@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "es2015",
+        "moduleResolution": "bundler",
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "allowJs": true,
+        "outDir": "build",
+        "rootDir": "src",
+        "strict": false,
+        "esModuleInterop": true,
+        "types": [
+            "node",
+            "jest"
+        ],
+        "skipLibCheck": true,
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "isolatedModules": true,
+        "rewriteRelativeImportExtensions":true,
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.js"
+    ],
+    "exclude":[
+        "build/**/*.*"
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "name": "jsx3d",
+    "version": "0.0.1",
+    "description": "Convert JSXGraph to TS, then maybe add ThreeJS, then add XR support...",
+    "license": "MIT",
+    "main": "./build/jxg.js",
+    "type": "module",
+    "scripts": {
+        "comment1":"it is convenient to use 'npm run build' with debug breakpoints in VSCode",
+        "build": "rimraf ./build && tsc -w",
+        "comment2" : "to run a single test (eg: coords):  npx jest coords",
+        "test": "jest",
+        "docs": "typedoc",
+        "dist": "vite build --base=/jsx3d/dist/",
+        "comment3": "use 'npx vite' to preview building distribution"
+    },
+    "keywords": [],
+    "author": "",
+    "devDependencies": {
+        "@babel/preset-typescript": "^7.28.5",
+        "@jest/globals": "^30.2.0",
+        "@jitbit/htmlsanitizer": "^2.0.3",
+        "@types/jest": "^30.0.0",
+        "babel-cli": "^6.26.0",
+        "jest": "^30.2.0",
+        "jest-environment-jsdom": "^30.2.0",
+        "rimraf": "^3.0.2",
+        "ts-jest": "^29.4.5",
+        "typedoc": "^0.28.14",
+        "typescript": "^5.9.3",
+        "vite": "^6.4.1"
+    },
+    "dependencies": {
+        "structured-clone-es": "^1.0.0"
+    }
+}

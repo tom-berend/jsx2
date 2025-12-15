@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JSXGraph3D Example</title>
+    <link rel="stylesheet" type="text/css" href="../jsxgraph/distrib/jsxgraph.css">
+   <script type="text/javascript" src="../jsxgraph/distrib/jsxgraphcore.js"></script>
+
+    <!-- <script type='module' src="../jsx3d/build/jsxgraph.js"></script> -->
+</head>
+
+<body>
+    <div style="margin:45px;">
+        <div id="box" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>
+        <div id="box2" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>
+    </div>
+    <script type="module">
+
+        import { IndexTests } from "./build/indextests.js"
+
+        let tests = new IndexTests()
+        // tests.text()
+
+
+        // import { Type } from './build//utils/type.js';
+        // import { Options } from './build/options.js';
+
+        // let lowerCaseLabelOptions = Type.keysToLowerCase(Options.label)  // merge converts to lower by default
+        // let testAttributes = { test: true }
+        // // expect(Type.copyAttributes({}, {}, 'dummyOption')).toEqual({ label: lowerCaseLabelOptions })
+        // console.log(Options, Options.dummyOption)
+
+        // let att = Type.copyAttributes({boo:'boo'}, Options.dummyOption,'jc')    //).toEqual({ test: true, label: lowerCaseLabelOptions })
+        // console.log(att)
+
+        // console.log('end')
+
+        // import { JSXGraph, } from './build/jsxgraph.js'
+        // import {SVGRenderer} from './build/renderer/svg.js'
+
+    </script>
+</body>
+
+</html>
