@@ -33,8 +33,8 @@
  * Create linear spaces of dimension at least one,
  * i.e. lines and planes.
  */
-import JXG from '../jxg.js';
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
+import { JXG } from '../jxg.js';
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import Type from '../utils/type.js';
 import Mat from '../math/math.js';
 import Geometry from '../math/geometry.js';
@@ -136,7 +136,7 @@ JXG.extend(
          * @returns {Object} Reference to Line3D object
          * @private
          */
-        updateCoords: function() {
+        updateCoords: function () {
             var i,
                 s = 0;
 
@@ -297,7 +297,7 @@ JXG.extend(
          * @function
          * @returns {Object} Reference to Line3D object
          */
-        updateZIndex: function() {
+        updateZIndex: function () {
             var p1 = this.endpoints[0],
                 p2 = this.endpoints[1],
                 c3d = [1, p1.X() + p2.X(), p1.Y() + p2.Y(), p1.Z() + p2.Z()];
@@ -569,7 +569,7 @@ JXG.createLine3D = function (board, parents, attributes) {
 
     if (base === null &&   // No transformation
         (Type.isPoint3D(parents[2]) ||
-            ( parents.length === 3 && (Type.isArray(parents[2]) || Type.isFunction(parents[2])) )
+            (parents.length === 3 && (Type.isArray(parents[2]) || Type.isFunction(parents[2])))
         )
     ) {
         // Line defined by two points; [view, point1, point2]
@@ -663,9 +663,9 @@ JXG.createLine3D = function (board, parents, attributes) {
         } else {
             throw new Error(
                 "JSXGraph: Can't create line3d with parents of type '" +
-                    typeof parents[1] + ", "  +
-                    typeof parents[2] + ", "  +
-                    typeof parents[3] + "'."
+                typeof parents[1] + ", " +
+                typeof parents[2] + ", " +
+                typeof parents[3] + "'."
             );
         }
 
@@ -947,7 +947,7 @@ JXG.extend(
          * @param {Number} v
          * @returns Number
          */
-        X: function(u, v) {
+        X: function (u, v) {
             return this.F(u, v)[0];
         },
 
@@ -960,7 +960,7 @@ JXG.extend(
          * @param {Number} v
          * @returns Number
          */
-        Y: function(u, v) {
+        Y: function (u, v) {
             return this.F(u, v)[1];
         },
 
@@ -973,7 +973,7 @@ JXG.extend(
          * @param {Number} v
          * @returns Number
          */
-        Z: function(u, v) {
+        Z: function (u, v) {
             return this.F(u, v)[2];
         },
 
@@ -985,7 +985,7 @@ JXG.extend(
          * @returns {Object} Reference to Plane3D object
          * @private
          */
-        updateCoords: function() {
+        updateCoords: function () {
             var i, s;
 
             if (Type.exists(this.direction1.view) && this.direction1.type === OBJECT_TYPE.LINE3D) {
@@ -1640,10 +1640,10 @@ JXG.createPlane3D = function (board, parents, attributes) {
         point = Type.providePoints3D(view, [parents[1]], attributes, 'plane3d', ['point1'])[0];
         point2 = Type.providePoints3D(view, [parents[2]], attributes, 'plane3d', ['point2'])[0];
         point3 = Type.providePoints3D(view, [parents[3]], attributes, 'plane3d', ['point3'])[0];
-        dir1 = function() {
+        dir1 = function () {
             return [point2.X() - point.X(), point2.Y() - point.Y(), point2.Z() - point.Z()];
         };
-        dir2 = function() {
+        dir2 = function () {
             return [point3.X() - point.X(), point3.Y() - point.Y(), point3.Z() - point.Z()];
         };
         range_u = parents[4] || [-Infinity, Infinity];
@@ -1656,7 +1656,7 @@ JXG.createPlane3D = function (board, parents, attributes) {
             base = parents[1];
             transform = parents[2];
 
-            point = Type.providePoints3D(view, [[0, 0, 0, 0]],  attributes,  'plane3d', ['point'])[0];
+            point = Type.providePoints3D(view, [[0, 0, 0, 0]], attributes, 'plane3d', ['point'])[0];
             dir1 = [0, 0.0001, 0, 0];
             dir2 = [0, 0, 0.0001, 0];
             range_u = parents[3] || [-Infinity, Infinity];
@@ -1672,18 +1672,18 @@ JXG.createPlane3D = function (board, parents, attributes) {
         if (point === false) {
             throw new Error(
                 "JSXGraph: Can't create plane3d with first parent of type '" + typeof parents[1] +
-                    "'." +
-                    "\nPossible first parent types are: point3d, array of length 3, function returning an array of length 3."
+                "'." +
+                "\nPossible first parent types are: point3d, array of length 3, function returning an array of length 3."
             );
         }
         if ((base !== null && parents < 3) || (base === null && parents.length < 4)) {
             throw new Error(
                 "JSXGraph: Can't create plane3d with parents of type '" +
-                    typeof parents[1] + ", "  +
-                    typeof parents[2] + ", "  +
-                    typeof parents[3] + ", "  +
-                    typeof parents[4] + ", "  +
-                    typeof parents[5] + "'."
+                typeof parents[1] + ", " +
+                typeof parents[2] + ", " +
+                typeof parents[3] + ", " +
+                typeof parents[4] + ", " +
+                typeof parents[5] + "'."
             );
         }
     }
@@ -1725,8 +1725,8 @@ JXG.createPlane3D = function (board, parents, attributes) {
                 return point.coords;
             },
             // dir1, dir2, range_u, range_v
-            function() { return el.vec1; },
-            function() { return el.vec2; },
+            function () { return el.vec1; },
+            function () { return el.vec2; },
             el.range_u,
             el.range_v
         ], attr);

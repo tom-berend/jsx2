@@ -36,10 +36,10 @@
         Nina Koch
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Mat from "../math/math.js";
 import Type from "../utils/type.js";
-import {OBJECT_TYPE} from "../base/constants.js";
+import { OBJECT_TYPE } from "../base/constants.js";
 
 /**
  * @class A grid is a mesh consisting of vertical and horizontal lines or other geometrical objects.
@@ -1041,7 +1041,7 @@ JXG.createGrid = function (board, parents, attributes) {
 
     minorGrid.dump = false;
 
-    majorGrid.getParents = minorGrid.getParents = function() {
+    majorGrid.getParents = minorGrid.getParents = function () {
         return parentAxes.slice();
     };
 

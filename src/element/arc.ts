@@ -37,13 +37,13 @@
  * style and functional properties that are required to draw an arc on a board.
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Geometry from "../math/geometry.js";
 import Mat from "../math/math.js";
 import Coords from "../base/coords.js";
 import Circle from "../base/circle.js";
 import Type from "../utils/type.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 
 /**
  * @class An arc is a partial circumference line of a circle.
@@ -111,13 +111,13 @@ JXG.createArc = function (board, parents, attributes) {
     if (points === false || points.length < 3) {
         throw new Error(
             "JSXGraph: Can't create Arc with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "' and '" +
-                typeof parents[2] +
-                "'." +
-                "\nPossible parent types: [point,point,point], [arc, transformation]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "' and '" +
+            typeof parents[2] +
+            "'." +
+            "\nPossible parent types: [point,point,point], [arc, transformation]"
         );
     }
 
@@ -303,7 +303,7 @@ JXG.createArc = function (board, parents, attributes) {
      * @returns {Number} Length of the arc.
      * @see Arc#Value
      */
-    el.L = function() {
+    el.L = function () {
         return this.Value('length');
     };
 
@@ -498,11 +498,11 @@ JXG.createSemicircle = function (board, parents, attributes) {
     if (points === false || points.length !== 2) {
         throw new Error(
             "JSXGraph: Can't create Semicircle with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [point,point]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [point,point]"
         );
     }
 
@@ -570,13 +570,13 @@ JXG.createCircumcircleArc = function (board, parents, attributes) {
     if (points === false || points.length !== 3) {
         throw new Error(
             "JSXGraph: create Circumcircle Arc with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "' and '" +
-                typeof parents[2] +
-                "'." +
-                "\nPossible parent types: [point,point,point]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "' and '" +
+            typeof parents[2] +
+            "'." +
+            "\nPossible parent types: [point,point,point]"
         );
     }
 

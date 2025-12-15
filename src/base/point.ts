@@ -38,11 +38,11 @@
  * a board.
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Options from "../options.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "./element.js";
 import Type from "../utils/type.js";
 import CoordsElement from "./coordselement.js";
@@ -207,10 +207,10 @@ JXG.extend(
             } catch (e) {
                 throw new Error(
                     "JSXGraph: Can't create 'intersection' with parent types '" +
-                        typeof el1 +
-                        "' and '" +
-                        typeof el2 +
-                        "'."
+                    typeof el1 +
+                    "' and '" +
+                    typeof el2 +
+                    "'."
                 );
             }
 
@@ -240,24 +240,24 @@ JXG.extend(
          */
         setStyle: function (i) {
             var facemap = [
-                    // 0-2
-                    "cross",
-                    "cross",
-                    "cross",
-                    // 3-6
-                    "circle",
-                    "circle",
-                    "circle",
-                    "circle",
-                    // 7-9
-                    "square",
-                    "square",
-                    "square",
-                    // 10-12
-                    "plus",
-                    "plus",
-                    "plus"
-                ],
+                // 0-2
+                "cross",
+                "cross",
+                "cross",
+                // 3-6
+                "circle",
+                "circle",
+                "circle",
+                "circle",
+                // 7-9
+                "square",
+                "square",
+                "square",
+                // 10-12
+                "plus",
+                "plus",
+                "plus"
+            ],
                 sizemap = [
                     // 0-2
                     2, 3, 4,
@@ -408,7 +408,7 @@ JXG.extend(
                         el.pnpoly(
                             this.coords.usrCoords[1],
                             this.coords.usrCoords[2],
-                            JXG.COORDS_BY_USER
+                            COORDS_BY.USER
                         )
                     ) {
                         return true;
@@ -495,11 +495,11 @@ JXG.createPoint = function (board, parents, attributes) {
     if (!el) {
         throw new Error(
             "JSXGraph: Can't create point with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [x,y], [z,x,y], [element,transformation]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [x,y], [z,x,y], [element,transformation]"
         );
     }
 
@@ -641,10 +641,10 @@ JXG.createIntersectionPoint = function (board, parents, attributes) {
     } catch (e) {
         throw new Error(
             "JSXGraph: Can't create 'intersection' with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'."
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'."
         );
     }
 
@@ -787,9 +787,9 @@ JXG.createIntersectionPoint = function (board, parents, attributes) {
  */
 JXG.createOtherIntersectionPoint = function (board, parents, attributes) {
     var el, el1, el2, i,
-    others, func, input,
-    isGood = true,
-    attr = Type.copyAttributes(attributes, board.options, 'otherintersection');
+        others, func, input,
+        isGood = true,
+        attr = Type.copyAttributes(attributes, board.options, 'otherintersection');
 
     if (parents.length !== 3) {
         isGood = false;
@@ -826,8 +826,8 @@ JXG.createOtherIntersectionPoint = function (board, parents, attributes) {
     if (!isGood) {
         throw new Error(
             "JSXGraph: Can't create 'other intersection point' with parent types '" +
-                typeof parents[0] + "',  '" + typeof parents[1] + "'and  '" + typeof parents[2] + "'." +
-                "\nPossible parent types: [circle|curve|line,circle|curve|line, point], not two lines"
+            typeof parents[0] + "',  '" + typeof parents[1] + "'and  '" + typeof parents[2] + "'." +
+            "\nPossible parent types: [circle|curve|line,circle|curve|line, point], not two lines"
         );
     }
 
@@ -960,11 +960,11 @@ JXG.createPolePoint = function (board, parents, attributes) {
         // Failure
         throw new Error(
             "JSXGraph: Can't create 'pole point' with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent type: [conic|circle,line], [line,conic|circle]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent type: [conic|circle,line], [line,conic|circle]"
         );
     }
 

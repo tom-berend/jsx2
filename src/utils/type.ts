@@ -42,7 +42,7 @@
 
 import { LooseObject } from '../interfaces.js'
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Mat from "../math/math.js";
 
@@ -1960,8 +1960,42 @@ JXG.extend(
             }
 
             return t;
-        }
-    }
-);
+        },
+
+
+    /**
+     * Generates a visProp object (all keys in lowercase) from objects presented in order and overwritten
+     * by subsequent objects.  Put the most general defaults first and user specified attributes last.
+     * @returns {Object} The resulting visProp object
+     */
+    initVisProps: function(...s){ //: LooseObject[]) {
+        // options is ALWAYS the Options object but lowercase
+        // if (dbug) console.warn(`%c type: copyAttibutes(attributes,  s='${JSON.stringify(s).substring(0, 30)}' )'`, dbugColor, s)
+
+        // tbtb - what to do with this?
+        let primitives = {
+            circle: 1,
+            curve: 1,
+            foreignobject: 1,
+            image: 1,
+            line: 1,
+            point: 1,
+            polygon: 1,
+            text: 1,
+            ticks: 1,
+            integral: 1
+        };
+
+
+        let a: LooseObject = {}
+        s.map((visProps) => {
+            this.mergeAttr(a, visProps, true)
+        })
+
+        return a;
+    },
+})
+
+
 
 export default JXG;

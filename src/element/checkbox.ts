@@ -36,8 +36,9 @@
  * @fileoverview In this file the Text element is defined.
  */
 
-import JXG from "../jxg.js";
-import Env from "../utils/env.js";
+import {JXG} from "../jxg.js";
+import { OBJECT_TYPE } from "../base/constants.js";
+import {Env} from "../utils/env.js";
 import Type from "../utils/type.js";
 
 var priv = {
@@ -189,7 +190,7 @@ JXG.createCheckbox = function (board, parents, attributes) {
 
     // 1. Create checkbox element with empty label
     t = board.create("text", par, attr);
-    t.type = Type.OBJECT_TYPE_CHECKBOX;
+    t.type = OBJECT_TYPE.CHECKBOX;
 
     t.rendNodeCheckbox = t.rendNode.childNodes[0].childNodes[0];
     t.rendNodeLabel = t.rendNode.childNodes[0].childNodes[1];

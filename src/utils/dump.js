@@ -36,7 +36,7 @@
  * @fileoverview The JXG.Dump namespace provides methods to save a board to javascript.
  */
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import Type from "./type.js";
 
 /**

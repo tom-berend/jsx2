@@ -32,8 +32,8 @@
 /*global JXG:true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import JXG from "./jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "./base/constants.js";
+import { JXG } from "./jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "./base/constants.js";
 import Mat from "./math/math.js";
 import Color from "./utils/color.js";
 import Type from "./utils/type.js";
@@ -5209,7 +5209,7 @@ JXG.Options = {
          * @type {String}
          * @name Grid#face
          */
-         // This attribute only exists for documentation purposes. It has no effect and is overwritten with actual values in major and minor.
+        // This attribute only exists for documentation purposes. It has no effect and is overwritten with actual values in major and minor.
         face: undefined,
 
         /**
@@ -8688,7 +8688,7 @@ JXG.Options = {
     /* special options for smartlabel of angle */
     smartlabelangle: {
         cssClass: 'smart-label-solid smart-label-angle',
-        highlightCssClass:'smart-label-solid smart-label-angle',
+        highlightCssClass: 'smart-label-solid smart-label-angle',
         anchorX: 'left',
         anchorY: 'middle',
 
@@ -8744,7 +8744,7 @@ JXG.Options = {
          *  <li> ...</li>
          * </ul>
          */
-        highlightCssClass:'smart-label-solid smart-label-circle',
+        highlightCssClass: 'smart-label-solid smart-label-circle',
         anchorX: 'middle',
         useMathJax: true,
 
@@ -8805,7 +8805,7 @@ JXG.Options = {
     /* special options for smartlabel of line */
     smartlabelline: {
         cssClass: 'smart-label-solid smart-label-line',
-        highlightCssClass:'smart-label-solid smart-label-line',
+        highlightCssClass: 'smart-label-solid smart-label-line',
         anchorX: 'middle',
 
         useMathJax: true,
@@ -8821,7 +8821,7 @@ JXG.Options = {
          */
 
         cssClass: 'smart-label-solid smart-label-point',
-        highlightCssClass:'smart-label-solid smart-label-point',
+        highlightCssClass: 'smart-label-solid smart-label-point',
         anchorX: 'middle',
         anchorY: 'top',
 
@@ -8851,7 +8851,7 @@ JXG.Options = {
     /* special options for smartlabel of polygon */
     smartlabelpolygon: {
         cssClass: 'smart-label-solid smart-label-polygon',
-        highlightCssClass:'smart-label-solid smart-label-polygon',
+        highlightCssClass: 'smart-label-solid smart-label-polygon',
         anchorX: 'middle',
 
         useMathJax: true,
@@ -10030,296 +10030,296 @@ JXG.Options = {
     }
 };
 
-    /**
-     * Holds all possible properties and the according validators for geometry elements.
-     * A validator is either a function
-     * which takes one parameter and returns true, if the value is valid for the property,
-     * or it is false if no validator is required.
-     */
-    JXG.Validator = (function () {
-        var i,
-            validatePixel = function (v) {
-                return (/^[0-9]+px$/).test(v);
-            },
-            validateDisplay = function (v) {
-                return (v  === 'html' || v === 'internal');
-            },
-            validateColor = function (v) {
-                // for now this should do it...
-                return Type.isString(v);
-            },
-            validatePointFace = function (v) {
-                return Type.exists(JXG.normalizePointFace(v));
-            },
-            validateNumber = function (v) {
-                return Type.isNumber(v, true, false);
-            },
-            validateInteger = function (v) {
-                return (Math.abs(v - Math.round(v)) < Mat.eps);
-            },
-            validateNotNegativeInteger = function (v) {
-                return validateInteger(v) && v >= 0;
-            },
-            validatePositiveInteger = function (v) {
-                return validateInteger(v) && v > 0;
-            },
-            // validateScreenCoords = function (v) {
-            //     return v.length >= 2 && validateInteger(v[0]) && validateInteger(v[1]);
-            // },
-            validateRenderer = function (v) {
-                return (v === 'vml' || v === 'svg' || v === 'canvas' || v === 'no');
-            },
-            validatePositive = function (v) {
-                return v > 0;
-            },
-            validateNotNegative = function (v) {
-                return v >= 0;
-            },
-            v = {},
-            validators = {
-                attractorDistance: validateNotNegative,
-                color: validateColor,
-                // defaultDistance: validateNumber,
-                display: validateDisplay,
-                doAdvancedPlot: false,
-                draft: false,
-                drawLabels: false,
-                drawZero: false,
-                face: validatePointFace,
-                factor: validateNumber,
-                fillColor: validateColor,
-                fillOpacity: validateNumber,
-                firstArrow: false,
-                fontSize: validateInteger,
-                dash: validateInteger,
-                gridX: validateNumber,
-                gridY: validateNumber,
-                // POI: Do we have to add something here?
-                hasGrid: false,
-                highlightFillColor: validateColor,
-                highlightFillOpacity: validateNumber,
-                highlightStrokeColor: validateColor,
-                highlightStrokeOpacity: validateNumber,
-                insertTicks: false,
-                //: validateScreenCoords,
-                lastArrow: false,
-                layer: validateNotNegativeInteger,
-                majorHeight: validateInteger,
-                minorHeight: validateInteger,
-                minorTicks: validateNotNegative,
-                minTicksDistance: validatePositiveInteger,
-                numberPointsHigh: validatePositiveInteger,
-                numberPointsLow: validatePositiveInteger,
-                opacity: validateNumber,
-                radius: validateNumber,
-                RDPsmoothing: false,
-                renderer: validateRenderer,
-                right: validatePixel,
-                showCopyright: false,
-                showInfobox: false,
-                showNavigation: false,
-                size: validateNotNegative, //validateInteger,
-                snapSizeX: validatePositive,
-                snapSizeY: validatePositive,
-                snapWidth: validateNumber,
-                snapToGrid: false,
-                snatchDistance: validateNotNegative,
-                straightFirst: false,
-                straightLast: false,
-                stretch: false,
-                strokeColor: validateColor,
-                strokeOpacity: validateNumber,
-                strokeWidth: validateNotNegative, //validateInteger,
-                takeFirst: false,
-                takeSizeFromFile: false,
-                to10: false,
-                toOrigin: false,
-                translateTo10: false,
-                translateToOrigin: false,
-                useASCIIMathML: false,
-                useDirection: false,
-                useMathJax: false,
-                withLabel: false,
-                withTicks: false,
-                zoom: false
-            };
-
-        // this seems like a redundant step but it makes sure that
-        // all properties in the validator object have lower case names
-        // and the validator object is easier to read.
-        for (i in validators) {
-            if (validators.hasOwnProperty(i)) {
-                v[i.toLowerCase()] = validators[i];
-            }
-        }
-
-        return v;
-    }());
-
-    /**
-     * All point faces can be defined with more than one name, e.g. a cross faced point can be given
-     * by face equal to 'cross' or equal to 'x'. This method maps all possible values to fixed ones to
-     * simplify if- and switch-clauses regarding point faces. The translation table is as follows:
-     * <table>
-     * <tr><th>Input</th><th>Output</th></tr>
-     * <tr><td>cross</td><td>x</td></tr>
-     * <tr><td>circle</td><td>o</td></tr>
-     * <tr><td>square, []</td><td>[]</td></tr>
-     * <tr><td>plus</td><td>+</td></tr>
-     * <tr><td>minus</td><td>-</td></tr>
-     * <tr><td>divide</td><td>|</td></tr>
-     * <tr><td>diamond</td><td>&lt;&gt;</td></tr>
-     * <tr><td>triangleup</td><td>^, a, A</td></tr>
-     * <tr><td>triangledown</td><td>v</td></tr>
-     * <tr><td>triangleleft</td><td>&lt;</td></tr>
-     * <tr><td>triangleright</td><td>&gt;</td></tr>
-     * </table>
-     * @param {String} s A string which should determine a valid point face.
-     * @returns {String} Returns a normalized string or undefined if the given string is not a valid
-     * point face.
-     */
-    JXG.normalizePointFace = function (s) {
-        var map = {
-            cross: 'x',
-            x: 'x',
-            circle: 'o',
-            o: 'o',
-            square: '[]',
-            '[]': '[]',
-            plus: '+',
-            '+': '+',
-            divide: '|',
-            '|': '|',
-            minus: '-',
-            '-': '-',
-            diamond: '<>',
-            '<>': '<>',
-            diamond2: '<<>>',
-            '<<>>': '<<>>',
-            triangleup: '^',
-            A: '^',
-            a: '^',
-            '^': '^',
-            triangledown: 'v',
-            v: 'v',
-            triangleleft: '<',
-            '<': '<',
-            triangleright: '>',
-            '>': '>'
+/**
+ * Holds all possible properties and the according validators for geometry elements.
+ * A validator is either a function
+ * which takes one parameter and returns true, if the value is valid for the property,
+ * or it is false if no validator is required.
+ */
+JXG.Validator = (function () {
+    var i,
+        validatePixel = function (v) {
+            return (/^[0-9]+px$/).test(v);
+        },
+        validateDisplay = function (v) {
+            return (v === 'html' || v === 'internal');
+        },
+        validateColor = function (v) {
+            // for now this should do it...
+            return Type.isString(v);
+        },
+        validatePointFace = function (v) {
+            return Type.exists(JXG.normalizePointFace(v));
+        },
+        validateNumber = function (v) {
+            return Type.isNumber(v, true, false);
+        },
+        validateInteger = function (v) {
+            return (Math.abs(v - Math.round(v)) < Mat.eps);
+        },
+        validateNotNegativeInteger = function (v) {
+            return validateInteger(v) && v >= 0;
+        },
+        validatePositiveInteger = function (v) {
+            return validateInteger(v) && v > 0;
+        },
+        // validateScreenCoords = function (v) {
+        //     return v.length >= 2 && validateInteger(v[0]) && validateInteger(v[1]);
+        // },
+        validateRenderer = function (v) {
+            return (v === 'vml' || v === 'svg' || v === 'canvas' || v === 'no');
+        },
+        validatePositive = function (v) {
+            return v > 0;
+        },
+        validateNotNegative = function (v) {
+            return v >= 0;
+        },
+        v = {},
+        validators = {
+            attractorDistance: validateNotNegative,
+            color: validateColor,
+            // defaultDistance: validateNumber,
+            display: validateDisplay,
+            doAdvancedPlot: false,
+            draft: false,
+            drawLabels: false,
+            drawZero: false,
+            face: validatePointFace,
+            factor: validateNumber,
+            fillColor: validateColor,
+            fillOpacity: validateNumber,
+            firstArrow: false,
+            fontSize: validateInteger,
+            dash: validateInteger,
+            gridX: validateNumber,
+            gridY: validateNumber,
+            // POI: Do we have to add something here?
+            hasGrid: false,
+            highlightFillColor: validateColor,
+            highlightFillOpacity: validateNumber,
+            highlightStrokeColor: validateColor,
+            highlightStrokeOpacity: validateNumber,
+            insertTicks: false,
+            //: validateScreenCoords,
+            lastArrow: false,
+            layer: validateNotNegativeInteger,
+            majorHeight: validateInteger,
+            minorHeight: validateInteger,
+            minorTicks: validateNotNegative,
+            minTicksDistance: validatePositiveInteger,
+            numberPointsHigh: validatePositiveInteger,
+            numberPointsLow: validatePositiveInteger,
+            opacity: validateNumber,
+            radius: validateNumber,
+            RDPsmoothing: false,
+            renderer: validateRenderer,
+            right: validatePixel,
+            showCopyright: false,
+            showInfobox: false,
+            showNavigation: false,
+            size: validateNotNegative, //validateInteger,
+            snapSizeX: validatePositive,
+            snapSizeY: validatePositive,
+            snapWidth: validateNumber,
+            snapToGrid: false,
+            snatchDistance: validateNotNegative,
+            straightFirst: false,
+            straightLast: false,
+            stretch: false,
+            strokeColor: validateColor,
+            strokeOpacity: validateNumber,
+            strokeWidth: validateNotNegative, //validateInteger,
+            takeFirst: false,
+            takeSizeFromFile: false,
+            to10: false,
+            toOrigin: false,
+            translateTo10: false,
+            translateToOrigin: false,
+            useASCIIMathML: false,
+            useDirection: false,
+            useMathJax: false,
+            withLabel: false,
+            withTicks: false,
+            zoom: false
         };
 
-        return map[s];
+    // this seems like a redundant step but it makes sure that
+    // all properties in the validator object have lower case names
+    // and the validator object is easier to read.
+    for (i in validators) {
+        if (validators.hasOwnProperty(i)) {
+            v[i.toLowerCase()] = validators[i];
+        }
+    }
+
+    return v;
+}());
+
+/**
+ * All point faces can be defined with more than one name, e.g. a cross faced point can be given
+ * by face equal to 'cross' or equal to 'x'. This method maps all possible values to fixed ones to
+ * simplify if- and switch-clauses regarding point faces. The translation table is as follows:
+ * <table>
+ * <tr><th>Input</th><th>Output</th></tr>
+ * <tr><td>cross</td><td>x</td></tr>
+ * <tr><td>circle</td><td>o</td></tr>
+ * <tr><td>square, []</td><td>[]</td></tr>
+ * <tr><td>plus</td><td>+</td></tr>
+ * <tr><td>minus</td><td>-</td></tr>
+ * <tr><td>divide</td><td>|</td></tr>
+ * <tr><td>diamond</td><td>&lt;&gt;</td></tr>
+ * <tr><td>triangleup</td><td>^, a, A</td></tr>
+ * <tr><td>triangledown</td><td>v</td></tr>
+ * <tr><td>triangleleft</td><td>&lt;</td></tr>
+ * <tr><td>triangleright</td><td>&gt;</td></tr>
+ * </table>
+ * @param {String} s A string which should determine a valid point face.
+ * @returns {String} Returns a normalized string or undefined if the given string is not a valid
+ * point face.
+ */
+JXG.normalizePointFace = function (s) {
+    var map = {
+        cross: 'x',
+        x: 'x',
+        circle: 'o',
+        o: 'o',
+        square: '[]',
+        '[]': '[]',
+        plus: '+',
+        '+': '+',
+        divide: '|',
+        '|': '|',
+        minus: '-',
+        '-': '-',
+        diamond: '<>',
+        '<>': '<>',
+        diamond2: '<<>>',
+        '<<>>': '<<>>',
+        triangleup: '^',
+        A: '^',
+        a: '^',
+        '^': '^',
+        triangledown: 'v',
+        v: 'v',
+        triangleleft: '<',
+        '<': '<',
+        triangleright: '>',
+        '>': '>'
     };
 
-    /**
-     * Apply the options stored in this object to all objects on the given board.
-     * @param {JXG.Board} board The board to which objects the options will be applied.
-     */
-    JXG.useStandardOptions = function (board) {
-        var el, t, p, copyProps,
-            o = JXG.Options,
-            boardHadGrid = board.hasGrid;
+    return map[s];
+};
 
-        board.options.grid.hasGrid = o.grid.hasGrid;
-        board.options.grid.gridX = o.grid.gridX;
-        board.options.grid.gridY = o.grid.gridY;
-        // POI: Do we have to add something here?
-        board.options.grid.gridColor = o.grid.gridColor;
-        board.options.grid.gridOpacity = o.grid.gridOpacity;
-        board.options.grid.gridDash = o.grid.gridDash;
-        board.options.grid.snapToGrid = o.grid.snapToGrid;
-        board.options.grid.snapSizeX = o.grid.SnapSizeX;
-        board.options.grid.snapSizeY = o.grid.SnapSizeY;
-        board.takeSizeFromFile = o.takeSizeFromFile;
+/**
+ * Apply the options stored in this object to all objects on the given board.
+ * @param {JXG.Board} board The board to which objects the options will be applied.
+ */
+JXG.useStandardOptions = function (board) {
+    var el, t, p, copyProps,
+        o = JXG.Options,
+        boardHadGrid = board.hasGrid;
 
-        copyProps = function (p, o) {
-            p.visProp.fillcolor = o.fillColor;
-            p.visProp.highlightfillcolor = o.highlightFillColor;
-            p.visProp.strokecolor = o.strokeColor;
-            p.visProp.highlightstrokecolor = o.highlightStrokeColor;
-        };
+    board.options.grid.hasGrid = o.grid.hasGrid;
+    board.options.grid.gridX = o.grid.gridX;
+    board.options.grid.gridY = o.grid.gridY;
+    // POI: Do we have to add something here?
+    board.options.grid.gridColor = o.grid.gridColor;
+    board.options.grid.gridOpacity = o.grid.gridOpacity;
+    board.options.grid.gridDash = o.grid.gridDash;
+    board.options.grid.snapToGrid = o.grid.snapToGrid;
+    board.options.grid.snapSizeX = o.grid.SnapSizeX;
+    board.options.grid.snapSizeY = o.grid.SnapSizeY;
+    board.takeSizeFromFile = o.takeSizeFromFile;
 
-        for (el in board.objects) {
-            if (board.objects.hasOwnProperty(el)) {
-                p = board.objects[el];
-                if (p.elementClass === OBJECT_CLASS.POINT) {
-                    copyProps(p, o.point);
-                } else if (p.elementClass === OBJECT_CLASS.LINE) {
-                    copyProps(p, o.line);
+    copyProps = function (p, o) {
+        p.visProp.fillcolor = o.fillColor;
+        p.visProp.highlightfillcolor = o.highlightFillColor;
+        p.visProp.strokecolor = o.strokeColor;
+        p.visProp.highlightstrokecolor = o.highlightStrokeColor;
+    };
 
-                    for (t = 0; t < p.ticks.length; t++) {
-                        p.ticks[t].majorTicks = o.line.ticks.majorTicks;
-                        p.ticks[t].minTicksDistance = o.line.ticks.minTicksDistance;
-                        p.ticks[t].visProp.minorheight = o.line.ticks.minorHeight;
-                        p.ticks[t].visProp.majorheight = o.line.ticks.majorHeight;
-                    }
-                } else if (p.elementClass === OBJECT_CLASS.CIRCLE) {
-                    copyProps(p, o.circle);
-                } else if (p.type === OBJECT_TYPE.ANGLE) {
-                    copyProps(p, o.angle);
-                } else if (p.type === OBJECT_TYPE.ARC) {
-                    copyProps(p, o.arc);
-                } else if (p.type === OBJECT_TYPE.POLYGON) {
-                    copyProps(p, o.polygon);
-                } else if (p.type === OBJECT_TYPE.CONIC) {
-                    copyProps(p, o.conic);
-                } else if (p.type === OBJECT_TYPE.CURVE) {
-                    copyProps(p, o.curve);
-                } else if (p.type === OBJECT_TYPE.SECTOR) {
-                    p.arc.visProp.fillcolor = o.sector.fillColor;
-                    p.arc.visProp.highlightfillcolor = o.sector.highlightFillColor;
-                    p.arc.visProp.fillopacity = o.sector.fillOpacity;
-                    p.arc.visProp.highlightfillopacity = o.sector.highlightFillOpacity;
+    for (el in board.objects) {
+        if (board.objects.hasOwnProperty(el)) {
+            p = board.objects[el];
+            if (p.elementClass === OBJECT_CLASS.POINT) {
+                copyProps(p, o.point);
+            } else if (p.elementClass === OBJECT_CLASS.LINE) {
+                copyProps(p, o.line);
+
+                for (t = 0; t < p.ticks.length; t++) {
+                    p.ticks[t].majorTicks = o.line.ticks.majorTicks;
+                    p.ticks[t].minTicksDistance = o.line.ticks.minTicksDistance;
+                    p.ticks[t].visProp.minorheight = o.line.ticks.minorHeight;
+                    p.ticks[t].visProp.majorheight = o.line.ticks.majorHeight;
                 }
+            } else if (p.elementClass === OBJECT_CLASS.CIRCLE) {
+                copyProps(p, o.circle);
+            } else if (p.type === OBJECT_TYPE.ANGLE) {
+                copyProps(p, o.angle);
+            } else if (p.type === OBJECT_TYPE.ARC) {
+                copyProps(p, o.arc);
+            } else if (p.type === OBJECT_TYPE.POLYGON) {
+                copyProps(p, o.polygon);
+            } else if (p.type === OBJECT_TYPE.CONIC) {
+                copyProps(p, o.conic);
+            } else if (p.type === OBJECT_TYPE.CURVE) {
+                copyProps(p, o.curve);
+            } else if (p.type === OBJECT_TYPE.SECTOR) {
+                p.arc.visProp.fillcolor = o.sector.fillColor;
+                p.arc.visProp.highlightfillcolor = o.sector.highlightFillColor;
+                p.arc.visProp.fillopacity = o.sector.fillOpacity;
+                p.arc.visProp.highlightfillopacity = o.sector.highlightFillOpacity;
             }
         }
+    }
 
-        board.fullUpdate();
-        if (boardHadGrid && !board.hasGrid) {
-            board.removeGrids(board);
-        } else if (!boardHadGrid && board.hasGrid) {
-            board.create('grid', []);
-        }
-    };
+    board.fullUpdate();
+    if (boardHadGrid && !board.hasGrid) {
+        board.removeGrids(board);
+    } else if (!boardHadGrid && board.hasGrid) {
+        board.create('grid', []);
+    }
+};
 
-    /**
-     * Converts all color values to greyscale and calls useStandardOption to put them onto the board.
-     * @param {JXG.Board} board The board to which objects the options will be applied.
-     * @see JXG.useStandardOptions
-     */
-    JXG.useBlackWhiteOptions = function (board) {
-        var o = JXG.Options;
-        o.point.fillColor = Color.rgb2bw(o.point.fillColor);
-        o.point.highlightFillColor = Color.rgb2bw(o.point.highlightFillColor);
-        o.point.strokeColor = Color.rgb2bw(o.point.strokeColor);
-        o.point.highlightStrokeColor = Color.rgb2bw(o.point.highlightStrokeColor);
+/**
+ * Converts all color values to greyscale and calls useStandardOption to put them onto the board.
+ * @param {JXG.Board} board The board to which objects the options will be applied.
+ * @see JXG.useStandardOptions
+ */
+JXG.useBlackWhiteOptions = function (board) {
+    var o = JXG.Options;
+    o.point.fillColor = Color.rgb2bw(o.point.fillColor);
+    o.point.highlightFillColor = Color.rgb2bw(o.point.highlightFillColor);
+    o.point.strokeColor = Color.rgb2bw(o.point.strokeColor);
+    o.point.highlightStrokeColor = Color.rgb2bw(o.point.highlightStrokeColor);
 
-        o.line.fillColor = Color.rgb2bw(o.line.fillColor);
-        o.line.highlightFillColor = Color.rgb2bw(o.line.highlightFillColor);
-        o.line.strokeColor = Color.rgb2bw(o.line.strokeColor);
-        o.line.highlightStrokeColor = Color.rgb2bw(o.line.highlightStrokeColor);
+    o.line.fillColor = Color.rgb2bw(o.line.fillColor);
+    o.line.highlightFillColor = Color.rgb2bw(o.line.highlightFillColor);
+    o.line.strokeColor = Color.rgb2bw(o.line.strokeColor);
+    o.line.highlightStrokeColor = Color.rgb2bw(o.line.highlightStrokeColor);
 
-        o.circle.fillColor = Color.rgb2bw(o.circle.fillColor);
-        o.circle.highlightFillColor = Color.rgb2bw(o.circle.highlightFillColor);
-        o.circle.strokeColor = Color.rgb2bw(o.circle.strokeColor);
-        o.circle.highlightStrokeColor = Color.rgb2bw(o.circle.highlightStrokeColor);
+    o.circle.fillColor = Color.rgb2bw(o.circle.fillColor);
+    o.circle.highlightFillColor = Color.rgb2bw(o.circle.highlightFillColor);
+    o.circle.strokeColor = Color.rgb2bw(o.circle.strokeColor);
+    o.circle.highlightStrokeColor = Color.rgb2bw(o.circle.highlightStrokeColor);
 
-        o.arc.fillColor = Color.rgb2bw(o.arc.fillColor);
-        o.arc.highlightFillColor = Color.rgb2bw(o.arc.highlightFillColor);
-        o.arc.strokeColor = Color.rgb2bw(o.arc.strokeColor);
-        o.arc.highlightStrokeColor = Color.rgb2bw(o.arc.highlightStrokeColor);
+    o.arc.fillColor = Color.rgb2bw(o.arc.fillColor);
+    o.arc.highlightFillColor = Color.rgb2bw(o.arc.highlightFillColor);
+    o.arc.strokeColor = Color.rgb2bw(o.arc.strokeColor);
+    o.arc.highlightStrokeColor = Color.rgb2bw(o.arc.highlightStrokeColor);
 
-        o.polygon.fillColor = Color.rgb2bw(o.polygon.fillColor);
-        o.polygon.highlightFillColor  = Color.rgb2bw(o.polygon.highlightFillColor);
+    o.polygon.fillColor = Color.rgb2bw(o.polygon.fillColor);
+    o.polygon.highlightFillColor = Color.rgb2bw(o.polygon.highlightFillColor);
 
-        o.sector.fillColor = Color.rgb2bw(o.sector.fillColor);
-        o.sector.highlightFillColor  = Color.rgb2bw(o.sector.highlightFillColor);
+    o.sector.fillColor = Color.rgb2bw(o.sector.fillColor);
+    o.sector.highlightFillColor = Color.rgb2bw(o.sector.highlightFillColor);
 
-        o.curve.strokeColor = Color.rgb2bw(o.curve.strokeColor);
-        o.grid.gridColor = Color.rgb2bw(o.grid.gridColor);
+    o.curve.strokeColor = Color.rgb2bw(o.curve.strokeColor);
+    o.grid.gridColor = Color.rgb2bw(o.grid.gridColor);
 
-        JXG.useStandardOptions(board);
-    };
+    JXG.useStandardOptions(board);
+};
 
 // needs to be exported
 JXG.Options.normalizePointFace = JXG.normalizePointFace;

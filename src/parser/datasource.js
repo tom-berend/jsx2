@@ -37,7 +37,7 @@
  * javascript arrays and HTML tables.
  */
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import Type from "../utils/type.js";
 
 JXG.DataSource = function () {

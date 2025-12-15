@@ -36,9 +36,9 @@
  * @fileoverview Example file for a triangle implemented as a extension to JSXGraph.
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Type from "../utils/type.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import Polygon from "../base/polygon.js";
 
 var priv = {
@@ -60,7 +60,7 @@ var priv = {
     Value: function () {
         return this.tangent.getSlope();
     },
-    Direction: function() {
+    Direction: function () {
         return this.tangent.Direction();
     }
 };
@@ -143,8 +143,8 @@ JXG.createSlopeTriangle = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create slope triangle with parent types '" +
-                typeof parents[0] +
-                "'."
+            typeof parents[0] +
+            "'."
         );
     }
 

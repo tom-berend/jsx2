@@ -38,7 +38,7 @@
  * a board.
  */
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import GeometryElement from "./element.js";
 import Coords from "./coords.js";
 import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
@@ -1000,7 +1000,7 @@ JXG.createCircle = function (board, parents, attributes) {
     ) {
         // Point/Number
         el = new JXG.Circle(board, "pointRadius", p[0], p[1], attr);
-    } else if (p[0].elementClass === OBJECT_CLASS.CIRCLE && Type.isPoint(p[1])) {
+    } else if (p[0] === OBJECT_CLASS.CIRCLE && Type.isPoint(p[1])) {
         // Circle/Point
         el = new JXG.Circle(board, "pointCircle", p[1], p[0], attr);
     } else if (p[1].elementClass === OBJECT_CLASS.CIRCLE && Type.isPoint(p[0])) {
@@ -1020,8 +1020,8 @@ JXG.createCircle = function (board, parents, attributes) {
     ) {
         // Circle through three points
         // Check if circumcircle element is available
-        if (JXG.elements.circumcircle) {
-            el = JXG.elements.circumcircle(board, p, attr);
+        if (JXG.elements['circumcircle']) {
+            el = JXG.elements['circumcircle'](board, p, attr);
         } else {
             throw new Error(
                 "JSXGraph: Can't create circle with three points. Please include the circumcircle element (element/composition)."

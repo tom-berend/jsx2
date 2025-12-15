@@ -36,8 +36,9 @@
  * @fileoverview In this file the Text element is defined.
  */
 
-import JXG from "../jxg.js";
-import Env from "../utils/env.js";
+import {JXG} from "../jxg.js";
+import { OBJECT_TYPE } from "../base/constants.js";
+import {Env} from "../utils/env.js";
 import Type from "../utils/type.js";
 
 var priv = {
@@ -251,7 +252,7 @@ JXG.createButton = function (board, parents, attributes) {
     // 1. Create empty button
     par = [parents[0], parents[1], '<button type="button" style="width:100%; height:100%;" tabindex="0"></button>'];
     t = board.create("text", par, attr);
-    t.type = Type.OBJECT_TYPE_BUTTON;
+    t.type = OBJECT_TYPE.BUTTON;
 
     t.rendNodeButton = t.rendNode.childNodes[0];
     t.rendNodeButton.id = t.rendNode.id + "_button";

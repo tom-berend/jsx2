@@ -38,10 +38,11 @@
  * a board.
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Type from "../utils/type.js";
 import GeometryElement from "../base/element.js";
 import Prefix from "../parser/prefix.js";
+import { OBJECT_TYPE } from "../base/constants.js";
 
 /**
  * @class A tape measure can be used to measure distances between points.
@@ -88,8 +89,8 @@ JXG.createTapemeasure = function (board, parents, attributes) {
     attr = Type.copyAttributes(attributes, board.options, "tapemeasure", 'point2');
     p2 = board.create("point", pos1, attr);
 
-    p1.setAttribute({ignoredSnapToPoints: [p2.id]});
-    p2.setAttribute({ignoredSnapToPoints: [p1.id]});
+    p1.setAttribute({ ignoredSnapToPoints: [p2.id] });
+    p2.setAttribute({ ignoredSnapToPoints: [p1.id] });
 
     // tape measure line
     attr = Type.copyAttributes(attributes, board.options, 'tapemeasure');
@@ -330,7 +331,7 @@ JXG.createMeasurement = function (board, parents, attributes) {
     term = parents[2];
 
     el = board.create("text", [x, y, ''], attr);
-    el.type = Type.OBJECT_TYPE_MEASUREMENT;
+    el.type = OBJECT_TYPE.MEASUREMENT;
     el.elType = 'measurement';
 
     el.Value = function () {

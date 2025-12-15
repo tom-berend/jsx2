@@ -33,7 +33,7 @@
  * @fileoverview Here, the computer algebra algorithms are implemented.
  */
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import Type from "../utils/type.js";
 // import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 // import Text from "../base/text.js";

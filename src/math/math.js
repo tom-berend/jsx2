@@ -36,7 +36,7 @@
  * @fileoverview In this file the namespace JXG.Math is defined, which is the base namespace
  * for namespaces like JXG.Math.Numerics, JXG.Math.Plot, JXG.Math.Statistics, JXG.Math.Clip etc.
  */
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Type from "../utils/type.js";
 
 var undef,
@@ -75,6 +75,7 @@ var undef,
  * specific to JSXGraph or which extend the JavaScript Math class.
  * @namespace
  */
+
 JXG.Math = {
     /**
      * eps defines the closeness to zero. If the absolute value of a given number is smaller
@@ -1450,7 +1451,13 @@ JXG.Math = {
             s[0] += y;
         }
         return s;
-    }
+    },
+
+    abs: function (x) { return Math.abs(x) },       // tbtb- rename this class !!
+    random: function (x) { return Math.random() },       // tbtb- rename this class !!
+    round: function (x) { return Math.round(x) },       // tbtb- rename this class !!
+    max: function (a,b) { return Math.max(a,b) },       // tbtb- rename this class !!
+
 };
 
 export default JXG.Math;

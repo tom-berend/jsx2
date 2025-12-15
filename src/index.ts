@@ -1,6 +1,8 @@
 /* eslint-disable one-var */
-import JXG from './jxg.js';
-import Env from './utils/env.js'; // Needed below
+import './jxg.js';
+import { JXG } from './jxg.js';
+
+import { Env } from './utils/env.js'; // Needed below
 import './base/constants.js';
 import './utils/type.js';
 import './utils/xml.js';
@@ -91,6 +93,7 @@ import './3d/surface3d.js';
 import './parser/3dmodels.js';
 import './themes/mono_thin.js';
 
+import { COORDS_BY } from './base/constants.js';
 
 // The following exports are used to restore granular objects.
 // This is consistent with 1.4.x when a UMD bundle is used with a SystemJS loader.
@@ -98,8 +101,8 @@ import './themes/mono_thin.js';
 // will only exist in a UMD bundle. This should improve tree-shaking.
 
 // Values
-export const COORDS_BY_SCREEN = JXG.COORDS_BY_SCREEN;
-export const COORDS_BY_USER = JXG.COORDS_BY_USER;
+export const COORDS_BY_SCREEN = COORDS_BY.SCREEN;
+export const COORDS_BY_USER = COORDS_BY.USER;
 export const Dump = JXG.Dump;
 export const Expect = JXG.Expect;
 export const JSXGraph = JXG.JSXGraph;

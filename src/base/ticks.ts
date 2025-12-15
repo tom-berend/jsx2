@@ -39,11 +39,11 @@
  * @version 0.1
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "./element.js";
 import Coords from "./coords.js";
 import Type from "../utils/type.js";
@@ -1090,9 +1090,9 @@ JXG.extend(
             //         point2UsrCoords = this.line.point1.coords.usrCoords;
             //     }
             // } /* if (this.line.elementClass === OBJECT_CLASS.LINE)*/ else {
-                // Line direction is always from P1 to P2 for non axis types
-                point1UsrCoords = this.line.point1.coords.usrCoords;
-                point2UsrCoords = this.line.point2.coords.usrCoords;
+            // Line direction is always from P1 to P2 for non axis types
+            point1UsrCoords = this.line.point1.coords.usrCoords;
+            point2UsrCoords = this.line.point2.coords.usrCoords;
             // }
             return {
                 x: (point2UsrCoords[1] - point1UsrCoords[1]) / distP1P2,

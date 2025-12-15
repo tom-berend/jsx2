@@ -28,7 +28,7 @@
  */
 /*global JXG:true, define: true*/
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";

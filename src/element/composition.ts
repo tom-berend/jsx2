@@ -54,13 +54,13 @@
  *   <li>{@link Reflection}</li></ul>
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import Coords from "../base/coords.js";
 import Type from "../utils/type.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 // import Point from "../base/point.js";
 // import Line from "../base/line.js";
 // import Circle from "../base/circle.js";
@@ -119,11 +119,11 @@ JXG.createOrthogonalProjection = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create perpendicular point with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [point,line]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [point,line]"
         );
     }
 
@@ -272,11 +272,11 @@ JXG.createPerpendicular = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create perpendicular with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [line,point]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [line,point]"
         );
     }
 
@@ -360,11 +360,11 @@ JXG.createPerpendicularPoint = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create perpendicular point with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [point,line]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [point,line]"
         );
     }
 
@@ -510,11 +510,11 @@ JXG.createPerpendicularSegment = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create perpendicular with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [line,point]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [line,point]"
         );
     }
     attr = Type.copyAttributes(attributes, board.options, "perpendicularsegment", 'point');
@@ -613,7 +613,7 @@ JXG.createMidpoint = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create midpoint." +
-                "\nPossible parent types: [point,point], [line]"
+            "\nPossible parent types: [point,point], [line]"
         );
     }
 
@@ -784,13 +784,13 @@ JXG.createParallelPoint = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create parallel point with parent types '" +
-                typeof parents[0] +
-                "', '" +
-                typeof parents[1] +
-                "' and '" +
-                typeof parents[2] +
-                "'." +
-                "\nPossible parent types: [line,point], [point,point,point]"
+            typeof parents[0] +
+            "', '" +
+            typeof parents[1] +
+            "' and '" +
+            typeof parents[2] +
+            "'." +
+            "\nPossible parent types: [line,point], [point,point,point]"
         );
     }
 
@@ -1101,11 +1101,11 @@ JXG.createArrowParallel = function (board, parents, attributes) {
     } catch (e) {
         throw new Error(
             "JSXGraph: Can't create arrowparallel with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [line,point], [point,point,point]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [line,point], [point,point,point]"
         );
     }
 };
@@ -1195,11 +1195,11 @@ JXG.createBisector = function (board, parents, attributes) {
 
     throw new Error(
         "JSXGraph: Can't create angle bisector with parent types '" +
-            typeof parents[0] +
-            "' and '" +
-            typeof parents[1] +
-            "'." +
-            "\nPossible parent types: [point,point,point]"
+        typeof parents[0] +
+        "' and '" +
+        typeof parents[1] +
+        "'." +
+        "\nPossible parent types: [point,point,point]"
     );
 };
 
@@ -1254,11 +1254,11 @@ JXG.createAngularBisectorsOfTwoLines = function (board, parents, attributes) {
     ) {
         throw new Error(
             "JSXGraph: Can't create angle bisectors of two lines with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [line,line]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [line,line]"
         );
     }
 
@@ -1520,13 +1520,13 @@ JXG.createCircumcenter = function (board, parents, attributes) {
 
     throw new Error(
         "JSXGraph: Can't create circumcircle midpoint with parent types '" +
-            typeof parents[0] +
-            "', '" +
-            typeof parents[1] +
-            "' and '" +
-            typeof parents[2] +
-            "'." +
-            "\nPossible parent types: [point,point,point]"
+        typeof parents[0] +
+        "', '" +
+        typeof parents[1] +
+        "' and '" +
+        typeof parents[2] +
+        "'." +
+        "\nPossible parent types: [point,point,point]"
     );
 };
 
@@ -1608,13 +1608,13 @@ JXG.createIncenter = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create incenter with parent types '" +
-                typeof parents[0] +
-                "', '" +
-                typeof parents[1] +
-                "' and '" +
-                typeof parents[2] +
-                "'." +
-                "\nPossible parent types: [point,point,point]"
+            typeof parents[0] +
+            "', '" +
+            typeof parents[1] +
+            "' and '" +
+            typeof parents[2] +
+            "'." +
+            "\nPossible parent types: [point,point,point]"
         );
     }
 
@@ -1652,13 +1652,13 @@ JXG.createCircumcircle = function (board, parents, attributes) {
     if (parents === false) {
         throw new Error(
             "JSXGraph: Can't create circumcircle with parent types '" +
-                typeof parents[0] +
-                "', '" +
-                typeof parents[1] +
-                "' and '" +
-                typeof parents[2] +
-                "'." +
-                "\nPossible parent types: [point,point,point]"
+            typeof parents[0] +
+            "', '" +
+            typeof parents[1] +
+            "' and '" +
+            typeof parents[2] +
+            "'." +
+            "\nPossible parent types: [point,point,point]"
         );
     }
 
@@ -1691,13 +1691,13 @@ JXG.createCircumcircle = function (board, parents, attributes) {
     } catch (e) {
         throw new Error(
             "JSXGraph: Can't create circumcircle with parent types '" +
-                typeof parents[0] +
-                "', '" +
-                typeof parents[1] +
-                "' and '" +
-                typeof parents[2] +
-                "'." +
-                "\nPossible parent types: [point,point,point]"
+            typeof parents[0] +
+            "', '" +
+            typeof parents[1] +
+            "' and '" +
+            typeof parents[2] +
+            "'." +
+            "\nPossible parent types: [point,point,point]"
         );
     }
 
@@ -1738,13 +1738,13 @@ JXG.createIncircle = function (board, parents, attributes) {
     if (parents === false) {
         throw new Error(
             "JSXGraph: Can't create circumcircle with parent types '" +
-                typeof parents[0] +
-                "', '" +
-                typeof parents[1] +
-                "' and '" +
-                typeof parents[2] +
-                "'." +
-                "\nPossible parent types: [point,point,point]"
+            typeof parents[0] +
+            "', '" +
+            typeof parents[1] +
+            "' and '" +
+            typeof parents[2] +
+            "'." +
+            "\nPossible parent types: [point,point,point]"
         );
     }
     try {
@@ -1799,13 +1799,13 @@ JXG.createIncircle = function (board, parents, attributes) {
     } catch (e) {
         throw new Error(
             "JSXGraph: Can't create circumcircle with parent types '" +
-                typeof parents[0] +
-                "', '" +
-                typeof parents[1] +
-                "' and '" +
-                typeof parents[2] +
-                "'." +
-                "\nPossible parent types: [point,point,point]"
+            typeof parents[0] +
+            "', '" +
+            typeof parents[1] +
+            "' and '" +
+            typeof parents[2] +
+            "'." +
+            "\nPossible parent types: [point,point,point]"
         );
     }
 
@@ -1936,11 +1936,11 @@ JXG.createReflection = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create reflection element with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                errStr
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            errStr
         );
     }
 
@@ -1949,11 +1949,11 @@ JXG.createReflection = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create reflected element with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                errStr
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            errStr
         );
     }
     t = JXG.createTransform(board, [l], { type: "reflect" });
@@ -1994,11 +1994,11 @@ JXG.createReflection = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create reflected element with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                errStr
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            errStr
         );
     }
 
@@ -2148,11 +2148,11 @@ JXG.createMirrorElement = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create mirror element with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                errStr
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            errStr
         );
     }
 
@@ -2163,11 +2163,11 @@ JXG.createMirrorElement = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create mirror element with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                errStr
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            errStr
         );
     }
 
@@ -2208,11 +2208,11 @@ JXG.createMirrorElement = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create mirror element with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                errStr
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            errStr
         );
     }
 
@@ -2304,11 +2304,11 @@ JXG.createIntegral = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create integral with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [[number|function,number|function],curve]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [[number|function,number|function],curve]"
         );
     }
 
@@ -2356,19 +2356,19 @@ JXG.createIntegral = function (board, parents, attributes) {
 
     attr = Type.copyAttributes(attributes, board.options, 'integral', 'baseleft');
     pa_on_axis = board.create('point', [
-            function () {
-                if (p.evalVisProp('axis') === 'y') {
-                    return 0;
-                }
-                return pa_on_curve.X();
-            },
-            function () {
-                if (p.evalVisProp('axis') === 'y') {
-                    return pa_on_curve.Y();
-                }
+        function () {
+            if (p.evalVisProp('axis') === 'y') {
                 return 0;
             }
-        ], attr);
+            return pa_on_curve.X();
+        },
+        function () {
+            if (p.evalVisProp('axis') === 'y') {
+                return pa_on_curve.Y();
+            }
+            return 0;
+        }
+    ], attr);
 
     attr = Type.copyAttributes(attributes, board.options, "integral", 'curveright');
     pb_on_curve = board.create("glider", [endx, endy, curve], attr);
@@ -2378,20 +2378,20 @@ JXG.createIntegral = function (board, parents, attributes) {
 
     attr = Type.copyAttributes(attributes, board.options, "integral", 'baseright');
     pb_on_axis = board.create('point', [
-            function () {
-                if (p.evalVisProp('axis') === 'y') {
-                    return 0;
-                }
-                return pb_on_curve.X();
-            },
-            function () {
-                if (p.evalVisProp('axis') === 'y') {
-                    return pb_on_curve.Y();
-                }
-
+        function () {
+            if (p.evalVisProp('axis') === 'y') {
                 return 0;
             }
-        ], attr);
+            return pb_on_curve.X();
+        },
+        function () {
+            if (p.evalVisProp('axis') === 'y') {
+                return pb_on_curve.Y();
+            }
+
+            return 0;
+        }
+    ], attr);
 
     // Re-insert the filled integral curve element
     p._pos = board.objectsList.length;
@@ -2403,54 +2403,54 @@ JXG.createIntegral = function (board, parents, attributes) {
         attr = Type.copyAttributes(attr, board.options, 'label');
 
         t = board.create('text', [
-                function () {
-                    var off = new Coords(
-                            COORDS_BY.SCREEN,
-                            [
-                                this.evalVisProp('offset.0') +
-                                    this.board.origin.scrCoords[1],
-                                0
-                            ],
-                            this.board,
-                            false
-                        ),
-                        bb = this.board.getBoundingBox(),
-                        dx = (bb[2] - bb[0]) * 0.1,
-                        x = pb_on_curve.X();
+            function () {
+                var off = new Coords(
+                    COORDS_BY.SCREEN,
+                    [
+                        this.evalVisProp('offset.0') +
+                        this.board.origin.scrCoords[1],
+                        0
+                    ],
+                    this.board,
+                    false
+                ),
+                    bb = this.board.getBoundingBox(),
+                    dx = (bb[2] - bb[0]) * 0.1,
+                    x = pb_on_curve.X();
 
-                    if (x < bb[0]) {
-                        x = bb[0] + dx;
-                    } else if (x > bb[2]) {
-                        x = bb[2] - dx;
-                    }
+                if (x < bb[0]) {
+                    x = bb[0] + dx;
+                } else if (x > bb[2]) {
+                    x = bb[2] - dx;
+                }
 
-                    return x + off.usrCoords[1];
-                },
-                function () {
-                    var off = new Coords(
-                            COORDS_BY.SCREEN,
-                            [
-                                0,
-                                this.evalVisProp('offset.1') +
-                                    this.board.origin.scrCoords[2]
-                            ],
-                            this.board,
-                            false
-                        ),
-                        bb = this.board.getBoundingBox(),
-                        dy = (bb[1] - bb[3]) * 0.1,
-                        y = pb_on_curve.Y();
+                return x + off.usrCoords[1];
+            },
+            function () {
+                var off = new Coords(
+                    COORDS_BY.SCREEN,
+                    [
+                        0,
+                        this.evalVisProp('offset.1') +
+                        this.board.origin.scrCoords[2]
+                    ],
+                    this.board,
+                    false
+                ),
+                    bb = this.board.getBoundingBox(),
+                    dy = (bb[1] - bb[3]) * 0.1,
+                    y = pb_on_curve.Y();
 
-                    if (y > bb[1]) {
-                        y = bb[1] - dy;
-                    } else if (y < bb[3]) {
-                        y = bb[3] + dy;
-                    }
+                if (y > bb[1]) {
+                    y = bb[1] - dy;
+                } else if (y < bb[3]) {
+                    y = bb[3] + dy;
+                }
 
-                    return y + off.usrCoords[2];
-                },
-                ''
-            ], attr);
+                return y + off.usrCoords[2];
+            },
+            ''
+        ], attr);
 
         txt_fun = function () {
             var intSymbol = '&int;',
@@ -2750,7 +2750,7 @@ JXG.createInequality = function (board, parents, attributes) {
                 w = expansion * Math.max(bb[2] - bb[0], bb[1] - bb[3]),
                 // Fake a point (for Math.Geometry.perpendicular)
                 // contains centroid of the board
-                dp:LooseObject = {
+                dp: LooseObject = {
                     coords: {
                         usrCoords: [1, (bb[0] + bb[2]) * 0.5, inverse ? bb[1] : bb[3]]
                     }
@@ -2915,7 +2915,7 @@ JXG.createInequality = function (board, parents, attributes) {
         if (!Type.exists(f)) {
             throw new Error(
                 "JSXGraph: Can't create area with the given parents." +
-                    "\nPossible parent types: [line], [function]"
+                "\nPossible parent types: [line], [function]"
             );
         }
     }

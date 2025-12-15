@@ -39,14 +39,14 @@
  *
  */
 
-import JXG from "./jxg.js";
-import Env from "./utils/env.js";
+import { JXG } from "./jxg.js";
+import {Env }from "./utils/env.js";
 import Type from "./utils/type.js";
 // import Mat from "./math/math.js";
-import Board from "./base/board.js";
+import { Board } from "./base/board.js";
 import FileReader from "./reader/file.js";
 import Options from "./options.js";
-import SVGRenderer from "./renderer/svg.js";
+import {SVGRenderer} from "./renderer/svg.js";
 import VMLRenderer from "./renderer/vml.js";
 import CanvasRenderer from "./renderer/canvas.js";
 import NoRenderer from "./renderer/no.js";
@@ -65,33 +65,6 @@ JXG.JSXGraph = {
      */
     rendererType: (function () {
         Options.board.renderer = 'no';
-
-        if (Env.supportsVML()) {
-            Options.board.renderer = 'vml';
-            // Ok, this is some real magic going on here. IE/VML always was so
-            // terribly slow, except in one place: Examples placed in a moodle course
-            // was almost as fast as in other browsers. So i grabbed all the css and
-            // lib scripts from our moodle, added them to a jsxgraph example and it
-            // worked. next step was to strip all the css/lib code which didn't affect
-            // the VML update speed. The following five lines are what was left after
-            // the last step and yes - it basically does nothing but reads two
-            // properties of document.body on every mouse move. why? we don't know. if
-            // you know, please let us know.
-            //
-            // If we want to use the strict mode we have to refactor this a little bit. Let's
-            // hope the magic isn't gone now. Anywho... it's only useful in old versions of IE
-            // which should not be used anymore.
-            document.onmousemove = function () {
-                var t;
-
-                if (document.body) {
-                    t = document.body.scrollLeft;
-                    t += document.body.scrollTop;
-                }
-
-                return t;
-            };
-        }
 
         if (Env.supportsCanvas()) {
             Options.board.renderer = 'canvas';
@@ -561,7 +534,8 @@ JXG.JSXGraph = {
             originY = unitY * (bbox[1] + offY);
         }
 
-        renderer = this.initRenderer(box, dimensions, attr.document, attr.renderer);
+        // tbtb - move the renderer to Board, so that different boards have different renderers
+        // renderer = this.initRenderer(box, dimensions, attr.document, attr.renderer);
         this._setARIA(box, attr);
 
         // Create the board.
@@ -925,7 +899,7 @@ if (Env.isBrowser && typeof window === 'object' && typeof document === 'object')
                 }
             }
         },
-        window
+        (window as any)
     );
 }
 

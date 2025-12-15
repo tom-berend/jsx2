@@ -38,7 +38,7 @@
  * stuff like intersection points, angles, midpoint, and so on.
  */
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Coords from "../base/coords.js";
 import Mat from "./math.js";

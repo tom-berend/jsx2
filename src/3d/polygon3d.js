@@ -29,8 +29,8 @@
  */
 /*global JXG:true, define: true*/
 
-import JXG from '../jxg.js';
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
+import { JXG } from '../jxg.js';
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import Type from '../utils/type.js';
 import Mat from '../math/math.js';
 
@@ -90,7 +90,7 @@ JXG.extend(
             return this;
         },
 
-        updateZIndex: function() {
+        updateZIndex: function () {
             var i,
                 le = this.vertices.length, // - 1,
                 c3d = [1, 0, 0, 0];

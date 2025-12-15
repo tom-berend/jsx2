@@ -36,7 +36,7 @@
  * @fileoverview This file contains code for transformations of geometrical objects.
  */
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Mat from "../math/math.js";
 import Type from "../utils/type.js";

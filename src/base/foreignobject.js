@@ -36,7 +36,7 @@
  * @fileoverview In this file the ForeignObject element is defined.
  */
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Coords from "./coords.js";
 import GeometryElement from "./element.js";

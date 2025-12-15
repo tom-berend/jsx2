@@ -29,8 +29,8 @@
  */
 /*global JXG:true, define: true*/
 
-import JXG from "../jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
+import { JXG } from "../jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import Type from "../utils/type.js";
 import Mat from '../math/math.js';
 import Geometry from '../math/geometry.js';
@@ -137,7 +137,7 @@ JXG.Circle3D = function (view, center, normal, radius, attributes) {
     this.curve = view.create(
         'curve3d',
         [
-            function(t) {
+            function (t) {
                 var r = that.Radius(),
                     s = Math.sin(t),
                     c = Math.cos(t);

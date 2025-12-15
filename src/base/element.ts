@@ -32,13 +32,13 @@
 /*global JXG: true, define: true*/
 /*jslint nomen: true, plusplus: true, unparam: true*/
 
-import JXG from "../jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { JXG } from "../jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import Coords from "./coords.js";
 import Mat from "../math/math.js";
 import Statistics from "../math/statistics.js";
 import Options from "../options.js";
-import {EventEmitter} from "../utils/event.js";
+import { EventEmitter } from "../utils/event.js";
 import Color from "../utils/color.js";
 import Type from "../utils/type.js";
 
@@ -1497,8 +1497,8 @@ JXG.extend(
                                 )
                             ) {
                                 value = (value.toLowerCase && value.toLowerCase() === 'false')
-                                            ? false
-                                            : value;
+                                    ? false
+                                    : value;
                                 this._set(key, value);
                             } else {
                                 if (!(key in Options.shortcuts)) {
@@ -1653,7 +1653,7 @@ JXG.extend(
          * @see GeometryElement#evalVisProp
          * @see JXG#evaluate
          */
-        eval: function(val) {
+        eval: function (val) {
             if (JXG.isFunction(val)) {
                 // For labels supply the anchor element as parameter.
                 if (this.visProp.islabel === true && Type.exists(this.visProp.anchor)) {
@@ -1773,7 +1773,7 @@ JXG.extend(
             // this is a dirty hack to resolve the text-dependency. If there is no text element available,
             // just don't create a label. This method is usually not called by a user, so we won't throw
             // an exception here and simply output a warning via JXG.debug.
-            if (JXG.elements.text) {
+            if (JXG.elements['text']) {
                 attr = Type.deepCopy(this.visProp.label, null);
                 attr.id = this.id + 'Label';
                 attr.isLabel = true;
@@ -1781,7 +1781,7 @@ JXG.extend(
                 attr.priv = this.visProp.priv;
 
                 if (this.visProp.withlabel) {
-                    this.label = JXG.elements.text(
+                    this.label = JXG.elements['text'](
                         this.board,
                         [
                             0,

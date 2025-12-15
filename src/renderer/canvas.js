@@ -32,10 +32,10 @@
 /*global JXG: true, define: true, AMprocessNode: true, document: true, Image: true, module: true, require: true */
 /*jslint nomen: true, plusplus: true, newcap:true*/
 
-import JXG from "../jxg.js";
-import AbstractRenderer from "./abstract.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import Env from "../utils/env.js";
+import { JXG } from "../jxg.js";
+import { AbstractRenderer } from "./abstract.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
+import { Env } from "../utils/env.js";
 import Type from "../utils/type.js";
 import UUID from "../utils/uuid.js";
 import Color from "../utils/color.js";
@@ -1159,7 +1159,7 @@ JXG.extend(
                 board._logo_image = new Image();
                 board._logo_image.src = str;
             }
-            board._logo_image.onload = function() {
+            board._logo_image.onload = function () {
                 context.save();
                 context.globalAlpha = alpha;
                 context.drawImage(board._logo_image, 5, 5, s, s);

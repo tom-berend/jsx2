@@ -32,8 +32,8 @@
 /*global JXG: true, define: true, AMprocessNode: true, MathJax: true, document: true */
 /*jslint nomen: true, plusplus: true, newcap:true*/
 
-import JXG from "../jxg.js";
-import AbstractRenderer from "./abstract.js";
+import {JXG} from "../jxg.js";
+import {AbstractRenderer} from "./abstract.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from "../utils/type.js";
 import Color from "../utils/color.js";

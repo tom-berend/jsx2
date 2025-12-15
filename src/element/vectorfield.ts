@@ -33,7 +33,7 @@
  * @fileoverview Implementation of vector fields and slope fields.
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Type from "../utils/type.js";
 
 /**

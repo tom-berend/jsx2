@@ -40,7 +40,7 @@ import { LooseObject } from "../interfaces.js";
  * @fileoverview In this file the EventEmitter interface is defined.
  */
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import Type from "./type.js";
 
 type argVals = string | number | Boolean  // arguments for event handlers

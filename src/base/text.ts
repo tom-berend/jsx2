@@ -47,11 +47,11 @@
  * @fileoverview In this file the Text element is defined.
  */
 
-import JXG from "../jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { JXG } from "../jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "./element.js";
 import GeonextParser from "../parser/geonext.js";
-import Env from "../utils/env.js";
+import { Env } from "../utils/env.js";
 import Type from "../utils/type.js";
 import Mat from "../math/math.js";
 import CoordsElement from "./coordselement.js";
@@ -317,7 +317,7 @@ JXG.extend(
                             }
                         }
 
-                        updateText = function() {
+                        updateText = function () {
                             var i, t,
                                 digits = that.evalVisProp('digits'),
                                 txt = '';
@@ -483,7 +483,7 @@ JXG.extend(
                             that.size = [tmp.width, tmp.height];
                             that.needsUpdate = true;
                             that.updateRenderer();
-                        } catch (e) {}
+                        } catch (e) { }
                     }, 0);
                 } else if (this.board.renderer.type === 'canvas') {
                     this.size = this.crudeSizeEstimate();
@@ -859,7 +859,7 @@ JXG.extend(
                     //         textComps.push("(" + res + ")");
                     //     }
                     // } else {
-                        textComps.push("(" + res + ")");
+                    textComps.push("(" + res + ")");
                     // }
                     contentStr = contentStr.slice(j + 8);
                     i = contentStr.indexOf("<value>");
@@ -1148,7 +1148,7 @@ JXG.extend(
          * @param  {Array} [whiteList] array of ids which should be ignored
          * @return {Number}   Number of overlapping elements
          */
-        getNumberOfConflicts: function(x, y, w, h, whiteList) {
+        getNumberOfConflicts: function (x, y, w, h, whiteList) {
             whiteList = whiteList || [];
             var count = 0,
                 i, obj,
@@ -1247,10 +1247,10 @@ JXG.extend(
          * @param {number} angle angle in radians
          * @returns {number} Position score, higher values indicate better positions
          */
-        calculateScore: function(radius, angle) {
+        calculateScore: function (radius, angle) {
             var x, y, co, si, angleCurrentOffset, angleDifference,
                 score = 0,
-                cornerPoint = [0,0],
+                cornerPoint = [0, 0],
                 w = this.getSize()[0],
                 h = this.getSize()[1],
                 anchorCoords,
@@ -1288,7 +1288,7 @@ JXG.extend(
             }
 
             // If label was not in bounding box, score is reduced by 1
-            if(
+            if (
                 cornerPoint[0] < 0 ||
                 cornerPoint[0] > (boundingBox[2] - boundingBox[0]) * this.board.unitX ||
                 cornerPoint[1] < 0 ||
@@ -1336,7 +1336,7 @@ JXG.extend(
          *
          * @returns {JXG.Text} Reference to the text object.
          */
-        setAutoPosition: function() {
+        setAutoPosition: function () {
             var radius, angle, radiusStep,
                 i,
                 bestScore = -Infinity, bestRadius, bestAngle,
@@ -1670,11 +1670,11 @@ JXG.createText = function (board, parents, attributes) {
     if (!t) {
         throw new Error(
             "JSXGraph: Can't create text with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [x,y], [z,x,y], [element,transformation]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [x,y], [z,x,y], [element,transformation]"
         );
     }
 
@@ -1724,11 +1724,11 @@ JXG.createHTMLSlider = function (board, parents, attributes) {
     if (parents.length !== 2 || parents[0].length !== 2 || parents[1].length !== 3) {
         throw new Error(
             "JSXGraph: Can't create htmlslider with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parents are: [[x,y], [min, start, max]]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parents are: [[x,y], [min, start, max]]"
         );
     }
 
@@ -1740,12 +1740,12 @@ JXG.createHTMLSlider = function (board, parents, attributes) {
         parents[0][0],
         parents[0][1],
         '<form style="display:inline">' +
-            '<input type="range" /><span></span><input type="text" />' +
-            "</form>"
+        '<input type="range" /><span></span><input type="text" />' +
+        "</form>"
     ];
 
     t = JXG.createText(board, par, attr);
-    t.type = Type.OBJECT_TYPE_HTMLSLIDER;
+    t.type = OBJECT_TYPE.HTMLSLIDER;
 
     t.rendNodeForm = t.rendNode.childNodes[0];
 

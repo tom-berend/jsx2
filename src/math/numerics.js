@@ -38,9 +38,9 @@
  * algorithms for solving linear equations etc.
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Type from "../utils/type.js";
-import Env from "../utils/env.js";
+import { Env } from "../utils/env.js";
 import Mat from "./math.js";
 
 // Predefined butcher tableaus for the common Runge-Kutta method (fourth order), Heun method (second order), and Euler method (first order).
@@ -1692,17 +1692,17 @@ Mat.Numerics = {
         f = f1[2] - f2[2];
         F2 = e * e + f * f;
 
-        D = function(t1, t2) {
+        D = function (t1, t2) {
             var h = Mat.eps,
                 f1_1 = c1.Ft(t1 - h),
                 f1_2 = c1.Ft(t1 + h),
                 f2_1 = c2.Ft(t2 - h),
                 f2_2 = c2.Ft(t2 + h);
             return [
-                [ (f1_2[1] - f1_1[1]) / (2 * h),
-                 -(f2_2[1] - f2_1[1]) / (2 * h)],
-                [ (f1_2[2] - f1_1[2]) / (2 * h),
-                 -(f2_2[2] - f2_1[2]) / (2 * h)]
+                [(f1_2[1] - f1_1[1]) / (2 * h),
+                -(f2_2[1] - f2_1[1]) / (2 * h)],
+                [(f1_2[2] - f1_1[2]) / (2 * h),
+                -(f2_2[2] - f2_1[2]) / (2 * h)]
             ];
         };
 

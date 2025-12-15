@@ -33,8 +33,8 @@
  * @fileoverview Implementation of smart labels..
  */
 
-import JXG from "../jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
+import { JXG } from "../jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import Type from "../utils/type.js";
 
 /**
@@ -193,14 +193,14 @@ JXG.createSmartLabel = function (board, parents, attributes) {
         getTextFun, txt_fun;
 
     if (parents.length === 0 || (
-        [OBJECT_CLASS.POINT, OBJECT_CLASS.LINE,OBJECT_CLASS.CIRCLE].indexOf(parents[0].elementClass) < 0 &&
+        [OBJECT_CLASS.POINT, OBJECT_CLASS.LINE, OBJECT_CLASS.CIRCLE].indexOf(parents[0].elementClass) < 0 &&
         [OBJECT_TYPE.POLYGON, OBJECT_TYPE.ANGLE].indexOf(parents[0].type) < 0
-        )
+    )
     ) {
         throw new Error(
             "JSXGraph: Can't create smartlabel with parent types " +
-                "'" + typeof parents[0] + "', " +
-                "'" + typeof parents[1] + "'."
+            "'" + typeof parents[0] + "', " +
+            "'" + typeof parents[1] + "'."
         );
     }
 

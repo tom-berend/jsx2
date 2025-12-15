@@ -11,7 +11,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "http://localhost/jsx3d/index.html",
+            "url": "http://localhost/jsx2/index.html",
             "webRoot": "${workspaceFolder}"
         }
     ]

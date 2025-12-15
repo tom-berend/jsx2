@@ -36,8 +36,8 @@
  * @fileoverview In this file the geometry element Image is defined.
  */
 
-import JXG from "../jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { JXG } from "../jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import Coords from "./coords.js";
 import GeometryElement from "./element.js";
 import Mat from "../math/math.js";
@@ -360,13 +360,13 @@ JXG.extend(
          * Returns the width of the image in user coordinates.
          * @returns {number} width of the image in user coordinates
          */
-        W: function () {}, // Needed for docs, defined in constructor
+        W: function () { }, // Needed for docs, defined in constructor
 
         /**
          * Returns the height of the image in user coordinates.
          * @returns {number} height of the image in user coordinates
          */
-        H: function () {} // Needed for docs, defined in constructor
+        H: function () { } // Needed for docs, defined in constructor
     }
 );
 
@@ -410,11 +410,11 @@ JXG.createImage = function (board, parents, attributes) {
     if (!im) {
         throw new Error(
             "JSXGraph: Can't create image with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [x,y], [z,x,y], [element,transformation]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [x,y], [z,x,y], [element,transformation]"
         );
     }
 

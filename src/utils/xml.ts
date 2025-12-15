@@ -32,7 +32,7 @@
 /*global JXG: true, define: true, DOMParser: true, ActiveXObject: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import Type from "./type.js";
 
 /**

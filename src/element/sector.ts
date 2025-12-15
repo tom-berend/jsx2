@@ -32,12 +32,12 @@
 /*global JXG: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Geometry from "../math/geometry.js";
 import Mat from "../math/math.js";
 import Statistics from "../math/statistics.js";
 import Coords from "../base/coords.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import Type from "../utils/type.js";
 
 /**
@@ -211,12 +211,12 @@ JXG.createSector = function (board, parents, attributes) {
         if (points === false) {
             throw new Error(
                 "JSXGraph: Can't create Sector with parent types '" +
-                    typeof parents[0] +
-                    "' and '" +
-                    typeof parents[1] +
-                    "' and '" +
-                    typeof parents[2] +
-                    "'."
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "' and '" +
+                typeof parents[2] +
+                "'."
             );
         }
         type = '3points';
@@ -588,10 +588,10 @@ JXG.createSector = function (board, parents, attributes) {
     if (type === '2lines') {
         el.updateDataArray();
         el.arc = board.create("arc", [
-            function() {
+            function () {
                 return el.point1.coords.usrCoords;
             }, // Center
-            function() {
+            function () {
                 var d = el.point2.coords.distance(COORDS_BY.USER, el.point1.coords);
                 if (d === 0) {
                     return [el.point1.coords.usrCoords[1], el.point1.coords.usrCoords[2]];
@@ -601,7 +601,7 @@ JXG.createSector = function (board, parents, attributes) {
                     el.point1.coords.usrCoords[2] + el.Radius() * (el.point2.coords.usrCoords[2] - el.point1.coords.usrCoords[2]) / d
                 ];
             },
-            function() {
+            function () {
                 return el.point3.coords.usrCoords;
             } // Center
         ], attr);
@@ -610,7 +610,7 @@ JXG.createSector = function (board, parents, attributes) {
         // This is important for angles.
         el.arc = board.create("arc", [
             el.point1, // Center
-            function() {
+            function () {
                 var d = el.point2.Dist(el.point1);
                 if (d === 0) {
                     return [el.point1.X(), el.point1.Y()];
@@ -834,7 +834,7 @@ JXG.createSector = function (board, parents, attributes) {
      * @returns {Number} The arc length or the angle value in various units.
      * @see Arc#Value
      */
-    el.Value = function(unit) {
+    el.Value = function (unit) {
         return this.arc.Value(unit);
     };
 
@@ -846,7 +846,7 @@ JXG.createSector = function (board, parents, attributes) {
      * @function
      * @see Arc#L
      */
-    el.L = function() {
+    el.L = function () {
         return this.arc.L();
     };
 
@@ -959,12 +959,12 @@ JXG.createCircumcircleSector = function (board, parents, attributes) {
     if (points === false) {
         throw new Error(
             "JSXGraph: Can't create circumcircle sector with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "' and '" +
-                typeof parents[2] +
-                "'."
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "' and '" +
+            typeof parents[2] +
+            "'."
         );
     }
 
@@ -1272,12 +1272,12 @@ JXG.createAngle = function (board, parents, attributes) {
         if (points === false) {
             throw new Error(
                 "JSXGraph: Can't create angle with parent types '" +
-                    typeof parents[0] +
-                    "' and '" +
-                    typeof parents[1] +
-                    "' and '" +
-                    typeof parents[2] +
-                    "'."
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "' and '" +
+                typeof parents[2] +
+                "'."
             );
         }
         type = '3points';
@@ -1312,12 +1312,12 @@ JXG.createAngle = function (board, parents, attributes) {
          * @class
          * @ignore
          */
-        el.setAngle = function (val) {};
+        el.setAngle = function (val) { };
         /**
          * @class
          * @ignore
          */
-        el.free = function (val) {};
+        el.free = function (val) { };
     } else {
         // Angle defined by three points
         el = board.create("sector", [points[1], points[0], points[2]], attr);
@@ -1648,16 +1648,16 @@ JXG.createAngle = function (board, parents, attributes) {
 
         if (type === 'none') {
             this.updateDataArrayNone();
-            this.maxX = function() { return 0; };
+            this.maxX = function () { return 0; };
         } else if (type === 'square') {
             this.updateDataArraySquare();
-            this.maxX = function() { return 4; };
+            this.maxX = function () { return 4; };
         } else if (type === 'sector') {
             this.updateDataArraySector();
-            this.maxX = function() { return 6; };
+            this.maxX = function () { return 6; };
         } else if (type === 'sectordot') {
             this.updateDataArraySector();
-            this.maxX = function() { return 6; };
+            this.maxX = function () { return 6; };
             if (!this.dot.visProp.visible) {
                 this.dot.setAttribute({ visible: true });
             }
@@ -1776,7 +1776,7 @@ JXG.createAngle = function (board, parents, attributes) {
      * // Output r * Math.PI * 0.25
      *
      */
-    el.Value = function(unit) {
+    el.Value = function (unit) {
         unit = unit || 'radians';
         if (unit === '') {
             unit = 'radians';
@@ -1797,7 +1797,7 @@ JXG.createAngle = function (board, parents, attributes) {
             vp_s = el.evalVisProp('selection'),
             l_vp = this.label ? this.label.visProp : this.visProp.label,
             pos = (this.label) ?
-                    this.label.evalVisProp('position') : this.evalVisProp('label.position');
+                this.label.evalVisProp('position') : this.evalVisProp('label.position');
 
         // If this is uncommented, the angle label can not be dragged
         //if (Type.exists(this.label)) {

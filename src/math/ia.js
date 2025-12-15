@@ -30,7 +30,7 @@
 /*global JXG: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import Mat from "./math.js";
 import Type from "../utils/type.js";
 

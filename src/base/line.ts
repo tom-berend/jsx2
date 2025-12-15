@@ -45,12 +45,12 @@
  * a board.
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import Statistics from "../math/statistics.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import Coords from "./coords.js";
 import GeometryElement from "./element.js";
 import Type from "../utils/type.js";
@@ -1031,7 +1031,7 @@ JXG.extend(
          * @returns {Array} [Z(t), X(t), Y(t)]
          * @see Line#X
          */
-        Ft: function(t) {
+        Ft: function (t) {
             var c = [this.Z(t), this.X(t), this.Y(t)];
             c[1] /= c[0];
             c[2] /= c[0];
@@ -1856,8 +1856,8 @@ JXG.createAxis = function (board, parents, attributes) {
             }
         }
 
-        this.point1.setPositionDirectly(JXG.COORDS_BY_USER, newPosP1);
-        this.point2.setPositionDirectly(JXG.COORDS_BY_USER, newPosP2);
+        this.point1.setPositionDirectly(COORDS_BY.USER, newPosP1);
+        this.point2.setPositionDirectly(COORDS_BY.USER, newPosP2);
 
         // Set position of tick labels
         if (Type.exists(this.defaultTicks)) {

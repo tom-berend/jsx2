@@ -32,7 +32,7 @@
  * Create axes and rear and front walls of the
  * view3d bounding box bbox3D.
  */
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import Type from "../utils/type.js";
 
 /**

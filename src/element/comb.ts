@@ -32,7 +32,7 @@
  * @fileoverview In this file the Comb element is defined.
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Type from "../utils/type.js";
 
 /**
@@ -142,11 +142,11 @@ JXG.createComb = function (board, parents, attributes) {
         } else {
             throw new Error(
                 "JSXGraph: Can't create comb with parent types '" +
-                    typeof parents[0] +
-                    "' and '" +
-                    typeof parents[1] +
-                    "'." +
-                    "\nPossible parent types: [point,point], [[x1,y1],[x2,y2]]"
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "'." +
+                "\nPossible parent types: [point,point], [[x1,y1],[x2,y2]]"
             );
         }
 
@@ -168,11 +168,11 @@ JXG.createComb = function (board, parents, attributes) {
         } else {
             throw new Error(
                 "JSXGraph: Can't create comb with parent types '" +
-                    typeof parents[0] +
-                    "' and '" +
-                    typeof parents[1] +
-                    "'." +
-                    "\nPossible parent types: [point,point], [[x1,y1],[x2,y2]]"
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "'." +
+                "\nPossible parent types: [point,point], [[x1,y1],[x2,y2]]"
             );
         }
     } else {
@@ -181,15 +181,15 @@ JXG.createComb = function (board, parents, attributes) {
         });
         throw new Error(
             "JSXGraph: Can't create comb with parent types " +
-                parent_types.join(", ") +
-                "." +
-                "\nPossible parent types: [point,point], [[x1,y1],[x2,y2]]"
+            parent_types.join(", ") +
+            "." +
+            "\nPossible parent types: [point,point], [[x1,y1],[x2,y2]]"
         );
     }
 
     attr = Type.copyAttributes(attributes, board.options, 'comb');
     // Type.merge(attr, Type.copyAttributes(attributes, board.options, 'comb', 'curve'));
-     c = board.create('curve', [[0], [0]], attr);
+    c = board.create('curve', [[0], [0]], attr);
 
     /**
      * @class

@@ -1,6 +1,6 @@
 /*global JXG:true, define: true*/
 
-import JXG from "./jxg.js";
+import { JXG } from "./jxg.js";
 import Options from "./options.js";
 
 JXG.extend(Options, {
@@ -1418,7 +1418,7 @@ JXG.extend(Options, {
                     pos: 'auto'
                 },
                 min: -Math.PI,
-                max:  Math.PI,
+                max: Math.PI,
                 start: 0.0
             }
         },

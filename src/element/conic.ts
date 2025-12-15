@@ -36,8 +36,8 @@
  * @fileoverview In this file the conic sections defined.
  */
 
-import JXG from "../jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { JXG } from "../jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import Coords from "../base/coords.js";
 import Mat from "../math/math.js";
 import Numerics from "../math/numerics.js";
@@ -138,11 +138,11 @@ JXG.createEllipse = function (board, parents, attributes) {
         } else {
             throw new Error(
                 "JSXGraph: Can't create Ellipse with parent types '" +
-                    typeof parents[0] +
-                    "' and '" +
-                    typeof parents[1] +
-                    "'." +
-                    "\nPossible parent types: [point,point,point], [point,point,number|function]"
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "'." +
+                "\nPossible parent types: [point,point,point], [point,point,number|function]"
             );
         }
     }
@@ -168,13 +168,13 @@ JXG.createEllipse = function (board, parents, attributes) {
         } else {
             throw new Error(
                 "JSXGraph: Can't create Ellipse with parent types '" +
-                    typeof parents[0] +
-                    "' and '" +
-                    typeof parents[1] +
-                    "' and '" +
-                    typeof parents[2] +
-                    "'." +
-                    "\nPossible parent types: [point,point,point], [point,point,number|function]"
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "' and '" +
+                typeof parents[2] +
+                "'." +
+                "\nPossible parent types: [point,point,point], [point,point,number|function]"
             );
         }
         /** @ignore */
@@ -388,11 +388,11 @@ JXG.createHyperbola = function (board, parents, attributes) {
         } else {
             throw new Error(
                 "JSXGraph: Can't create Hyperbola with parent types '" +
-                    typeof parents[0] +
-                    "' and '" +
-                    typeof parents[1] +
-                    "'." +
-                    "\nPossible parent types: [point,point,point], [point,point,number|function]"
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "'." +
+                "\nPossible parent types: [point,point,point], [point,point,number|function]"
             );
         }
     }
@@ -418,13 +418,13 @@ JXG.createHyperbola = function (board, parents, attributes) {
         } else {
             throw new Error(
                 "JSXGraph: Can't create Hyperbola with parent types '" +
-                    typeof parents[0] +
-                    "' and '" +
-                    typeof parents[1] +
-                    "' and '" +
-                    typeof parents[2] +
-                    "'." +
-                    "\nPossible parent types: [point,point,point], [point,point,number|function]"
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "' and '" +
+                typeof parents[2] +
+                "'." +
+                "\nPossible parent types: [point,point,point], [point,point,number|function]"
             );
         }
         /** @ignore */
@@ -622,11 +622,11 @@ JXG.createParabola = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create Parabola with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [point,line]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [point,line]"
         );
     }
 
@@ -880,9 +880,9 @@ JXG.createConic = function (board, parents, attributes) {
             } else {
                 throw new Error(
                     "JSXGraph: Can't create Conic section with parent types '" +
-                        typeof parents[i] +
-                        "'." +
-                        "\nPossible parent types: [point,point,point,point,point], [a00,a11,a22,a01,a02,a12]"
+                    typeof parents[i] +
+                    "'." +
+                    "\nPossible parent types: [point,point,point,point,point], [a00,a11,a22,a01,a02,a12]"
                 );
             }
         }
@@ -903,46 +903,46 @@ JXG.createConic = function (board, parents, attributes) {
         ];
         definingMat[0][0] = Type.isFunction(parents[2])
             ? function () {
-                  return parents[2]();
-              }
+                return parents[2]();
+            }
             : function () {
-                  return parents[2];
-              };
+                return parents[2];
+            };
         definingMat[0][1] = Type.isFunction(parents[4])
             ? function () {
-                  return parents[4]();
-              }
+                return parents[4]();
+            }
             : function () {
-                  return parents[4];
-              };
+                return parents[4];
+            };
         definingMat[0][2] = Type.isFunction(parents[5])
             ? function () {
-                  return parents[5]();
-              }
+                return parents[5]();
+            }
             : function () {
-                  return parents[5];
-              };
+                return parents[5];
+            };
         definingMat[1][1] = Type.isFunction(parents[0])
             ? function () {
-                  return parents[0]();
-              }
+                return parents[0]();
+            }
             : function () {
-                  return parents[0];
-              };
+                return parents[0];
+            };
         definingMat[1][2] = Type.isFunction(parents[3])
             ? function () {
-                  return parents[3]();
-              }
+                return parents[3]();
+            }
             : function () {
-                  return parents[3];
-              };
+                return parents[3];
+            };
         definingMat[2][2] = Type.isFunction(parents[1])
             ? function () {
-                  return parents[1]();
-              }
+                return parents[1]();
+            }
             : function () {
-                  return parents[1];
-              };
+                return parents[1];
+            };
     }
 
     // sym(A) = A + A^t . Manipulates A in place.

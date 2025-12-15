@@ -32,7 +32,7 @@
 /*global JXG: true, define: true, document: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import Numerics from "../math/numerics.js";
 import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Coords from "./coords.js";
@@ -40,7 +40,7 @@ import GeometryElement from "./element.js";
 import DataSource from "../parser/datasource.js";
 import Color from "../utils/color.js";
 import Type from "../utils/type.js";
-import Env from "../utils/env.js";
+import {Env} from "../utils/env.js";
 // import Statistics from "../math/statistics.js";
 // import Curve from "./curve.js";
 // import Point from "./point.js";

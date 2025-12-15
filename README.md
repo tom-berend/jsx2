@@ -1,1 +1,1 @@
-# JSXGraph 1.2.1 converted to TS
+# JSXGraph 1.12.2 converted to TS

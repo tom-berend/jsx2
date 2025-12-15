@@ -39,14 +39,14 @@
 
 /*global JXG:true, define: true*/
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Coords from "../base/coords.js";
 import Type from "../utils/type.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
-import Env from "../utils/env.js";
+import {Env} from "../utils/env.js";
 import GeometryElement from "../base/element.js";
 import Composition from "../base/composition.js";
 

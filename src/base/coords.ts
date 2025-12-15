@@ -32,9 +32,9 @@
 /*global JXG: true, define: true, AMprocessNode: true, MathJax: true, document: true */
 /*jslint nomen: true, plusplus: true*/
 
-import JXG from "../jxg.js";
-import {COORDS_BY} from "../base/constants.js";
-import {EventEmitter} from "../utils/event.js";
+import { JXG } from "../jxg.js";
+import { COORDS_BY } from "../base/constants.js";
+import { EventEmitter } from "../utils/event.js";
 import Type from "../utils/type.js";
 import Mat from "../math/math.js";
 
@@ -253,12 +253,12 @@ JXG.extend(
          * @param {Array} os Old screen coordinates
          * @event
          */
-        __evt__update: function (ou, os) {},
+        __evt__update: function (ou, os) { },
 
         /**
          * @ignore
          */
-        __evt: function () {}
+        __evt: function () { }
     }
 );
 

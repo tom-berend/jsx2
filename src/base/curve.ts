@@ -36,9 +36,9 @@
  * @fileoverview In this file the geometry element Curve is defined.
  */
 
-import JXG from "../jxg.js";
+import { JXG } from "../jxg.js";
 import Clip from "../math/clip.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import Coords from "./coords.js";
 import Geometry from "../math/geometry.js";
 import GeometryElement from "./element.js";
@@ -237,7 +237,7 @@ JXG.extend(
          * @param {Number} t A number between {@link JXG.Curve#minX} and {@link JXG.Curve#maxX}.
          * @returns {Array} [Z(t), X(t), Y(t)] plus transformations
          */
-        Ft: function(t) {
+        Ft: function (t) {
             var c = [this.Z(t), this.X(t), this.Y(t)],
                 len = this.transformations.length;
 
@@ -1140,7 +1140,7 @@ JXG.extend(
          * @param {Number} distance
          * @returns {JXG.Coords}
          */
-        getLabelPosition: function(pos, distance) {
+        getLabelPosition: function (pos, distance) {
             var x, y, xy,
                 c, d, e,
                 lbda,

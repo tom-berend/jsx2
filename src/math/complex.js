@@ -38,7 +38,7 @@
  * arithmetic functions.
  */
 
-import JXG from "../jxg.js";
+import {JXG} from "../jxg.js";
 import Type from "../utils/type.js";
 
 /**
