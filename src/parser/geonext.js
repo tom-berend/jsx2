@@ -33,7 +33,7 @@
 /*jslint nomen: true, plusplus: true*/
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from "../utils/type.js";
 
 /**
@@ -493,7 +493,7 @@ JXG.GeonextParser = {
         for (el in elements) {
             if (elements.hasOwnProperty(el)) {
                 if (el !== me.name) {
-                    if (elements[el].elementClass === Const.OBJECT_CLASS_TEXT) {
+                    if (elements[el].elementClass === OBJECT_CLASS.TEXT) {
                         if (!elements[el].evalVisProp('islabel')) {
                             elmask = el.replace(/\[/g, "\\[");
                             elmask = elmask.replace(/\]/g, "\\]");

@@ -37,7 +37,7 @@
  */
 
 import JXG from "../jxg.js";
-import Const from "./constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Mat from "../math/math.js";
 import Type from "../utils/type.js";
 
@@ -100,8 +100,8 @@ import Type from "../utils/type.js";
  *
  */
 JXG.Transformation = function (board, type, params, is3D) {
-    this.elementClass = Const.OBJECT_CLASS_OTHER;
-    this.type = Const.OBJECT_TYPE_TRANSFORMATION;
+    this.elementClass = OBJECT_CLASS.OTHER;
+    this.type = OBJECT_TYPE.TRANSFORMATION;
 
     if (is3D) {
         this.is3D = true;
@@ -631,7 +631,7 @@ JXG.extend(
                     p[i].coords = Mat.matVecMult(this.matrix, p[i].coords);
                 } else {
                     c = Mat.matVecMult(this.matrix, p[i].coords.usrCoords);
-                    p[i].coords.setCoordinates(Const.COORDS_BY_USER, c);
+                    p[i].coords.setCoordinates(COORDS_BY.USER, c);
                 }
             }
         },

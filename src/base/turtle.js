@@ -39,7 +39,7 @@
  */
 
 import JXG from "../jxg.js";
-import Const from "./constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Mat from "../math/math.js";
 import GeometryElement from "./element.js";
 import Type from "../utils/type.js";
@@ -118,7 +118,7 @@ import Type from "../utils/type.js";
 JXG.Turtle = function (board, parents, attributes) {
     var x, y, dir;
 
-    this.constructor(board, attributes, Const.OBJECT_TYPE_TURTLE, Const.OBJECT_CLASS_OTHER);
+    this.constructor(board, attributes, OBJECT_TYPE.TURTLE, OBJECT_CLASS.OTHER);
 
     this.turtleIsHidden = false;
     this.board = board;
@@ -396,7 +396,7 @@ JXG.extend(
 
             for (i = 0; i < this.objects.length; i++) {
                 el = this.objects[i];
-                if (el.type === Const.OBJECT_TYPE_CURVE) {
+                if (el.type === OBJECT_TYPE.CURVE) {
                     this.board.removeObject(el);
                     this.objects.splice(i, 1);
                 }
@@ -449,8 +449,8 @@ JXG.extend(
             }
 
             if (!this.turtleIsHidden) {
-                this.turtle.setPositionDirectly(Const.COORDS_BY_USER, [x, y]);
-                this.turtle2.setPositionDirectly(Const.COORDS_BY_USER, [x, y + this.arrowLen]);
+                this.turtle.setPositionDirectly(COORDS_BY.USER, [x, y]);
+                this.turtle2.setPositionDirectly(COORDS_BY.USER, [x, y + this.arrowLen]);
                 t = this.board.create(
                     "transform",
                     [(-(this.dir - 90) * Math.PI) / 180, this.turtle],
@@ -577,7 +577,7 @@ JXG.extend(
 
             for (i = 0; i < len; i++) {
                 el = this.objects[i];
-                if (el.type === Const.OBJECT_TYPE_CURVE) {
+                if (el.type === OBJECT_TYPE.CURVE) {
                     el.setAttribute(attributes);
                 }
             }
@@ -820,7 +820,7 @@ JXG.extend(
             for (i = 0, j = 0; i < len; i++) {
                 el = this.objects[i];
 
-                if (el.elementClass === Const.OBJECT_CLASS_CURVE) {
+                if (el.elementClass === OBJECT_CLASS.CURVE) {
                     if (j <= t && t < j + el.numberPoints) {
                         tc = t - j;
                         return el[co](tc);
@@ -885,7 +885,7 @@ JXG.extend(
 
             for (i = 0; i < len; i++) {
                 el = this.objects[i];
-                if (el.elementClass === Const.OBJECT_CLASS_CURVE) {
+                if (el.elementClass === OBJECT_CLASS.CURVE) {
                     np += this.objects[i].numberPoints;
                 }
             }
@@ -905,7 +905,7 @@ JXG.extend(
             for (i = 0; i < this.objects.length; i++) {
                 el = this.objects[i];
 
-                if (el.type === Const.OBJECT_TYPE_CURVE) {
+                if (el.type === OBJECT_TYPE.CURVE) {
                     if (el.hasPoint(x, y)) {
                         // So what??? All other curves have to be notified now (for highlighting)
                         return true;

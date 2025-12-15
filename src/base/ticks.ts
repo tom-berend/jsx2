@@ -43,7 +43,7 @@ import JXG from "../jxg.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
-import Const from "./constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import GeometryElement from "./element.js";
 import Coords from "./coords.js";
 import Type from "../utils/type.js";
@@ -60,7 +60,7 @@ import Type from "../utils/type.js";
  * @augments JXG.GeometryElement
  */
 JXG.Ticks = function (line, ticks, attributes) {
-    this.constructor(line.board, attributes, Const.OBJECT_TYPE_TICKS, Const.OBJECT_CLASS_OTHER);
+    this.constructor(line.board, attributes, OBJECT_TYPE.TICKS, OBJECT_CLASS.OTHER);
 
     /**
      * The line the ticks belong to.
@@ -220,7 +220,7 @@ JXG.extend(
 
             if (
                 !this.line.evalVisProp('scalable') ||
-                this.line.elementClass === Const.OBJECT_CLASS_CURVE
+                this.line.elementClass === OBJECT_CLASS.CURVE
             ) {
                 return false;
             }
@@ -238,7 +238,7 @@ JXG.extend(
             if (
                 this.line.stdform[1] !== 0 &&
                 this.line.stdform[2] !== 0 &&
-                this.line.type !== Const.OBJECT_TYPE_AXIS
+                this.line.type !== OBJECT_TYPE.AXIS
             ) {
                 return false;
             }
@@ -302,7 +302,7 @@ JXG.extend(
                 bb = this.board.getBoundingBox();
 
             if (
-                this.line.type !== Const.OBJECT_TYPE_AXIS ||
+                this.line.type !== OBJECT_TYPE.AXIS ||
                 !this.line.evalVisProp('scalable')
             ) {
                 return this;
@@ -338,7 +338,7 @@ JXG.extend(
         calculateTicksCoordinates: function () {
             var coordsZero, b, r_max, bb;
 
-            if (this.line.elementClass === Const.OBJECT_CLASS_LINE) {
+            if (this.line.elementClass === OBJECT_CLASS.LINE) {
                 // Calculate Ticks width and height in Screen and User Coordinates
                 this.setTicksSizeVariables();
 
@@ -353,7 +353,7 @@ JXG.extend(
 
             // Calculate lower bound and upper bound limits based on distance
             // between p1 and center and p2 and center
-            if (this.line.elementClass === Const.OBJECT_CLASS_LINE) {
+            if (this.line.elementClass === OBJECT_CLASS.LINE) {
                 b = this.getLowerAndUpperBounds(coordsZero, 'ticksdistance');
             } else {
                 b = {
@@ -465,8 +465,8 @@ JXG.extend(
                 t, mi, ma,
                 ev_a = this.evalVisProp('anchor');
 
-            if (this.line.elementClass === Const.OBJECT_CLASS_LINE) {
-                if (this.line.type === Const.OBJECT_TYPE_AXIS) {
+            if (this.line.elementClass === OBJECT_CLASS.LINE) {
+                if (this.line.type === OBJECT_TYPE.AXIS) {
                     return Geometry.projectPointToLine(
                         {
                             coords: {
@@ -489,14 +489,14 @@ JXG.extend(
                 }
                 if (ev_a === 'middle') {
                     return new Coords(
-                        Const.COORDS_BY_USER,
+                        COORDS_BY.USER,
                         [(c1z + c2z) * 0.5, (c1x + c2x) * 0.5, (c1y + c2y) * 0.5],
                         this.board
                     );
                 }
                 if (Type.isNumber(ev_a)) {
                     return new Coords(
-                        Const.COORDS_BY_USER,
+                        COORDS_BY.USER,
                         [
                             c1z + (c2z - c1z) * ev_a,
                             c1x + (c2x - c1x) * ev_a,
@@ -555,15 +555,15 @@ JXG.extend(
                 ev_i = this.evalVisProp('includeboundaries');
 
             // The line's defining points that will be adjusted to be within the board limits
-            if (this.line.elementClass === Const.OBJECT_CLASS_CURVE) {
+            if (this.line.elementClass === OBJECT_CLASS.CURVE) {
                 return {
                     lower: this.line.minX(),
                     upper: this.line.maxX()
                 };
             }
 
-            point1 = new Coords(Const.COORDS_BY_USER, this.line.point1.coords.usrCoords, this.board);
-            point2 = new Coords(Const.COORDS_BY_USER, this.line.point2.coords.usrCoords, this.board);
+            point1 = new Coords(COORDS_BY.USER, this.line.point1.coords.usrCoords, this.board);
+            point2 = new Coords(COORDS_BY.USER, this.line.point2.coords.usrCoords, this.board);
 
             // Are the original defining points within the board?
             isPoint1inBoard =
@@ -683,7 +683,7 @@ JXG.extend(
 
             p1 = this.line.point1.coords;
             p2 = this.line.point2.coords;
-            distance = zero.distance(Const.COORDS_BY_USER, point);
+            distance = zero.distance(COORDS_BY.USER, point);
 
             // Establish sign
             dirLine = [
@@ -727,7 +727,7 @@ JXG.extend(
             // Obsolete, since this.equidistant is always true at this point
             // ticksDelta = this.equidistant ? this.ticksFunction(1) : this.ticksDelta;
 
-            if (this.line.elementClass === Const.OBJECT_CLASS_LINE) {
+            if (this.line.elementClass === OBJECT_CLASS.LINE) {
                 // Calculate x and y distances between two points on the line which are 1 unit apart
                 // In essence, these are cosine and sine.
                 deltas = this.getXandYdeltas();
@@ -885,7 +885,7 @@ JXG.extend(
         //                 ev_mintd = this.evalVisProp('minticksdistance'),
         //                 ev_minti = this.evalVisProp('minorticks');
 
-        //             if (this.line.elementClass === Const.OBJECT_CLASS_CURVE) {
+        //             if (this.line.elementClass === OBJECT_CLASS.CURVE) {
         //                 return ticksDelta;
         //             }
         //             // Seems to be ignored:
@@ -895,8 +895,8 @@ JXG.extend(
         //             nx = coordsZero.usrCoords[1] + deltas.x * ticksDelta;
         //             ny = coordsZero.usrCoords[2] + deltas.y * ticksDelta;
         //             distScr = coordsZero.distance(
-        //                 Const.COORDS_BY_SCREEN,
-        //                 new Coords(Const.COORDS_BY_USER, [nx, ny], this.board)
+        //                 COORDS_BY.SCREEN,
+        //                 new Coords(COORDS_BY.USER, [nx, ny], this.board)
         //             );
         // // console.log(deltas, distScr, this.board.unitX, this.board.unitY, "ticksDelta:", ticksDelta);
 
@@ -916,8 +916,8 @@ JXG.extend(
         //                 nx = coordsZero.usrCoords[1] + deltas.x * ticksDelta;
         //                 ny = coordsZero.usrCoords[2] + deltas.y * ticksDelta;
         //                 distScr = coordsZero.distance(
-        //                     Const.COORDS_BY_SCREEN,
-        //                     new Coords(Const.COORDS_BY_USER, [nx, ny], this.board)
+        //                     COORDS_BY.SCREEN,
+        //                     new Coords(COORDS_BY.USER, [nx, ny], this.board)
         //                 );
         //             }
 
@@ -945,15 +945,15 @@ JXG.extend(
                 labelVal = null;
 
             // Calculates tick coordinates
-            if (this.line.elementClass === Const.OBJECT_CLASS_LINE) {
+            if (this.line.elementClass === OBJECT_CLASS.LINE) {
                 x = coordsZero.usrCoords[1] + tickPosition * deltas.x;
                 y = coordsZero.usrCoords[2] + tickPosition * deltas.y;
             } else {
                 x = this.line.X(coordsZero + tickPosition);
                 y = this.line.Y(coordsZero + tickPosition);
             }
-            tickCoords = new Coords(Const.COORDS_BY_USER, [x, y], this.board);
-            if (this.line.elementClass === Const.OBJECT_CLASS_CURVE) {
+            tickCoords = new Coords(COORDS_BY.USER, [x, y], this.board);
+            if (this.line.elementClass === OBJECT_CLASS.CURVE) {
                 labelVal = coordsZero + tickPosition;
                 this.setTicksSizeVariables(labelVal);
             }
@@ -1012,13 +1012,13 @@ JXG.extend(
                 deltas,
                 ev_dl = this.evalVisProp('drawlabels');
 
-            if (this.line.elementClass === Const.OBJECT_CLASS_LINE) {
+            if (this.line.elementClass === OBJECT_CLASS.LINE) {
                 // Calculate x and y distances between two points on the line which are 1 unit apart
                 // In essence, these are cosine and sine.
                 deltas = this.getXandYdeltas();
             }
             for (i = 0; i < this.fixedTicks.length; i++) {
-                if (this.line.elementClass === Const.OBJECT_CLASS_LINE) {
+                if (this.line.elementClass === OBJECT_CLASS.LINE) {
                     fixedTick = this.fixedTicks[i];
                     x = coordsZero.usrCoords[1] + fixedTick * deltas.x;
                     y = coordsZero.usrCoords[2] + fixedTick * deltas.y;
@@ -1027,9 +1027,9 @@ JXG.extend(
                     x = this.line.X(fixedTick);
                     y = this.line.Y(fixedTick);
                 }
-                tickCoords = new Coords(Const.COORDS_BY_USER, [x, y], this.board);
+                tickCoords = new Coords(COORDS_BY.USER, [x, y], this.board);
 
-                if (this.line.elementClass === Const.OBJECT_CLASS_CURVE) {
+                if (this.line.elementClass === OBJECT_CLASS.CURVE) {
                     this.setTicksSizeVariables(fixedTick);
                 }
 
@@ -1075,7 +1075,7 @@ JXG.extend(
                 point2UsrCoords,
                 distP1P2 = this.line.point1.Dist(this.line.point2);
 
-            // if (this.line.type === Const.OBJECT_TYPE_AXIS) {
+            // if (this.line.type === OBJECT_TYPE.AXIS) {
             //     // When line is an Axis, direction depends on board coordinates system
             //     // Assume line.point1 and line.point2 are in correct order
             //     point1UsrCoords = this.line.point1.coords.usrCoords;
@@ -1089,7 +1089,7 @@ JXG.extend(
             //         point1UsrCoords = this.line.point2.coords.usrCoords;
             //         point2UsrCoords = this.line.point1.coords.usrCoords;
             //     }
-            // } /* if (this.line.elementClass === Const.OBJECT_CLASS_LINE)*/ else {
+            // } /* if (this.line.elementClass === OBJECT_CLASS.LINE)*/ else {
                 // Line direction is always from P1 to P2 for non axis types
                 point1UsrCoords = this.line.point1.coords.usrCoords;
                 point2UsrCoords = this.line.point2.coords.usrCoords;
@@ -1746,8 +1746,8 @@ JXG.createTicks = function (board, parents, attributes) {
     }
 
     if (
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE ||
-        parents[0].elementClass === Const.OBJECT_CLASS_CURVE
+        parents[0].elementClass === OBJECT_CLASS.LINE ||
+        parents[0].elementClass === OBJECT_CLASS.CURVE
     ) {
         el = new JXG.Ticks(parents[0], dist, attr);
     } else {
@@ -1852,8 +1852,8 @@ JXG.createHatchmark = function (board, parents, attributes) {
         attr = Type.copyAttributes(attributes, board.options, 'hatch');
 
     if (
-        (parents[0].elementClass !== Const.OBJECT_CLASS_LINE &&
-            parents[0].elementClass !== Const.OBJECT_CLASS_CURVE) ||
+        (parents[0].elementClass !== OBJECT_CLASS.LINE &&
+            parents[0].elementClass !== OBJECT_CLASS.CURVE) ||
         typeof parents[1] !== "number"
     ) {
         throw new Error(

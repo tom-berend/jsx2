@@ -33,8 +33,8 @@
 /*jslint nomen: true, plusplus: true*/
 
 import JXG from "../jxg.js";
-import Const from "./constants.js";
-import EventEmitter from "../utils/event.js";
+import {COORDS_BY} from "../base/constants.js";
+import {EventEmitter} from "../utils/event.js";
 import Type from "../utils/type.js";
 import Mat from "../math/math.js";
 
@@ -152,7 +152,7 @@ JXG.extend(
                 scr = this.scrCoords,
                 f;
 
-            if (coord_type === Const.COORDS_BY_USER) {
+            if (coord_type === COORDS_BY.USER) {
                 c = coordinates.usrCoords;
                 f = ucr[0] - c[0];
                 sum = f * f;
@@ -183,7 +183,7 @@ JXG.extend(
                 ou = [uc[0], uc[1], uc[2]],
                 os = [sc[0], sc[1], sc[2]];
 
-            if (coord_type === Const.COORDS_BY_USER) {
+            if (coord_type === COORDS_BY.USER) {
                 if (coordinates.length === 2) {
                     // Euclidean coordinates
                     uc[0] = 1.0;

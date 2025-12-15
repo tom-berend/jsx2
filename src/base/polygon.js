@@ -33,7 +33,7 @@
 /*jslint nomen: true, plusplus: true*/
 
 import JXG from "../jxg.js";
-import Const from "./constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Coords from "./coords.js";
 import Statistics from "../math/statistics.js";
 import Geometry from "../math/geometry.js";
@@ -53,7 +53,7 @@ import GeometryElement from "./element.js";
  * and {@link JXG.Options.polygon}.
  */
 JXG.Polygon = function (board, vertices, attributes) {
-    this.constructor(board, attributes, Const.OBJECT_TYPE_POLYGON, Const.OBJECT_CLASS_AREA);
+    this.constructor(board, attributes, OBJECT_TYPE.POLYGON, OBJECT_CLASS.AREA);
 
     var i, l, len, j, p,
         attr_line = Type.copyAttributes(attributes, board.options, "polygon", 'borders');
@@ -304,7 +304,7 @@ JXG.extend(
             var a, b, x, y, i;
 
             if (this.vertices.length === 0) {
-                return new Coords(Const.COORDS_BY_USER, [1, 0, 0], this.board);
+                return new Coords(COORDS_BY.USER, [1, 0, 0], this.board);
             }
 
             a = this.vertices[0].X();
@@ -329,7 +329,7 @@ JXG.extend(
                 }
             }
 
-            return new Coords(Const.COORDS_BY_USER, [(a + x) * 0.5, (b + y) * 0.5], this.board);
+            return new Coords(COORDS_BY.USER, [(a + x) * 0.5, (b + y) * 0.5], this.board);
         },
 
         getLabelAnchor: JXG.shortcut(JXG.Polygon.prototype, 'getTextAnchor'),
@@ -1229,7 +1229,7 @@ JXG.createPolygon = function (board, parents, attributes) {
     }
     if (
         Type.isObject(obj) &&
-        obj.type === Const.OBJECT_TYPE_POLYGON &&
+        obj.type === OBJECT_TYPE.POLYGON &&
         Type.isTransformationOrArray(parents[1])
     ) {
         is_transform = true;
@@ -1380,7 +1380,7 @@ JXG.createRegularPolygon = function (board, parents, attributes) {
                 attr.id = attr.ids[i - 2];
             }
             p[i] = board.create("point", [p[i - 2], rot], attr);
-            p[i].type = Const.OBJECT_TYPE_CAS;
+            p[i].type = OBJECT_TYPE.CAS;
 
             // The next two lines of code are needed to make regular polygons draggable
             // The new helper points are set to be draggable.

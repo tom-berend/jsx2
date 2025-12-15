@@ -30,7 +30,7 @@
 /*global JXG:true, define: true*/
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from "../utils/type.js";
 import Mat from "../math/math.js";
 import Stat from "../math/statistics.js";
@@ -58,7 +58,7 @@ import Geometry from "../math/geometry.js";
  * @see JXG.Board#generateName
  */
 JXG.Sphere3D = function (view, method, par1, par2, attributes) {
-    this.constructor(view.board, attributes, Const.OBJECT_TYPE_SPHERE3D, Const.OBJECT_CLASS_3D);
+    this.constructor(view.board, attributes, OBJECT_TYPE.SPHERE3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'sphere3d');
 
     this.board.finalizeAdding(this);

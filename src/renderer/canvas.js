@@ -34,7 +34,7 @@
 
 import JXG from "../jxg.js";
 import AbstractRenderer from "./abstract.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Env from "../utils/env.js";
 import Type from "../utils/type.js";
 import UUID from "../utils/uuid.js";
@@ -245,8 +245,8 @@ JXG.extend(
                 y2 = 0;
             }
 
-            c1 = new Coords(Const.COORDS_BY_USER, [bb[0], bb[1]], el.board);
-            c2 = new Coords(Const.COORDS_BY_USER, [bb[2], bb[3]], el.board);
+            c1 = new Coords(COORDS_BY.USER, [bb[0], bb[1]], el.board);
+            c2 = new Coords(COORDS_BY.USER, [bb[2], bb[3]], el.board);
             dx = c2.scrCoords[1] - c1.scrCoords[1];
             dy = c2.scrCoords[2] - c1.scrCoords[2];
 
@@ -277,8 +277,8 @@ JXG.extend(
                 fxs, fys, frs,
                 dx, dy;
 
-            c1 = new Coords(Const.COORDS_BY_USER, [bb[0], bb[1]], el.board);
-            c2 = new Coords(Const.COORDS_BY_USER, [bb[2], bb[3]], el.board);
+            c1 = new Coords(COORDS_BY.USER, [bb[0], bb[1]], el.board);
+            c2 = new Coords(COORDS_BY.USER, [bb[2], bb[3]], el.board);
             dx = c2.scrCoords[1] - c1.scrCoords[1];
             dy = c1.scrCoords[2] - c2.scrCoords[2];
 
@@ -651,7 +651,7 @@ JXG.extend(
                 ev_la = a.evLast;
 
             if (el.evalVisProp('strokecolor') !== "none" && (ev_fa || ev_la)) {
-                if (el.elementClass === Const.OBJECT_CLASS_LINE) {
+                if (el.elementClass === OBJECT_CLASS.LINE) {
                     x1 = scr1.scrCoords[1];
                     y1 = scr1.scrCoords[2];
                     x2 = scr2.scrCoords[1];
@@ -967,8 +967,8 @@ JXG.extend(
         drawLine: function (el) {
             var c1_org,
                 c2_org,
-                c1 = new Coords(Const.COORDS_BY_USER, el.point1.coords.usrCoords, el.board),
-                c2 = new Coords(Const.COORDS_BY_USER, el.point2.coords.usrCoords, el.board),
+                c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board),
+                c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board),
                 margin = null,
                 hl,
                 w,
@@ -988,8 +988,8 @@ JXG.extend(
             Geometry.calcStraight(el, c1, c2, margin);
             this.handleTouchpoints(el, c1, c2, arrowData);
 
-            c1_org = new Coords(Const.COORDS_BY_USER, c1.usrCoords, el.board);
-            c2_org = new Coords(Const.COORDS_BY_USER, c2.usrCoords, el.board);
+            c1_org = new Coords(COORDS_BY.USER, c1.usrCoords, el.board);
+            c2_org = new Coords(COORDS_BY.USER, c2.usrCoords, el.board);
 
 
             this.getPositionArrowHead(el, c1, c2, arrowData);
@@ -1243,7 +1243,7 @@ JXG.extend(
                 }
                 node = el.rendNode;
                 if (
-                    el.elementClass === Const.OBJECT_CLASS_TEXT &&
+                    el.elementClass === OBJECT_CLASS.TEXT &&
                     el.evalVisProp('display') === "html"
                 ) {
                     node.style.color = c;
@@ -1310,7 +1310,7 @@ JXG.extend(
 
             if (len > 0) {
                 m = this.joinTransforms(el, t);
-                if (el.elementClass === Const.OBJECT_CLASS_TEXT && el.visProp.display === 'html') {
+                if (el.elementClass === OBJECT_CLASS.TEXT && el.visProp.display === 'html') {
                     s = " matrix(" + [m[1][1], m[2][1], m[1][2], m[2][2], m[1][0], m[2][0]].join(",") + ") ";
                     if (s.indexOf('NaN') === -1) {
                         node = el.rendNode;
@@ -1619,7 +1619,7 @@ JXG.extend(
         // documented in AbstractRenderer
         highlight: function (obj) {
             if (
-                obj.elementClass === Const.OBJECT_CLASS_TEXT &&
+                obj.elementClass === OBJECT_CLASS.TEXT &&
                 obj.evalVisProp('display') === "html"
             ) {
                 this.updateTextStyle(obj, true);
@@ -1635,7 +1635,7 @@ JXG.extend(
         // documented in AbstractRenderer
         noHighlight: function (obj) {
             if (
-                obj.elementClass === Const.OBJECT_CLASS_TEXT &&
+                obj.elementClass === OBJECT_CLASS.TEXT &&
                 obj.evalVisProp('display') === "html"
             ) {
                 this.updateTextStyle(obj, false);

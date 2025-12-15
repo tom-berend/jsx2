@@ -33,7 +33,7 @@
  * view3d bounding box bbox3D.
  */
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from "../utils/type.js";
 
 JXG.Polyhedron3D = function (view, polyhedron, faces, attributes) {
@@ -42,7 +42,7 @@ JXG.Polyhedron3D = function (view, polyhedron, faces, attributes) {
         generateMethod,
         that = this;
 
-    this.constructor(view.board, attributes, Const.OBJECT_TYPE_POLYHEDRON3D, Const.OBJECT_CLASS_3D);
+    this.constructor(view.board, attributes, OBJECT_TYPE.POLYHEDRON3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'polyhedron3d');
 
     this.board.finalizeAdding(this);
@@ -633,7 +633,7 @@ JXG.createPolyhedron3D = function (board, parents, attributes) {
             faces: []
         };
 
-    if (Type.exists(parents[1].type) && parents[1].type === Const.OBJECT_TYPE_POLYHEDRON3D) {
+    if (Type.exists(parents[1].type) && parents[1].type === OBJECT_TYPE.POLYHEDRON3D) {
         // Polyhedron from baseElement and transformations
         base = parents[1];
         transform = parents[2];

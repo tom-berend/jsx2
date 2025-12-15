@@ -91,8 +91,6 @@ import './3d/surface3d.js';
 import './parser/3dmodels.js';
 import './themes/mono_thin.js';
 
-import './reader/tracenpoche.js';
-
 
 // The following exports are used to restore granular objects.
 // This is consistent with 1.4.x when a UMD bundle is used with a SystemJS loader.

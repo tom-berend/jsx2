@@ -46,7 +46,7 @@
 import JXG from "../jxg.js";
 import Type from "../utils/type.js";
 import Mat from "../math/math.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 
 /**
  * Prefix expression parser, i.e. a poor man's parser.
@@ -280,14 +280,14 @@ JXG.PrefixParser = {
                         if (fun === 'Value' || fun === 'V') {
                             // The Value method of sector, angle and arc does not have the same dimension
                             // for all units.
-                            if ([Const.OBJECT_TYPE_ARC, Const.OBJECT_TYPE_SECTOR, Const.OBJECT_TYPE_ANGLE].indexOf(term[1].type) >= 0) {
+                            if ([OBJECT_TYPE.ARC, OBJECT_TYPE.SECTOR, OBJECT_TYPE.ANGLE].indexOf(term[1].type) >= 0) {
                                 unit = '';
                                 if (term.length === 3 && Type.isString(term[2])) {
                                     unit = term[2].toLowerCase();
                                 }
                                 if (unit === '') {
                                     // Default values:
-                                    if (term[1].type === Const.OBJECT_TYPE_ANGLE) {
+                                    if (term[1].type === OBJECT_TYPE.ANGLE) {
                                         // Default for angle.Value() is radians, i.e. dim 0
                                         res = 0;
                                     } else {

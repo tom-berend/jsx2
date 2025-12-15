@@ -35,7 +35,7 @@
 import JXG from "../jxg.js";
 import Options from "../options.js";
 import AbstractRenderer from "./abstract.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from "../utils/type.js";
 import Color from "../utils/color.js";
 import Base64 from "../utils/base64.js";
@@ -403,7 +403,7 @@ JXG.extend(
                 }
                 if (
                     // !Type.exists(el.rendNode.getTotalLength) &&
-                    el.elementClass === Const.OBJECT_CLASS_LINE
+                    el.elementClass === OBJECT_CLASS.LINE
                 ) {
                     if (type === 2) {
                         v = 4.9;
@@ -463,7 +463,7 @@ JXG.extend(
                 }
                 if (
                     // !Type.exists(el.rendNode.getTotalLength) &&
-                    el.elementClass === Const.OBJECT_CLASS_LINE
+                    el.elementClass === OBJECT_CLASS.LINE
                 ) {
                     if (type === 2) {
                         v = 5.1;
@@ -764,7 +764,7 @@ JXG.extend(
                 s = [m[1][1], m[2][1], m[1][2], m[2][2], m[1][0], m[2][0]].join(",");
                 if (s.indexOf('NaN') === -1) {
                     str += " matrix(" + s + ") ";
-                    if (el.elementClass === Const.OBJECT_CLASS_TEXT && el.visProp.display === 'html') {
+                    if (el.elementClass === OBJECT_CLASS.TEXT && el.visProp.display === 'html') {
                         node.style.transform = str;
                         cx = -el.coords.scrCoords[1];
                         cy = -el.coords.scrCoords[2];
@@ -1563,7 +1563,7 @@ JXG.extend(
 
                 node = el.rendNode;
 
-                if (el.elementClass === Const.OBJECT_CLASS_TEXT) {
+                if (el.elementClass === OBJECT_CLASS.TEXT) {
                     if (el.evalVisProp('display') === 'html') {
                         this._setAttribute(function () {
                             node.style.color = c;
@@ -1583,8 +1583,8 @@ JXG.extend(
                 }
 
                 if (
-                    el.elementClass === Const.OBJECT_CLASS_CURVE ||
-                    el.elementClass === Const.OBJECT_CLASS_LINE
+                    el.elementClass === OBJECT_CLASS.CURVE ||
+                    el.elementClass === OBJECT_CLASS.LINE
                 ) {
                     if (el.evalVisProp('firstarrow')) {
                         this._setArrowColor(
@@ -1622,8 +1622,8 @@ JXG.extend(
             if (Type.exists(w)) {
                 this.setPropertyPrim(node, "stroke-width", w + 'px');
 
-                // if (el.elementClass === Const.OBJECT_CLASS_CURVE ||
-                // el.elementClass === Const.OBJECT_CLASS_LINE) {
+                // if (el.elementClass === OBJECT_CLASS.CURVE ||
+                // el.elementClass === OBJECT_CLASS.LINE) {
                 //     if (el.evalVisProp('firstarrow')) {
                 //         this._setArrowWidth(el.rendNodeTriangleStart, w, el.rendNode);
                 //     }
@@ -1656,7 +1656,7 @@ JXG.extend(
             }
 
             // if (
-            //     el.elementClass === Const.OBJECT_CLASS_TEXT &&
+            //     el.elementClass === OBJECT_CLASS.TEXT &&
             //     el.evalVisProp('display') === "html"
             // ) {
             //     // transitionStr = " color " + duration + "ms," +

@@ -30,7 +30,7 @@
 /*global JXG:true, define: true*/
 
 import JXG from '../jxg.js';
-import Const from '../base/constants.js';
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from '../utils/type.js';
 import Mat from '../math/math.js';
 
@@ -50,7 +50,7 @@ import Mat from '../math/math.js';
 JXG.Polygon3D = function (view, vertices, attributes) {
     var i;
 
-    this.constructor(view.board, attributes, Const.OBJECT_TYPE_POLYGON3D, Const.OBJECT_CLASS_3D);
+    this.constructor(view.board, attributes, OBJECT_TYPE.POLYGON3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'polygon3d');
 
     this.board.finalizeAdding(this);
@@ -153,7 +153,7 @@ JXG.createPolygon3D = function (board, parents, attributes) {
     // TODO: Number of points? Is the last point equal to the first point?
     if (
         Type.isObject(obj) &&
-        obj.type === Const.OBJECT_TYPE_POLYGON3D &&
+        obj.type === OBJECT_TYPE.POLYGON3D &&
         Type.isTransformationOrArray(parents[2])
     ) {
         is_transform = true;

@@ -40,7 +40,7 @@
 
 import JXG from "../jxg.js";
 import Mat from "../math/math.js";
-import Const from "../base/constants.js";
+import {COORDS_BY} from "../base/constants.js";
 import Coords from "../base/coords.js";
 import Type from "../utils/type.js";
 import Point from "../base/point.js";
@@ -498,7 +498,7 @@ JXG.createSlider = function (board, parents, attributes) {
 
                 function (tick) {
                     var dFull = p3.point1.Dist(p3.point2),
-                        d = p3.point1.coords.distance(Const.COORDS_BY_USER, tick);
+                        d = p3.point1.coords.distance(COORDS_BY.USER, tick);
 
                     if (dFull < Mat.eps) {
                         return 0;
@@ -541,7 +541,7 @@ JXG.createSlider = function (board, parents, attributes) {
         t.dump = false;
     }
 
-    // p3.type = Const.OBJECT_TYPE_SLIDER; // No! type has to be Const.OBJECT_TYPE_GLIDER
+    // p3.type = OBJECT_TYPE.SLIDER; // No! type has to be OBJECT_TYPE.GLIDER
     p3.elType = 'slider';
     p3.parents = parents;
     p3.subs = {
@@ -574,7 +574,7 @@ JXG.createSlider = function (board, parents, attributes) {
 
         if (p3.evalVisProp('moveonup') && !p3.evalVisProp('fixed')) {
             pos = l1.board.getMousePosition(evt, 0);
-            c = new Coords(Const.COORDS_BY_SCREEN, pos, this.board);
+            c = new Coords(COORDS_BY.SCREEN, pos, this.board);
             p3.moveTo([c.usrCoords[1], c.usrCoords[2]]);
             p3.triggerEventHandlers(['drag'], [evt]);
         }

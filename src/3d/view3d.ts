@@ -40,7 +40,7 @@
 /*global JXG:true, define: true*/
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Coords from "../base/coords.js";
 import Type from "../utils/type.js";
 import Mat from "../math/math.js";
@@ -62,7 +62,7 @@ import Composition from "../base/composition.js";
  * [x,y] and side lengths [w, h] of the board.
  */
 JXG.View3D = function (board, parents, attributes) {
-    this.constructor(board, attributes, Const.OBJECT_TYPE_VIEW3D, Const.OBJECT_CLASS_3D);
+    this.constructor(board, attributes, OBJECT_TYPE.VIEW3D, OBJECT_CLASS._3D);
 
     /**
      * An associative array containing all geometric objects belonging to the view.
@@ -845,15 +845,15 @@ JXG.extend(
      */
     compareDepth: function (a, b) {
         // return a.zIndex - b.zIndex;
-        // if (a.type !== Const.OBJECT_TYPE_PLANE3D && b.type !== Const.OBJECT_TYPE_PLANE3D) {
+        // if (a.type !== OBJECT_TYPE.PLANE3D && b.type !== OBJECT_TYPE.PLANE3D) {
         //     return a.zIndex - b.zIndex;
-        // } else if (a.type === Const.OBJECT_TYPE_PLANE3D) {
+        // } else if (a.type === OBJECT_TYPE.PLANE3D) {
         //     let bHesse = Mat.innerProduct(a.point.coords, a.normal, 4);
         //     let po = Mat.innerProduct(b.coords, a.normal, 4);
         //     let pos = Mat.innerProduct(this.boxToCam[3], a.normal, 4);
         // console.log(this.boxToCam[3])
         //     return pos - po;
-        // } else if (b.type === Const.OBJECT_TYPE_PLANE3D) {
+        // } else if (b.type === OBJECT_TYPE.PLANE3D) {
         //     let bHesse = Mat.innerProduct(b.point.coords, b.normal, 4);
         //     let po = Mat.innerProduct(a.coords, a.normal, 4);
         //     let pos = Mat.innerProduct(this.boxToCam[3], b.normal, 4);
@@ -870,8 +870,8 @@ JXG.extend(
                 el = this.objects[id];
                 // Update zIndex of less frequent objects line3d and polygon3d
                 // The other elements (point3d, face3d) do this in their update method.
-                if ((el.type === Const.OBJECT_TYPE_LINE3D ||
-                    el.type === Const.OBJECT_TYPE_POLYGON3D
+                if ((el.type === OBJECT_TYPE.LINE3D ||
+                    el.type === OBJECT_TYPE.POLYGON3D
                     ) &&
                     Type.exists(el.element2D) &&
                     el.element2D.evalVisProp('visible')
@@ -912,11 +912,11 @@ JXG.extend(
         for (id in this.objects) {
             if (this.objects.hasOwnProperty(id)) {
                 el = this.objects[id];
-                if ((el.type === Const.OBJECT_TYPE_FACE3D ||
-                    el.type === Const.OBJECT_TYPE_LINE3D ||
-                    // el.type === Const.OBJECT_TYPE_PLANE3D ||
-                    el.type === Const.OBJECT_TYPE_POINT3D ||
-                    el.type === Const.OBJECT_TYPE_POLYGON3D
+                if ((el.type === OBJECT_TYPE.FACE3D ||
+                    el.type === OBJECT_TYPE.LINE3D ||
+                    // el.type === OBJECT_TYPE.PLANE3D ||
+                    el.type === OBJECT_TYPE.POINT3D ||
+                    el.type === OBJECT_TYPE.POLYGON3D
                     ) &&
                     Type.exists(el.element2D) &&
                     el.element2D.evalVisProp('visible')
@@ -1935,7 +1935,7 @@ JXG.extend(
         var pos = this.board.getMousePosition(evt),
             x, y, center;
 
-        center = new Coords(Const.COORDS_BY_USER, [this.llftCorner[0] + this.size[0] * 0.5, this.llftCorner[1] + this.size[1] * 0.5], this.board);
+        center = new Coords(COORDS_BY.USER, [this.llftCorner[0] + this.size[0] * 0.5, this.llftCorner[1] + this.size[1] * 0.5], this.board);
         x = pos[0] - center.scrCoords[1];
         y = pos[1] - center.scrCoords[2];
         this._trackball = {

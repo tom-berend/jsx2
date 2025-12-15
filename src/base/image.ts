@@ -37,7 +37,7 @@
  */
 
 import JXG from "../jxg.js";
-import Const from "./constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Coords from "./coords.js";
 import GeometryElement from "./element.js";
 import Mat from "../math/math.js";
@@ -63,7 +63,7 @@ import CoordsElement from "./coordselement.js";
  *
  */
 JXG.Image = function (board, coords, attributes, url, size) {
-    this.constructor(board, attributes, Const.OBJECT_TYPE_IMAGE, Const.OBJECT_CLASS_OTHER);
+    this.constructor(board, attributes, OBJECT_TYPE.IMAGE, OBJECT_CLASS.OTHER);
     this.element = this.board.select(attributes.anchor);
     this.coordsConstructor(coords);
 
@@ -157,7 +157,7 @@ JXG.extend(
             }
 
             // Image is transformed
-            c = new Coords(Const.COORDS_BY_SCREEN, [x, y], this.board);
+            c = new Coords(COORDS_BY.SCREEN, [x, y], this.board);
             // v is the vector from anchor point to the drag point
             c = c.usrCoords;
             v = [c[0] - this.span[0][0], c[1] - this.span[0][1], c[2] - this.span[0][2]];

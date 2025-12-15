@@ -1,3 +1,7 @@
+const dbug = false;
+const dbugColor = `color:pink;background-color:darkblue`;
+
+import { LooseObject } from "../interfaces.js";
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -39,22 +43,28 @@
 import JXG from "../jxg.js";
 import Type from "./type.js";
 
+type argVals = string | number | Boolean  // arguments for event handlers
+
 /**
  * Event namespace
  * @namespace
  */
-JXG.EventEmitter = {
+
+export class Event {
     /**
      * Holds the registered event handlers.
-     * @type Object
      */
-    eventHandlers: {},
+    eventHandlers: LooseObject = {}
 
     /**
      * Events can be suspended to prevent endless loops.
-     * @type Object
      */
-    suspended: {},
+    suspended: LooseObject = {}
+
+    /** initially this.trigger() */
+    public triggerEventHandlers: Function = this.trigger
+
+    constructor() {  /* nothing yet */ }
 
     /**
      * Triggers all event handlers of this element for a given event.
@@ -62,8 +72,10 @@ JXG.EventEmitter = {
      * @param {Array} args The arguments passed onto the event handler
      * @returns Reference to the object.
      */
-    trigger: function (event, args) {
+    trigger(event: string[], args: argVals[]) {
         var i, j, h, evt, len1, len2;
+
+        if (dbug) console.warn(`%c event: trigger(event: ${JSON.stringify(event)}, args: ${JSON.stringify(args)}`, dbugColor)
 
         len1 = event.length;
         for (j = 0; j < len1; j++) {
@@ -83,7 +95,7 @@ JXG.EventEmitter = {
         }
 
         return this;
-    },
+    }
 
     /**
      * Register a new event handler. For a list of possible events see documentation
@@ -98,7 +110,9 @@ JXG.EventEmitter = {
      * @param {Object} [context] The context the handler will be called in, default is the element itself.
      * @returns Reference to the object.
      */
-    on: function (event, handler, context) {
+    on(event:string, handler:Function, context:Object=this) {
+        if (dbug) console.warn(`%c event: on(event: ${event}`, dbugColor)
+
         if (!Type.isArray(this.eventHandlers[event])) {
             this.eventHandlers[event] = [];
         }
@@ -111,7 +125,7 @@ JXG.EventEmitter = {
         });
 
         return this;
-    },
+    }
 
     /**
      * Unregister an event handler.
@@ -119,8 +133,10 @@ JXG.EventEmitter = {
      * @param {Function} [handler]
      * @returns Reference to the object.
      */
-    off: function (event, handler) {
+    off(event: string, handler: Function): object {
         var i;
+
+        if (dbug) console.warn(`%c event: on(event: ${event}`, dbugColor)
 
         if (!event || !Type.isArray(this.eventHandlers[event])) {
             return this;
@@ -140,7 +156,7 @@ JXG.EventEmitter = {
         }
 
         return this;
-    },
+    }
 
     /**
      * @description Implements the functionality from this interface in the given object.
@@ -151,7 +167,9 @@ JXG.EventEmitter = {
      * <pre>@borrows JXG.EventEmitter#on as this.on</pre>
      * @param {Object} o
      */
-    eventify: function (o) {
+    eventify(o: LooseObject) {  // tbb Board | GeometryEvent
+                if (dbug) console.warn(`%c event: eventify ${o.id}`, dbugColor)
+
         o.eventHandlers = {
             clicks: 0 // Needed to handle dblclicks
         };
@@ -161,6 +179,7 @@ JXG.EventEmitter = {
         o.trigger = this.trigger;
         o.suspended = {};
     }
-};
+}
 
-export default JXG.EventEmitter;
+export let EventEmitter = new Event()   // TBTB - NO!! this is parent of GeometryElement
+

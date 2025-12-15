@@ -30,7 +30,7 @@
 /*global JXG:true, define: true*/
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from "../utils/type.js";
 import Mat from '../math/math.js';
 import Geometry from '../math/geometry.js';
@@ -53,7 +53,7 @@ import Geometry from '../math/geometry.js';
 JXG.Circle3D = function (view, center, normal, radius, attributes) {
     var altFrame1, that;
 
-    this.constructor(view.board, attributes, Const.OBJECT_TYPE_CIRCLE3D, Const.OBJECT_CLASS_3D);
+    this.constructor(view.board, attributes, OBJECT_TYPE.CIRCLE3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'circle3d');
 
     /**
@@ -399,7 +399,7 @@ JXG.createIntersectionCircle3D = function (board, parents, attributes) {
         );
     }
 
-    ixnCircle.type = Const.OBJECT_TYPE_INTERSECTION_CIRCLE3D;
+    ixnCircle.type = OBJECT_TYPE.INTERSECTION_CIRCLE3D;
     ixnCircle.elType = 'intersectioncircle3d';
     ixnCircle.setParents([el1.id, el2.id]);
 

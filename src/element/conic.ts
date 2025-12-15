@@ -37,7 +37,7 @@
  */
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Coords from "../base/coords.js";
 import Mat from "../math/math.js";
 import Numerics from "../math/numerics.js";
@@ -278,7 +278,7 @@ JXG.createEllipse = function (board, parents, attributes) {
     };
 
     curve.midpoint = curve.center = M;
-    curve.type = Const.OBJECT_TYPE_CONIC;
+    curve.type = OBJECT_TYPE.CONIC;
     curve.subs = {
         center: curve.center
     };
@@ -303,8 +303,8 @@ JXG.createEllipse = function (board, parents, attributes) {
             ac = F[0].coords;
             bc = F[1].coords;
             r = this.majorAxis();
-            p = new Coords(Const.COORDS_BY_SCREEN, [x, y], this.board);
-            dist = p.distance(Const.COORDS_BY_USER, ac) + p.distance(Const.COORDS_BY_USER, bc);
+            p = new Coords(COORDS_BY.SCREEN, [x, y], this.board);
+            dist = p.distance(COORDS_BY.USER, ac) + p.distance(COORDS_BY.USER, bc);
 
             return dist <= r;
         }
@@ -533,7 +533,7 @@ JXG.createHyperbola = function (board, parents, attributes) {
     if (Type.isPoint(C)) {
         curve.inherits.push(C);
     }
-    curve.type = Const.OBJECT_TYPE_CONIC;
+    curve.type = OBJECT_TYPE.CONIC;
 
     M.addChild(curve);
     for (i = 0; i < 2; i++) {
@@ -754,7 +754,7 @@ JXG.createParabola = function (board, parents, attributes) {
         return F1.Y() + Math.sin(phi + beta) * a;
     };
 
-    curve.type = Const.OBJECT_TYPE_CONIC;
+    curve.type = OBJECT_TYPE.CONIC;
     M.addChild(curve);
 
     if (Type.isPoint(F1)) {
@@ -1131,7 +1131,7 @@ JXG.createConic = function (board, parents, attributes) {
         attr_center
     );
 
-    curve.type = Const.OBJECT_TYPE_CONIC;
+    curve.type = OBJECT_TYPE.CONIC;
     curve.center = curve.midpoint;
     curve.subs = {
         center: curve.center

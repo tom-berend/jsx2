@@ -50,7 +50,7 @@
 import JXG from "../jxg.js";
 import Options from "../options.js";
 import Coords from "../base/coords.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Type from "../utils/type.js";
@@ -530,9 +530,9 @@ JXG.extend(
             this.makeArrows(el, arrowData);
 
             // Draw the paths with arrow heads
-            if (el.elementClass === Const.OBJECT_CLASS_LINE) {
+            if (el.elementClass === OBJECT_CLASS.LINE) {
                 this.updateLineWithEndings(el, arrowData);
-            } else if (el.elementClass === Const.OBJECT_CLASS_CURVE) {
+            } else if (el.elementClass === OBJECT_CLASS.CURVE) {
                 this.updatePath(el);
             }
 
@@ -576,7 +576,7 @@ JXG.extend(
                 if (Type.exists(ev_fa.type)) {
                     typeFirst = el.eval(ev_fa.type);
                 } else {
-                    if (el.elementClass === Const.OBJECT_CLASS_LINE) {
+                    if (el.elementClass === OBJECT_CLASS.LINE) {
                         typeFirst = 1;
                     } else {
                         typeFirst = 7;
@@ -585,7 +585,7 @@ JXG.extend(
                 if (Type.exists(ev_la.type)) {
                     typeLast = el.eval(ev_la.type);
                 } else {
-                    if (el.elementClass === Const.OBJECT_CLASS_LINE) {
+                    if (el.elementClass === OBJECT_CLASS.LINE) {
                         typeLast = 1;
                     } else {
                         typeLast = 7;
@@ -693,8 +693,8 @@ JXG.extend(
                 // useTotalLength = true,
                 margin = null;
 
-            c1 = new Coords(Const.COORDS_BY_USER, el.point1.coords.usrCoords, el.board);
-            c2 = new Coords(Const.COORDS_BY_USER, el.point2.coords.usrCoords, el.board);
+            c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board);
+            c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
             margin = el.evalVisProp('margin');
             Geometry.calcStraight(el, c1, c2, margin);
 
@@ -761,7 +761,7 @@ JXG.extend(
             if (a.evFirst || a.evLast) {
                 // Correct the position of the arrow heads
                 d1x = d1y = d2x = d2y = 0.0;
-                d = c1.distance(Const.COORDS_BY_SCREEN, c2);
+                d = c1.distance(COORDS_BY.SCREEN, c2);
 
                 if (a.evFirst && el.board.renderer.type !== 'vml') {
                     if (d >= a.minLen) {
@@ -781,13 +781,13 @@ JXG.extend(
                     }
                 }
                 c1.setCoordinates(
-                    Const.COORDS_BY_SCREEN,
+                    COORDS_BY.SCREEN,
                     [c1.scrCoords[1] + d1x, c1.scrCoords[2] + d1y],
                     false,
                     true
                 );
                 c2.setCoordinates(
-                    Const.COORDS_BY_SCREEN,
+                    COORDS_BY.SCREEN,
                     [c2.scrCoords[1] - d2x, c2.scrCoords[2] - d2y],
                     false,
                     true
@@ -821,7 +821,7 @@ JXG.extend(
                 // Handle touchlastpoint /touchfirstpoint
                 if (a.evFirst && el.evalVisProp('touchfirstpoint') &&
                         el.point1.evalVisProp('visible')) {
-                    d = c1.distance(Const.COORDS_BY_SCREEN, c2);
+                    d = c1.distance(COORDS_BY.SCREEN, c2);
                     //if (d > s) {
                     d1x = ((c2.scrCoords[1] - c1.scrCoords[1]) * s1) / d;
                     d1y = ((c2.scrCoords[2] - c1.scrCoords[2]) * s1) / d;
@@ -829,20 +829,20 @@ JXG.extend(
                 }
                 if (a.evLast && el.evalVisProp('touchlastpoint') &&
                         el.point2.evalVisProp('visible')) {
-                    d = c1.distance(Const.COORDS_BY_SCREEN, c2);
+                    d = c1.distance(COORDS_BY.SCREEN, c2);
                     //if (d > s) {
                     d2x = ((c2.scrCoords[1] - c1.scrCoords[1]) * s2) / d;
                     d2y = ((c2.scrCoords[2] - c1.scrCoords[2]) * s2) / d;
                     //}
                 }
                 c1.setCoordinates(
-                    Const.COORDS_BY_SCREEN,
+                    COORDS_BY.SCREEN,
                     [c1.scrCoords[1] + d1x, c1.scrCoords[2] + d1y],
                     false,
                     true
                 );
                 c2.setCoordinates(
-                    Const.COORDS_BY_SCREEN,
+                    COORDS_BY.SCREEN,
                     [c2.scrCoords[1] - d2x, c2.scrCoords[2] - d2y],
                     false,
                     true
@@ -1776,16 +1776,16 @@ JXG.extend(
 
             this.setObjectTransition(el);
             if (!el.visProp.draft) {
-                if (el.type === Const.OBJECT_TYPE_POLYGON) {
+                if (el.type === OBJECT_TYPE.POLYGON) {
                     this.setObjectFillColor(el, el.evalVisProp('highlightfillcolor'), el.evalVisProp('highlightfillopacity'));
                     do_hl = el.evalVisProp('highlightbystrokewidth');
                     for (i = 0; i < el.borders.length; i++) {
                         this.highlight(el.borders[i], !do_hl);
                     }
                 } else {
-                    if (el.elementClass === Const.OBJECT_CLASS_TEXT) {
+                    if (el.elementClass === OBJECT_CLASS.TEXT) {
                         this.updateTextStyle(el, true);
-                    } else if (el.type === Const.OBJECT_TYPE_IMAGE) {
+                    } else if (el.type === OBJECT_TYPE.IMAGE) {
                         this.updateImageStyle(el, true);
                         this.setObjectFillColor(
                             el,
@@ -1817,8 +1817,8 @@ JXG.extend(
                     );
                     this.setObjectStrokeWidth(el, sw);
                     if (
-                        el.elementClass === Const.OBJECT_CLASS_LINE ||
-                        el.elementClass === Const.OBJECT_CLASS_CURVE
+                        el.elementClass === OBJECT_CLASS.LINE ||
+                        el.elementClass === OBJECT_CLASS.CURVE
                     ) {
                         this.updatePathWithArrowHeads(el, true);
                     }
@@ -1840,15 +1840,15 @@ JXG.extend(
 
             this.setObjectTransition(el);
             if (!el.evalVisProp('draft')) {
-                if (el.type === Const.OBJECT_TYPE_POLYGON) {
+                if (el.type === OBJECT_TYPE.POLYGON) {
                     this.setObjectFillColor(el, el.evalVisProp('fillcolor'), el.evalVisProp('fillopacity'));
                     for (i = 0; i < el.borders.length; i++) {
                         this.noHighlight(el.borders[i]);
                     }
                 } else {
-                    if (el.elementClass === Const.OBJECT_CLASS_TEXT) {
+                    if (el.elementClass === OBJECT_CLASS.TEXT) {
                         this.updateTextStyle(el, false);
-                    } else if (el.type === Const.OBJECT_TYPE_IMAGE) {
+                    } else if (el.type === OBJECT_TYPE.IMAGE) {
                         this.updateImageStyle(el, false);
                         this.setObjectFillColor(el, el.evalVisProp('fillcolor'), el.evalVisProp('fillopacity'));
                     } else {
@@ -1860,8 +1860,8 @@ JXG.extend(
                 sw = el.evalVisProp('strokewidth');
                 this.setObjectStrokeWidth(el, sw);
                 if (
-                    el.elementClass === Const.OBJECT_CLASS_LINE ||
-                    el.elementClass === Const.OBJECT_CLASS_CURVE
+                    el.elementClass === OBJECT_CLASS.LINE ||
+                    el.elementClass === OBJECT_CLASS.CURVE
                 ) {
                     this.updatePathWithArrowHeads(el, false);
                 }
@@ -1877,10 +1877,10 @@ JXG.extend(
          */
         removeDraft: function (el) {
             this.setObjectTransition(el);
-            if (el.type === Const.OBJECT_TYPE_POLYGON) {
+            if (el.type === OBJECT_TYPE.POLYGON) {
                 this.setObjectFillColor(el, el.evalVisProp('fillcolor'), el.evalVisProp('fillopacity'));
             } else {
-                if (el.type === Const.OBJECT_CLASS_POINT) {
+                if (el.type === OBJECT_CLASS.POINT) {
                     this.setObjectFillColor(el, el.evalVisProp('fillcolor'), el.evalVisProp('fillopacity'));
                 }
                 this.setObjectStrokeColor(el, el.evalVisProp('strokecolor'), el.evalVisProp('strokeopacity'));
@@ -1940,10 +1940,10 @@ JXG.extend(
                 draftOpacity = el.board.options.elements.draft.opacity;
 
                 this.setObjectTransition(el);
-            if (el.type === Const.OBJECT_TYPE_POLYGON) {
+            if (el.type === OBJECT_TYPE.POLYGON) {
                 this.setObjectFillColor(el, draftColor, draftOpacity);
             } else {
-                if (el.elementClass === Const.OBJECT_CLASS_POINT) {
+                if (el.elementClass === OBJECT_CLASS.POINT) {
                     this.setObjectFillColor(el, draftColor, draftOpacity);
                 } else {
                     this.setObjectFillColor(el, "none", 0);

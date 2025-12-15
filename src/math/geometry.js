@@ -39,7 +39,7 @@
  */
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Coords from "../base/coords.js";
 import Mat from "./math.js";
 import Stat from "../math/statistics.js";
@@ -201,7 +201,7 @@ JXG.extend(
             // Parallel lines
             if (Bc[0] === 0) {
                 return new Coords(
-                    Const.COORDS_BY_USER,
+                    COORDS_BY.USER,
                     [1, (Ac[1] + Cc[1]) * 0.5, (Ac[2] + Cc[2]) * 0.5],
                     board
                 );
@@ -225,7 +225,7 @@ JXG.extend(
             x = Math.cos(phi) + Bc[1];
             y = Math.sin(phi) + Bc[2];
 
-            return new Coords(Const.COORDS_BY_USER, [1, x, y], board);
+            return new Coords(COORDS_BY.USER, [1, x, y], board);
         },
 
         // /**
@@ -255,7 +255,7 @@ JXG.extend(
 
         //     // Parallel lines
         //     if (Bc[0] === 0) {
-        //         return new Coords(Const.COORDS_BY_USER,
+        //         return new Coords(COORDS_BY.USER,
         //             [1, (Ac[1] + Cc[1]) * m, (Ac[2] + Cc[2]) * m], board);
         //     }
 
@@ -277,7 +277,7 @@ JXG.extend(
         //     x = Math.cos(phi) + Bc[1];
         //     y = Math.sin(phi) + Bc[2];
 
-        //     return new Coords(Const.COORDS_BY_USER, [1, x, y], board);
+        //     return new Coords(COORDS_BY.USER, [1, x, y], board);
         // },
 
         /**
@@ -316,7 +316,7 @@ JXG.extend(
             x1 = pc[1] + 2 * mu * w;
             y1 = pc[2] - 2 * mu * v;
 
-            return new Coords(Const.COORDS_BY_USER, [x1, y1], board);
+            return new Coords(COORDS_BY.USER, [x1, y1], board);
         },
 
         /**
@@ -351,7 +351,7 @@ JXG.extend(
             x1 = x0 * c - y0 * s + rotpc[1];
             y1 = x0 * s + y0 * c + rotpc[2];
 
-            return new Coords(Const.COORDS_BY_USER, [x1, y1], board);
+            return new Coords(COORDS_BY.USER, [x1, y1], board);
         },
 
         /**
@@ -435,7 +435,7 @@ JXG.extend(
                 change = true;
             }
 
-            return [new Coords(Const.COORDS_BY_USER, c, board), change];
+            return [new Coords(COORDS_BY.USER, c, board), change];
         },
 
         /**
@@ -475,7 +475,7 @@ JXG.extend(
             v = [(B[0] + C[0]) * 0.5, (B[1] + C[1]) * 0.5, (B[2] + C[2]) * 0.5];
             m2 = Mat.crossProduct(u, v);
 
-            return new Coords(Const.COORDS_BY_USER, Mat.crossProduct(m1, m2), board);
+            return new Coords(COORDS_BY.USER, Mat.crossProduct(m1, m2), board);
         },
 
         /**
@@ -1114,7 +1114,7 @@ JXG.extend(
 
             if (Type.isArray(points)) {
                 ps = Expect.each(points, Expect.coordsArray);
-            } else if (Type.exists(points.type) && points.type === Const.OBJECT_TYPE_POLYGON) {
+            } else if (Type.exists(points.type) && points.type === OBJECT_TYPE.POLYGON) {
                 ps = Expect.each(points.vertices, Expect.coordsArray);
             }
             le = ps.length;
@@ -1323,13 +1323,13 @@ JXG.extend(
             }
 
             if (p1) {
-                //point1.setCoordinates(Const.COORDS_BY_USER, p1.usrCoords.slice(1));
-                point1.setCoordinates(Const.COORDS_BY_USER, p1.usrCoords);
+                //point1.setCoordinates(COORDS_BY.USER, p1.usrCoords.slice(1));
+                point1.setCoordinates(COORDS_BY.USER, p1.usrCoords);
             }
 
             if (p2) {
-                //point2.setCoordinates(Const.COORDS_BY_USER, p2.usrCoords.slice(1));
-                point2.setCoordinates(Const.COORDS_BY_USER, p2.usrCoords);
+                //point2.setCoordinates(COORDS_BY.USER, p2.usrCoords.slice(1));
+                point2.setCoordinates(COORDS_BY.USER, p2.usrCoords);
             }
         },
 
@@ -1437,12 +1437,12 @@ JXG.extend(
             if (!takePoint1 && !takePoint2) {
                 // Segment, if segment does not cross the board, do nothing
                 if (!straightFirst && !straightLast) {
-                    distP1P2 = point1.distance(Const.COORDS_BY_USER, point2);
+                    distP1P2 = point1.distance(COORDS_BY.USER, point2);
                     // if  intersect1 not between point1 and point2
                     if (
                         Math.abs(
-                            point1.distance(Const.COORDS_BY_USER, intersect1) +
-                            intersect1.distance(Const.COORDS_BY_USER, point2) -
+                            point1.distance(COORDS_BY.USER, intersect1) +
+                            intersect1.distance(COORDS_BY.USER, point2) -
                             distP1P2
                         ) > Mat.eps
                     ) {
@@ -1451,8 +1451,8 @@ JXG.extend(
                     // if insersect2 not between point1 and point2
                     if (
                         Math.abs(
-                            point1.distance(Const.COORDS_BY_USER, intersect2) +
-                            intersect2.distance(Const.COORDS_BY_USER, point2) -
+                            point1.distance(COORDS_BY.USER, intersect2) +
+                            intersect2.distance(COORDS_BY.USER, point2) -
                             distP1P2
                         ) > Mat.eps
                     ) {
@@ -1517,13 +1517,13 @@ JXG.extend(
             }
 
             if (p1) {
-                //point1.setCoordinates(Const.COORDS_BY_USER, p1.usrCoords.slice(1));
-                point1.setCoordinates(Const.COORDS_BY_USER, p1.usrCoords);
+                //point1.setCoordinates(COORDS_BY.USER, p1.usrCoords.slice(1));
+                point1.setCoordinates(COORDS_BY.USER, p1.usrCoords);
             }
 
             if (p2) {
-                //point2.setCoordinates(Const.COORDS_BY_USER, p2.usrCoords.slice(1));
-                point2.setCoordinates(Const.COORDS_BY_USER, p2.usrCoords);
+                //point2.setCoordinates(COORDS_BY.USER, p2.usrCoords.slice(1));
+                point2.setCoordinates(COORDS_BY.USER, p2.usrCoords);
             }
         },
 
@@ -1826,8 +1826,8 @@ JXG.extend(
                 v = path,
                 isIn = false;
 
-            if (coord_type === Const.COORDS_BY_USER) {
-                crds = new Coords(Const.COORDS_BY_USER, [x_in, y_in], board);
+            if (coord_type === COORDS_BY.USER) {
+                crds = new Coords(COORDS_BY.USER, [x_in, y_in], board);
                 x = crds.scrCoords[1];
                 y = crds.scrCoords[2];
             } else {
@@ -1880,23 +1880,23 @@ JXG.extend(
                 el2_isArcType = false;
 
             el1_isArcType =
-                el1.elementClass === Const.OBJECT_CLASS_CURVE &&
-                    (el1.type === Const.OBJECT_TYPE_ARC || el1.type === Const.OBJECT_TYPE_SECTOR)
+                el1.elementClass === OBJECT_CLASS.CURVE &&
+                    (el1.type === OBJECT_TYPE.ARC || el1.type === OBJECT_TYPE.SECTOR)
                     ? true
                     : false;
             el2_isArcType =
-                el2.elementClass === Const.OBJECT_CLASS_CURVE &&
-                    (el2.type === Const.OBJECT_TYPE_ARC || el2.type === Const.OBJECT_TYPE_SECTOR)
+                el2.elementClass === OBJECT_CLASS.CURVE &&
+                    (el2.type === OBJECT_TYPE.ARC || el2.type === OBJECT_TYPE.SECTOR)
                     ? true
                     : false;
 
             if (
-                (el1.elementClass === Const.OBJECT_CLASS_CURVE ||
-                    el2.elementClass === Const.OBJECT_CLASS_CURVE) &&
-                (el1.elementClass === Const.OBJECT_CLASS_CURVE ||
-                    el1.elementClass === Const.OBJECT_CLASS_CIRCLE) &&
-                (el2.elementClass === Const.OBJECT_CLASS_CURVE ||
-                    el2.elementClass === Const.OBJECT_CLASS_CIRCLE) /*&&
+                (el1.elementClass === OBJECT_CLASS.CURVE ||
+                    el2.elementClass === OBJECT_CLASS.CURVE) &&
+                (el1.elementClass === OBJECT_CLASS.CURVE ||
+                    el1.elementClass === OBJECT_CLASS.CIRCLE) &&
+                (el2.elementClass === OBJECT_CLASS.CURVE ||
+                    el2.elementClass === OBJECT_CLASS.CIRCLE) /*&&
                 !(el1_isArcType && el2_isArcType)*/
             ) {
                 // curve - curve
@@ -1906,12 +1906,12 @@ JXG.extend(
                     return that.meetCurveCurve(el1, el2, i, j, el1.board);
                 };
             } else if (
-                (el1.elementClass === Const.OBJECT_CLASS_CURVE &&
+                (el1.elementClass === OBJECT_CLASS.CURVE &&
                     !el1_isArcType &&
-                    el2.elementClass === Const.OBJECT_CLASS_LINE) ||
-                (el2.elementClass === Const.OBJECT_CLASS_CURVE &&
+                    el2.elementClass === OBJECT_CLASS.LINE) ||
+                (el2.elementClass === OBJECT_CLASS.CURVE &&
                     !el2_isArcType &&
-                    el1.elementClass === Const.OBJECT_CLASS_LINE)
+                    el1.elementClass === OBJECT_CLASS.LINE)
             ) {
                 // curve - line (this includes intersections between conic sections and lines)
                 // with the exception that the curve is of arc type
@@ -1920,14 +1920,14 @@ JXG.extend(
                     return that.meetCurveLine(el1, el2, i, el1.board, Type.evaluate(alwaysintersect));
                 };
             } else if (
-                el1.type === Const.OBJECT_TYPE_POLYGON ||
-                el2.type === Const.OBJECT_TYPE_POLYGON
+                el1.type === OBJECT_TYPE.POLYGON ||
+                el2.type === OBJECT_TYPE.POLYGON
             ) {
                 // polygon - other
                 // Uses the Greiner-Hormann clipping algorithm
                 // Not implemented: polygon - point
 
-                if (el1.elementClass === Const.OBJECT_CLASS_LINE) {
+                if (el1.elementClass === OBJECT_CLASS.LINE) {
                     // line - path
                     /** @ignore */
                     func = function () {
@@ -1940,7 +1940,7 @@ JXG.extend(
                         a_not = (!Type.evaluate(alwaysintersect) && (!first1 || !last1 || !first2 || !last2));
                         return that.meetPolygonLine(el2, el1, i, el1.board, a_not);
                     };
-                } else if (el2.elementClass === Const.OBJECT_CLASS_LINE) {
+                } else if (el2.elementClass === OBJECT_CLASS.LINE) {
                     // path - line
                     /** @ignore */
                     func = function () {
@@ -1961,8 +1961,8 @@ JXG.extend(
                     };
                 }
             } else if (
-                el1.elementClass === Const.OBJECT_CLASS_LINE &&
-                el2.elementClass === Const.OBJECT_CLASS_LINE
+                el1.elementClass === OBJECT_CLASS.LINE &&
+                el2.elementClass === OBJECT_CLASS.LINE
             ) {
                 // line - line, lines may also be segments.
                 /** @ignore */
@@ -2003,7 +2003,7 @@ JXG.extend(
                             c = res[0];
                         }
 
-                        return new Coords(Const.COORDS_BY_USER, c, el1.board);
+                        return new Coords(COORDS_BY.USER, c, el1.board);
                     }
 
                     return that.meet(el1.stdform, el2.stdform, i, el1.board);
@@ -2022,7 +2022,7 @@ JXG.extend(
                     if (Type.evaluate(alwaysintersect)) {
                         return res;
                     }
-                    if (el1.elementClass === Const.OBJECT_CLASS_LINE) {
+                    if (el1.elementClass === OBJECT_CLASS.LINE) {
                         first = el1.evalVisProp('straightfirst');
                         last = el1.evalVisProp('straightlast');
                         if (!first || !last) {
@@ -2032,7 +2032,7 @@ JXG.extend(
                             }
                         }
                     }
-                    if (el2.elementClass === Const.OBJECT_CLASS_LINE) {
+                    if (el2.elementClass === OBJECT_CLASS.LINE) {
                         first = el2.evalVisProp('straightfirst');
                         last = el2.evalVisProp('straightlast');
                         if (!first || !last) {
@@ -2074,15 +2074,15 @@ JXG.extend(
                     eps = Type.evaluate(precision);
 
                 for (i = le; i >= 0; i--) {
-                    if (el1.elementClass === Const.OBJECT_CLASS_CIRCLE &&
-                        [Const.OBJECT_CLASS_CIRCLE, Const.OBJECT_CLASS_LINE].indexOf(el2.elementClass) >= 0) {
+                    if (el1.elementClass === OBJECT_CLASS.CIRCLE &&
+                        [OBJECT_CLASS.CIRCLE, OBJECT_CLASS.LINE].indexOf(el2.elementClass) >= 0) {
                         // circle, circle|line
                         c = that.meet(el1.stdform, el2.stdform, i, board);
-                    } else if (el1.elementClass === Const.OBJECT_CLASS_CURVE &&
-                        [Const.OBJECT_CLASS_CURVE, Const.OBJECT_CLASS_CIRCLE].indexOf(el2.elementClass) >= 0) {
+                    } else if (el1.elementClass === OBJECT_CLASS.CURVE &&
+                        [OBJECT_CLASS.CURVE, OBJECT_CLASS.CIRCLE].indexOf(el2.elementClass) >= 0) {
                         // curve, circle|curve
                         c = that.meetCurveCurve(el1, el2, i, 0, board);
-                    } else if (el1.elementClass === Const.OBJECT_CLASS_CURVE && el2.elementClass === Const.OBJECT_CLASS_LINE) {
+                    } else if (el1.elementClass === OBJECT_CLASS.CURVE && el2.elementClass === OBJECT_CLASS.LINE) {
                         // curve, line
                         if (Type.exists(el1.dataX)) {
                             c = JXG.Math.Geometry.meetCurveLine(el1, el2, i, el1.board, Type.evaluate(alwaysintersect));
@@ -2256,8 +2256,8 @@ JXG.extend(
             }
 
             return [
-                new Coords(Const.COORDS_BY_SCREEN, intersect1.slice(1), board),
-                new Coords(Const.COORDS_BY_SCREEN, intersect2.slice(1), board)
+                new Coords(COORDS_BY.SCREEN, intersect1.slice(1), board),
+                new Coords(COORDS_BY.SCREEN, intersect2.slice(1), board)
             ];
         },
 
@@ -2276,7 +2276,7 @@ JXG.extend(
             if (Math.abs(s[0]) < 1.0e-14) {
                 s[0] = 0;
             }
-            return new Coords(Const.COORDS_BY_USER, s, board);
+            return new Coords(COORDS_BY.USER, s, board);
         },
 
         /**
@@ -2295,10 +2295,10 @@ JXG.extend(
             // Radius is zero, return center of circle
             if (circ[4] < Mat.eps) {
                 if (Math.abs(Mat.innerProduct([1, circ[6], circ[7]], lin, 3)) < Mat.eps) {
-                    return new Coords(Const.COORDS_BY_USER, circ.slice(6, 8), board);
+                    return new Coords(COORDS_BY.USER, circ.slice(6, 8), board);
                 }
 
-                return new Coords(Const.COORDS_BY_USER, [NaN, NaN], board);
+                return new Coords(COORDS_BY.USER, [NaN, NaN], board);
             }
             c = circ[0];
             b = circ.slice(1, 3);
@@ -2324,18 +2324,18 @@ JXG.extend(
 
                 return Type.evaluate(i) === 0
                     ? new Coords(
-                        Const.COORDS_BY_USER,
+                        COORDS_BY.USER,
                         [-t[0] * -n[1] - d * n[0], -t[0] * n[0] - d * n[1]],
                         board
                     )
                     : new Coords(
-                        Const.COORDS_BY_USER,
+                        COORDS_BY.USER,
                         [-t[1] * -n[1] - d * n[0], -t[1] * n[0] - d * n[1]],
                         board
                     );
             }
 
-            return new Coords(Const.COORDS_BY_USER, [0, 0, 0], board);
+            return new Coords(COORDS_BY.USER, [0, 0, 0], board);
         },
 
         /**
@@ -2357,10 +2357,10 @@ JXG.extend(
                     Math.abs(this.distance(circ1.slice(6, 2), circ2.slice(6, 8)) - circ2[4]) <
                     Mat.eps
                 ) {
-                    return new Coords(Const.COORDS_BY_USER, circ1.slice(6, 8), board);
+                    return new Coords(COORDS_BY.USER, circ1.slice(6, 8), board);
                 }
 
-                return new Coords(Const.COORDS_BY_USER, [0, 0, 0], board);
+                return new Coords(COORDS_BY.USER, [0, 0, 0], board);
             }
 
             // Radius is zero, return center of circle, if on other circle
@@ -2369,10 +2369,10 @@ JXG.extend(
                     Math.abs(this.distance(circ2.slice(6, 2), circ1.slice(6, 8)) - circ1[4]) <
                     Mat.eps
                 ) {
-                    return new Coords(Const.COORDS_BY_USER, circ2.slice(6, 8), board);
+                    return new Coords(COORDS_BY.USER, circ2.slice(6, 8), board);
                 }
 
-                return new Coords(Const.COORDS_BY_USER, [0, 0, 0], board);
+                return new Coords(COORDS_BY.USER, [0, 0, 0], board);
             }
 
             radicalAxis = [
@@ -2412,7 +2412,7 @@ JXG.extend(
             } else {
                 co = this.meetCurveRedBlueSegments(c1, c2, i);
             }
-            return new Coords(Const.COORDS_BY_USER, co, board);
+            return new Coords(COORDS_BY.USER, co, board);
         },
 
         /**
@@ -2605,7 +2605,7 @@ JXG.extend(
             // generalizedNewton is still used.
             if (Type.exists(method) && method === 'newton' && i < 0 || parseInt(i) !== i) {
                 co = Numerics.generalizedNewton(c1, c2, i, t2ini);
-                return new Coords(Const.COORDS_BY_USER, co, board);
+                return new Coords(COORDS_BY.USER, co, board);
             }
 
             // Method 'newton'
@@ -2624,7 +2624,7 @@ JXG.extend(
                 return [0, NaN, NaN];
             }
 
-            return new Coords(Const.COORDS_BY_USER, co, board);
+            return new Coords(COORDS_BY.USER, co, board);
         },
 
         /**
@@ -2652,7 +2652,7 @@ JXG.extend(
                 board = el1.board;
             }
 
-            if (el1.elementClass === Const.OBJECT_CLASS_CURVE) {
+            if (el1.elementClass === OBJECT_CLASS.CURVE) {
                 cu = el1;
                 li = el2;
             } else {
@@ -2753,7 +2753,7 @@ JXG.extend(
                 z = 1.0;
             }
 
-            return new Coords(Const.COORDS_BY_USER, [z, cu.X(t), cu.Y(t)], board);
+            return new Coords(COORDS_BY.USER, [z, cu.X(t), cu.Y(t)], board);
         },
 
         /**
@@ -2784,7 +2784,7 @@ JXG.extend(
                 ev_sl = li.evalVisProp('straightlast');
 
             // In case, no intersection will be found we will take this
-            q = new Coords(Const.COORDS_BY_USER, [0, NaN, NaN], board);
+            q = new Coords(COORDS_BY.USER, [0, NaN, NaN], board);
 
             if (lip1[0] === 0.0) {
                 lip1 = [1, lip2[1] + li.stdform[2], lip2[2] - li.stdform[1]];
@@ -2832,7 +2832,7 @@ JXG.extend(
                                     return q; // break;
                                 }
 
-                                q = new Coords(Const.COORDS_BY_USER, p[0], board);
+                                q = new Coords(COORDS_BY.USER, p[0], board);
                                 return q; // break;
                             }
                             cnt += 1;
@@ -2999,7 +2999,7 @@ JXG.extend(
 
             // Handle cases where at least one of the paths is empty
             if (nr < 0 || JXG.Math.Clip.isEmptyCase(S, C, 'intersection')) {
-                return new Coords(Const.COORDS_BY_USER, [0, 0, 0], board);
+                return new Coords(COORDS_BY.USER, [0, 0, 0], board);
             }
 
             JXG.Math.Clip.makeDoublyLinkedList(S);
@@ -3009,7 +3009,7 @@ JXG.extend(
             if (n < intersections.length) {
                 return intersections[n].coords;
             }
-            return new Coords(Const.COORDS_BY_USER, [0, 0, 0], board);
+            return new Coords(COORDS_BY.USER, [0, 0, 0], board);
         },
 
         /**
@@ -3053,7 +3053,7 @@ JXG.extend(
             if (n >= 0 && n < intersections.length) {
                 crds = intersections[n];
             }
-            return new Coords(Const.COORDS_BY_USER, crds, board);
+            return new Coords(COORDS_BY.USER, crds, board);
         },
 
         /****************************************/
@@ -3363,11 +3363,11 @@ JXG.extend(
             lenRed = red.numberPoints - red.bezierDegree;
 
             // For sectors, we ignore the "legs"
-            if (red.type === Const.OBJECT_TYPE_SECTOR) {
+            if (red.type === OBJECT_TYPE.SECTOR) {
                 startRed = 3;
                 lenRed -= 3;
             }
-            if (blue.type === Const.OBJECT_TYPE_SECTOR) {
+            if (blue.type === OBJECT_TYPE.SECTOR) {
                 startBlue = 3;
                 lenBlue -= 3;
             }
@@ -3597,11 +3597,11 @@ JXG.extend(
 
             // gave us a point
             if (Type.isPoint(point)) {
-                dist = point.coords.distance(Const.COORDS_BY_USER, circle.center.coords);
+                dist = point.coords.distance(COORDS_BY.USER, circle.center.coords);
                 P = point.coords.usrCoords;
                 // gave us coords
             } else {
-                dist = point.distance(Const.COORDS_BY_USER, circle.center.coords);
+                dist = point.distance(COORDS_BY.USER, circle.center.coords);
                 P = point.usrCoords;
             }
 
@@ -3613,7 +3613,7 @@ JXG.extend(
             x = M[1] + factor * (P[1] - M[1]);
             y = M[2] + factor * (P[2] - M[2]);
 
-            return new Coords(Const.COORDS_BY_USER, [x, y], board);
+            return new Coords(COORDS_BY.USER, [x, y], board);
         },
 
         /**
@@ -3643,7 +3643,7 @@ JXG.extend(
             }
 
             v = Mat.crossProduct(v, coords);
-            return new Coords(Const.COORDS_BY_USER, Mat.crossProduct(v, line.stdform), board);
+            return new Coords(COORDS_BY.USER, Mat.crossProduct(v, line.stdform), board);
         },
 
         /**
@@ -3814,7 +3814,7 @@ JXG.extend(
                     }
                 }
 
-                newCoordsObj = new Coords(Const.COORDS_BY_USER, newCoords, board);
+                newCoordsObj = new Coords(COORDS_BY.USER, newCoords, board);
             } else {
                 // 'parameter', 'polar', 'functiongraph'
 
@@ -3906,7 +3906,7 @@ JXG.extend(
                 // }
 
                 newCoordsObj = new Coords(
-                    Const.COORDS_BY_USER,
+                    COORDS_BY.USER,
                     [curve.X(t), curve.Y(t)],
                     board
                 );
@@ -3989,7 +3989,7 @@ JXG.extend(
             for (i = 0; i < len; i++) {
                 el = turtle.objects[i];
 
-                if (el.elementClass === Const.OBJECT_CLASS_CURVE) {
+                if (el.elementClass === OBJECT_CLASS.CURVE) {
                     res = this.projectPointToCurve(point, el);
                     newCoords = res[0];
                     newPos = res[1];
@@ -4007,7 +4007,7 @@ JXG.extend(
                 }
             }
 
-            newCoords = new Coords(Const.COORDS_BY_USER, [x, y], board);
+            newCoords = new Coords(COORDS_BY.USER, [x, y], board);
             // point.position = t + npmin;
             // return minEl.updateTransform(newCoords);
             return [minEl.updateTransform(newCoords), t + npmin];
@@ -4157,17 +4157,17 @@ JXG.extend(
             var func,
                 that = this;
 
-            if (el1.type === Const.OBJECT_TYPE_PLANE3D) {
-                if (el2.type === Const.OBJECT_TYPE_PLANE3D) {
+            if (el1.type === OBJECT_TYPE.PLANE3D) {
+                if (el2.type === OBJECT_TYPE.PLANE3D) {
                     // func = () => view.intersectionPlanePlane(el1, el2)[i];
                     func = view.intersectionPlanePlane(el1, el2);
-                } else if (el2.type === Const.OBJECT_TYPE_SPHERE3D) {
+                } else if (el2.type === OBJECT_TYPE.SPHERE3D) {
                     func = that.meetPlaneSphere(el1, el2);
                 }
-            } else if (el1.type === Const.OBJECT_TYPE_SPHERE3D) {
-                if (el2.type === Const.OBJECT_TYPE_PLANE3D) {
+            } else if (el1.type === OBJECT_TYPE.SPHERE3D) {
+                if (el2.type === OBJECT_TYPE.PLANE3D) {
                     func = that.meetPlaneSphere(el2, el1);
-                } else if (el2.type === Const.OBJECT_TYPE_SPHERE3D) {
+                } else if (el2.type === OBJECT_TYPE.SPHERE3D) {
                     func = that.meetSphereSphere(el1, el2);
                 }
             }

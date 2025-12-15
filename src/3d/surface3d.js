@@ -29,7 +29,7 @@
 /*global JXG:true, define: true*/
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Type from "../utils/type.js";
@@ -54,8 +54,8 @@ JXG.Surface3D = function (view, F, X, Y, Z, range_u, range_v, attributes) {
     this.constructor(
         view.board,
         attributes,
-        Const.OBJECT_TYPE_SURFACE3D,
-        Const.OBJECT_CLASS_3D
+        OBJECT_TYPE.SURFACE3D,
+        OBJECT_CLASS._3D
     );
     this.constructor3D(view, 'surface3d');
 

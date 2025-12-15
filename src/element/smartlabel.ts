@@ -34,7 +34,7 @@
  */
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from "../utils/type.js";
 
 /**
@@ -193,8 +193,8 @@ JXG.createSmartLabel = function (board, parents, attributes) {
         getTextFun, txt_fun;
 
     if (parents.length === 0 || (
-        [Const.OBJECT_CLASS_POINT, Const.OBJECT_CLASS_LINE,Const.OBJECT_CLASS_CIRCLE].indexOf(parents[0].elementClass) < 0 &&
-        [Const.OBJECT_TYPE_POLYGON, Const.OBJECT_TYPE_ANGLE].indexOf(parents[0].type) < 0
+        [OBJECT_CLASS.POINT, OBJECT_CLASS.LINE,OBJECT_CLASS.CIRCLE].indexOf(parents[0].elementClass) < 0 &&
+        [OBJECT_TYPE.POLYGON, OBJECT_TYPE.ANGLE].indexOf(parents[0].type) < 0
         )
     ) {
         throw new Error(
@@ -207,10 +207,10 @@ JXG.createSmartLabel = function (board, parents, attributes) {
     p = parents[0];
     user_supplied_text = parents[1] || '';
 
-    if (p.elementClass === Const.OBJECT_CLASS_POINT) {
+    if (p.elementClass === OBJECT_CLASS.POINT) {
         attr = Type.copyAttributes(attributes, board.options, 'smartlabelpoint');
 
-    } else if (p.elementClass === Const.OBJECT_CLASS_LINE) {
+    } else if (p.elementClass === OBJECT_CLASS.LINE) {
         attr = Type.copyAttributes(attributes, board.options, 'smartlabelline');
         /**
          * @class
@@ -223,7 +223,7 @@ JXG.createSmartLabel = function (board, parents, attributes) {
          */
         attr.visible = function () { return (p.L() < 1.5) ? false : true; };
 
-    } else if (p.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+    } else if (p.elementClass === OBJECT_CLASS.CIRCLE) {
         attr = Type.copyAttributes(attributes, board.options, 'smartlabelcircle');
         /**
          * @class
@@ -231,9 +231,9 @@ JXG.createSmartLabel = function (board, parents, attributes) {
          */
         attr.visible = function () { return (p.Radius() < 1.5) ? false : true; };
 
-    } else if (p.type === Const.OBJECT_TYPE_POLYGON) {
+    } else if (p.type === OBJECT_TYPE.POLYGON) {
         attr = Type.copyAttributes(attributes, board.options, 'smartlabelpolygon');
-    } else if (p.type === Const.OBJECT_TYPE_ANGLE) {
+    } else if (p.type === OBJECT_TYPE.ANGLE) {
         attr = Type.copyAttributes(attributes, board.options, 'smartlabelangle');
         /**
          * @class
@@ -337,7 +337,7 @@ JXG.createSmartLabel = function (board, parents, attributes) {
         };
     };
 
-    if (p.elementClass === Const.OBJECT_CLASS_POINT) {
+    if (p.elementClass === OBJECT_CLASS.POINT) {
         el = board.create('text', [
             function () { return p.X(); },
             function () { return p.Y(); },
@@ -383,7 +383,7 @@ JXG.createSmartLabel = function (board, parents, attributes) {
             return str;
         };
 
-    } else if (p.elementClass === Const.OBJECT_CLASS_LINE) {
+    } else if (p.elementClass === OBJECT_CLASS.LINE) {
 
         if (attr.measure === 'length') {
             el = board.create('text', [
@@ -402,7 +402,7 @@ JXG.createSmartLabel = function (board, parents, attributes) {
             txt_fun = getTextFun(el, p, 'line', 'slope');
         }
 
-    } else if (p.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+    } else if (p.elementClass === OBJECT_CLASS.CIRCLE) {
         if (attr.measure === 'radius') {
             el = board.create('text', [
                 function () { return p.center.X() + p.Radius() * 0.5; },
@@ -427,7 +427,7 @@ JXG.createSmartLabel = function (board, parents, attributes) {
             txt_fun = getTextFun(el, p, 'circle', 'perimeter');
 
         }
-    } else if (p.type === Const.OBJECT_TYPE_POLYGON) {
+    } else if (p.type === OBJECT_TYPE.POLYGON) {
         if (attr.measure === 'area') {
             el = board.create('text', [
                 function () { return p.getTextAnchor(); },
@@ -453,7 +453,7 @@ JXG.createSmartLabel = function (board, parents, attributes) {
             txt_fun = getTextFun(el, p, 'polygon', 'perimeter');
         }
 
-    } else if (p.type === Const.OBJECT_TYPE_ANGLE) {
+    } else if (p.type === OBJECT_TYPE.ANGLE) {
         el = board.create('text', [
             function () {
                 return p.getLabelAnchor();

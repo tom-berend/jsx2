@@ -29,7 +29,7 @@
 /*global JXG:true, define: true*/
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Geometry from "../math/geometry.js";
 import Type from "../utils/type.js";
 import Mat from "../math/math.js";
@@ -50,7 +50,7 @@ import Mat from "../math/math.js";
  * @see JXG.Board#generateName
  */
 JXG.Curve3D = function (view, F, X, Y, Z, range, attributes) {
-    this.constructor(view.board, attributes, Const.OBJECT_TYPE_CURVE3D, Const.OBJECT_CLASS_3D);
+    this.constructor(view.board, attributes, OBJECT_TYPE.CURVE3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'curve3d');
 
     this.board.finalizeAdding(this);
@@ -389,7 +389,7 @@ JXG.createCurve3D = function (board, parents, attributes) {
         transform = null;
 
     if (parents.length === 3) {
-        if (Type.isTransformationOrArray(parents[2]) && parents[1].type === Const.OBJECT_TYPE_CURVE3D) {
+        if (Type.isTransformationOrArray(parents[2]) && parents[1].type === OBJECT_TYPE.CURVE3D) {
             // [curve, transformation(s)]
             // This might be adopted to the type of the base element (data plot or function)
             base = parents[1];

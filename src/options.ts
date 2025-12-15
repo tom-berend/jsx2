@@ -33,7 +33,7 @@
 /*jslint nomen: true, plusplus: true*/
 
 import JXG from "./jxg.js";
-import Const from "./base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "./base/constants.js";
 import Mat from "./math/math.js";
 import Color from "./utils/color.js";
 import Type from "./utils/type.js";
@@ -10242,9 +10242,9 @@ JXG.Options = {
         for (el in board.objects) {
             if (board.objects.hasOwnProperty(el)) {
                 p = board.objects[el];
-                if (p.elementClass === Const.OBJECT_CLASS_POINT) {
+                if (p.elementClass === OBJECT_CLASS.POINT) {
                     copyProps(p, o.point);
-                } else if (p.elementClass === Const.OBJECT_CLASS_LINE) {
+                } else if (p.elementClass === OBJECT_CLASS.LINE) {
                     copyProps(p, o.line);
 
                     for (t = 0; t < p.ticks.length; t++) {
@@ -10253,19 +10253,19 @@ JXG.Options = {
                         p.ticks[t].visProp.minorheight = o.line.ticks.minorHeight;
                         p.ticks[t].visProp.majorheight = o.line.ticks.majorHeight;
                     }
-                } else if (p.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+                } else if (p.elementClass === OBJECT_CLASS.CIRCLE) {
                     copyProps(p, o.circle);
-                } else if (p.type === Const.OBJECT_TYPE_ANGLE) {
+                } else if (p.type === OBJECT_TYPE.ANGLE) {
                     copyProps(p, o.angle);
-                } else if (p.type === Const.OBJECT_TYPE_ARC) {
+                } else if (p.type === OBJECT_TYPE.ARC) {
                     copyProps(p, o.arc);
-                } else if (p.type === Const.OBJECT_TYPE_POLYGON) {
+                } else if (p.type === OBJECT_TYPE.POLYGON) {
                     copyProps(p, o.polygon);
-                } else if (p.type === Const.OBJECT_TYPE_CONIC) {
+                } else if (p.type === OBJECT_TYPE.CONIC) {
                     copyProps(p, o.conic);
-                } else if (p.type === Const.OBJECT_TYPE_CURVE) {
+                } else if (p.type === OBJECT_TYPE.CURVE) {
                     copyProps(p, o.curve);
-                } else if (p.type === Const.OBJECT_TYPE_SECTOR) {
+                } else if (p.type === OBJECT_TYPE.SECTOR) {
                     p.arc.visProp.fillcolor = o.sector.fillColor;
                     p.arc.visProp.highlightfillcolor = o.sector.highlightFillColor;
                     p.arc.visProp.fillopacity = o.sector.fillOpacity;

@@ -38,7 +38,7 @@
  * @author graphjs
  */
 
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Coords from "../base/coords.js";
 import Mat from "./math.js";
 import Geometry from "./geometry.js";
@@ -224,9 +224,9 @@ Mat.Symbolic = {
             bol = board.options.locus,
             oldRadius = {},
             numDependent = this.generateSymbolicCoordinatesPartial(board, point, "u", 'brace'),
-            xsye = new Coords(Const.COORDS_BY_USR, [0, 0], board),
+            xsye = new Coords(COORDS_BY.USR, [0, 0], board),
             xeys = new Coords(
-                Const.COORDS_BY_USR,
+                COORDS_BY.USR,
                 [board.canvasWidth, board.canvasHeight],
                 board
             ),
@@ -333,7 +333,7 @@ Mat.Symbolic = {
 
                     for (i = 0; i < board.objectsList.length; i++) {
                         if (
-                            board.objectsList[i].elementClass === Const.OBJECT_CLASS_CIRCLE &&
+                            board.objectsList[i].elementClass === OBJECT_CLASS.CIRCLE &&
                             board.objectsList[i].method === "pointRadius"
                         ) {
                             oldRadius[i] = board.objectsList[i].radius;

@@ -50,7 +50,7 @@ import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import Statistics from "../math/statistics.js";
-import Const from "./constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Coords from "./coords.js";
 import GeometryElement from "./element.js";
 import Type from "../utils/type.js";
@@ -69,7 +69,7 @@ import Type from "../utils/type.js";
  * @param {Object} attributes Javascript object containing attributes like name, id and colors.
  */
 JXG.Line = function (board, p1, p2, attributes) {
-    this.constructor(board, attributes, Const.OBJECT_TYPE_LINE, Const.OBJECT_CLASS_LINE);
+    this.constructor(board, attributes, OBJECT_TYPE.LINE, OBJECT_CLASS.LINE);
 
     /**
      * Startpoint of the line. You really should not set this field directly as it may break JSXGraph's
@@ -219,8 +219,8 @@ JXG.extend(
             vnew[2] /= vnew[0];
             vnew[0] = 1;
 
-            vnew = new Coords(Const.COORDS_BY_SCREEN, vnew.slice(1), this.board).usrCoords;
-            d = p1c.distance(Const.COORDS_BY_USER, p2c);
+            vnew = new Coords(COORDS_BY.SCREEN, vnew.slice(1), this.board).usrCoords;
+            d = p1c.distance(COORDS_BY.USER, p2c);
             p1c = p1c.usrCoords.slice(0);
             p2c = p2c.usrCoords.slice(0);
 
@@ -291,7 +291,7 @@ JXG.extend(
                         if (Type.isPoint(funps)) {
                             this.point1 = funps;
                         } else if (funps && funps.length && funps.length === 2) {
-                            this.point1.setPositionDirectly(Const.COORDS_BY_USER, funps);
+                            this.point1.setPositionDirectly(COORDS_BY.USER, funps);
                         }
                     }
 
@@ -300,7 +300,7 @@ JXG.extend(
                         if (Type.isPoint(funps)) {
                             this.point2 = funps;
                         } else if (funps && funps.length && funps.length === 2) {
-                            this.point2.setPositionDirectly(Const.COORDS_BY_USER, funps);
+                            this.point2.setPositionDirectly(COORDS_BY.USER, funps);
                         }
                     }
                 }
@@ -337,11 +337,11 @@ JXG.extend(
             // Distances between the two points and their respective
             // position before the update
             d1 = this.fixedLengthOldCoords[0].distance(
-                Const.COORDS_BY_USER,
+                COORDS_BY.USER,
                 this.point1.coords
             );
             d2 = this.fixedLengthOldCoords[1].distance(
-                Const.COORDS_BY_USER,
+                COORDS_BY.USER,
                 this.point2.coords
             );
 
@@ -349,11 +349,11 @@ JXG.extend(
             if (d1 > Mat.eps || d2 > Mat.eps || d !== d_new) {
                 drag1 =
                     this.point1.isDraggable &&
-                    this.point1.type !== Const.OBJECT_TYPE_GLIDER &&
+                    this.point1.type !== OBJECT_TYPE.GLIDER &&
                     !this.point1.evalVisProp('fixed');
                 drag2 =
                     this.point2.isDraggable &&
-                    this.point2.type !== Const.OBJECT_TYPE_GLIDER &&
+                    this.point2.type !== OBJECT_TYPE.GLIDER &&
                     !this.point2.evalVisProp('fixed');
 
                 // First case: the two points are different
@@ -362,13 +362,13 @@ JXG.extend(
                 // we try move the other point
                 if (d > Mat.eps) {
                     if ((d1 > d2 && drag2) || (d1 <= d2 && drag2 && !drag1)) {
-                        this.point2.setPositionDirectly(Const.COORDS_BY_USER, [
+                        this.point2.setPositionDirectly(COORDS_BY.USER, [
                             this.point1.X() + ((this.point2.X() - this.point1.X()) * d_new) / d,
                             this.point1.Y() + ((this.point2.Y() - this.point1.Y()) * d_new) / d
                         ]);
                         this.point2.fullUpdate();
                     } else if ((d1 <= d2 && drag1) || (d1 > d2 && drag1 && !drag2)) {
-                        this.point1.setPositionDirectly(Const.COORDS_BY_USER, [
+                        this.point1.setPositionDirectly(COORDS_BY.USER, [
                             this.point2.X() + ((this.point1.X() - this.point2.X()) * d_new) / d,
                             this.point2.Y() + ((this.point1.Y() - this.point2.Y()) * d_new) / d
                         ]);
@@ -382,13 +382,13 @@ JXG.extend(
                     d = Mat.hypot(x, y);
 
                     if (drag2) {
-                        this.point2.setPositionDirectly(Const.COORDS_BY_USER, [
+                        this.point2.setPositionDirectly(COORDS_BY.USER, [
                             this.point1.X() + (x * d_new) / d,
                             this.point1.Y() + (y * d_new) / d
                         ]);
                         this.point2.fullUpdate();
                     } else if (drag1) {
-                        this.point1.setPositionDirectly(Const.COORDS_BY_USER, [
+                        this.point1.setPositionDirectly(COORDS_BY.USER, [
                             this.point2.X() + (x * d_new) / d,
                             this.point2.Y() + (y * d_new) / d
                         ]);
@@ -397,11 +397,11 @@ JXG.extend(
                 }
                 // Finally, we save the position of the two points.
                 this.fixedLengthOldCoords[0].setCoordinates(
-                    Const.COORDS_BY_USER,
+                    COORDS_BY.USER,
                     this.point1.coords.usrCoords
                 );
                 this.fixedLengthOldCoords[1].setCoordinates(
-                    Const.COORDS_BY_USER,
+                    COORDS_BY.USER,
                     this.point2.coords.usrCoords
                 );
             }
@@ -630,7 +630,7 @@ JXG.extend(
         // documented in geometry element
         getTextAnchor: function () {
             return new Coords(
-                Const.COORDS_BY_USER,
+                COORDS_BY.USER,
                 [
                     0.5 * (this.point2.X() + this.point1.X()),
                     0.5 * (this.point2.Y() + this.point1.Y())
@@ -646,7 +646,7 @@ JXG.extend(
         setLabelRelativeCoords: function (relCoords) {
             if (Type.exists(this.label)) {
                 this.label.relativeCoords = new Coords(
-                    Const.COORDS_BY_SCREEN,
+                    COORDS_BY.SCREEN,
                     [relCoords[0], -relCoords[1]],
                     this.board
                 );
@@ -659,8 +659,8 @@ JXG.extend(
                 xy, lbda, dx, dy, d,
                 dist = 1.5,
                 fs = 0,
-                c1 = new Coords(Const.COORDS_BY_USER, this.point1.coords.usrCoords, this.board),
-                c2 = new Coords(Const.COORDS_BY_USER, this.point2.coords.usrCoords, this.board),
+                c1 = new Coords(COORDS_BY.USER, this.point1.coords.usrCoords, this.board),
+                c2 = new Coords(COORDS_BY.USER, this.point2.coords.usrCoords, this.board),
                 ev_sf = this.evalVisProp('straightfirst'),
                 ev_sl = this.evalVisProp('straightlast');
 
@@ -672,12 +672,12 @@ JXG.extend(
             c2 = c2.scrCoords;
 
             if (!Type.exists(this.label)) {
-                return new Coords(Const.COORDS_BY_SCREEN, [NaN, NaN], this.board);
+                return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
             }
 
             pos = this.label.evalVisProp('position');
             if (!Type.isString(pos)) {
-                return new Coords(Const.COORDS_BY_SCREEN, [NaN, NaN], this.board);
+                return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
             }
 
             if (pos.indexOf('right') < 0 && pos.indexOf('left') < 0) {
@@ -785,7 +785,7 @@ JXG.extend(
                 }
             }
 
-            return new Coords(Const.COORDS_BY_SCREEN, [x, y], this.board);
+            return new Coords(COORDS_BY.SCREEN, [x, y], this.board);
         },
 
         // documented in geometry element
@@ -855,7 +855,7 @@ JXG.extend(
                     sX = this.evalVisProp('snapsizex');
                     sY = this.evalVisProp('snapsizey');
 
-                    c1 = new Coords(Const.COORDS_BY_SCREEN, [pos.Xprev, pos.Yprev], this.board);
+                    c1 = new Coords(COORDS_BY.SCREEN, [pos.Xprev, pos.Yprev], this.board);
 
                     x = c1.usrCoords[1];
                     y = c1.usrCoords[2];
@@ -1533,12 +1533,12 @@ JXG.createSegment = function (board, parents, attributes) {
             el.hasFixedLength = true;
             el.fixedLengthOldCoords = [];
             el.fixedLengthOldCoords[0] = new Coords(
-                Const.COORDS_BY_USER,
+                COORDS_BY.USER,
                 el.point1.coords.usrCoords.slice(1, 3),
                 board
             );
             el.fixedLengthOldCoords[1] = new Coords(
-                Const.COORDS_BY_USER,
+                COORDS_BY.USER,
                 el.point2.coords.usrCoords.slice(1, 3),
                 board
             );
@@ -1617,7 +1617,7 @@ JXG.createArrow = function (board, parents, attributes) {
     attr = Type.copyAttributes(attributes, board.options, 'arrow');
     el = board.create("line", parents, attr);
     //el.setArrow(false, true);
-    el.type = Const.OBJECT_TYPE_VECTOR;
+    el.type = OBJECT_TYPE.VECTOR;
     el.elType = 'arrow';
 
     return el;
@@ -1680,13 +1680,14 @@ JXG.registerElement("arrow", JXG.createArrow);
  *
  *
  *     })();
- *
+*
  * </script><pre>
  *
  */
 JXG.createAxis = function (board, parents, attributes) {
     var axis, attr,
         ancestor, ticksDist;
+
 
     // Create line
     attr = Type.copyAttributes(attributes, board.options, 'axis');
@@ -1703,7 +1704,7 @@ JXG.createAxis = function (board, parents, attributes) {
         );
     }
 
-    axis.type = Const.OBJECT_TYPE_AXIS;
+    axis.type = OBJECT_TYPE.AXIS;
     axis.isDraggable = false;
     axis.point1.isDraggable = false;
     axis.point2.isDraggable = false;
@@ -1714,7 +1715,7 @@ JXG.createAxis = function (board, parents, attributes) {
 
     for (ancestor in axis.ancestors) {
         if (axis.ancestors.hasOwnProperty(ancestor)) {
-            axis.ancestors[ancestor].type = Const.OBJECT_TYPE_AXISPOINT;
+            axis.ancestors[ancestor].type = OBJECT_TYPE.AXISPOINT;
         }
     }
 
@@ -2061,12 +2062,12 @@ JXG.createTangent = function (board, parents, attributes) {
     }
 
     attr = Type.copyAttributes(attributes, board.options, 'tangent');
-    if (c.elementClass === Const.OBJECT_CLASS_LINE) {
+    if (c.elementClass === OBJECT_CLASS.LINE) {
         tangent = board.create("line", [c.point1, c.point2], attr);
         tangent.glider = p;
     } else if (
-        c.elementClass === Const.OBJECT_CLASS_CURVE &&
-        c.type !== Const.OBJECT_TYPE_CONIC
+        c.elementClass === OBJECT_CLASS.CURVE &&
+        c.type !== OBJECT_TYPE.CONIC
     ) {
         res = c.getTransformationSource();
         isTransformed = res[0];
@@ -2094,7 +2095,7 @@ JXG.createTangent = function (board, parents, attributes) {
                             li, i, c_org, invMat, po,
                             t;
 
-                        if (p.type === Const.OBJECT_TYPE_GLIDER) {
+                        if (p.type === OBJECT_TYPE.GLIDER) {
                             t = p.position;
                         } else if (c.evalVisProp('curvetype') === 'functiongraph') {
                             t = p.X();
@@ -2118,7 +2119,7 @@ JXG.createTangent = function (board, parents, attributes) {
                                 po = Mat.matVecMult(invMat, po);
                             }
 
-                            if (p.type !== Const.OBJECT_TYPE_GLIDER) {
+                            if (p.type !== OBJECT_TYPE.GLIDER) {
                                 po[1] /= po[0];
                                 po[2] /= po[0];
                                 po[0] /= po[0];
@@ -2246,7 +2247,7 @@ JXG.createTangent = function (board, parents, attributes) {
                     function () {
                         var t;
 
-                        if (p.type === Const.OBJECT_TYPE_GLIDER) {
+                        if (p.type === OBJECT_TYPE.GLIDER) {
                             t = p.position;
                         } else {
                             t = Geometry.projectPointToCurve(p, c, board)[1];
@@ -2262,13 +2263,13 @@ JXG.createTangent = function (board, parents, attributes) {
             // this is required for the geogebra reader to display a slope
             tangent.glider = p;
         }
-    } else if (c.type === Const.OBJECT_TYPE_TURTLE) {
+    } else if (c.type === OBJECT_TYPE.TURTLE) {
         tangent = board.create(
             "line",
             [
                 function () {
                     var i, t;
-                    if (p.type === Const.OBJECT_TYPE_GLIDER) {
+                    if (p.type === OBJECT_TYPE.GLIDER) {
                         t = p.position;
                     } else {
                         t = Geometry.projectPointToTurtle(p, c, board)[1];
@@ -2280,7 +2281,7 @@ JXG.createTangent = function (board, parents, attributes) {
                     for (j = 0; j < c.objects.length; j++) {
                         el = c.objects[j];
 
-                        if (el.type === Const.OBJECT_TYPE_CURVE) {
+                        if (el.type === OBJECT_TYPE.CURVE) {
                             if (i < el.numberPoints) {
                                 break;
                             }
@@ -2311,8 +2312,8 @@ JXG.createTangent = function (board, parents, attributes) {
         // this is required for the geogebra reader to display a slope
         tangent.glider = p;
     } else if (
-        c.elementClass === Const.OBJECT_CLASS_CIRCLE ||
-        c.type === Const.OBJECT_TYPE_CONIC
+        c.elementClass === OBJECT_CLASS.CIRCLE ||
+        c.type === OBJECT_TYPE.CONIC
     ) {
         // If p is not on c, the tangent is the polar.
         // This construction should work on conics, too. p has to lie on c.
@@ -2336,7 +2337,7 @@ JXG.createTangent = function (board, parents, attributes) {
     }
 
     tangent.elType = 'tangent';
-    tangent.type = Const.OBJECT_TYPE_TANGENT;
+    tangent.type = OBJECT_TYPE.TANGENT;
     tangent.setParents(parents);
 
     return tangent;
@@ -2415,7 +2416,7 @@ JXG.createNormal = function (board, parents, attributes) {
     }
 
     attr = Type.copyAttributes(attributes, board.options, 'normal');
-    if (c.elementClass === Const.OBJECT_CLASS_LINE) {
+    if (c.elementClass === OBJECT_CLASS.LINE) {
         // Private point
         attrp = Type.copyAttributes(attributes, board.options, "normal", 'point');
         pp = board.create(
@@ -2444,9 +2445,9 @@ JXG.createNormal = function (board, parents, attributes) {
             point: pp
         };
         l.inherits.push(pp);
-    } else if (c.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+    } else if (c.elementClass === OBJECT_CLASS.CIRCLE) {
         l = board.create("line", [c.midpoint, p], attr);
-    } else if (c.elementClass === Const.OBJECT_CLASS_CURVE) {
+    } else if (c.elementClass === OBJECT_CLASS.CURVE) {
         res = c.getTransformationSource();
         isTransformed = res[0];
         if (isTransformed) {
@@ -2473,7 +2474,7 @@ JXG.createNormal = function (board, parents, attributes) {
                             li, i, c_org, invMat, po,
                             t;
 
-                        if (p.type === Const.OBJECT_TYPE_GLIDER) {
+                        if (p.type === OBJECT_TYPE.GLIDER) {
                             t = p.position;
                         } else if (c.evalVisProp('curvetype') === 'functiongraph') {
                             t = p.X();
@@ -2497,7 +2498,7 @@ JXG.createNormal = function (board, parents, attributes) {
                                 po = Mat.matVecMult(invMat, po);
                             }
 
-                            if (p.type !== Const.OBJECT_TYPE_GLIDER) {
+                            if (p.type !== OBJECT_TYPE.GLIDER) {
                                 po[1] /= po[0];
                                 po[2] /= po[0];
                                 po[0] /= po[0];
@@ -2623,7 +2624,7 @@ JXG.createNormal = function (board, parents, attributes) {
                     function () {
                         var t;
 
-                        if (p.type === Const.OBJECT_TYPE_GLIDER) {
+                        if (p.type === OBJECT_TYPE.GLIDER) {
                             t = p.position;
                         } else {
                             t = Geometry.projectPointToCurve(p, c, board)[1];
@@ -2637,7 +2638,7 @@ JXG.createNormal = function (board, parents, attributes) {
             p.addChild(l);
             l.glider = p;
         }
-    } else if (c.type === Const.OBJECT_TYPE_TURTLE) {
+    } else if (c.type === OBJECT_TYPE.TURTLE) {
         l = board.create(
             "line",
             [
@@ -2651,7 +2652,7 @@ JXG.createNormal = function (board, parents, attributes) {
                     for (j = 0; j < c.objects.length; j++) {
                         el = c.objects[j];
 
-                        if (el.type === Const.OBJECT_TYPE_CURVE) {
+                        if (el.type === OBJECT_TYPE.CURVE) {
                             if (i < el.numberPoints) {
                                 break;
                             }
@@ -2682,7 +2683,7 @@ JXG.createNormal = function (board, parents, attributes) {
                     // run through all curves of this turtle
                     for (j = 0; j < c.objects.length; j++) {
                         el = c.objects[j];
-                        if (el.type === Const.OBJECT_TYPE_CURVE) {
+                        if (el.type === OBJECT_TYPE.CURVE) {
                             if (i < el.numberPoints) {
                                 break;
                             }
@@ -2709,7 +2710,7 @@ JXG.createNormal = function (board, parents, attributes) {
                     // run through all curves of this turtle
                     for (j = 0; j < c.objects.length; j++) {
                         el = c.objects[j];
-                        if (el.type === Const.OBJECT_TYPE_CURVE) {
+                        if (el.type === OBJECT_TYPE.CURVE) {
                             if (i < el.numberPoints) {
                                 break;
                             }
@@ -2796,8 +2797,8 @@ JXG.createRadicalAxis = function (board, parents, attributes) {
 
     if (
         parents.length !== 2 ||
-        parents[0].elementClass !== Const.OBJECT_CLASS_CIRCLE ||
-        parents[1].elementClass !== Const.OBJECT_CLASS_CIRCLE
+        parents[0].elementClass !== OBJECT_CLASS.CIRCLE ||
+        parents[1].elementClass !== OBJECT_CLASS.CIRCLE
     ) {
         // Failure
         throw new Error(
@@ -2904,11 +2905,11 @@ JXG.createPolarLine = function (board, parents, attributes) {
 
     if (parents.length > 1) {
         firstParentIsConic =
-            parents[0].type === Const.OBJECT_TYPE_CONIC ||
-            parents[0].elementClass === Const.OBJECT_CLASS_CIRCLE;
+            parents[0].type === OBJECT_TYPE.CONIC ||
+            parents[0].elementClass === OBJECT_CLASS.CIRCLE;
         secondParentIsConic =
-            parents[1].type === Const.OBJECT_TYPE_CONIC ||
-            parents[1].elementClass === Const.OBJECT_CLASS_CIRCLE;
+            parents[1].type === OBJECT_TYPE.CONIC ||
+            parents[1].elementClass === OBJECT_CLASS.CIRCLE;
 
         firstParentIsPoint = Type.isPoint(parents[0]);
         secondParentIsPoint = Type.isPoint(parents[1]);
@@ -3017,8 +3018,8 @@ JXG.createTangentTo = function (board, parents, attributes) {
     num = Type.def(parents[2], 0);
 
     if (
-        (conic.type !== Const.OBJECT_TYPE_CIRCLE && conic.type !== Const.OBJECT_TYPE_CONIC) ||
-        (pointFrom.elementClass !== Const.OBJECT_CLASS_POINT)
+        (conic.type !== OBJECT_TYPE.CIRCLE && conic.type !== OBJECT_TYPE.CONIC) ||
+        (pointFrom.elementClass !== OBJECT_CLASS.POINT)
     ) {
         throw new Error(
             "JSXGraph: Can't create tangentto with parent types '" +

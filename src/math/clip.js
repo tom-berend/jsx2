@@ -39,7 +39,7 @@
  */
 
 // import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Coords from "../base/coords.js";
 import Mat from "./math.js";
 import Geometry from "./geometry.js";
@@ -127,7 +127,7 @@ Mat.Clip = {
         this.pos = i;
         this.intersection = true;
         this.coords = coords;
-        this.elementClass = Const.OBJECT_CLASS_POINT;
+        this.elementClass = OBJECT_CLASS.POINT;
 
         this.data = {
             alpha: alpha,
@@ -160,7 +160,7 @@ Mat.Clip = {
             pos: pos,
             intersection: false,
             coords: coords,
-            elementClass: Const.OBJECT_CLASS_POINT
+            elementClass: OBJECT_CLASS.POINT
         });
     },
 
@@ -431,7 +431,7 @@ Mat.Clip = {
                     // Collinear segments
                     (res[1] === Infinity && res[2] === Infinity && Mat.norm(res[0], 3) < eps)
                 ) {
-                    crds = new Coords(Const.COORDS_BY_USER, res[0], board);
+                    crds = new Coords(COORDS_BY.USER, res[0], board);
                     type = 'X';
 
                     // Handle degenerated cases
@@ -446,9 +446,9 @@ Mat.Clip = {
                             res[2] = 0;
                         }
                         if (res[1] === 0) {
-                            crds = new Coords(Const.COORDS_BY_USER, Si, board);
+                            crds = new Coords(COORDS_BY.USER, Si, board);
                         } else {
-                            crds = new Coords(Const.COORDS_BY_USER, Cj, board);
+                            crds = new Coords(COORDS_BY.USER, Cj, board);
                         }
 
                         if (DEBUG) {
@@ -479,7 +479,7 @@ Mat.Clip = {
                         }
                         if (alpha >= 0 && alpha < 1) {
                             type = 'T';
-                            crds = new Coords(Const.COORDS_BY_USER, Si, board);
+                            crds = new Coords(COORDS_BY.USER, Si, board);
                             res[1] = 0;
                             res[2] = alpha;
                             IS = new this.Vertex(crds, i, res[1], S, "S", type);
@@ -504,7 +504,7 @@ Mat.Clip = {
                         }
                         if (Geometry.distance(Si, Cj, 3) > eps && alpha >= 0 && alpha < 1) {
                             type = 'T';
-                            crds = new Coords(Const.COORDS_BY_USER, Cj, board);
+                            crds = new Coords(COORDS_BY.USER, Cj, board);
                             res[1] = alpha;
                             res[2] = 0;
                             IS = new this.Vertex(crds, i, res[1], S, "S", type);
@@ -961,12 +961,12 @@ Mat.Clip = {
                     }
                     if (!is_on_Q) {
                         // The midpoint is added to the doubly-linked list.
-                        crds = new Coords(Const.COORDS_BY_USER, M, board);
+                        crds = new Coords(COORDS_BY.USER, M, board);
                         node = {
                             pos: i,
                             intersection: false,
                             coords: crds,
-                            elementClass: Const.OBJECT_CLASS_POINT
+                            elementClass: OBJECT_CLASS.POINT
                         };
 
                         tmp = P[i]._next;
@@ -1592,8 +1592,8 @@ Mat.Clip = {
 
         // Collect all points into path array S
         if (
-            obj.elementClass === Const.OBJECT_CLASS_CURVE &&
-            (obj.type === Const.OBJECT_TYPE_ARC || obj.type === Const.OBJECT_TYPE_SECTOR)
+            obj.elementClass === OBJECT_CLASS.CURVE &&
+            (obj.type === OBJECT_TYPE.ARC || obj.type === OBJECT_TYPE.SECTOR)
         ) {
             angle = Geometry.rad(obj.radiuspoint, obj.center, obj.anglepoint);
             steps = Math.floor((angle * 180) / Math.PI);
@@ -1604,14 +1604,14 @@ Mat.Clip = {
                 obj.radiuspoint.coords.usrCoords[1] - obj.center.coords.usrCoords[1]
             );
 
-            if (obj.type === Const.OBJECT_TYPE_SECTOR) {
+            if (obj.type === OBJECT_TYPE.SECTOR) {
                 this._addToList(S, obj.center.coords, 0);
             }
             for (i = 0; i <= steps; i++) {
                 this._addToList(
                     S,
                     new Coords(
-                        Const.COORDS_BY_USER,
+                        COORDS_BY.USER,
                         [
                             obj.center.coords.usrCoords[0],
                             obj.center.coords.usrCoords[1] + Math.cos(i * rad + alpha) * r,
@@ -1622,19 +1622,19 @@ Mat.Clip = {
                     i + 1
                 );
             }
-            if (obj.type === Const.OBJECT_TYPE_SECTOR) {
+            if (obj.type === OBJECT_TYPE.SECTOR) {
                 this._addToList(S, obj.center.coords, steps + 2);
             }
-        } else if (obj.elementClass === Const.OBJECT_CLASS_CURVE && Type.exists(obj.points)) {
+        } else if (obj.elementClass === OBJECT_CLASS.CURVE && Type.exists(obj.points)) {
             len = obj.numberPoints;
             for (i = 0; i < len; i++) {
                 this._addToList(S, obj.points[i], i);
             }
-        } else if (obj.type === Const.OBJECT_TYPE_POLYGON) {
+        } else if (obj.type === OBJECT_TYPE.POLYGON) {
             for (i = 0; i < obj.vertices.length; i++) {
                 this._addToList(S, obj.vertices[i].coords, i);
             }
-        } else if (obj.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+        } else if (obj.elementClass === OBJECT_CLASS.CIRCLE) {
             steps = 359;
             r = obj.Radius();
             rad = (2 * Math.PI) / steps;
@@ -1642,7 +1642,7 @@ Mat.Clip = {
                 this._addToList(
                     S,
                     new Coords(
-                        Const.COORDS_BY_USER,
+                        COORDS_BY.USER,
                         [
                             obj.center.coords.usrCoords[0],
                             obj.center.coords.usrCoords[1] + Math.cos(i * rad) * r,
@@ -1661,7 +1661,7 @@ Mat.Clip = {
                     this._addToList(S, obj[i].coords, i);
                 } else if (Type.isArray(obj[i])) {
                     // Coordinate pair
-                    this._addToList(S, new Coords(Const.COORDS_BY_USER, obj[i], board), i);
+                    this._addToList(S, new Coords(COORDS_BY.USER, obj[i], board), i);
                 } else if (Type.exists(obj[i].usrCoords)) {
                     // JXG.Coordinates
                     this._addToList(S, obj[i], i);
@@ -1971,7 +1971,7 @@ Mat.Clip = {
         // Phase 2: mark intersection points as entry or exit points
         this.markEntryExit(S, C, S_starters);
 
-        // if (S[0].coords.distance(Const.COORDS_BY_USER, C[0].coords) === 0) {
+        // if (S[0].coords.distance(COORDS_BY.USER, C[0].coords) === 0) {
         //     // Randomly disturb the first point of the second path
         //     // if both paths start at the same point.
         //     C[0].usrCoords[1] *= 1 + Math.random() * 0.0001 - 0.00005;

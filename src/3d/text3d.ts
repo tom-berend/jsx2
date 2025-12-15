@@ -29,7 +29,7 @@
 /*global JXG:true, define: true*/
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Type from "../utils/type.js";
@@ -49,7 +49,7 @@ import Type from "../utils/type.js";
  * @see JXG.Board#generateName
  */
 JXG.Text3D = function (view, F, text, slide, attributes) {
-    this.constructor(view.board, attributes, Const.OBJECT_TYPE_TEXT3D, Const.OBJECT_CLASS_3D);
+    this.constructor(view.board, attributes, OBJECT_TYPE.TEXT3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'text3d');
 
     this.board.finalizeAdding(this);
@@ -302,7 +302,7 @@ JXG.extend(
                         // The 3D coordinates have been corrected, now
                         // also correct the 2D element.
                         this.element2D.coords.setCoordinates(
-                            Const.COORDS_BY_USER,
+                            COORDS_BY.USER,
                             this.view.project3DTo2D(this.coords)
                         );
                     }
@@ -310,7 +310,7 @@ JXG.extend(
                     if (this.slide) {
                         this.coords = this.slide.projectCoords([this.X(), this.Y(), this.Z()], this.position);
                         this.element2D.coords.setCoordinates(
-                            Const.COORDS_BY_USER,
+                            COORDS_BY.USER,
                             this.view.project3DTo2D(this.coords)
                         );
                     }
@@ -323,7 +323,7 @@ JXG.extend(
                 // Update 2D text from its 3D view
                 c3d = this.coords;
                 this.element2D.coords.setCoordinates(
-                    Const.COORDS_BY_USER,
+                    COORDS_BY.USER,
                     this.view.project3DTo2D(c3d)
                 );
                 // this.zIndex = Mat.matVecMult(this.view.matrix3DRotShift, c3d)[3];

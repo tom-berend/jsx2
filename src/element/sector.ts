@@ -37,7 +37,7 @@ import Geometry from "../math/geometry.js";
 import Mat from "../math/math.js";
 import Statistics from "../math/statistics.js";
 import Coords from "../base/coords.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Type from "../utils/type.js";
 
 /**
@@ -199,8 +199,8 @@ JXG.createSector = function (board, parents, attributes) {
 
     // Three points?
     if (
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE &&
-        parents[1].elementClass === Const.OBJECT_CLASS_LINE &&
+        parents[0].elementClass === OBJECT_CLASS.LINE &&
+        parents[1].elementClass === OBJECT_CLASS.LINE &&
         (Type.isArray(parents[2]) || Type.isNumber(parents[2])) &&
         (Type.isArray(parents[3]) || Type.isNumber(parents[3])) &&
         (Type.isNumber(parents[4]) || Type.isFunction(parents[4]) || Type.isString(parents[4]))
@@ -225,7 +225,7 @@ JXG.createSector = function (board, parents, attributes) {
     attr = Type.copyAttributes(attributes, board.options, 'sector');
     // The curve length is 6: 0-1: leg 1, 1-5: arc, 5-6: leg 2
     el = board.create("curve", [[0], [0], 0, 6], attr);
-    el.type = Const.OBJECT_TYPE_SECTOR;
+    el.type = OBJECT_TYPE.SECTOR;
     el.elType = 'sector';
 
     /**
@@ -399,9 +399,9 @@ JXG.createSector = function (board, parents, attributes) {
             r = this.direction2 * this.Radius();
             C = Statistics.add(B, [0, r * l2.stdform[2], -r * l2.stdform[1]]);
 
-            this.point2.coords = new Coords(Const.COORDS_BY_USER, A, el.board);
-            this.point1.coords = new Coords(Const.COORDS_BY_USER, B, el.board);
-            this.point3.coords = new Coords(Const.COORDS_BY_USER, C, el.board);
+            this.point2.coords = new Coords(COORDS_BY.USER, A, el.board);
+            this.point1.coords = new Coords(COORDS_BY.USER, B, el.board);
+            this.point3.coords = new Coords(COORDS_BY.USER, C, el.board);
 
             if (
                 Math.abs(A[0]) < Mat.eps ||
@@ -437,7 +437,7 @@ JXG.createSector = function (board, parents, attributes) {
         //         return el.point1.coords.usrCoords;
         //     }, // Center
         //     function() {
-        //         var d = el.point2.coords.distance(Const.COORDS_BY_USER, el.point1.coords);
+        //         var d = el.point2.coords.distance(COORDS_BY.USER, el.point1.coords);
         //         if (d === 0) {
         //             return [el.point1.coords.usrCoords[1], el.point1.coords.usrCoords[2]];
         //         }
@@ -592,7 +592,7 @@ JXG.createSector = function (board, parents, attributes) {
                 return el.point1.coords.usrCoords;
             }, // Center
             function() {
-                var d = el.point2.coords.distance(Const.COORDS_BY_USER, el.point1.coords);
+                var d = el.point2.coords.distance(COORDS_BY.USER, el.point1.coords);
                 if (d === 0) {
                     return [el.point1.coords.usrCoords[1], el.point1.coords.usrCoords[2]];
                 }
@@ -632,9 +632,9 @@ JXG.createSector = function (board, parents, attributes) {
             beta,
             prec,
             type,
-            checkPoint = new Coords(Const.COORDS_BY_SCREEN, [x, y], this.board),
+            checkPoint = new Coords(COORDS_BY.SCREEN, [x, y], this.board),
             r = this.Radius(),
-            dist = this.center.coords.distance(Const.COORDS_BY_USER, checkPoint),
+            dist = this.center.coords.distance(COORDS_BY.USER, checkPoint),
             has,
             vp_s = this.evalVisProp('selection');
 
@@ -676,9 +676,9 @@ JXG.createSector = function (board, parents, attributes) {
      */
     el.hasPointSector = function (x, y) {
         var angle,
-            checkPoint = new Coords(Const.COORDS_BY_SCREEN, [x, y], this.board),
+            checkPoint = new Coords(COORDS_BY.SCREEN, [x, y], this.board),
             r = this.Radius(),
-            dist = this.point1.coords.distance(Const.COORDS_BY_USER, checkPoint),
+            dist = this.point1.coords.distance(COORDS_BY.USER, checkPoint),
             alpha,
             beta,
             has = dist < r,
@@ -742,7 +742,7 @@ JXG.createSector = function (board, parents, attributes) {
 
         // If this is uncommented, the angle label can not be dragged
         //if (Type.exists(this.label)) {
-        //    this.label.relativeCoords = new Coords(Const.COORDS_BY_SCREEN, [0, 0], this.board);
+        //    this.label.relativeCoords = new Coords(COORDS_BY.SCREEN, [0, 0], this.board);
         //}
 
         if (
@@ -755,7 +755,7 @@ JXG.createSector = function (board, parents, attributes) {
             }
 
             coords = new Coords(
-                Const.COORDS_BY_USER,
+                COORDS_BY.USER,
                 [
                     pmc[1] + Math.cos(angle * 0.5) * bxminusax - Math.sin(angle * 0.5) * byminusay,
                     pmc[2] + Math.sin(angle * 0.5) * bxminusax + Math.cos(angle * 0.5) * byminusay
@@ -773,7 +773,7 @@ JXG.createSector = function (board, parents, attributes) {
 
             l_vp.position = Geometry.calcLabelQuadrant(Geometry.rad([1, 0], [0, 0], vec));
 
-            return new Coords(Const.COORDS_BY_USER, vec, this.board);
+            return new Coords(COORDS_BY.USER, vec, this.board);
         } else {
             return this.getLabelPosition(pos, this.label.evalVisProp('distance'));
         }
@@ -1258,8 +1258,8 @@ JXG.createAngle = function (board, parents, attributes) {
 
     // Two lines or three points?
     if (
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE &&
-        parents[1].elementClass === Const.OBJECT_CLASS_LINE &&
+        parents[0].elementClass === OBJECT_CLASS.LINE &&
+        parents[1].elementClass === OBJECT_CLASS.LINE &&
         (Type.isArray(parents[2]) || Type.isNumber(parents[2])) &&
         (Type.isArray(parents[3]) || Type.isNumber(parents[3]))
     ) {
@@ -1287,7 +1287,7 @@ JXG.createAngle = function (board, parents, attributes) {
 
     //  If empty, create a new name
     if (!Type.exists(attr.name) /*|| attr.name === ""*/) {
-        attr.name = board.generateName({ type: Const.OBJECT_TYPE_ANGLE });
+        attr.name = board.generateName({ type: OBJECT_TYPE.ANGLE });
     }
 
     if (Type.exists(attr.radius)) {
@@ -1528,7 +1528,7 @@ JXG.createAngle = function (board, parents, attributes) {
                 p.coords.on("update", function () {
                     t2.update();
                     // q.moveTo(Mat.matVecMult(t2.matrix, p.coords.usrCoords));
-                    q.setPositionDirectly(Const.COORDS_BY_USER, Mat.matVecMult(t2.matrix, p.coords.usrCoords));
+                    q.setPositionDirectly(COORDS_BY.USER, Mat.matVecMult(t2.matrix, p.coords.usrCoords));
                 });
 
                 p.setParents(q);
@@ -1572,7 +1572,7 @@ JXG.createAngle = function (board, parents, attributes) {
     }
 
     el.elType = 'angle';
-    el.type = Const.OBJECT_TYPE_ANGLE;
+    el.type = OBJECT_TYPE.ANGLE;
     el.subs = {};
 
     /**
@@ -1801,7 +1801,7 @@ JXG.createAngle = function (board, parents, attributes) {
 
         // If this is uncommented, the angle label can not be dragged
         //if (Type.exists(this.label)) {
-        //    this.label.relativeCoords = new Coords(Const.COORDS_BY_SCREEN, [0, 0], this.board);
+        //    this.label.relativeCoords = new Coords(COORDS_BY.SCREEN, [0, 0], this.board);
         //}
 
         if (
@@ -1847,7 +1847,7 @@ JXG.createAngle = function (board, parents, attributes) {
 
             l_vp.position = Geometry.calcLabelQuadrant(Geometry.rad([1, 0], [0, 0], vec));
 
-            return new Coords(Const.COORDS_BY_USER, vec, this.board);
+            return new Coords(COORDS_BY.USER, vec, this.board);
         } else {
             return this.getLabelPosition(pos, this.label.evalVisProp('distance'));
         }

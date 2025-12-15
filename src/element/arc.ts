@@ -43,7 +43,7 @@ import Mat from "../math/math.js";
 import Coords from "../base/coords.js";
 import Circle from "../base/circle.js";
 import Type from "../utils/type.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 
 /**
  * @class An arc is a partial circumference line of a circle.
@@ -131,7 +131,7 @@ JXG.createArc = function (board, parents, attributes) {
      * documented in JXG.GeometryElement
      * @ignore
      */
-    el.type = Const.OBJECT_TYPE_ARC;
+    el.type = OBJECT_TYPE.ARC;
 
     /**
      * Center of the arc.
@@ -330,7 +330,7 @@ JXG.createArc = function (board, parents, attributes) {
             prec = this.board.options.precision.hasPoint;
         }
         prec /= Math.min(Math.abs(this.board.unitX), Math.abs(this.board.unitY));
-        checkPoint = new Coords(Const.COORDS_BY_SCREEN, [x, y], this.board);
+        checkPoint = new Coords(COORDS_BY.SCREEN, [x, y], this.board);
 
         if (this.transformations.length > 0) {
             // Transform the mouse/touch coordinates
@@ -338,10 +338,10 @@ JXG.createArc = function (board, parents, attributes) {
             this.updateTransformMatrix();
             invMat = Mat.inverse(this.transformMat);
             c = Mat.matVecMult(invMat, checkPoint.usrCoords);
-            checkPoint = new Coords(Const.COORDS_BY_USER, c, this.board);
+            checkPoint = new Coords(COORDS_BY.USER, c, this.board);
         }
 
-        dist = this.center.coords.distance(Const.COORDS_BY_USER, checkPoint);
+        dist = this.center.coords.distance(COORDS_BY.USER, checkPoint);
         has = Math.abs(dist - r) < prec;
 
         /**
@@ -364,9 +364,9 @@ JXG.createArc = function (board, parents, attributes) {
      * @returns {Boolean} True if (x,y) is within the sector defined by the arc, False otherwise.
      */
     el.hasPointSector = function (x, y) {
-        var checkPoint = new Coords(Const.COORDS_BY_SCREEN, [x, y], this.board),
+        var checkPoint = new Coords(COORDS_BY.SCREEN, [x, y], this.board),
             r = this.Radius(),
-            dist = this.center.coords.distance(Const.COORDS_BY_USER, checkPoint),
+            dist = this.center.coords.distance(COORDS_BY.USER, checkPoint),
             has = dist < r;
 
         if (has) {
@@ -402,7 +402,7 @@ JXG.createArc = function (board, parents, attributes) {
 
         // If this is uncommented, the angle label can not be dragged
         //if (Type.exists(this.label)) {
-        //    this.label.relativeCoords = new Coords(Const.COORDS_BY_SCREEN, [0, 0], this.board);
+        //    this.label.relativeCoords = new Coords(COORDS_BY.SCREEN, [0, 0], this.board);
         //}
 
         if (
@@ -415,7 +415,7 @@ JXG.createArc = function (board, parents, attributes) {
             }
 
             coords = new Coords(
-                Const.COORDS_BY_USER,
+                COORDS_BY.USER,
                 [
                     pmc[1] + Math.cos(angle * 0.5) * bxminusax - Math.sin(angle * 0.5) * byminusay,
                     pmc[2] + Math.sin(angle * 0.5) * bxminusax + Math.cos(angle * 0.5) * byminusay
@@ -433,7 +433,7 @@ JXG.createArc = function (board, parents, attributes) {
 
             l_vp.position = Geometry.calcLabelQuadrant(Geometry.rad([1, 0], [0, 0], vec));
 
-            return new Coords(Const.COORDS_BY_USER, vec, this.board);
+            return new Coords(COORDS_BY.USER, vec, this.board);
         } else {
             return this.getLabelPosition(pos, this.label.evalVisProp('distance'));
         }

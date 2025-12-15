@@ -38,7 +38,7 @@
 
 import JXG from "../jxg.js";
 import Type from "./type.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Coords from "../base/coords.js";
 
 /**
@@ -82,14 +82,14 @@ JXG.Expect = {
     coords: function (c, copy) {
         var coord = c;
 
-        if (c && c.elementClass === Const.OBJECT_CLASS_POINT) {
+        if (c && c.elementClass === OBJECT_CLASS.POINT) {
             coord = c.coords;
         } else if (c.usrCoords && c.scrCoords && c.usr2screen) {
             coord = c;
         }
 
         if (copy) {
-            coord = new Coords(Const.COORDS_BY_USER, coord.usrCoords, coord.board);
+            coord = new Coords(COORDS_BY.USER, coord.usrCoords, coord.board);
         }
 
         return coord;

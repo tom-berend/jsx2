@@ -39,7 +39,7 @@
 import JXG from "../jxg.js";
 import Mat from "../math/math.js";
 import Type from "../utils/type.js";
-import Const from "../base/constants.js";
+import {OBJECT_TYPE} from "../base/constants.js";
 
 /**
  * @class A grid is a mesh consisting of vertical and horizontal lines or other geometrical objects.
@@ -428,7 +428,7 @@ JXG.createGrid = function (board, parents, attributes) {
     Type.mergeAttr(attrMajor, attrGrid.major, true, true);
     majorGrid = board.create('curve', [[null], [null]], attrMajor);
     majorGrid.elType = 'grid';
-    majorGrid.type = Const.OBJECT_TYPE_GRID;
+    majorGrid.type = OBJECT_TYPE.GRID;
 
     // Create minorGrid
     attrMinor = {};
@@ -442,7 +442,7 @@ JXG.createGrid = function (board, parents, attributes) {
     }
     minorGrid = board.create('curve', [[null], [null]], attrMinor);
     minorGrid.elType = 'grid';
-    minorGrid.type = Const.OBJECT_TYPE_GRID;
+    minorGrid.type = OBJECT_TYPE.GRID;
 
     majorGrid.minorGrid = minorGrid;
     minorGrid.majorGrid = majorGrid;

@@ -34,7 +34,7 @@
  * i.e. lines and planes.
  */
 import JXG from '../jxg.js';
-import Const from '../base/constants.js';
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from '../utils/type.js';
 import Mat from '../math/math.js';
 import Geometry from '../math/geometry.js';
@@ -57,7 +57,7 @@ import Geometry from '../math/geometry.js';
  * @see JXG.Board#generateName
  */
 JXG.Line3D = function (view, point, direction, range, attributes) {
-    this.constructor(view.board, attributes, Const.OBJECT_TYPE_LINE3D, Const.OBJECT_CLASS_3D);
+    this.constructor(view.board, attributes, OBJECT_TYPE.LINE3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'line3d');
 
     /**
@@ -140,7 +140,7 @@ JXG.extend(
             var i,
                 s = 0;
 
-            if ((Type.exists(this.direction.view) && this.direction.type === Const.OBJECT_TYPE_LINE3D)) {
+            if ((Type.exists(this.direction.view) && this.direction.type === OBJECT_TYPE.LINE3D)) {
                 // direction is another line3D object
                 this.vec = this.direction.vec.slice();
             } else if (Type.isFunction(this.direction)) {
@@ -549,7 +549,7 @@ JXG.createLine3D = function (board, parents, attributes) {
 
     // In any case, parents[1] contains a point or point coordinates
 
-    if (parents[1].type === Const.OBJECT_TYPE_LINE3D &&
+    if (parents[1].type === OBJECT_TYPE.LINE3D &&
         Type.isTransformationOrArray(parents[2])
     ) {
         base = parents[1];
@@ -654,7 +654,7 @@ JXG.createLine3D = function (board, parents, attributes) {
             direction = [0, 0, 0, 0.0001];
             range = parents[3] || [-Infinity, Infinity];
         } else if (
-            (Type.exists(parents[2].view) && parents[2].type === Const.OBJECT_TYPE_LINE3D) || // direction given by another line
+            (Type.exists(parents[2].view) && parents[2].type === OBJECT_TYPE.LINE3D) || // direction given by another line
             Type.isFunction(parents[2]) || (parents[2].length === 3) || (parents[2].length === 4) // direction given as function or array
         ) {
             point = Type.providePoints3D(view, [parents[1]], attributes, 'line3d', ['point'])[0];
@@ -781,7 +781,7 @@ JXG.registerElement('line3d', JXG.createLine3D);
  * @see JXG.Board#generateName
  */
 JXG.Plane3D = function (view, point, dir1, range_u, dir2, range_v, attributes) {
-    this.constructor(view.board, attributes, Const.OBJECT_TYPE_PLANE3D, Const.OBJECT_CLASS_3D);
+    this.constructor(view.board, attributes, OBJECT_TYPE.PLANE3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'plane3d');
 
     this.board.finalizeAdding(this);
@@ -988,7 +988,7 @@ JXG.extend(
         updateCoords: function() {
             var i, s;
 
-            if (Type.exists(this.direction1.view) && this.direction1.type === Const.OBJECT_TYPE_LINE3D) {
+            if (Type.exists(this.direction1.view) && this.direction1.type === OBJECT_TYPE.LINE3D) {
                 this.vec1 = this.direction1.vec.slice();
             } else if (Type.isFunction(this.direction1)) {
                 this.vec1 = Type.evaluate(this.direction1);
@@ -1006,7 +1006,7 @@ JXG.extend(
                 }
             }
 
-            if (Type.exists(this.direction2.view) && this.direction2.type === Const.OBJECT_TYPE_LINE3D) {
+            if (Type.exists(this.direction2.view) && this.direction2.type === OBJECT_TYPE.LINE3D) {
                 this.vec2 = this.direction2.vec.slice();
             } else if (Type.isFunction(this.direction2)) {
                 this.vec2 = Type.evaluate(this.direction2);
@@ -1649,7 +1649,7 @@ JXG.createPlane3D = function (board, parents, attributes) {
         range_u = parents[4] || [-Infinity, Infinity];
         range_v = parents[5] || [-Infinity, Infinity];
     } else {
-        if (parents[1].type === Const.OBJECT_TYPE_PLANE3D &&
+        if (parents[1].type === OBJECT_TYPE.PLANE3D &&
             Type.isTransformationOrArray(parents[2])
         ) {
             // Plane + transformation
@@ -1847,7 +1847,7 @@ JXG.createIntersectionLine3D = function (board, parents, attributes) {
         );
     }
 
-    ixnLine.type = Const.OBJECT_TYPE_INTERSECTION_LINE3D;
+    ixnLine.type = OBJECT_TYPE.INTERSECTION_LINE3D;
     ixnLine.elType = 'intersectionline3d';
     ixnLine.setParents([el1.id, el2.id]);
 

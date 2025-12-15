@@ -43,7 +43,7 @@
 import { LooseObject } from '../interfaces.js'
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Mat from "../math/math.js";
 
 JXG.extend(
@@ -184,7 +184,7 @@ JXG.extend(
          */
         isPoint: function (v) {
             if (v !== null && typeof v === "object" && this.exists(v.elementClass)) {
-                return v.elementClass === Const.OBJECT_CLASS_POINT;
+                return v.elementClass === OBJECT_CLASS.POINT;
             }
 
             return false;
@@ -197,7 +197,7 @@ JXG.extend(
          */
         isPoint3D: function (v) {
             if (v !== null && typeof v === "object" && this.exists(v.type)) {
-                return v.type === Const.OBJECT_TYPE_POINT3D;
+                return v.type === OBJECT_TYPE.POINT3D;
             }
 
             return false;
@@ -262,7 +262,7 @@ JXG.extend(
                     return this.isTransformationOrArray(v[0]);
                 }
                 if (typeof v === 'object') {
-                    return v.type === Const.OBJECT_TYPE_TRANSFORMATION;
+                    return v.type === OBJECT_TYPE.TRANSFORMATION;
                 }
             }
             return false;
@@ -1916,7 +1916,7 @@ JXG.extend(
          * @returns {*} s.Value() if s is an element of type slider, s otherwise
          */
         evalSlider: function (s) {
-            if (s && s.type === Const.OBJECT_TYPE_GLIDER && typeof s.Value === 'function') {
+            if (s && s.type === OBJECT_TYPE.GLIDER && typeof s.Value === 'function') {
                 return s.Value();
             }
 

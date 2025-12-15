@@ -60,7 +60,7 @@ import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import Coords from "../base/coords.js";
 import Type from "../utils/type.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 // import Point from "../base/point.js";
 // import Line from "../base/line.js";
 // import Circle from "../base/circle.js";
@@ -106,13 +106,13 @@ JXG.createOrthogonalProjection = function (board, parents, attributes) {
 
     if (
         Type.isPointType(board, parents[0]) &&
-        parents[1].elementClass === Const.OBJECT_CLASS_LINE
+        parents[1].elementClass === OBJECT_CLASS.LINE
     ) {
         p = Type.providePoints(board, [parents[0]], attributes, 'point')[0];
         l = parents[1];
     } else if (
         Type.isPointType(board, parents[1]) &&
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE
+        parents[0].elementClass === OBJECT_CLASS.LINE
     ) {
         p = Type.providePoints(board, [parents[1]], attributes, 'point')[0];
         l = parents[0];
@@ -259,13 +259,13 @@ JXG.createPerpendicular = function (board, parents, attributes) {
 
     if (
         Type.isPointType(board, parents[0]) &&
-        parents[1].elementClass === Const.OBJECT_CLASS_LINE
+        parents[1].elementClass === OBJECT_CLASS.LINE
     ) {
         l = parents[1];
         p = Type.providePoints(board, [parents[0]], attributes, 'point')[0];
     } else if (
         Type.isPointType(board, parents[1]) &&
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE
+        parents[0].elementClass === OBJECT_CLASS.LINE
     ) {
         l = parents[0];
         p = Type.providePoints(board, [parents[1]], attributes, 'point')[0];
@@ -347,13 +347,13 @@ JXG.createPerpendicularPoint = function (board, parents, attributes) {
     parents[1] = board.select(parents[1]);
     if (
         Type.isPointType(board, parents[0]) &&
-        parents[1].elementClass === Const.OBJECT_CLASS_LINE
+        parents[1].elementClass === OBJECT_CLASS.LINE
     ) {
         p = Type.providePoints(board, [parents[0]], attributes, 'point')[0];
         l = parents[1];
     } else if (
         Type.isPointType(board, parents[1]) &&
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE
+        parents[0].elementClass === OBJECT_CLASS.LINE
     ) {
         p = Type.providePoints(board, [parents[1]], attributes, 'point')[0];
         l = parents[0];
@@ -497,13 +497,13 @@ JXG.createPerpendicularSegment = function (board, parents, attributes) {
     parents[1] = board.select(parents[1]);
     if (
         Type.isPointType(board, parents[0]) &&
-        parents[1].elementClass === Const.OBJECT_CLASS_LINE
+        parents[1].elementClass === OBJECT_CLASS.LINE
     ) {
         l = parents[1];
         p = Type.providePoints(board, [parents[0]], attributes, 'point')[0];
     } else if (
         Type.isPointType(board, parents[1]) &&
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE
+        parents[0].elementClass === OBJECT_CLASS.LINE
     ) {
         l = parents[0];
         p = Type.providePoints(board, [parents[1]], attributes, 'point')[0];
@@ -607,7 +607,7 @@ JXG.createMidpoint = function (board, parents, attributes) {
         parents = Type.providePoints(board, parents, attributes, 'point');
         a = parents[0];
         b = parents[1];
-    } else if (parents.length === 1 && parents[0].elementClass === Const.OBJECT_CLASS_LINE) {
+    } else if (parents.length === 1 && parents[0].elementClass === OBJECT_CLASS.LINE) {
         a = parents[0].point1;
         b = parents[0].point2;
     } else {
@@ -769,14 +769,14 @@ JXG.createParallelPoint = function (board, parents, attributes) {
         c = parents[2];
     } else if (
         Type.isPointType(board, parents[0]) &&
-        parents[1].elementClass === Const.OBJECT_CLASS_LINE
+        parents[1].elementClass === OBJECT_CLASS.LINE
     ) {
         c = Type.providePoints(board, [parents[0]], attributes, 'point')[0];
         a = parents[1].point1;
         b = parents[1].point2;
     } else if (
         Type.isPointType(board, parents[1]) &&
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE
+        parents[0].elementClass === OBJECT_CLASS.LINE
     ) {
         c = Type.providePoints(board, [parents[1]], attributes, 'point')[0];
         a = parents[0].point1;
@@ -1092,7 +1092,7 @@ JXG.createArrowParallel = function (board, parents, attributes) {
             straightFirst: false,
             straightLast: false
         });
-        p.type = Const.OBJECT_TYPE_VECTOR;
+        p.type = OBJECT_TYPE.VECTOR;
         p.elType = 'arrowparallel';
 
         // parents are set in createParallel
@@ -1249,8 +1249,8 @@ JXG.createAngularBisectorsOfTwoLines = function (board, parents, attributes) {
         l2 = board.select(parents[1]);
 
     if (
-        l1.elementClass !== Const.OBJECT_CLASS_LINE ||
-        l2.elementClass !== Const.OBJECT_CLASS_LINE
+        l1.elementClass !== OBJECT_CLASS.LINE ||
+        l2.elementClass !== OBJECT_CLASS.LINE
     ) {
         throw new Error(
             "JSXGraph: Can't create angle bisectors of two lines with parent types '" +
@@ -1384,9 +1384,9 @@ JXG.createAngularBisectorsOfTwoLines = function (board, parents, attributes) {
 // JXG.createMsector = function (board, parents, attributes) {
 //     var p, l, i, attr;
 
-//     if (parents[0].elementClass === Const.OBJECT_CLASS_POINT &&
-//             parents[1].elementClass === Const.OBJECT_CLASS_POINT &&
-//             parents[2].elementClass === Const.OBJECT_CLASS_POINT) {
+//     if (parents[0].elementClass === OBJECT_CLASS.POINT &&
+//             parents[1].elementClass === OBJECT_CLASS.POINT &&
+//             parents[2].elementClass === OBJECT_CLASS.POINT) {
 //         // hidden and fixed helper
 //         attr = Type.copyAttributes(attributes, board.options, 'msector', 'point');
 //         p = board.create('point', [
@@ -1582,7 +1582,7 @@ JXG.createIncenter = function (board, parents, attributes) {
                     c = Mat.hypot(B.X() - A.X(), B.Y() - A.Y());
 
                     return new Coords(
-                        Const.COORDS_BY_USER,
+                        COORDS_BY.USER,
                         [
                             (a * A.X() + b * B.X() + c * C.X()) / (a + b + c),
                             (a * A.Y() + b * B.Y() + c * C.Y()) / (a + b + c)
@@ -1927,10 +1927,10 @@ JXG.createReflection = function (board, parents, attributes) {
     if (Type.isPoint(parents[0])) {
         org = Type.providePoints(board, [parents[0]], attr2)[0];
     } else if (
-        parents[0].elementClass === Const.OBJECT_CLASS_CURVE ||
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE ||
-        parents[0].type === Const.OBJECT_TYPE_POLYGON ||
-        parents[0].elementClass === Const.OBJECT_CLASS_CIRCLE
+        parents[0].elementClass === OBJECT_CLASS.CURVE ||
+        parents[0].elementClass === OBJECT_CLASS.LINE ||
+        parents[0].type === OBJECT_TYPE.POLYGON ||
+        parents[0].elementClass === OBJECT_CLASS.CIRCLE
     ) {
         org = parents[0];
     } else {
@@ -1944,7 +1944,7 @@ JXG.createReflection = function (board, parents, attributes) {
         );
     }
 
-    if (parents[1].elementClass === Const.OBJECT_CLASS_LINE) {
+    if (parents[1].elementClass === OBJECT_CLASS.LINE) {
         l = parents[1];
     } else {
         throw new Error(
@@ -1962,13 +1962,13 @@ JXG.createReflection = function (board, parents, attributes) {
         r = JXG.createPoint(board, [org, t], attr);
 
         // Arcs and sectors are treated as curves
-    } else if (org.elementClass === Const.OBJECT_CLASS_CURVE) {
+    } else if (org.elementClass === OBJECT_CLASS.CURVE) {
         r = JXG.createCurve(board, [org, t], attr);
-    } else if (org.elementClass === Const.OBJECT_CLASS_LINE) {
+    } else if (org.elementClass === OBJECT_CLASS.LINE) {
         r = JXG.createLine(board, [org, t], attr);
-    } else if (org.type === Const.OBJECT_TYPE_POLYGON) {
+    } else if (org.type === OBJECT_TYPE.POLYGON) {
         r = JXG.createPolygon(board, [org, t], attr);
-    } else if (org.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+    } else if (org.elementClass === OBJECT_CLASS.CIRCLE) {
         if (attr.type.toLowerCase() === 'euclidean') {
             // Create a circle element from a circle and a Euclidean transformation
             attr2 = Type.copyAttributes(attributes, board.options, "reflection", 'center');
@@ -2139,10 +2139,10 @@ JXG.createMirrorElement = function (board, parents, attributes) {
         // Create point to be mirrored if supplied by coords array.
         org = Type.providePoints(board, [parents[0]], attr)[0];
     } else if (
-        parents[0].elementClass === Const.OBJECT_CLASS_CURVE ||
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE ||
-        parents[0].type === Const.OBJECT_TYPE_POLYGON ||
-        parents[0].elementClass === Const.OBJECT_CLASS_CIRCLE
+        parents[0].elementClass === OBJECT_CLASS.CURVE ||
+        parents[0].elementClass === OBJECT_CLASS.LINE ||
+        parents[0].type === OBJECT_TYPE.POLYGON ||
+        parents[0].elementClass === OBJECT_CLASS.CIRCLE
     ) {
         org = parents[0];
     } else {
@@ -2176,13 +2176,13 @@ JXG.createMirrorElement = function (board, parents, attributes) {
         r = JXG.createPoint(board, [org, t], attr);
 
         // Arcs and sectors are treated as curves
-    } else if (org.elementClass === Const.OBJECT_CLASS_CURVE) {
+    } else if (org.elementClass === OBJECT_CLASS.CURVE) {
         r = JXG.createCurve(board, [org, t], attr);
-    } else if (org.elementClass === Const.OBJECT_CLASS_LINE) {
+    } else if (org.elementClass === OBJECT_CLASS.LINE) {
         r = JXG.createLine(board, [org, t], attr);
-    } else if (org.type === Const.OBJECT_TYPE_POLYGON) {
+    } else if (org.type === OBJECT_TYPE.POLYGON) {
         r = JXG.createPolygon(board, [org, t], attr);
-    } else if (org.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+    } else if (org.elementClass === OBJECT_CLASS.CIRCLE) {
         if (attr.type.toLowerCase() === 'euclidean') {
             // Create a circle element from a circle and a Euclidean transformation
             attr2 = Type.copyAttributes(attributes, board.options, "mirrorelement", 'center');
@@ -2292,12 +2292,12 @@ JXG.createIntegral = function (board, parents, attributes) {
         txt_fun,
         t = null, p;
 
-    if (Type.isArray(parents[0]) && parents[1].elementClass === Const.OBJECT_CLASS_CURVE) {
+    if (Type.isArray(parents[0]) && parents[1].elementClass === OBJECT_CLASS.CURVE) {
         interval = parents[0];
         curve = parents[1];
     } else if (
         Type.isArray(parents[1]) &&
-        parents[0].elementClass === Const.OBJECT_CLASS_CURVE
+        parents[0].elementClass === OBJECT_CLASS.CURVE
     ) {
         interval = parents[1];
         curve = parents[0];
@@ -2405,7 +2405,7 @@ JXG.createIntegral = function (board, parents, attributes) {
         t = board.create('text', [
                 function () {
                     var off = new Coords(
-                            Const.COORDS_BY_SCREEN,
+                            COORDS_BY.SCREEN,
                             [
                                 this.evalVisProp('offset.0') +
                                     this.board.origin.scrCoords[1],
@@ -2428,7 +2428,7 @@ JXG.createIntegral = function (board, parents, attributes) {
                 },
                 function () {
                     var off = new Coords(
-                            Const.COORDS_BY_SCREEN,
+                            COORDS_BY.SCREEN,
                             [
                                 0,
                                 this.evalVisProp('offset.1') +
@@ -2727,7 +2727,7 @@ JXG.createInequality = function (board, parents, attributes) {
     var f, a, attr;
 
     attr = Type.copyAttributes(attributes, board.options, 'inequality');
-    if (parents[0].elementClass === Const.OBJECT_CLASS_LINE) {
+    if (parents[0].elementClass === OBJECT_CLASS.LINE) {
         a = board.create("curve", [[], []], attr);
         a.hasPoint = function () {
             return false;
@@ -2765,7 +2765,7 @@ JXG.createInequality = function (board, parents, attributes) {
                 expansion *
                 Math.max(
                     Geometry.perpendicular(parents[0], dp, board)[0].distance(
-                        Const.COORDS_BY_USER,
+                        COORDS_BY.USER,
                         dp.coords
                     ),
                     w
@@ -2800,7 +2800,7 @@ JXG.createInequality = function (board, parents, attributes) {
             this.dataY = [i1[2], i1[2] + slope1[1] * h, i2[2] + slope2[1] * h, i2[2], i1[2]];
         };
     } else if (
-        parents[0].elementClass === Const.OBJECT_CLASS_CURVE &&
+        parents[0].elementClass === OBJECT_CLASS.CURVE &&
         parents[0].visProp.curvetype === "functiongraph"
     ) {
         a = board.create("curve", [[], []], attr);

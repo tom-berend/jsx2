@@ -37,7 +37,7 @@
  */
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Text from "../base/text.js";
 import Mat from "../math/math.js";
 import Interval from "../math/ia.js";
@@ -746,7 +746,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
     setProp: function (o, what, value) {
         var par = {}, x, y;
 
-        if (o.elementClass === Const.OBJECT_CLASS_POINT && (what === 'X' || what === 'Y')) {
+        if (o.elementClass === OBJECT_CLASS.POINT && (what === 'X' || what === 'Y')) {
             // set coords
 
             what = what.toLowerCase();
@@ -763,7 +763,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
                 x = what === 'x' ? value : o.X();
                 y = what === 'y' ? value : o.Y();
 
-                o.setPosition(Const.COORDS_BY_USER, [x, y]);
+                o.setPosition(COORDS_BY.USER, [x, y]);
             } else if (o.isDraggable && (typeof value === 'function' || typeof value === 'string')) {
                 x = what === 'x' ? value : o.coords.usrCoords[1];
                 y = what === 'y' ? value : o.coords.usrCoords[2];
@@ -777,7 +777,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
             }
 
             this.board.update();
-        } else if (o.elementClass === Const.OBJECT_CLASS_TEXT && (what === 'X' || what === 'Y')) {
+        } else if (o.elementClass === OBJECT_CLASS.TEXT && (what === 'X' || what === 'Y')) {
             if (typeof value === 'number') {
                 o[what] = function () { return value; };
             } else if (typeof value === 'function') {

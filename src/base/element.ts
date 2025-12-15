@@ -33,12 +33,12 @@
 /*jslint nomen: true, plusplus: true, unparam: true*/
 
 import JXG from "../jxg.js";
-import Const from "./constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Coords from "./coords.js";
 import Mat from "../math/math.js";
 import Statistics from "../math/statistics.js";
 import Options from "../options.js";
-import EventEmitter from "../utils/event.js";
+import {EventEmitter} from "../utils/event.js";
 import Color from "../utils/color.js";
 import Type from "../utils/type.js";
 
@@ -357,7 +357,7 @@ JXG.GeometryElement = function (board, attributes, type, oclass) {
          * @constant
          * @type Number
          */
-        this.elementClass = oclass || Const.OBJECT_CLASS_OTHER;
+        this.elementClass = oclass || OBJECT_CLASS.OTHER;
 
         /**
          * Unique identifier for the element. Equivalent to id-attribute of renderer element.
@@ -662,7 +662,7 @@ JXG.extend(
                 this.isDraggable &&
                 !this.evalVisProp('fixed') &&
                 // !this.visProp.frozen &&
-                this.type !== Const.OBJECT_TYPE_GLIDER
+                this.type !== OBJECT_TYPE.GLIDER
             );
         },
 
@@ -740,7 +740,7 @@ JXG.extend(
              * draggable, then their position has to be updated now.
              */
             for (i = 0; i < len; ++i) {
-                if (parents[i].type === Const.OBJECT_TYPE_GLIDER) {
+                if (parents[i].type === OBJECT_TYPE.GLIDER) {
                     parents[i].updateGlider();
                 }
             }
@@ -761,7 +761,7 @@ JXG.extend(
                 oldc = new Coords(method, oldcoords, this.board, false),
                 dc = Statistics.subtract(c.usrCoords, oldc.usrCoords);
 
-            this.setPosition(Const.COORDS_BY_USER, dc);
+            this.setPosition(COORDS_BY.USER, dc);
 
             return this;
         },
@@ -1282,7 +1282,7 @@ JXG.extend(
 
                         // First, handle the special case
                         // ticks.setAttribute({label: {anchorX: "right", ..., visible: true});
-                        if (this.type === Const.OBJECT_TYPE_TICKS && Type.exists(this.labels)) {
+                        if (this.type === OBJECT_TYPE.TICKS && Type.exists(this.labels)) {
                             le = this.labels.length;
                             for (j = 0; j < le; j++) {
                                 this.labels[j].setAttribute(value);
@@ -1327,7 +1327,7 @@ JXG.extend(
                             break;
                         case "generatelabelvalue":
                             if (
-                                this.type === Const.OBJECT_TYPE_TICKS &&
+                                this.type === OBJECT_TYPE.TICKS &&
                                 Type.isFunction(value)
                             ) {
                                 this.generateLabelValue = value;
@@ -1371,7 +1371,7 @@ JXG.extend(
                                     opacity
                                 );
                             }
-                            if (this.elementClass === Const.OBJECT_CLASS_TEXT) {
+                            if (this.elementClass === OBJECT_CLASS.TEXT) {
                                 this.visProp.strokecolor = value;
                                 this.visProp.strokeopacity = opacity;
                                 this.board.renderer.setObjectStrokeColor(this, value, opacity);
@@ -1401,23 +1401,23 @@ JXG.extend(
                             );
                             break;
                         case "onpolygon":
-                            if (this.type === Const.OBJECT_TYPE_GLIDER) {
+                            if (this.type === OBJECT_TYPE.GLIDER) {
                                 this.onPolygon = !!value;
                             }
                             break;
                         case "radius":
                             if (
-                                this.type === Const.OBJECT_TYPE_ANGLE ||
-                                this.type === Const.OBJECT_TYPE_SECTOR
+                                this.type === OBJECT_TYPE.ANGLE ||
+                                this.type === OBJECT_TYPE.SECTOR
                             ) {
                                 this.setRadius(value);
                             }
                             break;
                         case "rotate":
                             if (
-                                (this.elementClass === Const.OBJECT_CLASS_TEXT &&
+                                (this.elementClass === OBJECT_CLASS.TEXT &&
                                     this.evalVisProp('display') === 'internal') ||
-                                this.type === Const.OBJECT_TYPE_IMAGE
+                                this.type === OBJECT_TYPE.IMAGE
                             ) {
                                 this.addRotation(value);
                             }
@@ -1429,7 +1429,7 @@ JXG.extend(
                             }
                             break;
                         // case "ticksdistance":
-                        //     if (this.type === Const.OBJECT_TYPE_TICKS && Type.isNumber(value)) {
+                        //     if (this.type === OBJECT_TYPE.TICKS && Type.isNumber(value)) {
                         //         this.ticksFunction = this.makeTicksFunction(value);
                         //     }
                         //     break;
@@ -1518,7 +1518,7 @@ JXG.extend(
             } else {
                 this.board.update(this);
             }
-            if (this.elementClass === Const.OBJECT_CLASS_TEXT) {
+            if (this.elementClass === OBJECT_CLASS.TEXT) {
                 this.updateSize();
             }
 
@@ -1718,7 +1718,7 @@ JXG.extend(
          * @see JXG.GeometryElement#getLabelAnchor
          */
         getTextAnchor: function () {
-            return new Coords(Const.COORDS_BY_USER, [0, 0], this.board);
+            return new Coords(COORDS_BY.USER, [0, 0], this.board);
         },
 
         /**
@@ -1728,7 +1728,7 @@ JXG.extend(
          * @see JXG.GeometryElement#getTextAnchor
          */
         getLabelAnchor: function () {
-            return new Coords(Const.COORDS_BY_USER, [0, 0], this.board);
+            return new Coords(COORDS_BY.USER, [0, 0], this.board);
         },
 
         /**
@@ -1742,7 +1742,7 @@ JXG.extend(
             this.visProp.firstarrow = firstArrow;
             this.visProp.lastarrow = lastArrow;
             if (lastArrow) {
-                this.type = Const.OBJECT_TYPE_VECTOR;
+                this.type = OBJECT_TYPE.VECTOR;
                 this.elType = 'arrow';
             }
 
@@ -1942,8 +1942,8 @@ JXG.extend(
                 that = this;
 
             if (
-                (this.elementClass === Const.OBJECT_CLASS_TEXT ||
-                    this.type === Const.OBJECT_TYPE_IMAGE) &&
+                (this.elementClass === OBJECT_CLASS.TEXT ||
+                    this.type === OBJECT_TYPE.IMAGE) &&
                 angle !== 0
             ) {
                 tOffInv = this.board.create(
@@ -2345,11 +2345,11 @@ JXG.extend(
                     rx = Math.round(x / sX) * sX;
                     ry = Math.round(y / sY) * sY;
 
-                    rcoords = new JXG.Coords(Const.COORDS_BY_USER, [rx, ry], this.board);
+                    rcoords = new JXG.Coords(COORDS_BY.USER, [rx, ry], this.board);
                     if (
                         !attractToGrid ||
                         rcoords.distance(
-                            ev_au === "screen" ? Const.COORDS_BY_SCREEN : Const.COORDS_BY_USER,
+                            ev_au === "screen" ? COORDS_BY.SCREEN : COORDS_BY.USER,
                             this.coords
                         ) < ev_ad
                     ) {
@@ -2375,7 +2375,7 @@ JXG.extend(
                                 y -= sY;
                             }
                         }
-                        this.coords.setCoordinates(Const.COORDS_BY_USER, [x, y]);
+                        this.coords.setCoordinates(COORDS_BY.USER, [x, y]);
                     }
                 }
             }
@@ -2387,7 +2387,7 @@ JXG.extend(
                 x, y, r,
                 bb = [Infinity, Infinity, -Infinity, -Infinity];
 
-            if (this.type === Const.OBJECT_TYPE_POLYGON) {
+            if (this.type === OBJECT_TYPE.POLYGON) {
                 le = this.vertices.length - 1;
                 if (le <= 0) {
                     return bb;
@@ -2400,11 +2400,11 @@ JXG.extend(
                     bb[1] = v < bb[1] ? v : bb[1];
                     bb[3] = v > bb[3] ? v : bb[3];
                 }
-            } else if (this.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+            } else if (this.elementClass === OBJECT_CLASS.CIRCLE) {
                 x = this.center.X();
                 y = this.center.Y();
                 bb = [x - this.radius, y + this.radius, x + this.radius, y - this.radius];
-            } else if (this.elementClass === Const.OBJECT_CLASS_CURVE) {
+            } else if (this.elementClass === OBJECT_CLASS.CURVE) {
                 le = this.points.length;
                 if (le === 0) {
                     return bb;
@@ -2417,12 +2417,12 @@ JXG.extend(
                     bb[1] = v < bb[1] ? v : bb[1];
                     bb[3] = v > bb[3] ? v : bb[3];
                 }
-            } else if (this.elementClass === Const.OBJECT_CLASS_POINT) {
+            } else if (this.elementClass === OBJECT_CLASS.POINT) {
                 x = this.X();
                 y = this.Y();
                 r = this.evalVisProp('size');
                 bb = [x - r / this.board.unitX, y - r / this.board.unitY, x + r / this.board.unitX, y + r / this.board.unitY];
-            } else if (this.elementClass === Const.OBJECT_CLASS_LINE) {
+            } else if (this.elementClass === OBJECT_CLASS.LINE) {
                 v = this.point1.coords.usrCoords[1];
                 bb[0] = v < bb[0] ? v : bb[0];
                 bb[2] = v > bb[2] ? v : bb[2];

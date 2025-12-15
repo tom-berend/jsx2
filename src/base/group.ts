@@ -38,7 +38,7 @@
  */
 
 import JXG from "../jxg.js";
-import Const from "./constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Type from "../utils/type.js";
@@ -70,8 +70,8 @@ JXG.Group = function (board, id, name, objects, attributes) {
     }
     this.board.groups[this.id] = this;
 
-    this.type = Const.OBJECT_TYPE_POINT;
-    this.elementClass = Const.OBJECT_CLASS_POINT;
+    this.type = OBJECT_TYPE.POINT;
+    this.elementClass = OBJECT_CLASS.POINT;
 
     if (name === "" || !Type.exists(name)) {
         this.name = "group_" + this.board.generateName(this);
@@ -256,7 +256,7 @@ JXG.extend(
                     obj.coords.usrCoords[2] - this.coords[drag.id].usrCoords[2]
                 ];
 
-                if (obj.elementClass !== Const.OBJECT_CLASS_POINT) {
+                if (obj.elementClass !== OBJECT_CLASS.POINT) {
                     // For images and texts we have to update the drag direction
                     // by reapplying all transformations.
 
@@ -327,7 +327,7 @@ JXG.extend(
             // Bind the transformation to any images and texts
             for (el in this.objects) {
                 obj = this.objects[el].point;
-                if (obj.elementClass !== Const.OBJECT_CLASS_POINT) {
+                if (obj.elementClass !== OBJECT_CLASS.POINT) {
                     if (Type.exists(t.board)) {
                         // t itself is a transformation
                         t.meltTo(obj);
@@ -390,7 +390,7 @@ JXG.extend(
                 if (this.objects.hasOwnProperty(el)) {
                     obj = this.objects[el].point;
 
-                    if (obj.coords.distance(Const.COORDS_BY_USER, this.coords[el]) > Mat.eps) {
+                    if (obj.coords.distance(COORDS_BY.USER, this.coords[el]) > Mat.eps) {
                         changed.push(obj.id);
                     }
                 }
@@ -480,8 +480,8 @@ JXG.extend(
                         if (obj.id !== drag.id) {
                             if (drag.action === 'translation') {
                                 if (!Type.isInArray(drag.changed, obj.id)) {
-                                    if (obj.elementClass === Const.OBJECT_CLASS_POINT) {
-                                        obj.coords.setCoordinates(Const.COORDS_BY_USER, [
+                                    if (obj.elementClass === OBJECT_CLASS.POINT) {
+                                        obj.coords.setCoordinates(COORDS_BY.USER, [
                                             this.coords[el].usrCoords[1] + t[0],
                                             this.coords[el].usrCoords[2] + t[1]
                                         ]);
@@ -491,14 +491,14 @@ JXG.extend(
                                 drag.action === "rotation" ||
                                 drag.action === "scaling"
                             ) {
-                                if (obj.elementClass === Const.OBJECT_CLASS_POINT) {
+                                if (obj.elementClass === OBJECT_CLASS.POINT) {
                                     t.applyOnce([obj]);
                                 }
                             }
                         } else {
                             if (drag.action === "rotation" || drag.action === 'scaling') {
                                 obj.coords.setCoordinates(
-                                    Const.COORDS_BY_USER,
+                                    COORDS_BY.USER,
                                     Mat.matVecMult(t.matrix, this.coords[obj.id].usrCoords)
                                 );
                             }

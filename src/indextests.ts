@@ -20,21 +20,21 @@ export class IndexTests {
         this.newBoard = JSXGraph.initBoard(
             'box', {
             boundingBox: [-10, 10, 10, -10],
-            axis: true
+            // axis: true
         });
         this.oldBoard = (window as any).JXG.JSXGraph.initBoard(
             'box2', {
             boundingBox: [-10, 10, 10, -10],
-            axis: true
+            // axis: true
         });
     }
 
     point() {
         let a = this.newBoard.create('point', [1, 3])
-        let a2 = this.newBoard.create('point', [()=>a.X()+1, ()=>a.Y()+1])
+        let a2 = this.newBoard.create('point', [()=>a.X()+1, ()=>a.Y()+1],{name:'new second'})
 
         let b = this.oldBoard.create('point', [1, 3])
-        let b2 = this.oldBoard.create('point', [()=>b.X()+1, ()=>b.Y()+1])
+        let b2 = this.oldBoard.create('point', [()=>b.X()+1, ()=>b.Y()+1],{name:'old second'})
     }
     text() {
         let a = this.newBoard.create('text', [2, 3, "test"], { name: 'foo', strokecolor: 'red' })
@@ -44,8 +44,8 @@ export class IndexTests {
         let a = this.newBoard.create('segment', [[-1, -1],[-2,-1]] , { strokecolor: 'red' })
         let b = this.oldBoard.create('segment', [[-1, -1],[-2,-1]] , { strokecolor: 'red' })
 
-        this.newBoard.create('circle', [[-1, -1],[-2,-1]] , { strokecolor: 'green' })
-        this.oldBoard.create('circle', [[-1, -1],[-2,-1]] , { strokecolor: 'green' })
+        // this.newBoard.create('circle', [[-1, -1],[-2,-1]] , { strokecolor: 'green' })
+        // this.oldBoard.create('circle', [[-1, -1],[-2,-1]] , { strokecolor: 'green' })
 
     }
 

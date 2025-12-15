@@ -38,7 +38,7 @@
 
 import JXG from "../jxg.js";
 import Type from "../utils/type.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Polygon from "../base/polygon.js";
 
 var priv = {
@@ -125,17 +125,17 @@ JXG.createSlopeTriangle = function (board, parents, attributes) {
         label, attr,
         isPrivateTangent = false;
 
-    if (parents.length === 1 && parents[0].type === Const.OBJECT_TYPE_TANGENT) {
+    if (parents.length === 1 && parents[0].type === OBJECT_TYPE.TANGENT) {
         tangent = parents[0];
         tglide = tangent.glider;
-    } else if (parents.length === 1 && parents[0].type === Const.OBJECT_TYPE_GLIDER) {
+    } else if (parents.length === 1 && parents[0].type === OBJECT_TYPE.GLIDER) {
         tglide = parents[0];
         attr = Type.copyAttributes(attributes, board.options, "slopetriangle", 'tangent');
         tangent = board.create("tangent", [tglide], attr);
         isPrivateTangent = true;
     } else if (
         parents.length === 2 &&
-        parents[0].elementClass === Const.OBJECT_CLASS_LINE &&
+        parents[0].elementClass === OBJECT_CLASS.LINE &&
         Type.isPoint(parents[1])
     ) {
         tangent = parents[0];

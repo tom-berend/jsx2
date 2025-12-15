@@ -34,7 +34,7 @@
 
 import JXG from "../jxg.js";
 import AbstractRenderer from "./abstract.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from "../utils/type.js";
 import Color from "../utils/color.js";
 import Mat from "../math/math.js";
@@ -1153,7 +1153,7 @@ JXG.extend(
                         this._setAttr(el.rendNodeFill, "opacity", oo * 100 + "%");
                     }
                 }
-                if (el.type === Const.OBJECT_TYPE_IMAGE) {
+                if (el.type === OBJECT_TYPE.IMAGE) {
                     /*
                     t = el.rendNode.style.filter.toString();
                     if (t.match(/alpha/)) {
@@ -1203,7 +1203,7 @@ JXG.extend(
                     c = rgbo[0];
                     oo = o * rgbo[1];
                 }
-                if (el.elementClass === Const.OBJECT_CLASS_TEXT) {
+                if (el.elementClass === OBJECT_CLASS.TEXT) {
                     //node.style.filter = ' alpha(opacity = ' + oo + ')';
                     /*
                     t = node.style.filter.toString();
@@ -1229,7 +1229,7 @@ JXG.extend(
                     }
 
                     nodeStroke = el.rendNodeStroke;
-                    if (Type.exists(oo) && el.type !== Const.OBJECT_TYPE_IMAGE) {
+                    if (Type.exists(oo) && el.type !== OBJECT_TYPE.IMAGE) {
                         this._setAttr(nodeStroke, "opacity", oo * 100 + "%");
                     }
                 }

@@ -48,7 +48,7 @@
  */
 
 import JXG from "../jxg.js";
-import Const from "./constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import GeometryElement from "./element.js";
 import GeonextParser from "../parser/geonext.js";
 import Env from "../utils/env.js";
@@ -88,7 +88,7 @@ var priv = {
 JXG.Text = function (board, coords, attributes, content) {
     var tmp;
 
-    this.constructor(board, attributes, Const.OBJECT_TYPE_TEXT, Const.OBJECT_CLASS_TEXT);
+    this.constructor(board, attributes, OBJECT_TYPE.TEXT, OBJECT_CLASS.TEXT);
 
     this.element = this.board.select(attributes.anchor);
     this.coordsConstructor(coords, this.evalVisProp('islabel'));
@@ -607,9 +607,9 @@ JXG.extend(
                 dx = (x - coordsAnchor.usrCoords[1]) * this.board.unitX;
                 dy = -(y - coordsAnchor.usrCoords[2]) * this.board.unitY;
 
-                this.relativeCoords.setCoordinates(Const.COORDS_BY_SCREEN, [dx, dy]);
+                this.relativeCoords.setCoordinates(COORDS_BY.SCREEN, [dx, dy]);
             } else {
-                this.coords.setCoordinates(Const.COORDS_BY_USER, [x, y]);
+                this.coords.setCoordinates(COORDS_BY.USER, [x, y]);
             }
 
             // this should be a local update, otherwise there might be problems
@@ -1180,7 +1180,7 @@ JXG.extend(
                     // If is label or point use other conflict detection
                     if (
                         obj.visProp.islabel ||
-                        obj.elementClass === Const.OBJECT_CLASS_POINT
+                        obj.elementClass === OBJECT_CLASS.POINT
                     ) {
                         // get coords and size of the object
                         coords = obj.coords.scrCoords;

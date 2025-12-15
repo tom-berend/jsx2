@@ -29,7 +29,7 @@
 /*global JXG:true, define: true*/
 
 import JXG from "../jxg.js";
-import Const from "../base/constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Type from "../utils/type.js";
 import Mat from "../math/math.js";
 
@@ -49,7 +49,7 @@ import Mat from "../math/math.js";
  * @see JXG.Board#generateName
  */
 JXG.Face3D = function (view, polyhedron, faceNumber, attributes) {
-    this.constructor(view.board, attributes, Const.OBJECT_TYPE_FACE3D, Const.OBJECT_CLASS_3D);
+    this.constructor(view.board, attributes, OBJECT_TYPE.FACE3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'face3d');
 
     this.board.finalizeAdding(this);

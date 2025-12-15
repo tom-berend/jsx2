@@ -39,7 +39,7 @@
  */
 
 import JXG from '../jxg.js';
-import Const from './constants.js';
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY,LicenseLogo,LicenseText} from "../base/constants.js";
 import Coords from './coords.js';
 import Options from '../options.js';
 import Numerics from '../math/numerics.js';
@@ -50,7 +50,7 @@ import Statistics from '../math/statistics.js';
 import JessieCode from '../parser/jessiecode.js';
 import Color from '../utils/color.js';
 import Type from '../utils/type.js';
-import EventEmitter from '../utils/event.js';
+import {EventEmitter} from '../utils/event.js';
 import Env from '../utils/env.js';
 import Composition from './composition.js';
 
@@ -475,11 +475,11 @@ JXG.Board = function (container, renderer, id,
     this.focusObjects = [];
 
     if (this.attr.showcopyright || this.attr.showlogo) {
-        this.renderer.displayLogo(Const.licenseLogo, parseInt(this.options.text.fontSize, 10), this);
+        this.renderer.displayLogo(LicenseLogo, parseInt(this.options.text.fontSize, 10), this);
     }
 
     if (this.attr.showcopyright) {
-        this.renderer.displayCopyright(Const.licenseText, parseInt(this.options.text.fontSize, 10));
+        this.renderer.displayCopyright(LicenseText, parseInt(this.options.text.fontSize, 10));
     }
 
     /**
@@ -760,7 +760,7 @@ JXG.extend(
                 indices = [],
                 name = '';
 
-            if (object.type === Const.OBJECT_TYPE_TICKS) {
+            if (object.type === OBJECT_TYPE.TICKS) {
                 return '';
             }
 
@@ -769,7 +769,7 @@ JXG.extend(
                 possibleNames = [
                     '', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
                 ];
-            } else if (object.type === Const.OBJECT_TYPE_ANGLE) {
+            } else if (object.type === OBJECT_TYPE.ANGLE) {
                 possibleNames = [
                     '', '&alpha;', '&beta;', '&gamma;', '&delta;', '&epsilon;', '&zeta;', '&eta;', '&theta;', '&iota;', '&kappa;', '&lambda;',
                     '&mu;', '&nu;', '&xi;', '&omicron;', '&pi;', '&rho;', '&sigma;', '&tau;', '&upsilon;', '&phi;', '&chi;', '&psi;', '&omega;'
@@ -784,14 +784,14 @@ JXG.extend(
             if (
                 !Type.isPoint(object) &&
                 !Type.isPoint3D(object) &&
-                object.elementClass !== Const.OBJECT_CLASS_LINE &&
-                object.type !== Const.OBJECT_TYPE_ANGLE
+                object.elementClass !== OBJECT_CLASS.LINE &&
+                object.type !== OBJECT_TYPE.ANGLE
             ) {
-                if (object.type === Const.OBJECT_TYPE_POLYGON) {
+                if (object.type === OBJECT_TYPE.POLYGON) {
                     pre = 'P_{';
-                } else if (object.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+                } else if (object.elementClass === OBJECT_CLASS.CIRCLE) {
                     pre = 'k_{';
-                } else if (object.elementClass === Const.OBJECT_CLASS_TEXT) {
+                } else if (object.elementClass === OBJECT_CLASS.TEXT) {
                     pre = 't_{';
                 } else {
                     pre = 's_{';
@@ -1342,7 +1342,7 @@ JXG.extend(
                     pEl.isDraggable &&
                     pEl.visPropCalc.visible &&
                     ((this.geonextCompatibilityMode &&
-                        (Type.isPoint(pEl) || pEl.elementClass === Const.OBJECT_CLASS_TEXT)) ||
+                        (Type.isPoint(pEl) || pEl.elementClass === OBJECT_CLASS.TEXT)) ||
                         !this.geonextCompatibilityMode) &&
                     !pEl.evalVisProp('fixed')
                     /*(!pEl.visProp.frozen) &&*/
@@ -1368,7 +1368,7 @@ JXG.extend(
 
                             // Save offset for large coords elements.
                             if (Type.exists(dragEl['coords'])) {
-                                if (dragEl['elementClass'] === Const.OBJECT_CLASS_POINT ||
+                                if (dragEl['elementClass'] === OBJECT_CLASS.POINT ||
                                     dragEl['relativeCoords']    // Relative texts like labels
                                 ) {
                                     offset.push(Statistics.subtract(dragEl['coords'].scrCoords.slice(1), [x, y]));
@@ -1438,7 +1438,7 @@ JXG.extend(
          */
         moveObject: function (x, y, o, evt, type) {
             var newPos = new Coords(
-                Const.COORDS_BY_SCREEN,
+                COORDS_BY.SCREEN,
                 this.getScrCoordsOfMouse(x, y),
                 this
             ),
@@ -1471,7 +1471,7 @@ JXG.extend(
             // We have to distinguish between CoordsElements and other elements like lines.
             // The latter need the difference between two move events.
             if (Type.exists(drag.coords)) {
-                drag.setPositionDirectly(Const.COORDS_BY_SCREEN, this.drag_position, [x, y]);
+                drag.setPositionDirectly(COORDS_BY.SCREEN, this.drag_position, [x, y]);
             } else {
                 this.displayInfobox(false);
                 // Hide infobox in case the user has touched an intersection point
@@ -1479,7 +1479,7 @@ JXG.extend(
 
                 if (!isNaN(o.targets[0].Xprev + o.targets[0].Yprev)) {
                     drag.setPositionDirectly(
-                        Const.COORDS_BY_SCREEN,
+                        COORDS_BY.SCREEN,
                         [newPos.scrCoords[1], newPos.scrCoords[2]],
                         [o.targets[0].Xprev, o.targets[0].Yprev]
                     );
@@ -1532,11 +1532,11 @@ JXG.extend(
             }
 
             if (
-                drag.elementClass === Const.OBJECT_CLASS_LINE ||
-                drag.type === Const.OBJECT_TYPE_POLYGON
+                drag.elementClass === OBJECT_CLASS.LINE ||
+                drag.type === OBJECT_TYPE.POLYGON
             ) {
                 this.twoFingerTouchObject(o.targets, drag, id);
-            } else if (drag.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+            } else if (drag.elementClass === OBJECT_CLASS.CIRCLE) {
                 this.twoFingerTouchCircle(o.targets, drag, id);
             }
 
@@ -1564,17 +1564,17 @@ JXG.extend(
                 dxx, dyy,
                 C, S, LL, tx, ty, lbda;
 
-            crd = new Coords(Const.COORDS_BY_SCREEN, [finger1.Xprev, finger1.Yprev], this).usrCoords;
+            crd = new Coords(COORDS_BY.SCREEN, [finger1.Xprev, finger1.Yprev], this).usrCoords;
             x1 = crd[1];
             y1 = crd[2];
-            crd = new Coords(Const.COORDS_BY_SCREEN, [finger2.Xprev, finger2.Yprev], this).usrCoords;
+            crd = new Coords(COORDS_BY.SCREEN, [finger2.Xprev, finger2.Yprev], this).usrCoords;
             x2 = crd[1];
             y2 = crd[2];
 
-            crd = new Coords(Const.COORDS_BY_SCREEN, [finger1.X, finger1.Y], this).usrCoords;
+            crd = new Coords(COORDS_BY.SCREEN, [finger1.X, finger1.Y], this).usrCoords;
             xx1 = crd[1];
             yy1 = crd[2];
-            crd = new Coords(Const.COORDS_BY_SCREEN, [finger2.X, finger2.Y], this).usrCoords;
+            crd = new Coords(COORDS_BY.SCREEN, [finger2.X, finger2.Y], this).usrCoords;
             xx2 = crd[1];
             yy2 = crd[2];
 
@@ -1630,7 +1630,7 @@ JXG.extend(
                 t = this.create('transform', T, { type: 'generic' });
                 t.update();
 
-                if (drag.elementClass === Const.OBJECT_CLASS_LINE) {
+                if (drag.elementClass === OBJECT_CLASS.LINE) {
                     ar = [];
                     if (drag.point1.draggable()) {
                         ar.push(drag.point1);
@@ -1639,7 +1639,7 @@ JXG.extend(
                         ar.push(drag.point2);
                     }
                     t.applyOnce(ar);
-                } else if (drag.type === Const.OBJECT_TYPE_POLYGON) {
+                } else if (drag.type === OBJECT_TYPE.POLYGON) {
                     len = drag.vertices.length - 1;
                     snap = drag.evalVisProp('snaptogrid') || drag.evalVisProp('snaptopoints');
                     for (i = 0; i < len && !snap; ++i) {
@@ -1688,13 +1688,13 @@ JXG.extend(
                     moveEl = tar[1];
                 }
 
-                fix = new Coords(Const.COORDS_BY_SCREEN, [fixEl.Xprev, fixEl.Yprev], this)
+                fix = new Coords(COORDS_BY.SCREEN, [fixEl.Xprev, fixEl.Yprev], this)
                     .usrCoords;
                 // Previous finger position
-                op = new Coords(Const.COORDS_BY_SCREEN, [moveEl.Xprev, moveEl.Yprev], this)
+                op = new Coords(COORDS_BY.SCREEN, [moveEl.Xprev, moveEl.Yprev], this)
                     .usrCoords;
                 // New finger position
-                np = new Coords(Const.COORDS_BY_SCREEN, [moveEl.X, moveEl.Y], this).usrCoords;
+                np = new Coords(COORDS_BY.SCREEN, [moveEl.X, moveEl.Y], this).usrCoords;
 
                 alpha = Geometry.rad(op.slice(1), fix.slice(1), np.slice(1));
 
@@ -1793,28 +1793,28 @@ JXG.extend(
                 i,
                 len;
 
-            if (obj.type === Const.OBJECT_TYPE_TICKS) {
+            if (obj.type === OBJECT_TYPE.TICKS) {
                 xy.push([1, NaN, NaN]);
-            } else if (obj.elementClass === Const.OBJECT_CLASS_LINE) {
+            } else if (obj.elementClass === OBJECT_CLASS.LINE) {
                 xy.push(obj.point1.coords.usrCoords);
                 xy.push(obj.point2.coords.usrCoords);
-            } else if (obj.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+            } else if (obj.elementClass === OBJECT_CLASS.CIRCLE) {
                 xy.push(obj.center.coords.usrCoords);
                 if (obj.method === 'twoPoints') {
                     xy.push(obj.point2.coords.usrCoords);
                 }
-            } else if (obj.type === Const.OBJECT_TYPE_POLYGON) {
+            } else if (obj.type === OBJECT_TYPE.POLYGON) {
                 len = obj.vertices.length - 1;
                 for (i = 0; i < len; i++) {
                     xy.push(obj.vertices[i].coords.usrCoords);
                 }
-            } else if (obj.type === Const.OBJECT_TYPE_SECTOR) {
+            } else if (obj.type === OBJECT_TYPE.SECTOR) {
                 xy.push(obj.point1.coords.usrCoords);
                 xy.push(obj.point2.coords.usrCoords);
                 xy.push(obj.point3.coords.usrCoords);
-            } else if (Type.isPoint(obj) || obj.type === Const.OBJECT_TYPE_GLIDER) {
+            } else if (Type.isPoint(obj) || obj.type === OBJECT_TYPE.GLIDER) {
                 xy.push(obj.coords.usrCoords);
-            } else if (obj.elementClass === Const.OBJECT_CLASS_CURVE) {
+            } else if (obj.elementClass === OBJECT_CLASS.CURVE) {
                 // if (Type.exists(obj.parents)) {
                 //     len = obj.parents.length;
                 //     if (len > 0) {
@@ -2441,7 +2441,7 @@ JXG.extend(
                 [evt.touches[1].clientX, evt.touches[1].clientY]
             ];
 
-            c = new Coords(Const.COORDS_BY_SCREEN, this.getMousePosition(evt, 0), this);
+            c = new Coords(COORDS_BY.SCREEN, this.getMousePosition(evt, 0), this);
 
             if (this.attr.pan.enabled && this.attr.pan.needtwofingers && !isPinch) {
                 // Pan detected
@@ -3412,9 +3412,9 @@ JXG.extend(
 
                         if (
                             Type.isPoint(obj) ||
-                            obj.elementClass === Const.OBJECT_CLASS_TEXT ||
-                            obj.type === Const.OBJECT_TYPE_TICKS ||
-                            obj.type === Const.OBJECT_TYPE_IMAGE
+                            obj.elementClass === OBJECT_CLASS.TEXT ||
+                            obj.type === OBJECT_TYPE.TICKS ||
+                            obj.type === OBJECT_TYPE.IMAGE
                         ) {
                             // It's a point, so it's single touch, so we just push it to our touches
                             targets = [target];
@@ -3425,10 +3425,10 @@ JXG.extend(
                             this.touches.push({ obj: obj, targets: targets });
                             obj.highlight(true);
                         } else if (
-                            obj.elementClass === Const.OBJECT_CLASS_LINE ||
-                            obj.elementClass === Const.OBJECT_CLASS_CIRCLE ||
-                            obj.elementClass === Const.OBJECT_CLASS_CURVE ||
-                            obj.type === Const.OBJECT_TYPE_POLYGON
+                            obj.elementClass === OBJECT_CLASS.LINE ||
+                            obj.elementClass === OBJECT_CLASS.CIRCLE ||
+                            obj.elementClass === OBJECT_CLASS.CURVE ||
+                            obj.type === OBJECT_TYPE.POLYGON
                         ) {
                             found = false;
 
@@ -3712,11 +3712,11 @@ JXG.extend(
 
                     if (Type.isPoint(tmpTouches[i].obj)) {
                         found = touchTargets[0] && touchTargets[0].found;
-                    } else if (tmpTouches[i].obj.elementClass === Const.OBJECT_CLASS_LINE) {
+                    } else if (tmpTouches[i].obj.elementClass === OBJECT_CLASS.LINE) {
                         found =
                             (touchTargets[0] && touchTargets[0].found) ||
                             (touchTargets[1] && touchTargets[1].found);
-                    } else if (tmpTouches[i].obj.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+                    } else if (tmpTouches[i].obj.elementClass === OBJECT_CLASS.CIRCLE) {
                         found = foundNumber === 1 || foundNumber === 3;
                     }
 
@@ -3993,7 +3993,7 @@ JXG.extend(
             if (zoomCenter === 'board') {
                 pos = [];
             } else { // including zoomCenter === 'auto'
-                pos = new Coords(Const.COORDS_BY_SCREEN, this.getMousePosition(evt), this).usrCoords;
+                pos = new Coords(COORDS_BY.SCREEN, this.getMousePosition(evt), this).usrCoords;
             }
 
             // pos == [] does not throw an error
@@ -4163,7 +4163,7 @@ JXG.extend(
                     el.visPropCalc.visible &&
                     ((this.geonextCompatibilityMode &&
                         (Type.isPoint(el) ||
-                            el.elementClass === Const.OBJECT_CLASS_TEXT)
+                            el.elementClass === OBJECT_CLASS.TEXT)
                     ) || !this.geonextCompatibilityMode) &&
                     !el.evalVisProp('fixed')
                 ) {
@@ -4180,7 +4180,7 @@ JXG.extend(
                     } else {
                         this.displayInfobox(false);
                         el.setPositionDirectly(
-                            Const.COORDS_BY_USER,
+                            COORDS_BY.USER,
                             dir,
                             [0, 0]
                         );
@@ -4650,7 +4650,7 @@ JXG.extend(
          */
         displayInfobox: function (val) {
             if (!val && this.focusObjects.length > 0 &&
-                this.select(this.focusObjects[0]).elementClass === Const.OBJECT_CLASS_POINT) {
+                this.select(this.focusObjects[0]).elementClass === OBJECT_CLASS.POINT) {
                 // If an element has focus we do not hide its infobox
                 return this;
             }
@@ -4788,7 +4788,7 @@ JXG.extend(
                 absPos = Env.getPosition(evt, null, this.document),
                 x = absPos[0] - cPos[0],
                 y = absPos[1] - cPos[1],
-                newCoords = new Coords(Const.COORDS_BY_SCREEN, [x, y], this);
+                newCoords = new Coords(COORDS_BY.SCREEN, [x, y], this);
 
             return newCoords.usrCoords.slice(1);
         },
@@ -4888,9 +4888,9 @@ JXG.extend(
                     this.origin.scrCoords[2] -= this.drag_dy;
                 }
 
-                ul = new Coords(Const.COORDS_BY_SCREEN, [0, 0], this).usrCoords;
+                ul = new Coords(COORDS_BY.SCREEN, [0, 0], this).usrCoords;
                 lr = new Coords(
-                    Const.COORDS_BY_SCREEN,
+                    COORDS_BY.SCREEN,
                     [this.canvasWidth, this.canvasHeight],
                     this
                 ).usrCoords;
@@ -4935,9 +4935,9 @@ JXG.extend(
                         t = e.coords.usrCoords[what];
 
                         if (what === 2) {
-                            e.setPositionDirectly(Const.COORDS_BY_USER, [f(), t]);
+                            e.setPositionDirectly(COORDS_BY.USER, [f(), t]);
                         } else {
-                            e.setPositionDirectly(Const.COORDS_BY_USER, [t, f()]);
+                            e.setPositionDirectly(COORDS_BY.USER, [t, f()]);
                         }
                         e.prepareUpdate().update();
                     };
@@ -5110,9 +5110,9 @@ JXG.extend(
                 gridStep[1] = Type.parseNumber(gridStep[1], Math.abs(bbox[0] - bbox[2]), 1 / this.unitY);
             }
 
-            p1 = new Coords(Const.COORDS_BY_USER, [0, 0], this);
+            p1 = new Coords(COORDS_BY.USER, [0, 0], this);
             p2 = new Coords(
-                Const.COORDS_BY_USER,
+                COORDS_BY.USER,
                 [gridStep[0], gridStep[1]],
                 this
             );
@@ -5465,7 +5465,7 @@ JXG.extend(
                     for (i = object._pos; i < this.objectsList.length; i++) {
                         this.objectsList[i]._pos--;
                     }
-                } else if (object.type !== Const.OBJECT_TYPE_TURTLE) {
+                } else if (object.type !== OBJECT_TYPE.TURTLE) {
                     JXG.debug(
                         'Board.removeObject: object ' + object.id + ' not found in list.'
                     );
@@ -5731,7 +5731,7 @@ JXG.extend(
                     // Special case sphere3d in central projection:
                     // We have to update the defining points of the ellipse
                     if (pEl.visProp.element3d &&
-                        pEl.visProp.element3d.type === Const.OBJECT_TYPE_SPHERE3D
+                        pEl.visProp.element3d.type === OBJECT_TYPE.SPHERE3D
                     ) {
                         for (i = 0; i < pEl.parents.length; i++) {
                             this.objects[pEl.parents[i]].needsUpdate = true;
@@ -5776,7 +5776,7 @@ JXG.extend(
             */
             for (el = 0; el < this.objectsList.length; el++) {
                 pEl = this.objectsList[el];
-                if (this.needsFullUpdate && pEl.elementClass === Const.OBJECT_CLASS_TEXT) {
+                if (this.needsFullUpdate && pEl.elementClass === OBJECT_CLASS.TEXT) {
                     pEl.updateSize();
                 }
 
@@ -6351,9 +6351,9 @@ JXG.extend(
          * @returns {Array} bounding box [x1,y1,x2,y2] upper left corner, lower right corner
          */
         getBoundingBox: function () {
-            var ul = new Coords(Const.COORDS_BY_SCREEN, [0, 0], this).usrCoords,
+            var ul = new Coords(COORDS_BY.SCREEN, [0, 0], this).usrCoords,
                 lr = new Coords(
-                    Const.COORDS_BY_SCREEN,
+                    COORDS_BY.SCREEN,
                     [this.canvasWidth, this.canvasHeight],
                     this
                 ).usrCoords;
@@ -6629,7 +6629,7 @@ JXG.extend(
                             if (node) {
                                 node.style.display = ((Type.evaluate(value)) ? 'inline' : 'none');
                             } else if (Type.evaluate(value)) {
-                                this.renderer.displayCopyright(Const.licenseText, parseInt(this.options.text.fontSize, 10));
+                                this.renderer.displayCopyright(LicenseText, parseInt(this.options.text.fontSize, 10));
                             }
                         }
                         this._set(key, value);
@@ -6643,7 +6643,7 @@ JXG.extend(
                             if (node) {
                                 node.style.display = ((Type.evaluate(value)) ? 'inline' : 'none');
                             } else if (Type.evaluate(value)) {
-                                this.renderer.displayLogo(Const.licenseLogo, parseInt(this.options.text.fontSize, 10));
+                                this.renderer.displayLogo(LicenseLogo, parseInt(this.options.text.fontSize, 10));
                             }
                         }
                         this._set(key, value);
@@ -6753,7 +6753,7 @@ JXG.extend(
                         ) {
                             delete o.animationPath;
                         } else {
-                            o.setPositionDirectly(Const.COORDS_BY_USER, newCoords);
+                            o.setPositionDirectly(COORDS_BY.USER, newCoords);
                             o.fullUpdate();
                             obj = o;
                         }

@@ -42,7 +42,7 @@ import JXG from "../jxg.js";
 import Options from "../options.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
-import Const from "./constants.js";
+import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import GeometryElement from "./element.js";
 import Type from "../utils/type.js";
 import CoordsElement from "./coordselement.js";
@@ -62,7 +62,7 @@ import CoordsElement from "./coordselement.js";
  * @see JXG.Board#generateName
  */
 JXG.Point = function (board, coordinates, attributes) {
-    this.constructor(board, attributes, Const.OBJECT_TYPE_POINT, Const.OBJECT_CLASS_POINT);
+    this.constructor(board, attributes, OBJECT_TYPE.POINT, OBJECT_CLASS.POINT);
     this.element = this.board.select(attributes.anchor);
     this.coordsConstructor(coordinates);
 
@@ -163,7 +163,7 @@ JXG.extend(
                 this.transformations[i].update();
                 c = Mat.matVecMult(this.transformations[i].matrix, c);
             }
-            this.coords.setCoordinates(Const.COORDS_BY_USER, c);
+            this.coords.setCoordinates(COORDS_BY.USER, c);
 
             return this;
         },
@@ -214,7 +214,7 @@ JXG.extend(
                 );
             }
 
-            this.type = Const.OBJECT_TYPE_INTERSECTION;
+            this.type = OBJECT_TYPE.INTERSECTION;
             this.elType = 'intersection';
             this.parents = [el1.id, el2.id, i, j];
 
@@ -375,7 +375,7 @@ JXG.extend(
 
             if (Type.isPoint(el)) {
                 return this.Dist(el) < tol;
-            } else if (el.elementClass === Const.OBJECT_CLASS_LINE) {
+            } else if (el.elementClass === OBJECT_CLASS.LINE) {
                 if (el.elType === "segment" && !this.evalVisProp('alwaysintersect')) {
                     arr = JXG.Math.Geometry.projectCoordsToSegment(
                         this.coords.usrCoords,
@@ -394,15 +394,15 @@ JXG.extend(
                 } else {
                     return Geometry.distPointLine(this.coords.usrCoords, el.stdform) < tol;
                 }
-            } else if (el.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+            } else if (el.elementClass === OBJECT_CLASS.CIRCLE) {
                 if (el.evalVisProp('hasinnerpoints')) {
                     return this.Dist(el.center) < el.Radius() + tol;
                 }
                 return Math.abs(this.Dist(el.center) - el.Radius()) < tol;
-            } else if (el.elementClass === Const.OBJECT_CLASS_CURVE) {
+            } else if (el.elementClass === OBJECT_CLASS.CURVE) {
                 crds = Geometry.projectPointToCurve(this, el, this.board)[0];
                 return Geometry.distance(this.coords.usrCoords, crds.usrCoords, 3) < tol;
-            } else if (el.type === Const.OBJECT_TYPE_POLYGON) {
+            } else if (el.type === OBJECT_TYPE.POLYGON) {
                 if (el.evalVisProp('hasinnerpoints')) {
                     if (
                         el.pnpoly(
@@ -416,7 +416,7 @@ JXG.extend(
                 }
                 arr = Geometry.projectCoordsToPolygon(this.coords.usrCoords, el);
                 return Geometry.distance(this.coords.usrCoords, arr, 3) < tol;
-            } else if (el.type === Const.OBJECT_TYPE_TURTLE) {
+            } else if (el.type === OBJECT_TYPE.TURTLE) {
                 crds = Geometry.projectPointToTurtle(this, el, this.board);
                 return Geometry.distance(this.coords.usrCoords, crds.usrCoords, 3) < tol;
             }
@@ -648,7 +648,7 @@ JXG.createIntersectionPoint = function (board, parents, attributes) {
         );
     }
 
-    el.type = Const.OBJECT_TYPE_INTERSECTION;
+    el.type = OBJECT_TYPE.INTERSECTION;
     el.elType = 'intersection';
     el.setParents([el1.id, el2.id]);
 
@@ -815,9 +815,9 @@ JXG.createOtherIntersectionPoint = function (board, parents, attributes) {
             input.sort(function (a, b) { return b.elementClass - a.elementClass; });
 
             // Two lines are forbidden:
-            if ([Const.OBJECT_CLASS_CIRCLE, Const.OBJECT_CLASS_CURVE].indexOf(input[0].elementClass) < 0) {
+            if ([OBJECT_CLASS.CIRCLE, OBJECT_CLASS.CURVE].indexOf(input[0].elementClass) < 0) {
                 isGood = false;
-            } else if ([Const.OBJECT_CLASS_CIRCLE, Const.OBJECT_CLASS_CURVE, Const.OBJECT_CLASS_LINE].indexOf(input[1].elementClass) < 0) {
+            } else if ([OBJECT_CLASS.CIRCLE, OBJECT_CLASS.CURVE, OBJECT_CLASS.LINE].indexOf(input[1].elementClass) < 0) {
                 isGood = false;
             }
         }
@@ -836,7 +836,7 @@ JXG.createOtherIntersectionPoint = function (board, parents, attributes) {
     func = Geometry.otherIntersectionFunction(input, others, el.visProp.alwaysintersect, el.visProp.precision);
     el.addConstraint([func]);
 
-    el.type = Const.OBJECT_TYPE_INTERSECTION;
+    el.type = OBJECT_TYPE.INTERSECTION;
     el.elType = 'otherintersection';
     el.setParents([el1.id, el2.id]);
     el.addParents(others);
@@ -844,7 +844,7 @@ JXG.createOtherIntersectionPoint = function (board, parents, attributes) {
     el1.addChild(el);
     el2.addChild(el);
 
-    if (el1.elementClass === Const.OBJECT_CLASS_CIRCLE) {
+    if (el1.elementClass === OBJECT_CLASS.CIRCLE) {
         // circle, circle|line
         el.generatePolynomial = function () {
             var poly1 = el1.generatePolynomial(el),
@@ -933,23 +933,23 @@ JXG.createPolePoint = function (board, parents, attributes) {
 
     if (parents.length > 1) {
         firstParentIsConic =
-            parents[0].type === Const.OBJECT_TYPE_CONIC ||
-            parents[0].elementClass === Const.OBJECT_CLASS_CIRCLE;
+            parents[0].type === OBJECT_TYPE.CONIC ||
+            parents[0].elementClass === OBJECT_CLASS.CIRCLE;
         secondParentIsConic =
-            parents[1].type === Const.OBJECT_TYPE_CONIC ||
-            parents[1].elementClass === Const.OBJECT_CLASS_CIRCLE;
+            parents[1].type === OBJECT_TYPE.CONIC ||
+            parents[1].elementClass === OBJECT_CLASS.CIRCLE;
 
-        firstParentIsLine = parents[0].elementClass === Const.OBJECT_CLASS_LINE;
-        secondParentIsLine = parents[1].elementClass === Const.OBJECT_CLASS_LINE;
+        firstParentIsLine = parents[0].elementClass === OBJECT_CLASS.LINE;
+        secondParentIsLine = parents[1].elementClass === OBJECT_CLASS.LINE;
     }
 
     /*        if (parents.length !== 2 || !((
-                parents[0].type === Const.OBJECT_TYPE_CONIC ||
-                parents[0].elementClass === Const.OBJECT_CLASS_CIRCLE) &&
-                parents[1].elementClass === Const.OBJECT_CLASS_LINE ||
-                parents[0].elementClass === Const.OBJECT_CLASS_LINE && (
-                parents[1].type === Const.OBJECT_TYPE_CONIC ||
-                parents[1].elementClass === Const.OBJECT_CLASS_CIRCLE))) {*/
+                parents[0].type === OBJECT_TYPE.CONIC ||
+                parents[0].elementClass === OBJECT_CLASS.CIRCLE) &&
+                parents[1].elementClass === OBJECT_CLASS.LINE ||
+                parents[0].elementClass === OBJECT_CLASS.LINE && (
+                parents[1].type === OBJECT_TYPE.CONIC ||
+                parents[1].elementClass === OBJECT_CLASS.CIRCLE))) {*/
     if (
         parents.length !== 2 ||
         !(
