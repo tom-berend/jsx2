@@ -31,7 +31,7 @@
 import { JXG } from "../jxg.js";
 import {Type} from "../utils/type.js";
 import {JSXMath} from "./math.js";
-import Geometry from "./geometry.js";
+import {Geometry} from "./geometry.js";
 import Numerics from "./numerics.js";
 import Quadtree from "./bqdt.js";
 
@@ -49,8 +49,8 @@ import Quadtree from "./bqdt.js";
  * Also, it is always a trade off to find all components of the curve and
  * keep the construction responsive.
  *
- * @name JXG.Math.ImplicitPlot
- * @exports JXG.JSXMath.ImplicitPlot as JXG.Math.ImplicitPlot
+ * @name Geometry.ImplicitPlot
+ * @exports JXG.JSXMath.ImplicitPlot as Geometry.ImplicitPlot
  * @param {Array} bbox Bounding box of the area in which solutions of the equation
  * are determined.
  * @param {Object} config Configuration object. Default:
@@ -111,7 +111,7 @@ import Quadtree from "./bqdt.js";
  *
  *         this.dataX = [];
  *         this.dataY = [];
- *         ip = new JXG.Math.ImplicitPlot(bbox, cfg, f, null, null);
+ *         ip = new Geometry.ImplicitPlot(bbox, cfg, f, null, null);
  *         ret = ip.plot();
  *         this.dataX = ret[0];
  *         this.dataY = ret[1];
@@ -149,7 +149,7 @@ import Quadtree from "./bqdt.js";
  *                 this.dataX = [];
  *                 this.dataY = [];
  *
- *                 ip = new JXG.Math.ImplicitPlot(bbox, cfg, f, null, null);
+ *                 ip = new Geometry.ImplicitPlot(bbox, cfg, f, null, null);
  *                 ret = ip.plot();
  *
  *                 this.dataX = ret[0];
@@ -222,7 +222,7 @@ JXG.JSXMath.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
 
 JXG.extend(
     JXG.JSXMath.ImplicitPlot.prototype,
-    /** @lends JXG.Math.ImplicitPlot.prototype */ {
+    /** @lends Geometry.ImplicitPlot.prototype */ {
 
         /**
          * Implicit plotting method.

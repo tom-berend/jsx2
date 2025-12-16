@@ -38,14 +38,14 @@ import {JSXMath} from "./math.js";
 import Extrapolate from "./extrapolate.js";
 import Numerics from "./numerics.js";
 import Statistics from "./statistics.js";
-import Geometry from "./geometry.js";
+import {Geometry} from "./geometry.js";
 import IntervalArithmetic from "./ia.js";
 import {Type} from "../utils/type.js";
 
 /**
  * Functions for plotting of curves.
- * @name JXG.Math.Plot
- * @exports JXG.JSXMath.Plot as JXG.Math.Plot
+ * @name Geometry.Plot
+ * @exports JXG.JSXMath.Plot as Geometry.Plot
  * @namespace
  */
 JXG.JSXMath.Plot = {
@@ -2371,7 +2371,7 @@ JXG.JSXMath.Plot = {
     /**
      * If the absolute maximum of the set of differences is larger than
      * criticalThreshold * median of these values, it is regarded as critical point.
-     * @see JXG.Math.Plot._criticalInterval
+     * @see Geometry.Plot._criticalInterval
      */
     criticalThreshold: 1000,
 

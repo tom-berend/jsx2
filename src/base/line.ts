@@ -49,7 +49,7 @@ const dbugColor = `color:white;background-color:black`;
 
 import { JXG } from "../jxg.js";
 import {JSXMath} from "../math/math.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import Statistics from "../math/statistics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";

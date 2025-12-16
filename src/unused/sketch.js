@@ -1675,7 +1675,7 @@
                                 step.args.p2.unshift(1);
                             }
 
-                            str2 = JXG.Math.crossProduct(step.args.p1, step.args.p2);
+                            str2 = Geometry.crossProduct(step.args.p1, step.args.p2);
                             for (i = 0; i < str2.length; i++) {
                                 str2[i] = pn(str2[i]);
                             }

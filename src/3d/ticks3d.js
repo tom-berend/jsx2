@@ -107,8 +107,8 @@ JXG.createTicks3D = function (board, parents, attributes) {
             v2[i] = Type.evaluate(this.direction2[i]);
         }
 
-        l1 = JXG.Math.norm(v1, 3);
-        l2 = JXG.Math.norm(v2, 3);
+        l1 = Geometry.norm(v1, 3);
+        l2 = Geometry.norm(v2, 3);
         for (i = 0; i < 3; i++) {
             v1[i] /= l1;
             v2[i] /= l2;
@@ -174,8 +174,8 @@ JXG.createTicks3D = function (board, parents, attributes) {
             v2[i] = Type.evaluate(this.direction2[i]);
         }
 
-        l1 = JXG.Math.norm(v1, 3);
-        l2 = JXG.Math.norm(v2, 3);
+        l1 = Geometry.norm(v1, 3);
+        l2 = Geometry.norm(v2, 3);
         for (i = 0; i < 3; i++) {
             v1[i] /= l1;
             v2[i] /= l2;

@@ -33,7 +33,7 @@
 /*jslint nomen: true, plusplus: true*/
 
 import { JXG } from "../jxg.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import {JSXMath} from "../math/math.js";
 import Statistics from "../math/statistics.js";
 import {Coords} from "../base/coords.js";
@@ -881,7 +881,7 @@ JXG.createSector = function (board, parents, attributes) {
          * @memberOf Sector.prototype
          * @name setPositionDirectly
          * @function
-         * @param {Number} method The type of coordinates used here. Possible values are {@link JXG.COORDS_BY_USER} and {@link JXG.COORDS_BY_SCREEN}.
+         * @param {Number} method The type of coordinates used here. Possible values are {@link COORDS_BY.USER} and {@link JXG.COORDS_BY_SCREEN}.
          * @param {Array} coords coordinates in screen/user units
          * @param {Array} oldcoords previous coordinates in screen/user units
          * @returns {JXG.Curve} this element
@@ -1207,7 +1207,7 @@ JXG.registerElement("majorsector", JXG.createMajorSector);
  * var a = board.create('angle', [p1, p2, p3], {
  * 	 radius: 1,
  *   name: function() {
- *   	return JXG.Math.Geometry.trueAngle(p1, p2, p3).toFixed(1) + '°';
+ *   	return Geometry.trueAngle(p1, p2, p3).toFixed(1) + '°';
  *   }});
  *
  * </pre><div id="JXGc813f601-8dd3-4030-9892-25c6d8671512" class="jxgbox" style="width: 300px; height: 300px;"></div>
@@ -1223,7 +1223,7 @@ JXG.registerElement("majorsector", JXG.createMajorSector);
  *     var a = board.create('angle', [p1, p2, p3], {
  *     	radius: 1,
  *       name: function() {
- *       	return JXG.Math.Geometry.trueAngle(p1, p2, p3).toFixed(1) + '°';
+ *       	return Geometry.trueAngle(p1, p2, p3).toFixed(1) + '°';
  *       }});
  *
  *     })();

@@ -34,14 +34,14 @@
 
 import { JXG } from "../jxg.js";
 import {JSXMath} from "./math.js";
-import Geometry from "./geometry.js";
+import {Geometry} from "./geometry.js";
 import { Type } from "../utils/type.js";
 
 /**
  * Instantiate a new quadtree.
  *
- * @name JXG.Math.Quadtree
- * @exports JXG.JSXMath.Quadtree as JXG.Math.Quadtree
+ * @name Geometry.Quadtree
+ * @exports JXG.JSXMath.Quadtree as Geometry.Quadtree
  * @param {Array} bbox Bounding box of the new quad (sub)tree.
  * @param {Object} config Configuration object. Default value: to {capacity: 10}
  * @param {Object} [parent] Parent object or null if root.
@@ -57,14 +57,14 @@ JXG.JSXMath.Quadtree = function (bbox, config={capacity:10}, parent=null) {
     /**
      * Configuration object for quadtree.
      *
-     * @name JXG.Math.Quadtree.config
+     * @name Geometry.Quadtree.config
      * @type Object
      */
     this.config = {};
     /**
      * The maximum number of points stored in a quadtree node
      * before it is subdivided.
-     * @name JXG.Math.Quadtree.config#capacity
+     * @name Geometry.Quadtree.config#capacity
      * @type Number
      * @default 10
      */
@@ -73,7 +73,7 @@ JXG.JSXMath.Quadtree = function (bbox, config={capacity:10}, parent=null) {
     /**
      * Type of a point object. Possible values are:
      * 'coords', 'object'.
-     * @name JXG.Math.Quadtree.config#pointType
+     * @name Geometry.Quadtree.config#pointType
      * @type String
      * @default 'coords'
      */
@@ -81,7 +81,7 @@ JXG.JSXMath.Quadtree = function (bbox, config={capacity:10}, parent=null) {
 
     /**
      * Point storage.
-     * @name JXG.Math.Quadtree#points
+     * @name Geometry.Quadtree#points
      * @type Array
      */
     this.points = [];
@@ -94,37 +94,37 @@ JXG.JSXMath.Quadtree = function (bbox, config={capacity:10}, parent=null) {
     /**
      * Parent quadtree or null if there is not parent.
      *
-     * @name JXG.Math.Quadtree#parent
-     * @type JXG.Math.Quadtree
+     * @name Geometry.Quadtree#parent
+     * @type Geometry.Quadtree
      *
      */
     this.parent = parent || null;
 
     /**
      * In a subdivided quadtree this represents the top left subtree.
-     * @name JXG.Math.Quadtree#northWest
-     * @type JXG.Math.Quadtree
+     * @name Geometry.Quadtree#northWest
+     * @type Geometry.Quadtree
      */
     this.northWest = null;
 
     /**
      * In a subdivided quadtree this represents the top right subtree.
-     * @name JXG.Math.Quadtree#northEast
-     * @type JXG.Math.Quadtree
+     * @name Geometry.Quadtree#northEast
+     * @type Geometry.Quadtree
      */
     this.northEast = null;
 
     /**
      * In a subdivided quadtree this represents the bottom right subtree.
-     * @name JXG.Math.Quadtree#southEast
-     * @type JXG.Math.Quadtree
+     * @name Geometry.Quadtree#southEast
+     * @type Geometry.Quadtree
      */
     this.southEast = null;
 
     /**
      * In a subdivided quadtree this represents the bottom left subtree.
-     * @name JXG.Math.Quadtree#southWest
-     * @type JXG.Math.Quadtree
+     * @name Geometry.Quadtree#southWest
+     * @type Geometry.Quadtree
      */
     this.southWest = null;
 
@@ -132,7 +132,7 @@ JXG.JSXMath.Quadtree = function (bbox, config={capacity:10}, parent=null) {
 
 JXG.extend(
     JXG.JSXMath.Quadtree.prototype,
-    /** @lends JXG.Math.Quadtree.prototype */ {
+    /** @lends Geometry.Quadtree.prototype */ {
         /**
          * Checks if the given coordinates are inside of the boundaries of the quadtree.
          * The quadtree is open to the left and botton and closed to
@@ -215,7 +215,7 @@ JXG.extend(
 
         /**
          * Internal _query method that lacks adjustment of the parameter.
-         * @name JXG.Math.Quadtree#_query
+         * @name Geometry.Quadtree#_query
          * @param {Number} x
          * @param {Number} y
          * @returns {Boolean|JXG.Quadtree} The quadtree if the point is found, false
@@ -257,7 +257,7 @@ JXG.extend(
 
         /**
          * Retrieve the smallest quad tree that contains the given coordinate pair.
-         * @name JXG.Math.Quadtree#query
+         * @name Geometry.Quadtree#query
          * @param {JXG.Coords|Number} xp
          * @param {Number} y
          * @returns {Boolean|JXG.Quadtree} The quadtree if the point is found, false

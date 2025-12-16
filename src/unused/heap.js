@@ -40,8 +40,8 @@ import {JSXMath} from "./math.js";
  * <p>
  * The heap nodes are stored in a JavaScript array.
  *
- * @name JXG.Math.Heap
- * @exports Mat.Heap as JXG.Math.Heap
+ * @name Geometry.Heap
+ * @exports Mat.Heap as Geometry.Heap
  *
  * @constructor
  */

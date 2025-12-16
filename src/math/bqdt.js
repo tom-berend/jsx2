@@ -41,8 +41,8 @@ import {Type} from "../utils/type.js";
  * A box quadtree stores AABBs, i.e. axis-aligned bounding boxes.
  * The box quadtree has four sub-quadtress which maybe null if not needed.
  *
- * @name JXG.Math.BoxQuadtree
- * @exports JXG.JSXMath.BoxQuadtree as JXG.Math.BoxQuadtree
+ * @name Geometry.BoxQuadtree
+ * @exports JXG.JSXMath.BoxQuadtree as Geometry.BoxQuadtree
  *
  * @param {Number} depth Maximum recursion depth.
  * @param {Number} capacity Maximum number of items stored in this node.
@@ -60,7 +60,7 @@ JXG.JSXMath.BoxQuadtree = function (depth, capacity, bbox) {
 
     /**
      * Maximum depth of the box quadtree node
-     * @name JXG.Math.BoxQuadtree#depth
+     * @name Geometry.BoxQuadtree#depth
      * @type Number
      * @private
      */
@@ -68,7 +68,7 @@ JXG.JSXMath.BoxQuadtree = function (depth, capacity, bbox) {
 
     /**
      * Capacity of the box quadtree node
-     * @name JXG.Math.BoxQuadtree#capacity
+     * @name Geometry.BoxQuadtree#capacity
      * @type Number
      * @private
      */
@@ -77,7 +77,7 @@ JXG.JSXMath.BoxQuadtree = function (depth, capacity, bbox) {
     /**
      * Item storage.
      *
-     * @name JXG.Math.BoxQuadtree#items
+     * @name Geometry.BoxQuadtree#items
      * @type Array
      * @private
      */
@@ -85,32 +85,32 @@ JXG.JSXMath.BoxQuadtree = function (depth, capacity, bbox) {
 
     /**
      * In a subdivided quadtree this represents the top left subtree.
-     * @name JXG.Math.BoxQuadtree#northWest
-     * @type JXG.Math.BoxQuadtree
+     * @name Geometry.BoxQuadtree#northWest
+     * @type Geometry.BoxQuadtree
      * @private
      */
     this.northWest = null;
 
     /**
      * In a subdivided quadtree this represents the top right subtree.
-     * @name JXG.Math.BoxQuadtree#northEast
-     * @type JXG.Math.BoxQuadtree
+     * @name Geometry.BoxQuadtree#northEast
+     * @type Geometry.BoxQuadtree
      * @private
      */
     this.northEast = null;
 
     /**
      * In a subdivided quadtree this represents the bottom right subtree.
-     * @name JXG.Math.BoxQuadtree#southEast
-     * @type JXG.Math.BoxQuadtree
+     * @name Geometry.BoxQuadtree#southEast
+     * @type Geometry.BoxQuadtree
      * @private
      */
     this.southEast = null;
 
     /**
      * In a subdivided quadtree this represents the bottom left subtree.
-     * @name JXG.Math.BoxQuadtree#southWest
-     * @type JXG.Math.BoxQuadtree
+     * @name Geometry.BoxQuadtree#southWest
+     * @type Geometry.BoxQuadtree
      * @private
      */
     this.southWest = null;
@@ -118,7 +118,7 @@ JXG.JSXMath.BoxQuadtree = function (depth, capacity, bbox) {
     /**
      * Bounding box [left, top, right, bottom].
      *
-     * @name JXG.Math.BoxQuadtree#bbox
+     * @name Geometry.BoxQuadtree#bbox
      * @type Array
      * @private
      */
@@ -127,7 +127,7 @@ JXG.JSXMath.BoxQuadtree = function (depth, capacity, bbox) {
     /**
      * x-coordinate of bounding box center.
      *
-     * @name JXG.Math.BoxQuadtree#cx
+     * @name Geometry.BoxQuadtree#cx
      * @type Number
      * @private
      */
@@ -136,7 +136,7 @@ JXG.JSXMath.BoxQuadtree = function (depth, capacity, bbox) {
     /**
      * y-coordinate of bounding box center.
      *
-     * @name JXG.Math.BoxQuadtree#cy
+     * @name Geometry.BoxQuadtree#cy
      * @type Number
      * @private
      */
@@ -156,7 +156,7 @@ JXG.JSXMath.BoxQuadtree = function (depth, capacity, bbox) {
 
 JXG.extend(
     JXG.JSXMath.BoxQuadtree.prototype,
-    /** @lends JXG.Math.BoxQuadtree.prototype */ {
+    /** @lends Geometry.BoxQuadtree.prototype */ {
 
         /**
          * Insert an array of items into the box quadtree. An item is an object
@@ -332,25 +332,25 @@ JXG.extend(
         subdivide: function(nw_it, sw_it, ne_it, se_it, l, t, r, b) {
             if (nw_it.length > 0) {
                 if (this.northWest === null) {
-                    this.northWest = new JXG.Math.BoxQuadtree(this.depth, this.capacity, [l, t, this.cx, this.cy]);
+                    this.northWest = new Geometry.BoxQuadtree(this.depth, this.capacity, [l, t, this.cx, this.cy]);
                 }
                 this.northWest.insert(nw_it);
             }
             if (sw_it.length > 0) {
                 if (this.southWest === null) {
-                    this.southWest = new JXG.Math.BoxQuadtree(this.depth, this.capacity, [l, this.cy, this.cx, b]);
+                    this.southWest = new Geometry.BoxQuadtree(this.depth, this.capacity, [l, this.cy, this.cx, b]);
                 }
                 this.southWest.insert(sw_it);
             }
             if (ne_it.length > 0) {
                 if (this.northEast === null) {
-                    this.northEast = new JXG.Math.BoxQuadtree(this.depth, this.capacity, [this.cx, t, r, this.cy]);
+                    this.northEast = new Geometry.BoxQuadtree(this.depth, this.capacity, [this.cx, t, r, this.cy]);
                 }
                 this.northEast.insert(ne_it);
             }
             if (se_it.length > 0) {
                 if (this.southEast === null) {
-                    this.southEast = new JXG.Math.BoxQuadtree(this.depth, this.capacity, [this.cx, this.cy, r, b]);
+                    this.southEast = new Geometry.BoxQuadtree(this.depth, this.capacity, [this.cx, this.cy, r, b]);
                 }
                 this.southEast.insert(se_it);
             }

@@ -41,7 +41,7 @@
 import { JXG } from "../jxg.js";
 import Options from "../options.js";
 import {JSXMath} from "../math/math.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "./element.js";
 import {Type} from "../utils/type.js";
@@ -377,7 +377,7 @@ JXG.extend(
                 return this.Dist(el) < tol;
             } else if (el.elementClass === OBJECT_CLASS.LINE) {
                 if (el.elType === "segment" && !this.evalVisProp('alwaysintersect')) {
-                    arr = JXG.JSXMath.Geometry.projectCoordsToSegment(
+                    arr = Geometry.projectCoordsToSegment(
                         this.coords.usrCoords,
                         el.point1.coords.usrCoords,
                         el.point2.coords.usrCoords

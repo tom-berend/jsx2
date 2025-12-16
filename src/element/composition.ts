@@ -56,7 +56,7 @@
 
 import { JXG } from "../jxg.js";
 import { JSXMath } from "../math/math.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import { Coords } from "../base/coords.js";
 

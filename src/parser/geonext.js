@@ -135,9 +135,9 @@ JXG.GeonextParser = {
                 // Otherwise, the operand has to be a constant (or variable).
                 rightop = "[\\w\\.]+";
             }
-            // Now, we have the two operands and replace ^ by JXG.Math.pow
+            // Now, we have the two operands and replace ^ by Geometry.pow
             expr = new RegExp("(" + leftop + ")\\^(" + rightop + ")");
-            //te = te.replace(expr, 'JXG.Math.pow($1,$2)');
+            //te = te.replace(expr, 'Geometry.pow($1,$2)');
             te = te.replace(expr, "pow($1,$2)");
             i = te.indexOf("^");
         }

@@ -808,13 +808,13 @@
                     "line",
                     [
                         function () {
-                            return JXG.Math.matVecMult(c.quadraticform, p.coords.usrCoords)[0];
+                            return Geometry.matVecMult(c.quadraticform, p.coords.usrCoords)[0];
                         },
                         function () {
-                            return JXG.Math.matVecMult(c.quadraticform, p.coords.usrCoords)[1];
+                            return Geometry.matVecMult(c.quadraticform, p.coords.usrCoords)[1];
                         },
                         function () {
-                            return JXG.Math.matVecMult(c.quadraticform, p.coords.usrCoords)[2];
+                            return Geometry.matVecMult(c.quadraticform, p.coords.usrCoords)[2];
                         }
                     ],
                     { visible: false }

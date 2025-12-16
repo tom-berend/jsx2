@@ -42,16 +42,16 @@ import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 
 import {JSXMath} from "./math.js";
-import Geometry from "./geometry.js";
+import {Geometry} from "./geometry.js";
 import Server from "../server/server.js";
 import {Type} from "../utils/type.js";
 
 var undef;
 
 /**
- * The JXG.Math.Symbolic namespace holds algorithms for symbolic computations.
- * @name JXG.Math.Symbolic
- * @exports Mat.Symbolic as JXG.Math.Symbolic
+ * The Geometry.Symbolic namespace holds algorithms for symbolic computations.
+ * @name Geometry.Symbolic
+ * @exports Mat.Symbolic as Geometry.Symbolic
  * @namespace
  */
 Mat.Symbolic = {
@@ -64,7 +64,7 @@ Mat.Symbolic = {
      * @param {String} append Method for how to append the number of the coordinates. Possible values are
      *                        'underscore' (e.g. x_2), 'none' (e.g. x2), 'brace' (e.g. x[2]).
      * @returns {Number} Number of coordinates given.
-     * @memberof JXG.Math.Symbolic
+     * @memberof Geometry.Symbolic
      */
     generateSymbolicCoordinatesPartial: function (board, element, variable, append) {
         var t_num,
@@ -126,7 +126,7 @@ Mat.Symbolic = {
     /**
      * Clears all .symbolic.x and .symbolic.y members on every point of a given board.
      * @param {JXG.Board} board The board that's points get cleared their symbolic coordinates.
-     * @memberof JXG.Math.Symbolic
+     * @memberof Geometry.Symbolic
      */
     clearSymbolicCoordinates: function (board) {
         var clear = function (list) {
@@ -155,7 +155,7 @@ Mat.Symbolic = {
      * @param {JXG.GeometryElement} element All points in the set of ancestors of this element are used to generate the set of polynomials.
      * @param {Boolean} generateCoords
      * @returns {Array} An array of polynomials as strings.
-     * @memberof JXG.Math.Symbolic
+     * @memberof Geometry.Symbolic
      */
     generatePolynomials: function (board, element, generateCoords) {
         var t,
@@ -206,7 +206,7 @@ Mat.Symbolic = {
      * @param {JXG.Board} board The board on which the point lies.
      * @param {JXG.Point} point The point that will be traced.
      * @returns {Array} An array of points.
-     * @memberof JXG.Math.Symbolic
+     * @memberof Geometry.Symbolic
      */
     geometricLocusByGroebnerBase: function (board, point) {
         var poly,

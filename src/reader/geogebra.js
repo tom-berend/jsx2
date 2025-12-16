@@ -2687,7 +2687,7 @@
                     },
                     makeRootFun = function (x) {
                         return function () {
-                            return JXG.Math.Numerics.root(inp.Y, x, inp);
+                            return Geometry.Numerics.root(inp.Y, x, inp);
                         };
                     };
 

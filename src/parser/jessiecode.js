@@ -41,7 +41,7 @@ import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import Text from "../base/text.js";
 import {JSXMath} from "../math/math.js";
 import Interval from "../math/ia.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import Statistics from "../math/statistics.js";
 import {Type} from "../utils/type.js";
 import { Env } from "../utils/env.js";
@@ -550,7 +550,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
                 }
             }
             if (Type.exists(this.board.mathLibJXG)) {
-                // Handle builtin case: factorial(x) -> JXG.Math.factorial
+                // Handle builtin case: factorial(x) -> Geometry.factorial
                 re = new RegExp('^JXG\.Math\.');
                 if (re.exec(r) !== null) {
                     return r.replace(re, '$jc$.board.mathLibJXG.');
@@ -2573,17 +2573,17 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
         builtIn.L.src = '$jc$.L';
         builtIn.Length.src = '$jc$.L';
 
-        builtIn.acosh.src = 'JXG.Math.acosh';
-        builtIn.acot.src = 'JXG.Math.acot';
-        builtIn.asinh.src = 'JXG.Math.asinh';
-        builtIn.binomial.src = 'JXG.Math.binomial';
-        builtIn.cbrt.src = 'JXG.Math.cbrt';
-        builtIn.cot.src = 'JXG.Math.cot';
-        builtIn.cosh.src = 'JXG.Math.cosh';
-        builtIn.deg.src = 'JXG.Math.Geometry.trueAngle';
-        builtIn.erf.src = 'JXG.Math.erf';
-        builtIn.erfc.src = 'JXG.Math.erfc';
-        builtIn.erfi.src = 'JXG.Math.erfi';
+        builtIn.acosh.src = 'Geometry.acosh';
+        builtIn.acot.src = 'Geometry.acot';
+        builtIn.asinh.src = 'Geometry.asinh';
+        builtIn.binomial.src = 'Geometry.binomial';
+        builtIn.cbrt.src = 'Geometry.cbrt';
+        builtIn.cot.src = 'Geometry.cot';
+        builtIn.cosh.src = 'Geometry.cosh';
+        builtIn.deg.src = 'Geometry.trueAngle';
+        builtIn.erf.src = 'Geometry.erf';
+        builtIn.erfc.src = 'Geometry.erfc';
+        builtIn.erfi.src = 'Geometry.erfi';
         builtIn.A.src = '$jc$.area';
         builtIn.area.src = '$jc$.area';
         builtIn.Area.src = '$jc$.area';
@@ -2594,24 +2594,24 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
         builtIn.R.src = '$jc$.radius';
         builtIn.radius.src = '$jc$.radius';
         builtIn.Radius.src = '$jc$.radius';
-        builtIn.factorial.src = 'JXG.Math.factorial';
-        builtIn.gcd.src = 'JXG.Math.gcd';
-        builtIn.lb.src = 'JXG.Math.log2';
-        builtIn.lcm.src = 'JXG.Math.lcm';
-        builtIn.ld.src = 'JXG.Math.log2';
-        builtIn.lg.src = 'JXG.Math.log10';
+        builtIn.factorial.src = 'Geometry.factorial';
+        builtIn.gcd.src = 'Geometry.gcd';
+        builtIn.lb.src = 'Geometry.log2';
+        builtIn.lcm.src = 'Geometry.lcm';
+        builtIn.ld.src = 'Geometry.log2';
+        builtIn.lg.src = 'Geometry.log10';
         builtIn.ln.src = 'Math.log';
-        builtIn.log.src = 'JXG.Math.log';
-        builtIn.log10.src = 'JXG.Math.log10';
-        builtIn.log2.src = 'JXG.Math.log2';
-        builtIn.ndtr.src = 'JXG.Math.ndtr';
-        builtIn.ndtri.src = 'JXG.Math.ndtri';
-        builtIn.nthroot.src = 'JXG.Math.nthroot';
-        builtIn.pow.src = 'JXG.Math.pow';
-        builtIn.rad.src = 'JXG.Math.Geometry.rad';
-        builtIn.ratpow.src = 'JXG.Math.ratpow';
+        builtIn.log.src = 'Geometry.log';
+        builtIn.log10.src = 'Geometry.log10';
+        builtIn.log2.src = 'Geometry.log2';
+        builtIn.ndtr.src = 'Geometry.ndtr';
+        builtIn.ndtri.src = 'Geometry.ndtri';
+        builtIn.nthroot.src = 'Geometry.nthroot';
+        builtIn.pow.src = 'Geometry.pow';
+        builtIn.rad.src = 'Geometry.rad';
+        builtIn.ratpow.src = 'Geometry.ratpow';
         builtIn.trunc.src = 'JXG.trunc';
-        builtIn.sinh.src = 'JXG.Math.sinh';
+        builtIn.sinh.src = 'Geometry.sinh';
         builtIn.slope.src = '$jc$.slope';
         builtIn.Slope.src = '$jc$.slope';
 

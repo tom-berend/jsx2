@@ -40,7 +40,7 @@ import { JXG } from "../jxg.js";
 import Clip from "../math/clip.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import {Coords} from "../base/coords.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import GeometryElement from "./element.js";
 import GeonextParser from "../parser/geonext.js";
 import ImplicitPlot from "../math/implicitplot.js";
@@ -103,7 +103,7 @@ JXG.Curve = function (board, parents, attributes) {
     /**
      * Stores a quadtree if it is required. The quadtree is generated in the curve
      * updates and can be used to speed up the hasPoint method.
-     * @type JXG.Math.Quadtree
+     * @type Geometry.Quadtree
      */
     this.qdt = null;
 
@@ -1479,7 +1479,7 @@ JXG.extend(
             return [isTransformed, curve_org];
         }
 
-        // See JXG.Math.Geometry.pnpoly
+        // See Geometry.pnpoly
         // pnpoly: function (x_in, y_in, coord_type) {
         //     var i,
         //         j,
@@ -1639,7 +1639,7 @@ JXG.extend(
  *  p.push(board.create('point',[-1, -2.5 ], {size: 5, strokeColor:col, fillColor:col}));
  *  p.push(board.create('point',[2, -2], {size: 5, strokeColor:col, fillColor:col}));
  *
- *  c = board.create('curve', JXG.Math.Numerics.bezier(p),
+ *  c = board.create('curve', Geometry.Numerics.bezier(p),
  *              {strokeColor:'red', name:"curve", strokeWidth:5, fixed: false}); // Draggable curve
  *  c.addParents(p);
  * </pre><div class="jxgbox" id="JXG7bcc6280-f6eb-433e-8281-c837c3387849" style="width: 300px; height: 300px;"></div>
@@ -1654,7 +1654,7 @@ JXG.extend(
  *  p.push(board.create('point',[-1, -2.5 ], {size: 5, strokeColor:col, fillColor:col}));
  *  p.push(board.create('point',[2, -2], {size: 5, strokeColor:col, fillColor:col}));
  *
- *  c = board.create('curve', JXG.Math.Numerics.bezier(p),
+ *  c = board.create('curve', Geometry.Numerics.bezier(p),
  *              {strokeColor:'red', name:"curve", strokeWidth:5, fixed: false}); // Draggable curve
  *  c.addParents(p);
  * })();
@@ -3097,9 +3097,9 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
  * var data = [57, 57, 57, 58, 63, 66, 66, 67, 67, 68, 69, 70, 70, 70, 70, 72, 73, 75, 75, 76, 76, 78, 79, 81];
  * var Q = [];
  *
- * Q[0] = JXG.Math.Statistics.min(data);
- * Q = Q.concat(JXG.Math.Statistics.percentile(data, [25, 50, 75]));
- * Q[4] = JXG.Math.Statistics.max(data);
+ * Q[0] = Geometry.Statistics.min(data);
+ * Q = Q.concat(Geometry.Statistics.percentile(data, [25, 50, 75]));
+ * Q[4] = Geometry.Statistics.max(data);
  *
  * var b = board.create('boxplot', [Q, 0, 3]);
  *
@@ -3111,9 +3111,9 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
  *     var data = [57, 57, 57, 58, 63, 66, 66, 67, 67, 68, 69, 70, 70, 70, 70, 72, 73, 75, 75, 76, 76, 78, 79, 81];
  *     var Q = [];
  *
- *     Q[0] = JXG.Math.Statistics.min(data);
- *     Q = Q.concat(JXG.Math.Statistics.percentile(data, [25, 50, 75]));
- *     Q[4] = JXG.Math.Statistics.max(data);
+ *     Q[0] = Geometry.Statistics.min(data);
+ *     Q = Q.concat(Geometry.Statistics.percentile(data, [25, 50, 75]));
+ *     Q[4] = Geometry.Statistics.max(data);
  *
  *     var b = board.create('boxplot', [Q, 0, 3]);
  *

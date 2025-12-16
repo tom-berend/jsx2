@@ -34,7 +34,7 @@ import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
 import {JSXMath} from "../math/math.js";
 import Stat from "../math/statistics.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 
 /**
  * A sphere consists of all points with a given distance from a given point.

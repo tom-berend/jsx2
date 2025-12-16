@@ -47,7 +47,7 @@ import { BOARD_MODE, BOARD_QUALITY, OBJECT_CLASS, OBJECT_TYPE, COORDS_BY, Versio
 import { Coords } from './coords.js';
 import Options from '../options.js';
 import Numerics from '../math/numerics.js'
-import Geometry from '../math/geometry.js';
+import {Geometry} from '../math/geometry.js';
 import Complex from '../math/complex.js';
 // import {Statistics} from '../math/statistics.js';
 // import {JessieCode} from '../parser/jessiecode.js';
@@ -631,8 +631,8 @@ export class Board extends Events {
      */
     userLog = [];
 
-    // mathLib = Math;        // Math or JXG.Math.IntervalArithmetic
-    // mathLibJXG = JXG.Math; // JXG.Math or JXG.Math.IntervalArithmetic
+    // mathLib = Math;        // Math or Geometry.IntervalArithmetic
+    // mathLibJXG = JXG.Math; // JXG.Math or Geometry.IntervalArithmetic
 
     // missing definitions
     cssTransMat: number[][];
@@ -8301,12 +8301,12 @@ export class Board extends Events {
  * // Circle defined as a curve. The circle 'starts' at P, i.e. circle(0) = P
  * var circle = board.create('curve',[
  *           function (t){var d = P.Dist(C),
- *                           beta = JXG.Math.Geometry.rad([C.X()+1,C.Y()],C,P);
+ *                           beta = Geometry.rad([C.X()+1,C.Y()],C,P);
  *                       t += beta;
  *                       return C.X()+d*Math.cos(t);
  *           }
  *           function (t){var d = P.Dist(C),
- *                           beta = JXG.Math.Geometry.rad([C.X()+1,C.Y()],C,P);
+ *                           beta = Geometry.rad([C.X()+1,C.Y()],C,P);
  *                       t += beta;
  *                       return C.Y()+d*Math.sin(t);
  *           }
@@ -8330,12 +8330,12 @@ export class Board extends Events {
  * // Circle defined as a curve. The circle 'starts' at P, i.e. circle(0) = P
  * var circle = brd.create('curve',[
  *           function (t){var d = P.Dist(C),
- *                           beta = JXG.Math.Geometry.rad([C.X()+1,C.Y()],C,P);
+ *                           beta = Geometry.rad([C.X()+1,C.Y()],C,P);
  *                       t += beta;
  *                       return C.X()+d*Math.cos(t);
  *           }
  *           function (t){var d = P.Dist(C),
- *                           beta = JXG.Math.Geometry.rad([C.X()+1,C.Y()],C,P);
+ *                           beta = Geometry.rad([C.X()+1,C.Y()],C,P);
  *                       t += beta;
  *                       return C.Y()+d*Math.sin(t);
  *           }

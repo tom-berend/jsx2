@@ -33,7 +33,7 @@ import { JXG } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import {Type} from "../utils/type.js";
 import {JSXMath} from '../math/math.js';
-import Geometry from '../math/geometry.js';
+import {Geometry} from '../math/geometry.js';
 
 /**
  * In 3D space, a circle consists of all points on a given plane with a given distance from a given point. The given point is called the center, and the given distance is called the radius.

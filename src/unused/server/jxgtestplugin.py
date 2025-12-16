@@ -9,7 +9,7 @@ class JXGTestModule(JXGServerModule):
             alert(x);
         };
         '''
-        resp.addField('JXG.Math.Numerics', 'test', s)
+        resp.addField('Geometry.Numerics', 'test', s)
 
         resp.addHandler(self.calcTest, 'function(data) { alert(data.y); }')
         return

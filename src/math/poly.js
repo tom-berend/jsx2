@@ -42,9 +42,9 @@ import {JSXMath} from "./math.js";
 import {Type} from "../utils/type.js";
 
 /**
- * The JXG.Math.Poly namespace holds algorithms to create and manipulate polynomials.
- * @name JXG.Math.Poly
- * @exports JXG.JSXMath.Poly as JXG.Math.Poly
+ * The Geometry.Poly namespace holds algorithms to create and manipulate polynomials.
+ * @name Geometry.Poly
+ * @exports JXG.JSXMath.Poly as Geometry.Poly
  * @namespace
  */
 JXG.JSXMath.Poly = {};
@@ -52,7 +52,7 @@ JXG.JSXMath.Poly = {};
 /**
  * Define a polynomial ring over R.
  * @class
- * @name JXG.Math.Poly.Ring
+ * @name Geometry.Poly.Ring
  * @param {Array} variables List of indeterminates.
  */
 JXG.JSXMath.Poly.Ring = function (variables) {
@@ -65,7 +65,7 @@ JXG.JSXMath.Poly.Ring = function (variables) {
 
 JXG.extend(
     JXG.JSXMath.Poly.Ring.prototype,
-    /** @lends JXG.Math.Poly.Ring.prototype */ {
+    /** @lends Geometry.Poly.Ring.prototype */ {
         // nothing yet.
     }
 );
@@ -73,8 +73,8 @@ JXG.extend(
 /**
  * Define a monomial over the polynomial ring <tt>ring</tt>.
  * @class
- * @name JXG.Math.Poly.Monomial
- * @param {JXG.Math.Poly.Ring} ring
+ * @name Geometry.Poly.Monomial
+ * @param {Geometry.Poly.Ring} ring
  * @param {Number} coefficient
  * @param {Array} exponents An array of exponents, corresponding to ring
  */
@@ -82,7 +82,7 @@ JXG.JSXMath.Poly.Monomial = function (ring, coefficient, exponents) {
     var i;
 
     if (!Type.exists(ring)) {
-        throw new Error("JSXGraph error: In JXG.Math.Poly.monomial missing parameter 'ring'.");
+        throw new Error("JSXGraph error: In Geometry.Poly.monomial missing parameter 'ring'.");
     }
 
     if (!Type.isArray(exponents)) {
@@ -97,7 +97,7 @@ JXG.JSXMath.Poly.Monomial = function (ring, coefficient, exponents) {
 
     /**
      * A polynomial ring.
-     * @type JXG.Math.Poly.Ring
+     * @type Geometry.Poly.Ring
      */
     this.ring = ring;
 
@@ -117,13 +117,13 @@ JXG.JSXMath.Poly.Monomial = function (ring, coefficient, exponents) {
 
 JXG.extend(
     JXG.JSXMath.Poly.Monomial.prototype,
-    /** @lends JXG.Math.Poly.Monomial.prototype */ {
+    /** @lends Geometry.Poly.Monomial.prototype */ {
         /**
          * Creates a deep copy of the monomial.
          *
-         * @returns {JXG.Math.Poly.Monomial}
+         * @returns {Geometry.Poly.Monomial}
          *
-         * @memberof JXG.Math.Poly.Monomial
+         * @memberof Geometry.Poly.Monomial
          */
         copy: function () {
             return new JXG.JSXMath.Poly.Monomial(this.ring, this.coefficient, this.exponents);
@@ -133,7 +133,7 @@ JXG.extend(
          * Print the monomial.
          * @returns {String} String representation of the monomial
 
-         * @memberof JXG.Math.Poly.Monomial
+         * @memberof Geometry.Poly.Monomial
          */
         print: function () {
             var s = [],
@@ -151,8 +151,8 @@ JXG.extend(
 /**
  * A polynomial is a sum of monomials.
  * @class
- * @name JXG.Math.Poly.Polynomial
- * @param {JXG.Math.Poly.Ring} ring A polynomial ring.
+ * @name Geometry.Poly.Polynomial
+ * @param {Geometry.Poly.Ring} ring A polynomial ring.
  * @param {String} str TODO String representation of the polynomial, will be parsed.
  */
 JXG.JSXMath.Poly.Polynomial = function (ring, str) {
@@ -161,7 +161,7 @@ JXG.JSXMath.Poly.Polynomial = function (ring, str) {
 
     if (!Type.exists(ring)) {
         throw new Error(
-            "JSXGraph error: In JXG.Math.Poly.polynomial missing parameter 'ring'."
+            "JSXGraph error: In Geometry.Poly.polynomial missing parameter 'ring'."
         );
     }
 
@@ -173,7 +173,7 @@ JXG.JSXMath.Poly.Polynomial = function (ring, str) {
 
     /**
      * A polynomial ring.
-     * @type JXG.Math.Poly.Ring
+     * @type Geometry.Poly.Ring
      */
     this.ring = ring;
 
@@ -186,13 +186,13 @@ JXG.JSXMath.Poly.Polynomial = function (ring, str) {
 
 JXG.extend(
     JXG.JSXMath.Poly.Polynomial.prototype,
-    /** @lends JXG.Math.Poly.Polynomial.prototype */ {
+    /** @lends Geometry.Poly.Polynomial.prototype */ {
         /**
          * Find a monomial with the given signature, i.e. exponent vector.
          * @param {Array} sig An array of numbers
          * @returns {Number} The index of the first monomial with the given signature, or -1
          * if no monomial could be found.
-         * @memberof JXG.Math.Poly.Polynomial
+         * @memberof Geometry.Poly.Polynomial
          */
         findSignature: function (sig) {
             var i;
@@ -209,9 +209,9 @@ JXG.extend(
         /**
          * Adds a monomial to the polynomial. Checks the existing monomials for the added
          * monomial's signature and just adds the coefficient if one is found.
-         * @param {JXG.Math.Poly.Monomial} m
+         * @param {Geometry.Poly.Monomial} m
          * @param {Number} factor Either <tt>1</tt> or <tt>-1</tt>.
-         * @memberof JXG.Math.Poly.Polynomial
+         * @memberof Geometry.Poly.Polynomial
          */
         addSubMonomial: function (m, factor) {
             var i;
@@ -228,8 +228,8 @@ JXG.extend(
         /**
          * Adds another polynomial or monomial to this one and merges them by checking for the
          * signature of each new monomial in the existing monomials.
-         * @param {JXG.Math.Poly.Polynomial|JXG.Math.Poly.Monomial} mp
-         * @memberof JXG.Math.Poly.Polynomial
+         * @param {Geometry.Poly.Polynomial|Geometry.Poly.Monomial} mp
+         * @memberof Geometry.Poly.Polynomial
          */
         add: function (mp) {
             var i;
@@ -246,7 +246,7 @@ JXG.extend(
                 }
             } else {
                 throw new Error(
-                    "JSXGraph error: In JXG.Math.Poly.polynomial.add either summand is undefined or rings don't match."
+                    "JSXGraph error: In Geometry.Poly.polynomial.add either summand is undefined or rings don't match."
                 );
             }
         },
@@ -254,8 +254,8 @@ JXG.extend(
         /**
          * Subtracts another polynomial or monomial from this one and merges them by checking for the
          * signature of each new monomial in the existing monomials.
-         * @param {JXG.Math.Poly.Polynomial|JXG.Math.Poly.Monomial} mp
-         * @memberof JXG.Math.Poly.Polynomial
+         * @param {Geometry.Poly.Polynomial|Geometry.Poly.Monomial} mp
+         * @memberof Geometry.Poly.Polynomial
          */
         sub: function (mp) {
             var i;
@@ -272,15 +272,15 @@ JXG.extend(
                 }
             } else {
                 throw new Error(
-                    "JSXGraph error: In JXG.Math.Poly.polynomial.sub either summand is undefined or rings don't match."
+                    "JSXGraph error: In Geometry.Poly.polynomial.sub either summand is undefined or rings don't match."
                 );
             }
         },
 
         /**
          * Creates a deep copy of the polynomial.
-         * @returns {JXG.Math.Poly.Polynomial}
-         * @memberof JXG.Math.Poly.Polynomial
+         * @returns {Geometry.Poly.Polynomial}
+         * @memberof Geometry.Poly.Polynomial
          */
         copy: function () {
             var i, p;
@@ -296,7 +296,7 @@ JXG.extend(
         /**
          * Prints the polynomial.
          * @returns {String} A string representation of the polynomial.
-         * @memberof JXG.Math.Poly.Polynomial
+         * @memberof Geometry.Poly.Polynomial
          */
         print: function () {
             var s = [],

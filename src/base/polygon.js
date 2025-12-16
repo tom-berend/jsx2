@@ -36,7 +36,7 @@ import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 import Statistics from "../math/statistics.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import {Type} from "../utils/type.js";
 import GeometryElement from "./element.js";
 
@@ -173,23 +173,23 @@ JXG.extend(
     JXG.Polygon.prototype,
     /** @lends JXG.Polygon.prototype */ {
         /**
-         * Wrapper for JXG.Math.Geometry.pnpoly.
+         * Wrapper for Geometry.pnpoly.
          *
          * @param {Number} x_in x-coordinate (screen or user coordinates)
          * @param {Number} y_in y-coordinate (screen or user coordinates)
          * @param {Number} coord_type (Optional) the type of coordinates used here.
-         *   Possible values are <b>JXG.COORDS_BY_USER</b> and <b>JXG.COORDS_BY_SCREEN</b>.
+         *   Possible values are <b>COORDS_BY.USER</b> and <b>JXG.COORDS_BY_SCREEN</b>.
          *   Default value is JXG.COORDS_BY_SCREEN
          *
          * @returns {Boolean} if (x_in, y_in) is inside of the polygon.
-         * @see JXG.Math.Geometry#pnpoly
+         * @see Geometry.Geometry#pnpoly
          *
          * @example
          * var pol = board.create('polygon', [[-1,2], [2,2], [-1,4]]);
          * var p = board.create('point', [4, 3]);
          * var txt = board.create('text', [-1, 0.5, function() {
          *   return 'Point A is inside of the polygon = ' +
-         *     pol.pnpoly(p.X(), p.Y(), JXG.COORDS_BY_USER);
+         *     pol.pnpoly(p.X(), p.Y(), COORDS_BY.USER);
          * }]);
          *
          * </pre><div id="JXG7f96aec7-4e3d-4ffc-a3f5-d3f967b6691c" class="jxgbox" style="width: 300px; height: 300px;"></div>
@@ -200,7 +200,7 @@ JXG.extend(
          *     var pol = board.create('polygon', [[-1,2], [2,2], [-1,4]]);
          *     var p = board.create('point', [4, 3]);
          *     var txt = board.create('text', [-1, 0.5, function() {
-         *     		return 'Point A is inside of the polygon = ' + pol.pnpoly(p.X(), p.Y(), JXG.COORDS_BY_USER);
+         *     		return 'Point A is inside of the polygon = ' + pol.pnpoly(p.X(), p.Y(), COORDS_BY.USER);
          *     }]);
          *
          *     })();
@@ -894,7 +894,7 @@ JXG.extend(
 
         /**
          * Moves the polygon by the difference of two coordinates.
-         * @param {Number} method The type of coordinates used here. Possible values are {@link JXG.COORDS_BY_USER} and {@link JXG.COORDS_BY_SCREEN}.
+         * @param {Number} method The type of coordinates used here. Possible values are {@link COORDS_BY.USER} and {@link JXG.COORDS_BY_SCREEN}.
          * @param {Array} coords coordinates in screen/user units
          * @param {Array} oldcoords previous coordinates in screen/user units
          * @returns {JXG.Polygon} this element
@@ -937,8 +937,8 @@ JXG.extend(
          */
         sutherlandHodgman: function (polygon) {
             // First the two polygons are sorted counter clockwise
-            var clip = JXG.Math.Geometry.sortVertices(this.vertices), // "this" is the clipping polygon
-                subject = JXG.Math.Geometry.sortVertices(polygon.vertices), // "polygon" is the subject polygon
+            var clip = Geometry.sortVertices(this.vertices), // "this" is the clipping polygon
+                subject = Geometry.sortVertices(polygon.vertices), // "polygon" is the subject polygon
                 lenClip = clip.length - 1,
                 lenSubject = subject.length - 1,
                 lenIn,
@@ -973,7 +973,7 @@ JXG.extend(
                     E = inputList[j];
                     if (isInside(clip[i], clip[i + 1], E)) {
                         if (!isInside(clip[i], clip[i + 1], S)) {
-                            cross = JXG.Math.Geometry.meetSegmentSegment(
+                            cross = Geometry.meetSegmentSegment(
                                 S,
                                 E,
                                 clip[i],
@@ -986,7 +986,7 @@ JXG.extend(
                         }
                         outputList.push(E);
                     } else if (isInside(clip[i], clip[i + 1], S)) {
-                        cross = JXG.Math.Geometry.meetSegmentSegment(
+                        cross = Geometry.meetSegmentSegment(
                             S,
                             E,
                             clip[i],
@@ -1010,7 +1010,7 @@ JXG.extend(
          * Both polygons have to be convex.
          * Calls the algorithm by Sutherland, Hodgman, {@link JXG.Polygon#sutherlandHodgman}.
          * <p>
-         * An alternative is to use the methods from {@link JXG.Math.Clip}, where the algorithm by Greiner and Hormann
+         * An alternative is to use the methods from {@link Geometry.Clip}, where the algorithm by Greiner and Hormann
          * is used.
          *
          * @param {JXG.Polygon} polygon Polygon which will be clipped.
@@ -1064,7 +1064,7 @@ JXG.extend(
          *  // For this a curve element is used.
          *  var curve = board.create('curve', [[],[]], {fillColor: 'blue', fillOpacity: 0.4});
          *  curve.updateDataArray = function() {
-         *      var mat = JXG.Math.transpose(pol1.intersect(pol2));
+         *      var mat = Geometry.transpose(pol1.intersect(pol2));
          *
          *      if (mat.length == 3) {
          *          this.dataX = mat[1];
@@ -1093,7 +1093,7 @@ JXG.extend(
          *  // For this a curve element is used.
          *    var curve = board.create('curve', [[],[]], {fillColor: 'blue', fillOpacity: 0.4});
          *    curve.updateDataArray = function() {
-         *        var mat = JXG.Math.transpose(pol1.intersect(pol2));
+         *        var mat = Geometry.transpose(pol1.intersect(pol2));
          *
          *        if (mat.length == 3) {
          *            this.dataX = mat[1];

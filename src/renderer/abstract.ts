@@ -58,7 +58,7 @@ import { Coords } from "../base/coords.js";
 
 // import { Constants } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import { Type } from "../utils/type.js";
 import { Env } from "../utils/env.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
@@ -782,8 +782,8 @@ export abstract class AbstractRenderer {
      * 'showFirst' and 'showLast' are set.
      *
      * @param  {JXG.Line} el Reference to the line object that gets arrow heads.
-     * @param  {JXG.Coords} c1  Coords of the first point of the line (after {@link JXG.Math.Geometry#calcStraight}).
-     * @param  {JXG.Coords} c2  Coords of the second point of the line (after {@link JXG.Math.Geometry#calcStraight}).
+     * @param  {JXG.Coords} c1  Coords of the first point of the line (after {@link Geometry.Geometry#calcStraight}).
+     * @param  {JXG.Coords} c2  Coords of the second point of the line (after {@link Geometry.Geometry#calcStraight}).
      * @param  {Object}  a Object { evFirst: Boolean, evLast: Boolean} containing information about arrow heads.
      * @see JXG.AbstractRenderer#getArrowHeadData
      *

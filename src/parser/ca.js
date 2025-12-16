@@ -38,7 +38,7 @@ import {Type} from "../utils/type.js";
 // import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 // import Text from "../base/text.js";
 // import {JSXMath} from "../math/math.js";
-// import Geometry from "../math/geometry.js";
+// import {Geometry} from "../math/geometry.js";
 // import Statistics from "../math/statistics.js";
 // import Env from "../utils/env.js";
 

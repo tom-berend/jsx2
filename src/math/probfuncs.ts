@@ -44,8 +44,8 @@ import {Type} from "../utils/type.js";
  * Cephes Math Library Release 2.9:  November, 2000
  * Copyright 1984, 1987, 1988, 1992, 2000 by Stephen L. Moshier
  *
- * @name JXG.Math.ProbFuncs
- * @exports Mat.ProbFuncs as JXG.Math.ProbFuncs
+ * @name Geometry.ProbFuncs
+ * @exports Mat.ProbFuncs as Geometry.ProbFuncs
  * @namespace
  */
 if(JXG.JSXMath === undefined)

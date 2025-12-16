@@ -1482,7 +1482,7 @@ JXG.Legend.prototype.drawVerticalLegend = function (board, attributes) {
  *   inputFun = "x^2/2-2*x*y+y^2/2";
  *   niveauline = [-3,-2,-1,-0.5, 0, 1,2,3];
  *   niveaunum = niveauline.length;
- *   for (let i = 0; JXG.Math.lt(i, niveaunum); i++) {
+ *   for (let i = 0; Geometry.lt(i, niveaunum); i++) {
  *     let niveaui = niveauline[i];
  *     niveauopac.push(((i + 1) / (niveaunum + 1)));
  *     cf.push(board.create("implicitcurve", [
@@ -1516,7 +1516,7 @@ JXG.Legend.prototype.drawVerticalLegend = function (board, attributes) {
  *       inputFun = "x^2/2-2*x*y+y^2/2";
  *       niveauline = [-3,-2,-1,-0.5, 0, 1,2,3];
  *       niveaunum = niveauline.length;
- *       for (let i = 0; JXG.Math.lt(i, niveaunum); i++) {
+ *       for (let i = 0; Geometry.lt(i, niveaunum); i++) {
  *         let niveaui = niveauline[i];
  *         niveauopac.push(((i + 1) / (niveaunum + 1)));
  *         cf.push(board.create("implicitcurve", [

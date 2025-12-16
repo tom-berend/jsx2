@@ -604,7 +604,7 @@ JXG.TracenpocheReader = function (board, str) {
         predefined("tan", 'Math.tan');
         predefined("abs", 'Math.abs');
         predefined("racine", 'Math.sqrt');
-        predefined("carre", 'JXG.Math.carre');
+        predefined("carre", 'Geometry.carre');
 
         assignment("=");
 
@@ -843,7 +843,7 @@ JXG.TracenpocheReader = function (board, str) {
         return obj;
     };
 
-    JXG.Math.carre = function (x) {
+    Geometry.carre = function (x) {
         return x * x;
     };
 

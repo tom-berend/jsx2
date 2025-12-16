@@ -364,14 +364,14 @@ JXG.createMesh3D = function (board, parents, attributes) {
             v2 = v2.slice(1);
         }
 
-        l1 = JXG.Math.norm(v1, 3);
-        l2 = JXG.Math.norm(v2, 3);
+        l1 = Geometry.norm(v1, 3);
+        l2 = Geometry.norm(v2, 3);
         for (i = 0; i < 3; i++) {
             v1[i] /= l1;
             v2[i] /= l2;
         }
 
-        // sol = JXG.JSXMath.Geometry.getPlaneBounds(v1, v2, q, s1, e1);
+        // sol = Geometry.getPlaneBounds(v1, v2, q, s1, e1);
         // if (sol !== null) {
         //     s1 = sol[0];
         //     e1 = sol[1];

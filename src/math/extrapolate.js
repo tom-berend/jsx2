@@ -35,8 +35,8 @@ import {JSXMath} from "./math.js";
 
 /**
  * Functions for extrapolation of sequences. Used for finding limits of sequences which is used for curve plotting.
- * @name JXG.Math.Extrapolate
- * @exports JXG.JSXMath.Extrapolate as JXG.Math.Extrapolate
+ * @name Geometry.Extrapolate
+ * @exports JXG.JSXMath.Extrapolate as Geometry.Extrapolate
  * @namespace
  */
 JXG.JSXMath.Extrapolate = {
@@ -53,7 +53,7 @@ JXG.JSXMath.Extrapolate = {
      * @param {Array} e One-dimensional array containing the extrapolation data. Has to be supplied by the calling routine.
      * @returns {Number} New estimate of the limit of the sequence.
      *
-     * @memberof JXG.Math.Extrapolate
+     * @memberof Geometry.Extrapolate
      */
     wynnEps: function (s_n, n, e) {
         var HUGE = 1e20,
@@ -126,7 +126,7 @@ JXG.JSXMath.Extrapolate = {
      * @param {Array} a One-dimensional array containing the extrapolation data. Has to be supplied by the calling routine.
      * @returns {Number} New estimate of the limit of the sequence.
      *
-     * @memberof JXG.Math.Extrapolate
+     * @memberof Geometry.Extrapolate
      */
     aitken: function (s_n, n, a) {
         var estlim,
@@ -168,7 +168,7 @@ JXG.JSXMath.Extrapolate = {
      * @param {Array} a One-dimensional array containing the extrapolation data. Has to be supplied by the calling routine.
      * @returns {Number} New estimate of the limit of the sequence.
      *
-     * @memberof JXG.Math.Extrapolate
+     * @memberof Geometry.Extrapolate
      */
     brezinski: function (s_n, n, a) {
         var estlim,
@@ -217,11 +217,11 @@ JXG.JSXMath.Extrapolate = {
      * @returns {Array} Array of length 3. Position 0: estimated value for f(x0), position 1: 'finite', 'infinite', or 'NaN'.
      * Position 2: value between 0 and 1 judging the reliability of the result (1: high, 0: not successful).
      *
-     * @memberof JXG.Math.Extrapolate
-     * @see JXG.Math.Extrapolate.limit
-     * @see JXG.Math.Extrapolate.wynnEps
-     * @see JXG.Math.Extrapolate.aitken
-     * @see JXG.Math.Extrapolate.brezinski
+     * @memberof Geometry.Extrapolate
+     * @see Geometry.Extrapolate.limit
+     * @see Geometry.Extrapolate.wynnEps
+     * @see Geometry.Extrapolate.aitken
+     * @see Geometry.Extrapolate.brezinski
      */
     iteration: function (x0, h0, f, method, step_type) {
         var n,
@@ -269,7 +269,7 @@ JXG.JSXMath.Extrapolate = {
      * @param {Array} numer One-dimensional array containing the extrapolation data for the numerator. Has to be supplied by the calling routine.
      * @param {Array} denom One-dimensional array containing the extrapolation data for the denominator. Has to be supplied by the calling routine.
      *
-     * @memberof JXG.Math.Extrapolate
+     * @memberof Geometry.Extrapolate
      */
     levin: function (s_n, n, omega, beta, numer, denom) {
         var HUGE = 1e20,
@@ -380,7 +380,7 @@ JXG.JSXMath.Extrapolate = {
      * var h = 0.1;
      * for (let f of [f1, f2, f3]) {
      *     console.log("x0=", x0, f.toString());
-     *     console.log(JXG.Math.Extrapolate.limit(x0, h, f));
+     *     console.log(Geometry.Extrapolate.limit(x0, h, f));
      *  }
      *
      * </pre><div id="JXG5e8c6a7e-eeae-43fb-a669-26b5c9e40cab" class="jxgbox" style="width: 300px; height: 300px;"></div>
@@ -396,7 +396,7 @@ JXG.JSXMath.Extrapolate = {
      *     var h = 0.1;
      *     for (let f of [f1, f2, f3]) {
      *         console.log("x0=", x0, f.toString());
-     *         console.log(JXG.Math.Extrapolate.limit(x0, h, f));
+     *         console.log(Geometry.Extrapolate.limit(x0, h, f));
      *      }
      *
      *     })();
@@ -404,8 +404,8 @@ JXG.JSXMath.Extrapolate = {
      * </script><pre>
      *
      *
-     * @see JXG.Math.Extrapolate.iteration
-     * @memberof JXG.Math.Extrapolate
+     * @see Geometry.Extrapolate.iteration
+     * @memberof Geometry.Extrapolate
      */
     limit: function (x0, h0, f) {
         return this.iteration_levin(x0, h0, f, 0);

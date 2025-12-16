@@ -32,7 +32,7 @@ import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
 import {JSXMath} from "../math/math.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 
 /**
  * A 3D point is the basic geometric element.

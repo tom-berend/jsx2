@@ -413,7 +413,7 @@ JXG.extend(
  *     {layer: 0, fixed: true}
  *  );
  *
- * var f = JXG.Math.Numerics.lagrangePolynomial(points);
+ * var f = Geometry.Numerics.lagrangePolynomial(points);
  * var graph = board.create('functiongraph', [f, -10, 10], {fixed:true,strokeWidth:3, layer: 8});
  *
  * </pre><div id="JXGc3fc5520-13aa-4f66-abaa-42e9dc3fbf3f" class="jxgbox" style="width: 500px; height: 500px;"></div>
@@ -433,7 +433,7 @@ JXG.extend(
  *         {layer: 0, fixed: true}
  *      );
  *
- *     var f = JXG.Math.Numerics.lagrangePolynomial(points);
+ *     var f = Geometry.Numerics.lagrangePolynomial(points);
  *     var graph = board.create('functiongraph', [f, -10, 10], {fixed:true,strokeWidth:3, layer: 8});
  *
  *     })();

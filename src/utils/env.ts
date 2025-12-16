@@ -45,7 +45,7 @@ const dbugColor = `color:blue;background-color:#c0feac`;
 // import { JXG } from "../Env.js";
 import  {Type}  from "./type.js";
 import { LooseObject } from "../interfaces.js";
-import  GeometryElement  from "../base/element.js";
+import GeometryElement  from "../base/element.js";
 import { Board } from '../base/board.js'
 
 

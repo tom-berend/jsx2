@@ -1828,7 +1828,7 @@ export class Type {
      * @param {Boolean} [useTeX=false]
      * @param {Number} [order=0.001]
      * @returns {String}
-     * @see JXG.Math.decToFraction
+     * @see Geometry.decToFraction
      */
     static toFraction(x, useTeX, order = 0.001) {
         var arr = JSXMath.decToFraction(x, order),

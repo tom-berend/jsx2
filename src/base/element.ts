@@ -670,7 +670,7 @@ JXG.extend(
          * Translates the object by <tt>(x, y)</tt>. In case the element is defined by points, the defining points are
          * translated, e.g. a circle constructed by a center point and a point on the circle line.
          * @param {Number} method The type of coordinates used here.
-         * Possible values are {@link JXG.COORDS_BY_USER} and {@link JXG.COORDS_BY_SCREEN}.
+         * Possible values are {@link COORDS_BY.USER} and {@link JXG.COORDS_BY_SCREEN}.
          * @param {Array} coords array of translation vector.
          * @returns {JXG.GeometryElement} Reference to the element object.
          *
@@ -751,7 +751,7 @@ JXG.extend(
         /**
          * Moves an element by the difference of two coordinates.
          * @param {Number} method The type of coordinates used here.
-         * Possible values are {@link JXG.COORDS_BY_USER} and {@link JXG.COORDS_BY_SCREEN}.
+         * Possible values are {@link COORDS_BY.USER} and {@link JXG.COORDS_BY_SCREEN}.
          * @param {Array} coords coordinates in screen/user units
          * @param {Array} oldcoords previous coordinates in screen/user units
          * @returns {JXG.GeometryElement} this element

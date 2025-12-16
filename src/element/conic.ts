@@ -42,7 +42,7 @@ import {Coords} from "../base/coords.js";
 
 import {JSXMath} from "../math/math.js";
 import Numerics from "../math/numerics.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import {Type} from "../utils/type.js";
 
 /**

@@ -38,7 +38,7 @@
  */
 
 import { JXG } from "../jxg.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import {JSXMath} from "../math/math.js";
 import {Coords} from "../base/coords.js";
 

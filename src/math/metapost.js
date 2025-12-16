@@ -69,11 +69,11 @@ import {Type} from "../utils/type.js";
 import {JSXMath} from "./math.js";
 
 /**
- * The JXG.Math.Metapost namespace holds algorithms translated from Metapost
+ * The Geometry.Metapost namespace holds algorithms translated from Metapost
  * by D.E. Knuth and J.D. Hobby.
  *
- * @name JXG.Math.Metapost
- * @exports JXG.JSXMath.Metapost as JXG.Math.Metapost
+ * @name Geometry.Metapost
+ * @exports JXG.JSXMath.Metapost as Geometry.Metapost
  * @namespace
  */
 JXG.JSXMath.Metapost = {

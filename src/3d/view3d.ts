@@ -45,7 +45,7 @@ import {Coords} from "../base/coords.js";
 
 import {Type} from "../utils/type.js";
 import {JSXMath} from "../math/math.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import {Env} from "../utils/env.js";
 import GeometryElement from "../base/element.js";
@@ -1375,7 +1375,7 @@ JXG.extend(
         w = JSXMath.crossProduct(plane1.normal.slice(1), plane2.normal.slice(1));
         w.unshift(0);
 
-        p = JXG.JSXMath.Geometry.meet3Planes(
+        p = Geometry.meet3Planes(
             plane1.normal,
             plane1.d,
             plane2.normal,
@@ -1385,7 +1385,7 @@ JXG.extend(
         );
 
         // Get the direction of the intersecting line of the two planes
-        dir = JXG.JSXMath.Geometry.meetPlanePlane(
+        dir = Geometry.meetPlanePlane(
             plane1.vec1,
             plane1.vec2,
             plane2.vec1,

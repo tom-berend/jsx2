@@ -37,7 +37,7 @@
 
 import { JXG } from "../jxg.js";
 import {JSXMath} from "../math/math.js";
-import Geometry from "../math/geometry.js";
+import {Geometry} from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import Statistics from "../math/statistics.js";
 import {Coords} from "../base/coords.js";
@@ -1169,7 +1169,7 @@ JXG.extend(
         /**
          * Sets coordinates and calls the elements's update() method.
          * @param {Number} method The type of coordinates used here.
-         * Possible values are {@link JXG.COORDS_BY_USER} and {@link JXG.COORDS_BY_SCREEN}.
+         * Possible values are {@link COORDS_BY.USER} and {@link JXG.COORDS_BY_SCREEN}.
          * @param {Array} coords coordinates <tt>([z], x, y)</tt> in screen/user units
          * @returns {JXG.CoordsElement} this element
          */
@@ -1243,7 +1243,7 @@ JXG.extend(
         /**
          * Translates the point by <tt>tv = (x, y)</tt>.
          * @param {Number} method The type of coordinates used here.
-         * Possible values are {@link JXG.COORDS_BY_USER} and {@link JXG.COORDS_BY_SCREEN}.
+         * Possible values are {@link COORDS_BY.USER} and {@link JXG.COORDS_BY_SCREEN}.
          * @param {Array} tv (x, y)
          * @returns {JXG.CoordsElement}
          */
@@ -1272,7 +1272,7 @@ JXG.extend(
         /**
          * Sets coordinates and calls the element's update() method.
          * @param {Number} method The type of coordinates used here.
-         * Possible values are {@link JXG.COORDS_BY_USER} and {@link JXG.COORDS_BY_SCREEN}.
+         * Possible values are {@link COORDS_BY.USER} and {@link JXG.COORDS_BY_SCREEN}.
          * @param {Array} coords coordinates in screen/user units
          * @returns {JXG.CoordsElement}
          */
@@ -1309,7 +1309,7 @@ JXG.extend(
                 // Search for the closest edge of the polygon.
                 min = Number.MAX_VALUE;
                 for (i = 0; i < slideobj.borders.length; i++) {
-                    dist = JXG.JSXMath.Geometry.distPointLine(
+                    dist = Geometry.distPointLine(
                         this.coords.usrCoords,
                         slideobj.borders[i].stdform
                     );

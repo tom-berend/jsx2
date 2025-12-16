@@ -34,7 +34,7 @@
 
 /**
  * @fileoverview In this file the namespace JXG.Math is defined, which is the base namespace
- * for namespaces like JXG.Math.Numerics, JXG.Math.Plot, JXG.Math.Statistics, JXG.Math.Clip etc.
+ * for namespaces like Geometry.Numerics, Geometry.Plot, Geometry.Statistics, Geometry.Clip etc.
  */
 import { JXG } from "../jxg.js";
 import { Type } from "../utils/type.js";
@@ -43,11 +43,11 @@ var undef,
     /*
      * Dynamic programming approach for recursive functions.
      * From "Speed up your JavaScript, Part 3" by Nicholas C. Zakas.
-     * @see JXG.Math.factorial
-     * @see JXG.Math.binomial
+     * @see Geometry.factorial
+     * @see Geometry.binomial
      * http://blog.thejit.org/2008/09/05/memoization-in-javascript/
      *
-     * This method is hidden, because it is only used in JXG.Math. If someone wants
+     * This method is hidden, because it is only used in Geometry. If someone wants
      * to use it in JSXGraph outside of JXG.Math, it should be moved to jsxgraph.js
      */
     memoizer = function (f) {
@@ -284,7 +284,7 @@ export class JSXMath {
      *          [2, 3]],
      *     b = [4, 5],
      *     c;
-     * c = JXG.Math.matVecMult(A, b);
+     * c = Geometry.matVecMult(A, b);
      * // c === [13, 23];
      */
     static matVecMult(mat, vec) {
@@ -322,7 +322,7 @@ export class JSXMath {
      *          [2, 3]],
      *     b = [4, 5],
      *     c;
-     * c = JXG.Math.vecMatMult(b, A);
+     * c = Geometry.vecMatMult(b, A);
      * // c === [18, 16];
      */
     static vecMatMult(vec, mat) {
@@ -477,7 +477,7 @@ export class JSXMath {
 
             // Singular matrix
             if (ma <= eps) {
-                JXG.warn('JXG.Math.inverse: singular matrix');
+                JXG.warn('Geometry.inverse: singular matrix');
                 return [];
             }
 
@@ -876,7 +876,7 @@ export class JSXMath {
     /**
      * Compute base to the power of the rational exponent m / n.
      * This function first reduces the fraction m/n and then computes
-     * JXG.Math.pow(base, m/n).
+     * Geometry.pow(base, m/n).
      *
      * This function is necessary to have the same results for e.g.
      * (-8)^(1/3) = (-8)^(2/6) = -2
@@ -1092,7 +1092,7 @@ export class JSXMath {
     /**
      *  Error function, see {@link https://en.wikipedia.org/wiki/Error_function}.
      *
-     * @see JXG.Math.ProbFuncs.erf
+     * @see Geometry.ProbFuncs.erf
      * @param  {Number} x
      * @returns {Number}
      */
@@ -1103,8 +1103,8 @@ export class JSXMath {
     /**
      * Complementary error function, i.e. 1 - erf(x).
      *
-     * @see JXG.Math.erf
-     * @see JXG.Math.ProbFuncs.erfc
+     * @see Geometry.erf
+     * @see Geometry.ProbFuncs.erfc
      * @param  {Number} x
      * @returns {Number}
      */
@@ -1115,8 +1115,8 @@ export class JSXMath {
     /**
      * Inverse of error function
      *
-     * @see JXG.Math.erf
-     * @see JXG.Math.ProbFuncs.erfi
+     * @see Geometry.erf
+     * @see Geometry.ProbFuncs.erfi
      * @param  {Number} x
      * @returns {Number}
      */
@@ -1127,7 +1127,7 @@ export class JSXMath {
     /**
      * Normal distribution function
      *
-     * @see JXG.Math.ProbFuncs.ndtr
+     * @see Geometry.ProbFuncs.ndtr
      * @param  {Number} x
      * @returns {Number}
      */
@@ -1138,8 +1138,8 @@ export class JSXMath {
     /**
      * Inverse of normal distribution function
      *
-     * @see JXG.Math.ndtr
-     * @see JXG.Math.ProbFuncs.ndtri
+     * @see Geometry.ndtr
+     * @see Geometry.ProbFuncs.ndtri
      * @param  {Number} x
      * @returns {Number}
      */
@@ -1342,13 +1342,13 @@ export class JSXMath {
      * @see JXG.toFraction
      *
      * @example
-     * JXG.Math.decToFraction(0.33333333);
+     * Geometry.decToFraction(0.33333333);
      * // Result: [ 1, 0, 1, 3 ]
      *
-     * JXG.Math.decToFraction(0);
+     * Geometry.decToFraction(0);
      * // Result: [ 1, 0, 0, 1 ]
      *
-     * JXG.Math.decToFraction(-10.66666666666667);
+     * Geometry.decToFraction(-10.66666666666667);
      * // Result: [-1, 10, 2, 3 ]
     */
     static decToFraction(x, order) {

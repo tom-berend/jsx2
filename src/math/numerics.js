@@ -74,13 +74,13 @@ var predefinedButcher = {
 };
 
 /**
- * The JXG.Math.Numerics namespace holds numerical algorithms, constants, and variables.
- * @name JXG.Math.Numerics
- * @exports JXG.JSXMath.Numerics as JXG.Math.Numerics
+ * The Geometry.Numerics namespace holds numerical algorithms, constants, and variables.
+ * @name Geometry.Numerics
+ * @exports JXG.JSXMath.Numerics as Geometry.Numerics
  * @namespace
  */
 JXG.JSXMath.Numerics = {
-    //JXG.extend(JXG.JSXMath.Numerics, /** @lends JXG.Math.Numerics */ {
+    //JXG.extend(JXG.JSXMath.Numerics, /** @lends Geometry.Numerics */ {
     /**
      * Solves a system of linear equations given by A and b using the Gauss-Jordan-elimination.
      * The algorithm runs in-place. I.e. the entries of A and b are changed.
@@ -88,7 +88,7 @@ JXG.JSXMath.Numerics = {
      * @param {Array} b A vector containing the linear equation system's right hand side.
      * @throws {Error} If a non-square-matrix is given or if b has not the right length or A's rank is not full.
      * @returns {Array} A vector that solves the linear equation system.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     Gauss: function (A, b) {
         var i,
@@ -104,7 +104,7 @@ JXG.JSXMath.Numerics = {
 
         if (n !== b.length || n !== A.length) {
             throw new Error(
-                "JXG.Math.Numerics.Gauss: Dimensions don't match. A must be a square matrix and b must be of the same length as A."
+                "Geometry.Numerics.Gauss: Dimensions don't match. A must be a square matrix and b must be of the same length as A."
             );
         }
 
@@ -143,7 +143,7 @@ JXG.JSXMath.Numerics = {
             // The absolute values of all coefficients below the j-th row in the j-th column are smaller than JXG.JSXMath.eps.
             if (Math.abs(Acopy[j][j]) < eps) {
                 throw new Error(
-                    "JXG.Math.Numerics.Gauss(): The given matrix seems to be singular."
+                    "Geometry.Numerics.Gauss(): The given matrix seems to be singular."
                 );
             }
         }
@@ -159,7 +159,7 @@ JXG.JSXMath.Numerics = {
      * @param {Array} b Right hand side of the linear equation system.
      * @param {Boolean} [canModify=false] If true, the right hand side vector is allowed to be changed by this method.
      * @returns {Array} An array representing a vector that solves the system of linear equations.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     backwardSolve: function (R, b, canModify) {
         var x, m, n, i, j;
@@ -198,7 +198,7 @@ JXG.JSXMath.Numerics = {
      * @param {Array} mat Matrix
      * @returns Number
      * @private
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     gaussBareiss: function (mat) {
         var k, c, s,
@@ -272,7 +272,7 @@ JXG.JSXMath.Numerics = {
      * @param {Array} mat Matrix.
      * @returns {Number} The determinant pf the matrix mat.
      *                   The empty matrix returns 0.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     det: function (mat) {
         var n = mat.length;
@@ -289,7 +289,7 @@ JXG.JSXMath.Numerics = {
      * Adaption of a FORTRAN program by Ed Wilson, Dec. 25, 1990
      * @param {Array} Ain A symmetric 3x3 matrix.
      * @returns {Array} [A,V] the matrices A and V. The diagonal of A contains the Eigenvalues, V contains the Eigenvectors.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     Jacobi: function (Ain) {
         var i,
@@ -405,15 +405,15 @@ JXG.JSXMath.Numerics = {
      * }
      *
      * // calculates integral of <tt>f</tt> from 0 to 2.
-     * var area1 = JXG.Math.Numerics.NewtonCotes([0, 2], f);
+     * var area1 = Geometry.Numerics.NewtonCotes([0, 2], f);
      *
      * // the same with an anonymous function
-     * var area2 = JXG.Math.Numerics.NewtonCotes([0, 2], function (x) { return x*x; });
+     * var area2 = Geometry.Numerics.NewtonCotes([0, 2], function (x) { return x*x; });
      *
      * // use trapez rule with 16 nodes
-     * var area3 = JXG.Math.Numerics.NewtonCotes([0, 2], f,
+     * var area3 = Geometry.Numerics.NewtonCotes([0, 2], f,
      *                                   {number_of_nodes: 16, integration_type: 'trapez'});
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     NewtonCotes: function (interval, f, config) {
         var evaluation_point,
@@ -519,15 +519,15 @@ JXG.JSXMath.Numerics = {
      * }
      *
      * // calculates integral of <tt>f</tt> from 0 to 2.
-     * var area1 = JXG.Math.Numerics.Romberg([0, 2], f);
+     * var area1 = Geometry.Numerics.Romberg([0, 2], f);
      *
      * // the same with an anonymous function
-     * var area2 = JXG.Math.Numerics.Romberg([0, 2], function (x) { return x*x; });
+     * var area2 = Geometry.Numerics.Romberg([0, 2], function (x) { return x*x; });
      *
      * // use trapez rule with maximum of 16 iterations or stop if the precision 0.0001 has been reached.
-     * var area3 = JXG.Math.Numerics.Romberg([0, 2], f,
+     * var area3 = Geometry.Numerics.Romberg([0, 2], f,
      *                                   {max_iterations: 16, eps: 0.0001});
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     Romberg: function (interval, f, config) {
         var a,
@@ -593,15 +593,15 @@ JXG.JSXMath.Numerics = {
      * }
      *
      * // calculates integral of <tt>f</tt> from 0 to 2.
-     * var area1 = JXG.Math.Numerics.GaussLegendre([0, 2], f);
+     * var area1 = Geometry.Numerics.GaussLegendre([0, 2], f);
      *
      * // the same with an anonymous function
-     * var area2 = JXG.Math.Numerics.GaussLegendre([0, 2], function (x) { return x*x; });
+     * var area2 = Geometry.Numerics.GaussLegendre([0, 2], function (x) { return x*x; });
      *
      * // use 16 point Gauss-Legendre rule.
-     * var area3 = JXG.Math.Numerics.GaussLegendre([0, 2], f,
+     * var area3 = Geometry.Numerics.GaussLegendre([0, 2], f,
      *                                   {n: 16});
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     GaussLegendre: function (interval, f, config) {
         var a,
@@ -828,7 +828,7 @@ JXG.JSXMath.Numerics = {
 
     /**
      * Scale error in Gauss Kronrod quadrature.
-     * Internal method used in {@link JXG.Math.Numerics._gaussKronrod}.
+     * Internal method used in {@link Geometry.Numerics._gaussKronrod}.
      * @private
      */
     _rescale_error: function (err, result_abs, result_asc) {
@@ -860,9 +860,9 @@ JXG.JSXMath.Numerics = {
 
     /**
      * Generic Gauss-Kronrod quadrature algorithm.
-     * Internal method used in {@link JXG.Math.Numerics.GaussKronrod15},
-     * {@link JXG.Math.Numerics.GaussKronrod21},
-     * {@link JXG.Math.Numerics.GaussKronrod31}.
+     * Internal method used in {@link Geometry.Numerics.GaussKronrod15},
+     * {@link Geometry.Numerics.GaussKronrod21},
+     * {@link Geometry.Numerics.GaussKronrod31}.
      * Taken from QUADPACK.
      *
      * @param {Array} interval The integration interval, e.g. [0, 3].
@@ -960,7 +960,7 @@ JXG.JSXMath.Numerics = {
      *
      * @returns {Number} Integral value of f over interval
      *
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     GaussKronrod15: function (interval, f, resultObj) {
         /* Gauss quadrature weights and kronrod quadrature abscissae and
@@ -1005,7 +1005,7 @@ JXG.JSXMath.Numerics = {
      *
      * @returns {Number} Integral value of f over interval
      *
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     GaussKronrod21: function (interval, f, resultObj) {
         /* Gauss quadrature weights and kronrod quadrature abscissae and
@@ -1053,7 +1053,7 @@ JXG.JSXMath.Numerics = {
      *
      * @returns {Number} Integral value of f over interval
      *
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     GaussKronrod31: function (interval, f, resultObj) {
         /* Gauss quadrature weights and kronrod quadrature abscissae and
@@ -1099,13 +1099,13 @@ JXG.JSXMath.Numerics = {
     },
 
     /**
-     * Generate workspace object for {@link JXG.Math.Numerics.Qag}.
+     * Generate workspace object for {@link Geometry.Numerics.Qag}.
      * @param {Array} interval The integration interval, e.g. [0, 3].
      * @param {Number} n Max. limit
      * @returns {Object} Workspace object
      *
      * @private
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     _workspace: function (interval, n) {
         return {
@@ -1269,9 +1269,9 @@ JXG.JSXMath.Numerics = {
 
     /**
      * Quadrature algorithm qag from QUADPACK.
-     * Internal method used in {@link JXG.Math.Numerics.GaussKronrod15},
-     * {@link JXG.Math.Numerics.GaussKronrod21},
-     * {@link JXG.Math.Numerics.GaussKronrod31}.
+     * Internal method used in {@link Geometry.Numerics.GaussKronrod15},
+     * {@link Geometry.Numerics.GaussKronrod21},
+     * {@link Geometry.Numerics.GaussKronrod31}.
      *
      * @param {Array} interval The integration interval, e.g. [0, 3].
      * @param {function} f A function which takes one argument of type number and returns a number.
@@ -1281,7 +1281,7 @@ JXG.JSXMath.Numerics = {
      * @param {Number} [config.limit=15]
      * @param {Number} [config.epsrel=0.0000001]
      * @param {Number} [config.epsabs=0.0000001]
-     * @param {Number} [config.q=JXG.Math.Numerics.GaussKronrod15]
+     * @param {Number} [config.q=Geometry.Numerics.GaussKronrod15]
      * @returns {Number} Integral value of f over interval
      *
      * @example
@@ -1290,15 +1290,15 @@ JXG.JSXMath.Numerics = {
      * }
      *
      * // calculates integral of <tt>f</tt> from 0 to 2.
-     * var area1 = JXG.Math.Numerics.Qag([0, 2], f);
+     * var area1 = Geometry.Numerics.Qag([0, 2], f);
      *
      * // the same with an anonymous function
-     * var area2 = JXG.Math.Numerics.Qag([0, 2], function (x) { return x*x; });
+     * var area2 = Geometry.Numerics.Qag([0, 2], function (x) { return x*x; });
      *
-     * // use JXG.Math.Numerics.GaussKronrod31 rule as sub-algorithm.
-     * var area3 = JXG.Math.Numerics.Quag([0, 2], f,
-     *                                   {q: JXG.Math.Numerics.GaussKronrod31});
-     * @memberof JXG.Math.Numerics
+     * // use Geometry.Numerics.GaussKronrod31 rule as sub-algorithm.
+     * var area3 = Geometry.Numerics.Quag([0, 2], f,
+     *                                   {q: Geometry.Numerics.GaussKronrod31});
+     * @memberof Geometry.Numerics
      */
     Qag: function (interval, f, config) {
         var DBL_EPS = 2.2204460492503131e-16,
@@ -1490,10 +1490,10 @@ JXG.JSXMath.Numerics = {
      * @param {Array} interval The integration interval, e.g. [0, 3].
      * @param {function} f A function which takes one argument of type number and returns a number.
      * @returns {Number} The value of the integral of f over interval
-     * @see JXG.Math.Numerics.NewtonCotes
-     * @see JXG.Math.Numerics.Romberg
-     * @see JXG.Math.Numerics.Qag
-     * @memberof JXG.Math.Numerics
+     * @see Geometry.Numerics.NewtonCotes
+     * @see Geometry.Numerics.Romberg
+     * @see Geometry.Numerics.Qag
+     * @memberof Geometry.Numerics
      */
     I: function (interval, f) {
         // return this.NewtonCotes(interval, f, {number_of_nodes: 16, integration_type: 'milne'});
@@ -1513,7 +1513,7 @@ JXG.JSXMath.Numerics = {
      * @param {Object} context optional object that is treated as "this" in the function body. This is useful if
      * the function is a method of an object and contains a reference to its parent object via "this".
      * @returns {Number} A root of the function f.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     Newton: function (f, x, context) {
         var df,
@@ -1547,7 +1547,7 @@ JXG.JSXMath.Numerics = {
 
     /**
      * Abstract method to find roots of univariate functions, which - for the time being -
-     * is an alias for {@link JXG.Math.Numerics.chandrupatla}.
+     * is an alias for {@link Geometry.Numerics.chandrupatla}.
      * @param {function} f We search for a solution of f(x)=0.
      * @param {Number|Array} x initial guess for the root, i.e. starting value, or start interval enclosing the root.
      * If x is an interval [a,b], it is required that f(a)f(b) <= 0, otherwise the minimum of f in [a, b] will be returned.
@@ -1558,11 +1558,11 @@ JXG.JSXMath.Numerics = {
      * the function is a method of an object and contains a reference to its parent object via "this".
      * @returns {Number} A root of the function f.
      *
-     * @see JXG.Math.Numerics.chandrupatla
-     * @see JXG.Math.Numerics.fzero
-     * @see JXG.Math.Numerics.polzeros
-     * @see JXG.Math.Numerics.Newton
-     * @memberof JXG.Math.Numerics
+     * @see Geometry.Numerics.chandrupatla
+     * @see Geometry.Numerics.fzero
+     * @see Geometry.Numerics.polzeros
+     * @see Geometry.Numerics.Newton
+     * @memberof Geometry.Numerics
      */
     root: function (f, x, context) {
         //return this.fzero(f, x, context);
@@ -1606,7 +1606,7 @@ JXG.JSXMath.Numerics = {
      * @param {Number} t1ini start value for t1
      * @param {Number} t2ini start value for t2
      * @returns {JXG.Coords} intersection point
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     generalizedNewton: function (c1, c2, t1ini, t2ini) {
         var t1, t2,
@@ -1818,7 +1818,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} An array consisting of two functions x(t), y(t) which define a parametric curve
      * f(t) = (x(t), y(t)), a number x1 (which equals 0) and a function x2 defining the curve's domain.
      * That means the curve is defined between x1 and x2(). x2 returns the (length of array p minus one).
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      *
      * @example
      * var p = [];
@@ -1829,7 +1829,7 @@ JXG.JSXMath.Numerics = {
      * p[3] = board.create('point', [3, 3], {size:2, name: 'C(b)'});
      *
      * // Curve
-     * var fg = JXG.Math.Numerics.Neville(p);
+     * var fg = Geometry.Numerics.Neville(p);
      * var graph = board.create('curve', fg, {strokeWidth:3, strokeOpacity:0.5});
      *
      * </pre><div id="JXG88a8b3a8-6561-44f5-a678-76bca13fd484" class="jxgbox" style="width: 300px; height: 300px;"></div>
@@ -1845,7 +1845,7 @@ JXG.JSXMath.Numerics = {
      *     p[3] = board.create('point', [3, 3], {size:2, name: 'C(b)'});
      *
      *     // Curve
-     *     var fg = JXG.Math.Numerics.Neville(p);
+     *     var fg = Geometry.Numerics.Neville(p);
      *     var graph = board.create('curve', fg, {strokeWidth:3, strokeOpacity:0.5});
      *
      *     })();
@@ -1907,8 +1907,8 @@ JXG.JSXMath.Numerics = {
      * @param {Array} x x values of knots
      * @param {Array} y y values of knots
      * @returns {Array} Second derivatives of the interpolated function at the knots.
-     * @see JXG.Math.Numerics.splineEval
-     * @memberof JXG.Math.Numerics
+     * @see Geometry.Numerics.splineEval
+     * @memberof Geometry.Numerics
      */
     splineDef: function (x, y) {
         var pair,
@@ -1980,10 +1980,10 @@ JXG.JSXMath.Numerics = {
      * @param {Number|Array} x0 A single float value or an array of values to evaluate
      * @param {Array} x x values of knots
      * @param {Array} y y values of knots
-     * @param {Array} F Second derivatives at knots, calculated by {@link JXG.Math.Numerics.splineDef}
-     * @see JXG.Math.Numerics.splineDef
+     * @param {Array} F Second derivatives at knots, calculated by {@link Geometry.Numerics.splineDef}
+     * @see Geometry.Numerics.splineDef
      * @returns {Number|Array} A single value or an array, depending on what is given as x0.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     splineEval: function (x0, x, y, F) {
         var i,
@@ -2049,7 +2049,7 @@ JXG.JSXMath.Numerics = {
      * @param {String} varname Name of the variable (usually 'x')
      * @param {Number} prec Precision
      * @returns {String} A string containing the function term of the polynomial.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     generatePolynomialTerm: function (coeffs, deg, varname, prec) {
         var i,
@@ -2078,7 +2078,7 @@ JXG.JSXMath.Numerics = {
      * the method getCoefficients() which returns an array containing the coefficients of the polynomial.
      * @param {Array} p Array of JXG.Points
      * @returns {function} A function of one parameter which returns the value of the polynomial, whose graph runs through the given points.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      *
      * @example
      * var p = [];
@@ -2086,7 +2086,7 @@ JXG.JSXMath.Numerics = {
      * p[1] = board.create('point', [0,3], {size:4});
      * p[2] = board.create('point', [1,1], {size:4});
      * p[3] = board.create('point', [3,-1], {size:4});
-     * var f = JXG.Math.Numerics.lagrangePolynomial(p);
+     * var f = Geometry.Numerics.lagrangePolynomial(p);
      * var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
      *
      * </pre><div id="JXGc058aa6b-74d4-41e1-af94-df06169a2d89" class="jxgbox" style="width: 300px; height: 300px;"></div>
@@ -2099,7 +2099,7 @@ JXG.JSXMath.Numerics = {
      *     p[1] = board.create('point', [0,3], {size:4});
      *     p[2] = board.create('point', [1,1], {size:4});
      *     p[3] = board.create('point', [3,-1], {size:4});
-     *     var f = JXG.Math.Numerics.lagrangePolynomial(p);
+     *     var f = Geometry.Numerics.lagrangePolynomial(p);
      *     var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
      *
      *     })();
@@ -2112,7 +2112,7 @@ JXG.JSXMath.Numerics = {
      * points[1] = board.create('point', [0, 0], {size:4});
      * points[2] = board.create('point', [2, 1], {size:4});
      *
-     * var f = JXG.Math.Numerics.lagrangePolynomial(points);
+     * var f = Geometry.Numerics.lagrangePolynomial(points);
      * var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
      * var txt = board.create('text', [-3, -4,  () => f.getTerm(2, 't', ' * ')], {fontSize: 16});
      * var txt2 = board.create('text', [-3, -6,  () => f.getCoefficients()], {fontSize: 12});
@@ -2127,7 +2127,7 @@ JXG.JSXMath.Numerics = {
      *     points[1] = board.create('point', [0, 0], {size:4});
      *     points[2] = board.create('point', [2, 1], {size:4});
      *
-     *     var f = JXG.Math.Numerics.lagrangePolynomial(points);
+     *     var f = Geometry.Numerics.lagrangePolynomial(points);
      *     var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
      *     var txt = board.create('text', [-3, -4,  () => f.getTerm(2, 't', ' * ')], {fontSize: 16});
      *     var txt2 = board.create('text', [-3, -6,  () => f.getCoefficients()], {fontSize: 12});
@@ -2187,21 +2187,21 @@ JXG.JSXMath.Numerics = {
 
         /**
          * Get the term of the Lagrange polynomial as string.
-         * Calls {@link JXG.Math.Numerics#lagrangePolynomialTerm}.
+         * Calls {@link Geometry.Numerics#lagrangePolynomialTerm}.
          *
-         * @name JXG.Math.Numerics.lagrangePolynomial#getTerm
+         * @name Geometry.Numerics.lagrangePolynomial#getTerm
          * @param {Number} digits Number of digits of the coefficients
          * @param {String} param Variable name
          * @param {String} dot Dot symbol
          * @returns {String} containing the term of Lagrange polynomial as string.
-         * @see JXG.Math.Numerics.lagrangePolynomialTerm
+         * @see Geometry.Numerics.lagrangePolynomialTerm
          * @example
          * var points = [];
          * points[0] = board.create('point', [-1,2], {size:4});
          * points[1] = board.create('point', [0, 0], {size:4});
          * points[2] = board.create('point', [2, 1], {size:4});
          *
-         * var f = JXG.Math.Numerics.lagrangePolynomial(points);
+         * var f = Geometry.Numerics.lagrangePolynomial(points);
          * var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
          * var txt = board.create('text', [-3, -4,  () => f.getTerm(2, 't', ' * ')], {fontSize: 16});
          *
@@ -2215,7 +2215,7 @@ JXG.JSXMath.Numerics = {
          *     points[1] = board.create('point', [0, 0], {size:4});
          *     points[2] = board.create('point', [2, 1], {size:4});
          *
-         *     var f = JXG.Math.Numerics.lagrangePolynomial(points);
+         *     var f = Geometry.Numerics.lagrangePolynomial(points);
          *     var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
          *     var txt = board.create('text', [-3, -4,  () => f.getTerm(2, 't', ' * ')], {fontSize: 16});
          *
@@ -2231,20 +2231,20 @@ JXG.JSXMath.Numerics = {
         /**
          * Get the coefficients of the Lagrange polynomial as array. The leading
          * coefficient is at position 0.
-         * Calls {@link JXG.Math.Numerics#lagrangePolynomialCoefficients}.
+         * Calls {@link Geometry.Numerics#lagrangePolynomialCoefficients}.
          *
-         * @name JXG.Math.Numerics.lagrangePolynomial#getCoefficients
+         * @name Geometry.Numerics.lagrangePolynomial#getCoefficients
          * @returns {Array} containing the coefficients of the Lagrange polynomial.
-         * @see JXG.Math.Numerics.lagrangePolynomial.getTerm
-         * @see JXG.Math.Numerics.lagrangePolynomialTerm
-         * @see JXG.Math.Numerics.lagrangePolynomialCoefficients
+         * @see Geometry.Numerics.lagrangePolynomial.getTerm
+         * @see Geometry.Numerics.lagrangePolynomialTerm
+         * @see Geometry.Numerics.lagrangePolynomialCoefficients
          * @example
          * var points = [];
          * points[0] = board.create('point', [-1,2], {size:4});
          * points[1] = board.create('point', [0, 0], {size:4});
          * points[2] = board.create('point', [2, 1], {size:4});
          *
-         * var f = JXG.Math.Numerics.lagrangePolynomial(points);
+         * var f = Geometry.Numerics.lagrangePolynomial(points);
          * var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
          * var txt = board.create('text', [1, -4,  () => f.getCoefficients()], {fontSize: 10});
          *
@@ -2258,7 +2258,7 @@ JXG.JSXMath.Numerics = {
          *     points[1] = board.create('point', [0, 0], {size:4});
          *     points[2] = board.create('point', [2, 1], {size:4});
          *
-         *     var f = JXG.Math.Numerics.lagrangePolynomial(points);
+         *     var f = Geometry.Numerics.lagrangePolynomial(points);
          *     var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
          *     var txt = board.create('text', [1, -4,  () => f.getCoefficients()], {fontSize: 10});
          *
@@ -2284,7 +2284,7 @@ JXG.JSXMath.Numerics = {
      * @param {String} dot Multiplication symbol. Default: ' * '.
      * @returns {Function} returning the Lagrange polynomial term through
      *    the supplied points as string
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      *
      * @example
      * var points = [];
@@ -2292,10 +2292,10 @@ JXG.JSXMath.Numerics = {
      * points[1] = board.create('point', [0, 0], {size:4});
      * points[2] = board.create('point', [2, 1], {size:4});
      *
-     * var f = JXG.Math.Numerics.lagrangePolynomial(points);
+     * var f = Geometry.Numerics.lagrangePolynomial(points);
      * var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
      *
-     * var f_txt = JXG.Math.Numerics.lagrangePolynomialTerm(points, 2, 't', ' * ');
+     * var f_txt = Geometry.Numerics.lagrangePolynomialTerm(points, 2, 't', ' * ');
      * var txt = board.create('text', [-3, -4, f_txt], {fontSize: 16});
      *
      * </pre><div id="JXGd45e9e96-7526-486d-aa43-e1178d5f2baa" class="jxgbox" style="width: 300px; height: 300px;"></div>
@@ -2308,10 +2308,10 @@ JXG.JSXMath.Numerics = {
      *     points[1] = board.create('point', [0, 0], {size:4});
      *     points[2] = board.create('point', [2, 1], {size:4});
      *
-     *     var f = JXG.Math.Numerics.lagrangePolynomial(points);
+     *     var f = Geometry.Numerics.lagrangePolynomial(points);
      *     var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
      *
-     *     var f_txt = JXG.Math.Numerics.lagrangePolynomialTerm(points, 2, 't', ' * ');
+     *     var f_txt = Geometry.Numerics.lagrangePolynomialTerm(points, 2, 't', ' * ');
      *     var txt = board.create('text', [-3, -4, f_txt], {fontSize: 16});
      *
      *     })();
@@ -2370,7 +2370,7 @@ JXG.JSXMath.Numerics = {
      * @param {Array} points Array of JXG.Points
      * @returns {Function} returning the coefficients of the Lagrange polynomial through
      *    the supplied points.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      *
      * @example
      * var points = [];
@@ -2378,10 +2378,10 @@ JXG.JSXMath.Numerics = {
      * points[1] = board.create('point', [0, 0], {size:4});
      * points[2] = board.create('point', [2, 1], {size:4});
      *
-     * var f = JXG.Math.Numerics.lagrangePolynomial(points);
+     * var f = Geometry.Numerics.lagrangePolynomial(points);
      * var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
      *
-     * var f_arr = JXG.Math.Numerics.lagrangePolynomialCoefficients(points);
+     * var f_arr = Geometry.Numerics.lagrangePolynomialCoefficients(points);
      * var txt = board.create('text', [1, -4, f_arr], {fontSize: 10});
      *
      * </pre><div id="JXG1778f0d1-a420-473f-99e8-1755ef4be97e" class="jxgbox" style="width: 300px; height: 300px;"></div>
@@ -2394,10 +2394,10 @@ JXG.JSXMath.Numerics = {
      *     points[1] = board.create('point', [0, 0], {size:4});
      *     points[2] = board.create('point', [2, 1], {size:4});
      *
-     *     var f = JXG.Math.Numerics.lagrangePolynomial(points);
+     *     var f = Geometry.Numerics.lagrangePolynomial(points);
      *     var graph = board.create('functiongraph', [f,-10, 10], {strokeWidth:3});
      *
-     *     var f_arr = JXG.Math.Numerics.lagrangePolynomialCoefficients(points);
+     *     var f_arr = Geometry.Numerics.lagrangePolynomialCoefficients(points);
      *     var txt = board.create('text', [1, -4, f_arr], {fontSize: 10});
      *
      *     })();
@@ -2468,7 +2468,7 @@ JXG.JSXMath.Numerics = {
      * which return the x resp. y coordinates of the Catmull-Rom-spline curve in t, a zero value,
      * and a function simply returning the length of the points array
      * minus three.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     CardinalSpline: function (points, tau_param, type) {
         var p,
@@ -2651,7 +2651,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} An Array consisting of four components: Two functions each of one parameter t
      * which return the x resp. y coordinates of the Catmull-Rom-spline curve in t, a zero value, and a function simply
      * returning the length of the points array minus three.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     CatmullRomSpline: function (points, type) {
         return this.CardinalSpline(points, 0.5, type);
@@ -2669,7 +2669,7 @@ JXG.JSXMath.Numerics = {
      * @returns {function} A function of one parameter which returns the value of the regression polynomial of the given degree.
      * It possesses the method getTerm() which returns the string containing the function term of the polynomial.
      * The function returned will throw an exception, if the data set is malformed.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     regressionPolynomial: function (degree, dataX, dataY) {
         var coeffs, deg, dX, dY, inputType, fct,
@@ -2815,7 +2815,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} An array consisting of two functions of one parameter t which return the
      * x resp. y coordinates of the Bezier curve in t, one zero value, and a third function accepting
      * no parameters and returning one third of the length of the points.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     bezier: function (points) {
         var len,
@@ -2870,7 +2870,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} An Array consisting of four components: Two functions each of one parameter t
      * which return the x resp. y coordinates of the B-spline curve in t, a zero value, and a function simply
      * returning the length of the points array minus one.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     bspline: function (points, order) {
         var knots,
@@ -2995,7 +2995,7 @@ JXG.JSXMath.Numerics = {
      * @param {object} [obj] Optional object that is treated as "this" in the function body. This is useful, if the function is a
      * method of an object and contains a reference to its parent object via "this".
      * @returns {function} Derivative function of a given function f.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     D: function (f, obj) {
         if (!Type.exists(obj)) {
@@ -3030,16 +3030,16 @@ JXG.JSXMath.Numerics = {
     },
 
     /**
-     * Evaluate the function term for {@link JXG.Math.Numerics.riemann}.
+     * Evaluate the function term for {@link Geometry.Numerics.riemann}.
      * @private
      * @param {Number} x function argument
      * @param {function} f JavaScript function returning a number
      * @param {String} type Name of the Riemann sum type, e.g. 'lower'.
      * @param {Number} delta Width of the bars in user coordinates
      * @returns {Number} Upper (delta > 0) or lower (delta < 0) value of the bar containing x of the Riemann sum.
-     * @see JXG.Math.Numerics.riemann
+     * @see Geometry.Numerics.riemann
      * @private
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     _riemannValue: function (x, f, type, delta) {
         var y, y1, x1, delta1;
@@ -3125,7 +3125,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} An array of two arrays containing the x and y coordinates for the rectangles showing the Riemann sum. This
      * array may be used as parent array of a {@link JXG.Curve}. The third parameteris the riemann sum, i.e. the sum of the volumes of all
      * rectangles.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     riemann: function (gf, n, type, start, end) {
         var i, delta,
@@ -3262,7 +3262,7 @@ JXG.JSXMath.Numerics = {
      * @param {Number} start Left border of the approximation interval
      * @param {Number} end Right border of the approximation interval
      * @returns {Number} The sum of the areas of the rectangles.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     riemannsum: function (f, n, type, start, end) {
         JXG.deprecated("Numerics.riemannsum()", "Numerics.riemann()[2]");
@@ -3300,7 +3300,7 @@ JXG.JSXMath.Numerics = {
      *
      * // Solve it with initial value x(0) = 1 on the interval [0, 2]
      * // with 20 evaluation points.
-     * var data = JXG.Math.Numerics.rungeKutta('heun', [1], [0, 2], 20, f);
+     * var data = Geometry.Numerics.rungeKutta('heun', [1], [0, 2], 20, f);
      *
      * // Prepare data for plotting the solution of the ode using a curve.
      * var dataX = [];
@@ -3320,7 +3320,7 @@ JXG.JSXMath.Numerics = {
      *     // return x; would just return the reference.
      *     return [x[0]];
      * }
-     * var data = JXG.Math.Numerics.rungeKutta('heun', [1], [0, 2], 20, f);
+     * var data = Geometry.Numerics.rungeKutta('heun', [1], [0, 2], 20, f);
      * var dataX = [];
      * var dataY = [];
      * var h = 0.1;
@@ -3330,7 +3330,7 @@ JXG.JSXMath.Numerics = {
      * }
      * var g = board.create('curve', [dataX, dataY], {strokeColor:'red', strokeWidth:'2px'});
      * </script><pre>
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     rungeKutta: function (butcher, x0, I, N, f) {
         var e,
@@ -3401,19 +3401,19 @@ JXG.JSXMath.Numerics = {
     },
 
     /**
-     * Maximum number of iterations in {@link JXG.Math.Numerics.fzero} and
-     * {@link JXG.Math.Numerics.chandrupatla}
+     * Maximum number of iterations in {@link Geometry.Numerics.fzero} and
+     * {@link Geometry.Numerics.chandrupatla}
      * @type Number
      * @default 80
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     maxIterationsRoot: 80,
 
     /**
-     * Maximum number of iterations in {@link JXG.Math.Numerics.fminbr}
+     * Maximum number of iterations in {@link Geometry.Numerics.fminbr}
      * @type Number
      * @default 500
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     maxIterationsMinimize: 500,
 
@@ -3428,10 +3428,10 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} [x_0, f(x_0), x_1, f(x_1)] in case that x_0 <= x_1
      *   or [x_1, f(x_1), x_0, f(x_0)] in case that x_1 < x_0.
      *
-     * @see JXG.Math.Numerics.fzero
-     * @see JXG.Math.Numerics.chandrupatla
+     * @see Geometry.Numerics.fzero
+     * @see Geometry.Numerics.chandrupatla
      *
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     findBracket: function (f, x0, context) {
         var a, aa, fa, blist, b, fb, u, fu, i, len;
@@ -3512,12 +3512,12 @@ JXG.JSXMath.Numerics = {
      * the algorithm tries to bracket a zero of f starting from x0.
      * If this fails, we fall back to Newton's method.
      *
-     * @see JXG.Math.Numerics.chandrupatla
-     * @see JXG.Math.Numerics.root
-     * @see JXG.Math.Numerics.findBracket
-     * @see JXG.Math.Numerics.Newton
-     * @see JXG.Math.Numerics.fminbr
-     * @memberof JXG.Math.Numerics
+     * @see Geometry.Numerics.chandrupatla
+     * @see Geometry.Numerics.root
+     * @see Geometry.Numerics.findBracket
+     * @see Geometry.Numerics.Newton
+     * @see Geometry.Numerics.fminbr
+     * @memberof Geometry.Numerics
      */
     fzero: function (f, x0, context) {
         var a, b, c,
@@ -3538,7 +3538,7 @@ JXG.JSXMath.Numerics = {
         if (Type.isArray(x0)) {
             if (x0.length < 2) {
                 throw new Error(
-                    "JXG.Math.Numerics.fzero: length of array x0 has to be at least two."
+                    "Geometry.Numerics.fzero: length of array x0 has to be at least two."
                 );
             }
 
@@ -3686,12 +3686,12 @@ JXG.JSXMath.Numerics = {
      * the algorithm tries to bracket a zero of f starting from x0.
      * If this fails, we fall back to Newton's method.
      *
-     * @see JXG.Math.Numerics.root
-     * @see JXG.Math.Numerics.fzero
-     * @see JXG.Math.Numerics.findBracket
-     * @see JXG.Math.Numerics.Newton
-     * @see JXG.Math.Numerics.fminbr
-     * @memberof JXG.Math.Numerics
+     * @see Geometry.Numerics.root
+     * @see Geometry.Numerics.fzero
+     * @see Geometry.Numerics.findBracket
+     * @see Geometry.Numerics.Newton
+     * @see Geometry.Numerics.fminbr
+     * @memberof Geometry.Numerics
      */
     chandrupatla: function (f, x0, context) {
         var a, b, fa, fb,
@@ -3712,7 +3712,7 @@ JXG.JSXMath.Numerics = {
         if (Type.isArray(x0)) {
             if (x0.length < 2) {
                 throw new Error(
-                    "JXG.Math.Numerics.fzero: length of array x0 has to be at least two."
+                    "Geometry.Numerics.fzero: length of array x0 has to be at least two."
                 );
             }
 
@@ -3806,8 +3806,8 @@ JXG.JSXMath.Numerics = {
      * Find a small enclosing interval of the domain of a function by
      * tightening the input interval x0.
      * <p>
-     * This is a helper function which is used in {@link JXG.Math.Numerics.fminbr},
-     * {@link JXG.Math.Numerics.fzero}, and  {@link JXG.Curve.getLabelPosition}
+     * This is a helper function which is used in {@link Geometry.Numerics.fminbr},
+     * {@link Geometry.Numerics.fzero}, and  {@link JXG.Curve.getLabelPosition}
      * to avoid search in an interval where the function is mostly undefined.
      *
      * @param {function} f
@@ -3819,13 +3819,13 @@ JXG.JSXMath.Numerics = {
      *
      * @example
      * var f = (x) => Math.sqrt(x);
-     * console.log(JXG.Math.Numerics.findDomain(f, [-5, 5]));
+     * console.log(Geometry.Numerics.findDomain(f, [-5, 5]));
      *
      * // Output: [ -0.00020428174445492973, 5 ]
      *
      * @example
      * var f = (x) => Math.sqrt(x);
-     * console.log(JXG.Math.Numerics.findDomain(f, [-5, 5], null, false));
+     * console.log(Geometry.Numerics.findDomain(f, [-5, 5], null, false));
      *
      * // Output: [ 0.00020428174562965915, 5 ]
      */
@@ -3843,7 +3843,7 @@ JXG.JSXMath.Numerics = {
 
         if (!Type.isArray(x0) || x0.length < 2) {
             throw new Error(
-                "JXG.Math.Numerics.findDomain: length of array x0 has to be at least two."
+                "Geometry.Numerics.findDomain: length of array x0 has to be at least two."
             );
         }
 
@@ -3913,7 +3913,7 @@ JXG.JSXMath.Numerics = {
      * @param {Array} x0  Start interval enclosing the minimum
      * @param {Object} [context] Parent object in case f is method of it
      * @returns {Number} the approximation of the minimum value position
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      **/
     fminbr: function (f, x0, context) {
         var a, b, x, v, w,
@@ -3930,7 +3930,7 @@ JXG.JSXMath.Numerics = {
 
         if (!Type.isArray(x0) || x0.length < 2) {
             throw new Error(
-                "JXG.Math.Numerics.fminbr: length of array x0 has to be at least two."
+                "Geometry.Numerics.fminbr: length of array x0 has to be at least two."
             );
         }
 
@@ -4316,7 +4316,7 @@ JXG.JSXMath.Numerics = {
      * @param {Array} [initial_values=null] Array of initial values for the roots. If not given,
      * starting values are determined by the method of Ozawa.
      * @returns {Array} Array of complex numbers (of JXG.Complex) approximating the roots of the polynomial.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      * @see JXG.Complex
      * @see JXG.C
      *
@@ -4325,7 +4325,7 @@ JXG.JSXMath.Numerics = {
      * var i, roots,
      *     p = [-1, 0, 1];
      *
-     * roots = JXG.Math.Numerics.polzeros(p);
+     * roots = Geometry.Numerics.polzeros(p);
      * for (i = 0; i < roots.length; i++) {
      *     console.log(i, roots[i].toString());
      * }
@@ -4338,7 +4338,7 @@ JXG.JSXMath.Numerics = {
      * var i, roots,
      *     p = [-1, 3, -9, 1, 0, 0, -8, 9, -9, 1];
      *
-     * roots = JXG.Math.Numerics.polzeros(p);
+     * roots = Geometry.Numerics.polzeros(p);
      * for (i = 0; i < roots.length; i++) {
      *     console.log(i, roots[i].toString());
      * }
@@ -4664,7 +4664,7 @@ JXG.JSXMath.Numerics = {
      * @param {Array} pts Array of {@link JXG.Coords}
      * @param {Number} eps If the absolute value of a given number <tt>x</tt> is smaller than <tt>eps</tt> it is considered to be equal <tt>0</tt>.
      * @returns {Array} An array containing points which represent an apparently identical curve as the points of pts do, but contains fewer points.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      */
     RamerDouglasPeucker: function (pts, eps) {
         var allPts = [],
@@ -4673,7 +4673,7 @@ JXG.JSXMath.Numerics = {
             endless = true,
 
             /**
-             * findSplit() is a subroutine of {@link JXG.Math.Numerics.RamerDouglasPeucker}.
+             * findSplit() is a subroutine of {@link Geometry.Numerics.RamerDouglasPeucker}.
              * It searches for the point between index i and j which
              * has the largest distance from the line between the points i and j.
              * @param {Array} pts Array of {@link JXG.Coords}
@@ -4750,7 +4750,7 @@ JXG.JSXMath.Numerics = {
                 return [Math.sqrt(dist), f];
             },
             /**
-             * RDP() is a private subroutine of {@link JXG.Math.Numerics.RamerDouglasPeucker}.
+             * RDP() is a private subroutine of {@link Geometry.Numerics.RamerDouglasPeucker}.
              * It runs recursively through the point set and searches the
              * point which has the largest distance from the line between the first point and
              * the last point. If the distance from the line is greater than eps, this point is
@@ -4824,8 +4824,8 @@ JXG.JSXMath.Numerics = {
 
     /**
      * Old name for the implementation of the Ramer-Douglas-Peucker algorithm.
-     * @deprecated Use {@link JXG.Math.Numerics.RamerDouglasPeucker}
-     * @memberof JXG.Math.Numerics
+     * @deprecated Use {@link Geometry.Numerics.RamerDouglasPeucker}
+     * @memberof Geometry.Numerics
      */
     RamerDouglasPeuker: function (pts, eps) {
         JXG.deprecated("Numerics.RamerDouglasPeuker()", "Numerics.RamerDouglasPeucker()");
@@ -4843,7 +4843,7 @@ JXG.JSXMath.Numerics = {
      * @param {Number} numPoints Number of remaining intermediate points. The first and the last point of the original points will
      *    be taken in any case.
      * @returns {Array} An array containing points which approximates the curve defined by pts.
-     * @memberof JXG.Math.Numerics
+     * @memberof Geometry.Numerics
      *
      * @example
      *     var i, p = [];
@@ -4852,7 +4852,7 @@ JXG.JSXMath.Numerics = {
      *     }
      *
      *     // Plot a cardinal spline curve
-     *     var splineArr = JXG.Math.Numerics.CardinalSpline(p, 0.5);
+     *     var splineArr = Geometry.Numerics.CardinalSpline(p, 0.5);
      *     var cu1 = board.create('curve', splineArr, {strokeColor: 'green'});
      *
      *     var c = board.create('curve', [[0],[0]], {strokeWidth: 2, strokeColor: 'black'});
@@ -4860,7 +4860,7 @@ JXG.JSXMath.Numerics = {
      *         var i, len, points;
      *
      *         // Reduce number of intermediate points with Visvakingam-Whyatt to 6
-     *         points = JXG.Math.Numerics.Visvalingam(cu1.points, 6);
+     *         points = Geometry.Numerics.Visvalingam(cu1.points, 6);
      *         // Plot the remaining points
      *         len = points.length;
      *         this.dataX = [];
@@ -4884,7 +4884,7 @@ JXG.JSXMath.Numerics = {
      *         }
      *
      *         // Plot a cardinal spline curve
-     *         var splineArr = JXG.Math.Numerics.CardinalSpline(p, 0.5);
+     *         var splineArr = Geometry.Numerics.CardinalSpline(p, 0.5);
      *         var cu1 = board.create('curve', splineArr, {strokeColor: 'green'});
      *
      *         var c = board.create('curve', [[0],[0]], {strokeWidth: 2, strokeColor: 'black'});
@@ -4892,7 +4892,7 @@ JXG.JSXMath.Numerics = {
      *             var i, len, points;
      *
      *             // Reduce number of intermediate points with Visvakingam-Whyatt to 6
-     *             points = JXG.Math.Numerics.Visvalingam(cu1.points, 6);
+     *             points = Geometry.Numerics.Visvalingam(cu1.points, 6);
      *             // Plot the remaining points
      *             len = points.length;
      *             this.dataX = [];
@@ -4943,7 +4943,7 @@ JXG.JSXMath.Numerics = {
         lft = 0;
         for (i = 1; i < len - 1; i++) {
             vol = Math.abs(
-                JXG.Math.Numerics.det([
+                Geometry.Numerics.det([
                     pts[i - 1].usrCoords,
                     pts[i].usrCoords,
                     pts[i + 1].usrCoords
@@ -4998,7 +4998,7 @@ JXG.JSXMath.Numerics = {
             lft2 = linkedList[lft].lft;
             if (lft2 !== null) {
                 vol = Math.abs(
-                    JXG.Math.Numerics.det([
+                    Geometry.Numerics.det([
                         pts[lft2].usrCoords,
                         pts[lft].usrCoords,
                         pts[rt].usrCoords
@@ -5010,7 +5010,7 @@ JXG.JSXMath.Numerics = {
             rt2 = linkedList[rt].rt;
             if (rt2 !== null) {
                 vol = Math.abs(
-                    JXG.Math.Numerics.det([
+                    Geometry.Numerics.det([
                         pts[lft].usrCoords,
                         pts[rt].usrCoords,
                         pts[rt2].usrCoords

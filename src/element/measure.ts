@@ -143,7 +143,7 @@ JXG.createTapemeasure = function (board, parents, attributes) {
         board.removeObject(p2);
         board.removeObject(p1);
 
-        GeometryElement.prototype.remove.call(this);
+        JXG.GeometryElement.prototype.remove.call(this);
     };
 
     /**
