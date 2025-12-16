@@ -83,12 +83,16 @@ import Mat from "./math.js";
 // import {Type} from "../utils/type.js";
 
 /**
- * The JXG.Math.Nlp namespace holds numerical algorithms for non-linear optimization.
- * @name JXG.Math.Nlp
+ * The JXG.JSXMath.Nlp namespace holds numerical algorithms for non-linear optimization.
+ * @name JXG.JSXMath.Nlp
  * @namespace
  *
  */
-JXG.Math.Nlp = {
+
+if(JXG.JSXMath === undefined)
+    JXG.JSXMath= {}
+
+JXG.JSXMath.Nlp = {
     arr: function (n) {
         // Is 0 initialized
         return new Float64Array(n);
@@ -125,7 +129,7 @@ JXG.Math.Nlp = {
     /**
      * Minimizes the objective function F with respect to a set of inequality constraints CON,
      * and returns the optimal variable array. F and CON may be non-linear, and should preferably be smooth.
-     * Calls {@link JXG.Math.Nlp#cobylb}.
+     * Calls {@link JXG.JSXMath.Nlp#cobylb}.
      *
      * @param calcfc Interface implementation for calculating objective function and constraints.
      * @param n Number of variables.
@@ -1393,4 +1397,4 @@ JXG.Math.Nlp = {
     }
 };
 
-export default JXG.Math.Nlp;
+export default JXG.JSXMath.Nlp;

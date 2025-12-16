@@ -44,7 +44,7 @@ import { LooseObject } from '../interfaces.js'
 
 import { JXG } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
-import Mat from "../math/math.js";
+import JSXMath from "../math/math.js";
 
 export class Type {
     /**
@@ -1831,7 +1831,7 @@ export class Type {
      * @see JXG.Math.decToFraction
      */
     static toFraction(x, useTeX, order = 0.001) {
-        var arr = Mat.decToFraction(x, order),
+        var arr = JSXMath.decToFraction(x, order),
             str = '';
 
         if (arr[1] === 0 && arr[2] === 0) {

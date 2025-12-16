@@ -191,7 +191,7 @@ export class JXG {
     static useStandardOptions
     static useBlackWhiteOptions
     static Validator
-    static Math
+    static JSXMath
     static str2Bool
     static getDimensions
     static copyAttributes
@@ -385,7 +385,7 @@ export class JXG {
     static Text3D
     static createText3D
     static createView3D
-
+    static DoubleBits
 
 
 

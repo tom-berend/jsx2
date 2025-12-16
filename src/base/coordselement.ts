@@ -1309,7 +1309,7 @@ JXG.extend(
                 // Search for the closest edge of the polygon.
                 min = Number.MAX_VALUE;
                 for (i = 0; i < slideobj.borders.length; i++) {
-                    dist = JXG.Math.Geometry.distPointLine(
+                    dist = JXG.JSXMath.Geometry.distPointLine(
                         this.coords.usrCoords,
                         slideobj.borders[i].stdform
                     );
@@ -1855,7 +1855,7 @@ JXG.extend(
          * @param {function} [options.callback] A function that is called as soon as the animation is finished.
          * @param {Boolean} [options.interpolate=true] If <tt>path</tt> is an array moveAlong()
          * will interpolate the path
-         * using {@link JXG.Math.Numerics.Neville}. Set this flag to false if you don't want to use interpolation.
+         * using {@link JXG.JSXMath.Numerics.Neville}. Set this flag to false if you don't want to use interpolation.
          * @returns {JXG.CoordsElement} Reference to itself.
          * @see JXG.CoordsElement#moveTo
          * @see JXG.CoordsElement#visit

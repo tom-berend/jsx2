@@ -58,7 +58,7 @@ import { Env } from '../utils/env.js';
 // import Composition from './composition.js';
 import GeometryElement from './element.js';
 import { SVGRenderer } from '../renderer/svg.js';
-import Math from '../math/math.js';
+import JSXMath from '../math/math.js';
 import createText from '../base/text.js'
 import createPoint from '../base/point.js'
 import Statistics from '../math/statistics.js';
@@ -1413,7 +1413,7 @@ export class Board extends Events {
 
         // Position relative to the top left corner
         v = [1, absPos[0] - cPos[0], absPos[1] - cPos[1]];
-        v = Math.matVecMult(this.cssTransMat, v);
+        v = JSXMath.matVecMult(this.cssTransMat, v);
         v[1] /= v[0];
         v[2] /= v[0];
         return [v[1], v[2]];
@@ -5057,10 +5057,10 @@ export class Board extends Events {
                 this
             ).usrCoords;
             if (
-                ul[1] < this.maxboundingbox[0] - Math.eps ||
-                ul[2] > this.maxboundingbox[1] + Math.eps ||
-                lr[1] > this.maxboundingbox[2] + Math.eps ||
-                lr[2] < this.maxboundingbox[3] - Math.eps
+                ul[1] < this.maxboundingbox[0] - JSXMath.eps ||
+                ul[2] > this.maxboundingbox[1] + JSXMath.eps ||
+                lr[1] > this.maxboundingbox[2] + JSXMath.eps ||
+                lr[2] < this.maxboundingbox[3] - JSXMath.eps
             ) {
                 this.origin.scrCoords[1] = ox;
                 this.origin.scrCoords[2] = oy;
@@ -6434,10 +6434,10 @@ export class Board extends Events {
         }
 
         if (
-            bbox[0] < this.maxboundingbox[0] - Math.eps ||
-            bbox[1] > this.maxboundingbox[1] + Math.eps ||
-            bbox[2] > this.maxboundingbox[2] + Math.eps ||
-            bbox[3] < this.maxboundingbox[3] - Math.eps
+            bbox[0] < this.maxboundingbox[0] - JSXMath.eps ||
+            bbox[1] > this.maxboundingbox[1] + JSXMath.eps ||
+            bbox[2] > this.maxboundingbox[2] + JSXMath.eps ||
+            bbox[3] < this.maxboundingbox[3] - JSXMath.eps
         ) {
             return this;
         }
@@ -7256,26 +7256,26 @@ export class Board extends Events {
         if (Type.exists(o.getRootNode)) {
             o = o.parentNode === o.getRootNode() ? o.parentNode.host : o.parentNode;
             while (o) {
-                this.cssTransMat = Math.matMatMult(Env.getCSSTransformMatrix(o), this.cssTransMat);
+                this.cssTransMat = JSXMath.matMatMult(Env.getCSSTransformMatrix(o), this.cssTransMat);
                 o = o.parentNode === o.getRootNode() ? o.parentNode.host : o.parentNode;
             }
-            this.cssTransMat = Math.inverse(this.cssTransMat);
+            this.cssTransMat = JSXMath.inverse(this.cssTransMat);
         } else {
             /*
              * This is necessary for IE11
              */
             o = o.offsetParent;
             while (o) {
-                this.cssTransMat = Math.matMatMult(Env.getCSSTransformMatrix(o), this.cssTransMat);
+                this.cssTransMat = JSXMath.matMatMult(Env.getCSSTransformMatrix(o), this.cssTransMat);
 
                 o2 = o2.parentNode;
                 while (o2 !== o) {
-                    this.cssTransMat = Math.matMatMult(Env.getCSSTransformMatrix(o), this.cssTransMat);
+                    this.cssTransMat = JSXMath.matMatMult(Env.getCSSTransformMatrix(o), this.cssTransMat);
                     o2 = o2.parentNode;
                 }
                 o = o.offsetParent;
             }
-            this.cssTransMat = Math.inverse(this.cssTransMat);
+            this.cssTransMat = JSXMath.inverse(this.cssTransMat);
         }
         return this;
     }

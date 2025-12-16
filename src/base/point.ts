@@ -377,7 +377,7 @@ JXG.extend(
                 return this.Dist(el) < tol;
             } else if (el.elementClass === OBJECT_CLASS.LINE) {
                 if (el.elType === "segment" && !this.evalVisProp('alwaysintersect')) {
-                    arr = JXG.Math.Geometry.projectCoordsToSegment(
+                    arr = JXG.JSXMath.Geometry.projectCoordsToSegment(
                         this.coords.usrCoords,
                         el.point1.coords.usrCoords,
                         el.point2.coords.usrCoords
@@ -984,9 +984,9 @@ JXG.createPolePoint = function (board, parents, attributes) {
                     s = el2.stdform.slice(0, 3);
 
                 return [
-                    JXG.Math.Numerics.det([s, q[1], q[2]]),
-                    JXG.Math.Numerics.det([q[0], s, q[2]]),
-                    JXG.Math.Numerics.det([q[0], q[1], s])
+                    JXG.JSXMath.Numerics.det([s, q[1], q[2]]),
+                    JXG.JSXMath.Numerics.det([q[0], s, q[2]]),
+                    JXG.JSXMath.Numerics.det([q[0], q[1], s])
                 ];
             }
         ],

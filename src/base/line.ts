@@ -1,3 +1,5 @@
+const dbug = (elem?/*: GeometryElement*/) => true // elem && elem.id === 'jxgBoard1P1Label';
+const dbugColor = `color:white;background-color:black`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -1232,11 +1234,13 @@ JXG.createLine = function (board, parents, attributes) {
         constrained = false,
         isDraggable;
 
+   if(dbug()) console.warn(`%c line createLine(board,${JSON.stringify(parents)})`,dbugColor,attributes)
+
     if (parents.length === 2) {
         // The line is defined by two points or coordinates of two points.
         // In the latter case, the points are created.
         attr = Type.copyAttributes(attributes, board.options, "line", 'point1');
-        if (Type.isArray(parents[0]) && parents[0].length > 1) {
+        if (Array.isArray(parents[0]) && parents[0].length > 1) {
             p1 = board.create("point", parents[0], attr);
         } else if (Type.isString(parents[0]) || Type.isPoint(parents[0])) {
             p1 = board.select(parents[0]);
@@ -1268,7 +1272,7 @@ JXG.createLine = function (board, parents, attributes) {
         attr = Type.copyAttributes(attributes, board.options, "line", 'point2');
         if (doTransform) {
             p2 = board.create("point", [parents[0].point2, parents[1]], attr);
-        } else if (Type.isArray(parents[1]) && parents[1].length > 1) {
+        } else if (Array.isArray(parents[1]) && parents[1].length > 1) {
             p2 = board.create("point", parents[1], attr);
         } else if (Type.isString(parents[1]) || Type.isPoint(parents[1])) {
             p2 = board.select(parents[1]);
