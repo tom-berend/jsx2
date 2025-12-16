@@ -44,7 +44,7 @@ import Geometry from "../math/geometry.js";
 import GeometryElement from "./element.js";
 import GeonextParser from "../parser/geonext.js";
 import ImplicitPlot from "../math/implicitplot.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Metapost from "../math/metapost.js";
 import Numerics from "../math/numerics.js";
 import Plot from "../math/plot.js";
@@ -242,7 +242,7 @@ JXG.extend(
                 len = this.transformations.length;
 
             if (len > 0) {
-                c = Mat.matVecMult(this.transformMat, c);
+                c = JSXMath.matVecMult(this.transformMat, c);
             }
             c[1] /= c[0];
             c[2] /= c[0];
@@ -316,8 +316,8 @@ JXG.extend(
                 // This is needed, because we work with the function terms, not the points.
                 if (this.transformations.length > 0) {
                     this.updateTransformMatrix();
-                    invMat = Mat.inverse(this.transformMat);
-                    c = Mat.matVecMult(invMat, [1, x, y]);
+                    invMat = JSXMath.inverse(this.transformMat);
+                    c = JSXMath.matVecMult(invMat, [1, x, y]);
                     x = c[1];
                     y = c[2];
                 }
@@ -881,7 +881,7 @@ JXG.extend(
             for (i = 0; i < len; i++) {
                 t = this.transformations[i];
                 t.update();
-                this.transformMat = Mat.matMatMult(t.matrix, this.transformMat);
+                this.transformMat = JSXMath.matMatMult(t.matrix, this.transformMat);
             }
 
             return this;
@@ -898,7 +898,7 @@ JXG.extend(
                 len = this.transformations.length;
 
             if (len > 0) {
-                c = Mat.matVecMult(this.transformMat, p.usrCoords);
+                c = JSXMath.matVecMult(this.transformMat, p.usrCoords);
                 p.setCoordinates(COORDS_BY.USER, c, false, true);
             }
 
@@ -1051,7 +1051,7 @@ JXG.extend(
             } else if (!Type.exists(yterm)) {
                 // Discrete data as an array of coordinate pairs,
                 // i.e. transposed input
-                mat = Mat.transpose(xterm);
+                mat = JSXMath.transpose(xterm);
                 this.dataX = mat[0];
                 this.dataY = mat[1];
                 this.numberPoints = this.dataX.length;
@@ -1179,7 +1179,7 @@ JXG.extend(
             }
             c = (new Coords(COORDS_BY.USER, [x, y], this.board)).scrCoords;
 
-            e = Mat.eps;
+            e = JSXMath.eps;
             if (t < mi + e) {
                 dx = (this.X(t + e) - this.X(t)) / e;
                 dy = (this.Y(t + e) - this.Y(t)) / e;
@@ -1192,7 +1192,7 @@ JXG.extend(
             }
             dx = isNaN(dx) ? 1. : dx;
             dy = isNaN(dy) ? 1. : dy;
-            d = Mat.hypot(dx, dy);
+            d = Math.hypot(dx, dy);
 
             if (xy.side === 'left') {
                 dy *= -1;
@@ -1284,7 +1284,7 @@ JXG.extend(
                 // y = this.Y(t);
                 // c = (new Coords(COORDS_BY.USER, [x, y], this.board)).scrCoords;
 
-                // e = Mat.eps;
+                // e = JSXMath.eps;
                 // if (t < this.minX() + e) {
                 //     dx = (this.X(t + e) - this.X(t)) / e;
                 //     dy = (this.Y(t + e) - this.Y(t)) / e;
@@ -1295,7 +1295,7 @@ JXG.extend(
                 //     dx = 0.5 * (this.X(t + e) - this.X(t - e)) / e;
                 //     dy = 0.5 * (this.Y(t + e) - this.Y(t - e)) / e;
                 // }
-                // d = Mat.hypot(dx, dy);
+                // d = Math.hypot(dx, dy);
 
                 // if (xy.side === 'left') {
                 //     dy *= -1;
@@ -2115,7 +2115,7 @@ JXG.createCardinalSpline = function (board, parents, attributes) {
                     var dx = this.X() - p.X(),
                         dy = this.Y() - p.Y();
 
-                    return Mat.hypot(dx, dy);
+                    return Math.hypot(dx, dy);
                 }
             };
         };

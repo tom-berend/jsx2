@@ -30,7 +30,7 @@
 
 import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import {Type} from "../utils/type.js";
 //, GeometryElement3D) {
@@ -222,7 +222,7 @@ JXG.extend(
          *    p.normalizeCoords();
          */
         normalizeCoords: function () {
-            if (Math.abs(this.coords[0]) > Mat.eps) {
+            if (Math.abs(this.coords[0]) > JSXMath.eps) {
                 this.coords[1] /= this.coords[0];
                 this.coords[2] /= this.coords[0];
                 this.coords[3] /= this.coords[0];
@@ -326,8 +326,8 @@ JXG.extend(
                     COORDS_BY.USER,
                     this.view.project3DTo2D(c3d)
                 );
-                // this.zIndex = Mat.matVecMult(this.view.matrix3DRotShift, c3d)[3];
-                this.zIndex = Mat.innerProduct(this.view.matrix3DRotShift[3], c3d);
+                // this.zIndex = JSXMath.matVecMult(this.view.matrix3DRotShift, c3d)[3];
+                this.zIndex = JSXMath.innerProduct(this.view.matrix3DRotShift[3], c3d);
                 this.element2D.prepareUpdate().update();
             }
             this._c2d = this.element2D.coords.usrCoords.slice();
@@ -345,7 +345,7 @@ JXG.extend(
          * @returns {Boolean} True if the first entry of the coordinate vector is not zero; false otherwise.
          */
         testIfFinite: function () {
-            return Math.abs(this.coords[0]) > Mat.eps ? true : false;
+            return Math.abs(this.coords[0]) > JSXMath.eps ? true : false;
             // return Type.cmpArrays(this.coords, [0, 0, 0, 0]);
         },
 

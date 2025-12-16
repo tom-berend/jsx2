@@ -54,13 +54,13 @@ import { JXG } from '../jxg.js'
 import { LooseObject } from "../interfaces.js";
 import Options from "../options.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js'
-import {Coords} from "../base/coords.js";
+import { Coords } from "../base/coords.js";
 
 // import { Constants } from "../base/constants.js";
-import Math from "../math/math.js";
+import { JSXMath } from "../math/math.js";
 import Geometry from "../math/geometry.js";
-import {Type} from "../utils/type.js";
-import {Env} from "../utils/env.js";
+import { Type } from "../utils/type.js";
+import { Env } from "../utils/env.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "../base/element.js";
 import { SVGType } from "../interfaces.js";
@@ -591,7 +591,7 @@ export abstract class AbstractRenderer {
      * @private
      */
     getArrowHeadData(el, strokewidth, hl) {
-        var minlen = Math.eps,
+        var minlen = JSXMath.eps,
             typeFirst,
             typeLast,
             offFirst = 0,
@@ -977,7 +977,7 @@ export abstract class AbstractRenderer {
 
         if (
             /*radius > 0.0 &&*/
-            Math.abs(el.center.coords.usrCoords[0]) > Math.eps &&
+            Math.abs(el.center.coords.usrCoords[0]) > JSXMath.eps &&
             !isNaN(radius + el.center.coords.scrCoords[1] + el.center.coords.scrCoords[2]) &&
             radius * el.board.unitX < 2000000
         ) {
@@ -1526,10 +1526,10 @@ export abstract class AbstractRenderer {
             ];
 
         for (i = 0; i < len; i++) {
-            m = Math.matMatMult(transformations[i].matrix, m);
+            m = JSXMath.matMatMult(transformations[i].matrix, m);
         }
         // Scale back and then translate back
-        m = Math.matMatMult(
+        m = JSXMath.matMatMult(
             [
                 [1, 0, 0],
                 [ox, ux, 0],

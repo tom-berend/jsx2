@@ -35,7 +35,7 @@
 import { JXG } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import {Coords} from "../base/coords.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Statistics from "../math/statistics.js";
 import Options from "../options.js";
 import { EventEmitter } from "../utils/event.js";
@@ -1895,7 +1895,7 @@ JXG.extend(
          * @private
          */
         normalize: function () {
-            this.stdform = Mat.normalize(this.stdform);
+            this.stdform = JSXMath.normalize(this.stdform);
             return this;
         },
 

@@ -32,7 +32,7 @@
 import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Stat from "../math/statistics.js";
 import Geometry from "../math/geometry.js";
 
@@ -251,11 +251,11 @@ JXG.extend(
             return function () {
                 var view = that.view,
                     p = view.worldToFocal(that.center.coords, false),
-                    distOffAxis = Mat.hypot(p[0], p[1]),
+                    distOffAxis = Math.hypot(p[0], p[1]),
                     cam = view.boxToCam,
                     r = that.Radius(),
                     angleOffAxis = Math.atan(-distOffAxis / p[2]),
-                    steepness = Math.acos(r / Mat.norm(p)),
+                    steepness = Math.acos(r / JSXMath.norm(p)),
                     lean = angleOffAxis + steepness,
                     cos_lean = Math.cos(lean),
                     sin_lean = Math.sin(lean),

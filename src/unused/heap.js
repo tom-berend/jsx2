@@ -32,7 +32,7 @@
 /*global JXG:true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import Mat from "./math.js";
+import {JSXMath} from "./math.js";
 
 /**
  * Instantiate a new heap.

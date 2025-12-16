@@ -39,7 +39,7 @@
 
 import { JXG } from "../jxg.js";
 import Geometry from "../math/geometry.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import {Coords} from "../base/coords.js";
 
 import Circle from "../base/circle.js";
@@ -337,8 +337,8 @@ JXG.createArc = function (board, parents, attributes) {
             // Transform the mouse/touch coordinates
             // back to the original position of the curve.
             this.updateTransformMatrix();
-            invMat = Mat.inverse(this.transformMat);
-            c = Mat.matVecMult(invMat, checkPoint.usrCoords);
+            invMat = JSXMath.inverse(this.transformMat);
+            c = JSXMath.matVecMult(invMat, checkPoint.usrCoords);
             checkPoint = new Coords(COORDS_BY.USER, c, this.board);
         }
 
@@ -427,7 +427,7 @@ JXG.createArc = function (board, parents, attributes) {
             vecx = coords.usrCoords[1] - pmc[1];
             vecy = coords.usrCoords[2] - pmc[2];
 
-            len = Mat.hypot(vecx, vecy);
+            len = Math.hypot(vecx, vecy);
             vecx = (vecx * (len + dx)) / len;
             vecy = (vecy * (len + dy)) / len;
             vec = [pmc[1] + vecx, pmc[2] + vecy];

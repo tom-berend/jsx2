@@ -37,8 +37,8 @@
  */
 
 import { JXG } from "../jxg.js";
-import Mat from "../math/math.js";
-import {Type} from "../utils/type.js";
+import { JSXMath } from "../math/math.js";
+import { Type } from "../utils/type.js";
 import { OBJECT_TYPE } from "../base/constants.js";
 
 /**
@@ -216,7 +216,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  * </script><pre>
  */
 JXG.createGrid = function (board, parents, attributes) {
-    var eps = Mat.eps,       // to avoid rounding errors
+    var eps = JSXMath.eps,       // to avoid rounding errors
         maxLines = 5000,    // maximum number of vertical or horizontal grid elements (abort criterion for performance reasons)
 
         majorGrid,      // main object which will be returned as grid
@@ -558,8 +558,8 @@ JXG.createGrid = function (board, parents, attributes) {
         majorRadius[1] = majorSize[1] / 2;
 
         // calculate start position of curve
-        startX = Mat.roundToStep(bbox[0], majorStep[0]);
-        startY = Mat.roundToStep(bbox[1], majorStep[1]);
+        startX = JSXMath.roundToStep(bbox[0], majorStep[0]);
+        startY = JSXMath.roundToStep(bbox[1], majorStep[1]);
 
         // check if number of grid elements side by side is not too large
         finite = isFinite(startX) && isFinite(startY) &&
@@ -730,8 +730,8 @@ JXG.createGrid = function (board, parents, attributes) {
         minorRadius[1] = minorSize[1] * 0.5;
 
         // calculate start position of curve
-        startX = Mat.roundToStep(bbox[0], minorStep[0]);
-        startY = Mat.roundToStep(bbox[1], minorStep[1]);
+        startX = JSXMath.roundToStep(bbox[0], minorStep[0]);
+        startY = JSXMath.roundToStep(bbox[1], minorStep[1]);
 
         // check if number of grid elements side by side is not too large
         finite = isFinite(startX) && isFinite(startY) &&
@@ -774,11 +774,11 @@ JXG.createGrid = function (board, parents, attributes) {
                          |
                          |
                     */
-                    XdisTo0 = Mat.roundToStep(Math.abs(x), majorStep[0]);
+                    XdisTo0 = JSXMath.roundToStep(Math.abs(x), majorStep[0]);
                     XdisTo0 = Math.abs(XdisTo0 - Math.abs(x));
                     XdisFrom0 = majorStep[0] - XdisTo0;
 
-                    YdisTo0 = Mat.roundToStep(Math.abs(y), majorStep[1]);
+                    YdisTo0 = JSXMath.roundToStep(Math.abs(y), majorStep[1]);
                     YdisTo0 = Math.abs(YdisTo0 - Math.abs(y));
                     YdisFrom0 = majorStep[1] - YdisTo0;
 
@@ -898,7 +898,7 @@ JXG.createGrid = function (board, parents, attributes) {
         } else {
             m = minorGrid.evalVisProp('margin');
             for (y = startY; finite && y >= bbox[3]; y -= minorStep[1]) {
-                YdisTo0 = Mat.roundToStep(Math.abs(y), majorStep[1]);
+                YdisTo0 = JSXMath.roundToStep(Math.abs(y), majorStep[1]);
                 YdisTo0 = Math.abs(YdisTo0 - Math.abs(y));
                 YdisFrom0 = majorStep[1] - YdisTo0;
 
@@ -966,7 +966,7 @@ JXG.createGrid = function (board, parents, attributes) {
                 Type.concat(this.dataY, dataArr[1]);
             }
             for (x = startX; finite && x <= bbox[2]; x += minorStep[0]) {
-                XdisTo0 = Mat.roundToStep(Math.abs(x), majorStep[0]);
+                XdisTo0 = JSXMath.roundToStep(Math.abs(x), majorStep[0]);
                 XdisTo0 = Math.abs(XdisTo0 - Math.abs(x));
                 XdisFrom0 = majorStep[0] - XdisTo0;
 

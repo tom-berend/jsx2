@@ -32,7 +32,7 @@ import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Geometry from "../math/geometry.js";
 import {Type} from "../utils/type.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 
 /**
  * Constructor for 3D curves.
@@ -205,9 +205,9 @@ JXG.extend(
                 c3d = this.baseElement.evalF(u);
             }
             c3d.unshift(1);
-            c3d = Mat.matVecMult(t[0].matrix, c3d);
+            c3d = JSXMath.matVecMult(t[0].matrix, c3d);
             for (i = 1; i < t.length; i++) {
-                c3d = Mat.matVecMult(t[i].matrix, c3d);
+                c3d = JSXMath.matVecMult(t[i].matrix, c3d);
             }
 
             return c3d.slice(1);
@@ -299,7 +299,7 @@ JXG.extend(
                     c = this.baseElement.points[i];
                 }
                 for (j = 0; j < t.length; j++) {
-                    c = Mat.matVecMult(t[j].matrix, c);
+                    c = JSXMath.matVecMult(t[j].matrix, c);
                 }
                 this.points[i] = c;
             }
@@ -407,7 +407,7 @@ JXG.createCurve3D = function (board, parents, attributes) {
             Z = null;
         }
     } else if (parents.length === 2 && Type.isArray(parents[1])) {
-        mat = Mat.transpose(parents[1]);
+        mat = JSXMath.transpose(parents[1]);
         X = mat[0];
         Y = mat[1];
         Z = mat[2];
@@ -634,7 +634,7 @@ JXG.createVectorfield3D = function (board, parents, attributes) {
             for (j = 0, y = start[1]; j <= steps[1]; y += delta[1], j++) {
                 for (k = 0, z = start[2]; k <= steps[2]; z += delta[2], k++) {
                     v = this.F(x, y, z);
-                    nrm = Mat.norm(v);
+                    nrm = JSXMath.norm(v);
                     if (nrm < Number.EPSILON) {
                         continue;
                     }

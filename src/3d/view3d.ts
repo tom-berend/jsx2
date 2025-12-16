@@ -44,7 +44,7 @@ import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 
 import {Type} from "../utils/type.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import {Env} from "../utils/env.js";
@@ -343,7 +343,7 @@ JXG.extend(
 
         // extract bank by rotating the view box z axis onto the camera yz plane
         rBank = Math.sqrt(rem[1][3] * rem[1][3] + rem[2][3] * rem[2][3]);
-        if (rBank > Mat.eps) {
+        if (rBank > JSXMath.eps) {
             cosBank = rem[2][3] / rBank;
             sinBank = rem[1][3] / rBank;
         } else {
@@ -352,7 +352,7 @@ JXG.extend(
             cosBank = Math.cos(this.angles.bank);
             sinBank = Math.sin(this.angles.bank);
         }
-        rem = Mat.matMatMult([
+        rem = JSXMath.matMatMult([
             [1, 0, 0, 0],
             [0, cosBank, -sinBank, 0],
             [0, sinBank, cosBank, 0],
@@ -364,7 +364,7 @@ JXG.extend(
         // y axis
         cosEl = rem[2][3];
         sinEl = rem[3][3];
-        rem = Mat.matMatMult([
+        rem = JSXMath.matMatMult([
             [1, 0, 0, 0],
             [0, 1, 0, 0],
             [0, 0, cosEl, sinEl],
@@ -384,9 +384,9 @@ JXG.extend(
     anglesHaveMoved: function () {
         return (
             this._hasMoveAz || this._hasMoveEl ||
-            Math.abs(this.angles.az - this.az_slide.Value()) > Mat.eps ||
-            Math.abs(this.angles.el - this.el_slide.Value()) > Mat.eps ||
-            Math.abs(this.angles.bank - this.bank_slide.Value()) > Mat.eps
+            Math.abs(this.angles.az - this.az_slide.Value()) > JSXMath.eps ||
+            Math.abs(this.angles.el - this.el_slide.Value()) > JSXMath.eps ||
+            Math.abs(this.angles.bank - this.bank_slide.Value()) > JSXMath.eps
         );
     },
 
@@ -434,7 +434,7 @@ JXG.extend(
 
         cosBank = Math.cos(b);
         sinBank = Math.sin(b);
-        mat = Mat.matMatMult([
+        mat = JSXMath.matMatMult([
             [1, 0, 0, 0],
             [0, cosBank, sinBank, 0],
             [0, -sinBank, cosBank, 0],
@@ -470,14 +470,14 @@ JXG.extend(
         eye = func_sphere(a, e);
         d = [eye[0], eye[1], eye[2]];
 
-        nrm = Mat.norm(d, 3);
+        nrm = JSXMath.norm(d, 3);
         az = [d[0] / nrm, d[1] / nrm, d[2] / nrm];
 
-        nrm = Mat.norm(up, 3);
+        nrm = JSXMath.norm(up, 3);
         v = [up[0] / nrm, up[1] / nrm, up[2] / nrm];
 
-        ax = Mat.crossProduct(v, az);
-        ay = Mat.crossProduct(az, ax);
+        ax = JSXMath.crossProduct(v, az);
+        ay = JSXMath.crossProduct(az, ax);
 
         this.matrix3DRot[1] = [0, ax[0], ax[1], ax[2]];
         this.matrix3DRot[2] = [0, ay[0], ay[1], ay[2]];
@@ -497,7 +497,7 @@ JXG.extend(
      * @private
      */
     _projectToSphere: function (r, x, y) {
-        var d = Mat.hypot(x, y),
+        var d = Math.hypot(x, y),
             t, z;
 
         if (d < r * 0.7071067811865475) { // Inside sphere
@@ -534,7 +534,7 @@ JXG.extend(
         dx = this._trackball.dx;
         dy = this._trackball.dy;
         dr2 = dx * dx + dy * dy;
-        if (dr2 > Mat.eps) {
+        if (dr2 > JSXMath.eps) {
             // // Method by Hanson, "The rolling ball", Graphics Gems III, p.51
             // // Rotation axis:
             // //     n = (-dy/dr, dx/dr, 0)
@@ -560,8 +560,8 @@ JXG.extend(
             y -= dy;
             p1 = [x, y, this._projectToSphere(R, x, y)];
 
-            n = Mat.crossProduct(p1, p2);
-            d = Mat.hypot(n[0], n[1], n[2]);
+            n = JSXMath.crossProduct(p1, p2);
+            d = Math.hypot(n[0], n[1], n[2]);
             n[0] /= d;
             n[1] /= d;
             n[2] /= d;
@@ -592,7 +592,7 @@ JXG.extend(
             mat[3][3] = c + n[2] * n[2] * t;
         }
 
-        mat = Mat.matMatMult(mat, this.matrix3DRot);
+        mat = JSXMath.matMatMult(mat, this.matrix3DRot);
         return mat;
     },
 
@@ -635,17 +635,17 @@ JXG.extend(
         if (this.trackballEnabled) {
             // if we're upside-down, flip the bank angle to reach the same
             // orientation with an elevation between -pi/2 and pi/2
-            el_cover = Mat.mod(this.angles.el, 2 * Math.PI);
+            el_cover = JSXMath.mod(this.angles.el, 2 * Math.PI);
             if (0.5 * Math.PI < el_cover && el_cover < 1.5 * Math.PI) {
                 this.angles.el = Math.PI - el_cover;
-                this.angles.az = Mat.wrap(this.angles.az + Math.PI, az_smin, az_smax);
-                this.angles.bank = Mat.wrap(this.angles.bank + Math.PI, bank_smin, bank_smax);
+                this.angles.az = JSXMath.wrap(this.angles.az + Math.PI, az_smin, az_smax);
+                this.angles.bank = JSXMath.wrap(this.angles.bank + Math.PI, bank_smin, bank_smax);
             }
 
             // wrap the azimuth and bank angle
-            this.angles.az = Mat.wrap(this.angles.az, az_smin, az_smax);
-            this.angles.el = Mat.wrap(this.angles.el, el_smin, el_smax);
-            this.angles.bank = Mat.wrap(this.angles.bank, bank_smin, bank_smax);
+            this.angles.az = JSXMath.wrap(this.angles.az, az_smin, az_smax);
+            this.angles.el = JSXMath.wrap(this.angles.el, el_smin, el_smax);
+            this.angles.bank = JSXMath.wrap(this.angles.bank, bank_smin, bank_smax);
         } else {
             // wrap and clamp the elevation into the slider range. if
             // flipping the elevation gets us closer to the slider interval,
@@ -660,12 +660,12 @@ JXG.extend(
                 }
             };
             el_smid = 0.5 * (el_smin + el_smax);
-            el_equiv = Mat.wrap(
+            el_equiv = JSXMath.wrap(
                 this.angles.el,
                 el_smid - Math.PI,
                 el_smid + Math.PI
             );
-            el_flip_equiv = Mat.wrap(
+            el_flip_equiv = JSXMath.wrap(
                 Math.PI - this.angles.el,
                 el_smid - Math.PI,
                 el_smid + Math.PI
@@ -673,16 +673,16 @@ JXG.extend(
             el_equiv_loss = el_interval_loss(el_equiv);
             el_flip_equiv_loss = el_interval_loss(el_flip_equiv);
             if (el_equiv_loss <= el_flip_equiv_loss) {
-                this.angles.el = Mat.clamp(el_equiv, el_smin, el_smax);
+                this.angles.el = JSXMath.clamp(el_equiv, el_smin, el_smax);
             } else {
-                this.angles.el = Mat.clamp(el_flip_equiv, el_smin, el_smax);
-                this.angles.az = Mat.wrap(this.angles.az + Math.PI, az_smin, az_smax);
-                this.angles.bank = Mat.wrap(this.angles.bank + Math.PI, bank_smin, bank_smax);
+                this.angles.el = JSXMath.clamp(el_flip_equiv, el_smin, el_smax);
+                this.angles.az = JSXMath.wrap(this.angles.az + Math.PI, az_smin, az_smax);
+                this.angles.bank = JSXMath.wrap(this.angles.bank + Math.PI, bank_smin, bank_smax);
             }
 
             // wrap and clamp the azimuth and bank angle into the slider range
-            this.angles.az = Mat.wrapAndClamp(this.angles.az, az_smin, az_smax, 2 * Math.PI);
-            this.angles.bank = Mat.wrapAndClamp(this.angles.bank, bank_smin, bank_smax, 2 * Math.PI);
+            this.angles.az = JSXMath.wrapAndClamp(this.angles.az, az_smin, az_smax, 2 * Math.PI);
+            this.angles.bank = JSXMath.wrapAndClamp(this.angles.bank, bank_smin, bank_smax, 2 * Math.PI);
 
             // since we're using `clamp`, angles may have changed
             this.matrix3DRot = this.getRotationFromAngles();
@@ -709,7 +709,7 @@ JXG.extend(
         // set distance from view box center to camera
         r = this.evalVisProp('r');
         if (r === 'auto') {
-            r = Mat.hypot(
+            r = Math.hypot(
                 this.bbox3D[0][0] - this.bbox3D[0][1],
                 this.bbox3D[1][0] - this.bbox3D[1][1],
                 this.bbox3D[2][0] - this.bbox3D[2][1]
@@ -730,7 +730,7 @@ JXG.extend(
             [2 * zf * zn / (zn - zf), 0, 0, (zf + zn) / (zn - zf)]
         ];
 
-        return Mat.matMatMult(A, this.boxToCam);
+        return JSXMath.matMatMult(A, this.boxToCam);
     },
 
     // Update 3D-to-2D transformation matrix with the actual azimuth and elevation angles.
@@ -810,7 +810,7 @@ JXG.extend(
                 this.viewPortTransform = mat2D;
                 objectToClip = this._updateCentralProjection();
                 // this.matrix3D is a 4x4 matrix
-                this.matrix3D = Mat.matMatMult(objectToClip, this.shift);
+                this.matrix3D = JSXMath.matMatMult(objectToClip, this.shift);
                 break;
 
             case 'parallel': // Parallel projection
@@ -825,15 +825,15 @@ JXG.extend(
                 mat2D[2][0] = this.llftCorner[1] + mat2D[2][2] * 0.5 * dy; // llft_y
 
                 // Combine all transformations, this.matrix3D is a 3x4 matrix
-                this.matrix3D = Mat.matMatMult(
+                this.matrix3D = JSXMath.matMatMult(
                     mat2D,
-                    Mat.matMatMult(Mat.matMatMult(this.matrix3DRot, stretch), this.shift).slice(0, 3)
+                    JSXMath.matMatMult(JSXMath.matMatMult(this.matrix3DRot, stretch), this.shift).slice(0, 3)
                 );
         }
 
         // Used for zIndex in dept ordering in subsequent update methods of the
         // 3D elements and in view3d.updateRenderer
-        this.matrix3DRotShift = Mat.matMatMult(this.matrix3DRot, this.shift);
+        this.matrix3DRotShift = JSXMath.matMatMult(this.matrix3DRot, this.shift);
 
         return this;
     },
@@ -849,15 +849,15 @@ JXG.extend(
         // if (a.type !== OBJECT_TYPE.PLANE3D && b.type !== OBJECT_TYPE.PLANE3D) {
         //     return a.zIndex - b.zIndex;
         // } else if (a.type === OBJECT_TYPE.PLANE3D) {
-        //     let bHesse = Mat.innerProduct(a.point.coords, a.normal, 4);
-        //     let po = Mat.innerProduct(b.coords, a.normal, 4);
-        //     let pos = Mat.innerProduct(this.boxToCam[3], a.normal, 4);
+        //     let bHesse = JSXMath.innerProduct(a.point.coords, a.normal, 4);
+        //     let po = JSXMath.innerProduct(b.coords, a.normal, 4);
+        //     let pos = JSXMath.innerProduct(this.boxToCam[3], a.normal, 4);
         // console.log(this.boxToCam[3])
         //     return pos - po;
         // } else if (b.type === OBJECT_TYPE.PLANE3D) {
-        //     let bHesse = Mat.innerProduct(b.point.coords, b.normal, 4);
-        //     let po = Mat.innerProduct(a.coords, a.normal, 4);
-        //     let pos = Mat.innerProduct(this.boxToCam[3], b.normal, 4);
+        //     let bHesse = JSXMath.innerProduct(b.point.coords, b.normal, 4);
+        //     let po = JSXMath.innerProduct(a.coords, a.normal, 4);
+        //     let pos = JSXMath.innerProduct(this.boxToCam[3], b.normal, 4);
         //     console.log('b', pos, po, bHesse)
         //     return -pos;
         // }
@@ -1032,7 +1032,7 @@ JXG.extend(
      */
     worldToFocal: function (pWorld, homog = true) {
         var k,
-            pView = Mat.matVecMult(this.boxToCam, Mat.matVecMult(this.shift, pWorld));
+            pView = JSXMath.matVecMult(this.boxToCam, JSXMath.matVecMult(this.shift, pWorld));
         pView[3] -= pView[0] * this.focalDist;
         if (homog) {
             return pView;
@@ -1069,7 +1069,7 @@ JXG.extend(
             }
         }
 
-        w = Mat.matVecMult(this.matrix3D, vec);
+        w = JSXMath.matVecMult(this.matrix3D, vec);
 
         switch (this.projectionType) {
             case 'central':
@@ -1077,7 +1077,7 @@ JXG.extend(
                 w[2] /= w[0];
                 w[3] /= w[0];
                 w[0] /= w[0];
-                return Mat.matVecMult(this.viewPortTransform, w.slice(0, 3));
+                return JSXMath.matVecMult(this.viewPortTransform, w.slice(0, 3));
 
             case 'parallel':
             default:
@@ -1098,7 +1098,7 @@ JXG.extend(
      * @private
      */
     _getW0: function (mat, v2d, d) {
-        var R = Mat.inverse(mat),
+        var R = JSXMath.inverse(mat),
             R1 = R[0][0] + v2d[1] * R[0][1] + v2d[2] * R[0][2],
             R2 = R[3][0] + v2d[1] * R[3][1] + v2d[2] * R[3][2],
             w, h, det;
@@ -1125,8 +1125,8 @@ JXG.extend(
             n = normal.slice(1),
             v2d, w0, res;
 
-        le = Mat.norm(n, 3);
-        d = Mat.innerProduct(f, n, 3) / le;
+        le = JSXMath.norm(n, 3);
+        d = JSXMath.innerProduct(f, n, 3) / le;
 
         if (this.projectionType === 'parallel') {
             mat = this.matrix3D.slice(0, 3);     // Copy each row by reference
@@ -1138,9 +1138,9 @@ JXG.extend(
             try {
                 // Prevent singularity in case elevation angle is zero
                 if (mat[2][3] === 1.0) {
-                    mat[2][1] = mat[2][2] = Mat.eps * 0.001;
+                    mat[2][1] = mat[2][2] = JSXMath.eps * 0.001;
                 }
-                sol = Mat.Numerics.Gauss(mat, rhs);
+                sol = JXG.JSXMath.Numerics.Gauss(mat, rhs);
             } catch (e) {
                 sol = [0, NaN, NaN, NaN];
             }
@@ -1150,7 +1150,7 @@ JXG.extend(
             // 2D coordinates of point:
             rhs = point2d.coords.usrCoords.slice();
 
-            v2d = Mat.Numerics.Gauss(this.viewPortTransform, rhs);
+            v2d = JXG.JSXMath.Numerics.Gauss(this.viewPortTransform, rhs);
             res = this._getW0(mat, v2d, d);
             w0 = res[0];
             rhs = [
@@ -1162,10 +1162,10 @@ JXG.extend(
             try {
                 // Prevent singularity in case elevation angle is zero
                 if (mat[2][3] === 1.0) {
-                    mat[2][1] = mat[2][2] = Mat.eps * 0.001;
+                    mat[2][1] = mat[2][2] = JSXMath.eps * 0.001;
                 }
 
-                sol = Mat.Numerics.Gauss(mat, rhs);
+                sol = JXG.JSXMath.Numerics.Gauss(mat, rhs);
                 sol[1] /= sol[0];
                 sol[2] /= sol[0];
                 sol[3] /= sol[0];
@@ -1199,12 +1199,12 @@ JXG.extend(
                 end1_2d[0] - end0_2d[0],
                 end1_2d[1] - end0_2d[1]
             ],
-            dir_2d_norm_sq = Mat.innerProduct(dir_2d, dir_2d),
+            dir_2d_norm_sq = JSXMath.innerProduct(dir_2d, dir_2d),
             diff = [
                 pScr[0] - end0_2d[0],
                 pScr[1] - end0_2d[1]
             ],
-            s = Mat.innerProduct(diff, dir_2d) / dir_2d_norm_sq, // screen-space affine parameter
+            s = JSXMath.innerProduct(diff, dir_2d) / dir_2d_norm_sq, // screen-space affine parameter
             mid, mid_2d, mid_diff, m,
 
             t, // view-space affine parameter
@@ -1222,7 +1222,7 @@ JXG.extend(
                 mid_2d[0] - end0_2d[0],
                 mid_2d[1] - end0_2d[1]
             ];
-            m = Mat.innerProduct(mid_diff, dir_2d) / dir_2d_norm_sq;
+            m = JSXMath.innerProduct(mid_diff, dir_2d) / dir_2d_norm_sq;
 
             // the view-space affine parameter s is related to the
             // screen-space affine parameter t by a Möbius transformation,
@@ -1347,12 +1347,12 @@ JXG.extend(
             q = p.slice(1);
         }
         return (
-            q[0] > this.bbox3D[0][0] - Mat.eps &&
-            q[0] < this.bbox3D[0][1] + Mat.eps &&
-            q[1] > this.bbox3D[1][0] - Mat.eps &&
-            q[1] < this.bbox3D[1][1] + Mat.eps &&
-            q[2] > this.bbox3D[2][0] - Mat.eps &&
-            q[2] < this.bbox3D[2][1] + Mat.eps
+            q[0] > this.bbox3D[0][0] - JSXMath.eps &&
+            q[0] < this.bbox3D[0][1] + JSXMath.eps &&
+            q[1] > this.bbox3D[1][0] - JSXMath.eps &&
+            q[1] < this.bbox3D[1][1] + JSXMath.eps &&
+            q[2] > this.bbox3D[2][0] - JSXMath.eps &&
+            q[2] < this.bbox3D[2][1] + JSXMath.eps
         );
     },
 
@@ -1372,10 +1372,10 @@ JXG.extend(
         d = d || plane2.d;
 
         // Get one point of the intersection of the two planes
-        w = Mat.crossProduct(plane1.normal.slice(1), plane2.normal.slice(1));
+        w = JSXMath.crossProduct(plane1.normal.slice(1), plane2.normal.slice(1));
         w.unshift(0);
 
-        p = Mat.Geometry.meet3Planes(
+        p = JXG.JSXMath.Geometry.meet3Planes(
             plane1.normal,
             plane1.d,
             plane2.normal,
@@ -1385,7 +1385,7 @@ JXG.extend(
         );
 
         // Get the direction of the intersecting line of the two planes
-        dir = Mat.Geometry.meetPlanePlane(
+        dir = JXG.JSXMath.Geometry.meetPlanePlane(
             plane1.vec1,
             plane1.vec2,
             plane2.vec1,
@@ -1394,12 +1394,12 @@ JXG.extend(
 
         // Get the bounding points of the intersecting segment
         r = this.intersectionLineCube(p, dir, Infinity);
-        q = Mat.axpy(r, dir, p);
+        q = JSXMath.axpy(r, dir, p);
         if (this.isInCube(q)) {
             ret[0] = q;
         }
         r = this.intersectionLineCube(p, dir, -Infinity);
-        q = Mat.axpy(r, dir, p);
+        q = JSXMath.axpy(r, dir, p);
         if (this.isInCube(q)) {
             ret[1] = q;
         }
@@ -1416,7 +1416,7 @@ JXG.extend(
             dir, vec, w,
             mat = [], b = [], sol;
 
-        w = Mat.crossProduct(plane.normal.slice(1), face.normal.slice(1));
+        w = JSXMath.crossProduct(plane.normal.slice(1), face.normal.slice(1));
         w.unshift(0);
 
         // Get one point of the intersection of the two planes
@@ -1460,7 +1460,7 @@ JXG.extend(
 
             sol = Numerics.Gauss(mat, b);
             t = sol[1];
-            if (t > -Mat.eps && t < 1 + Mat.eps) {
+            if (t > -JSXMath.eps && t < 1 + JSXMath.eps) {
                 c = [1, p1[1] + t * vec[1], p1[2] + t * vec[2], p1[3] + t * vec[3]];
                 ret.push(c);
             }
@@ -1806,7 +1806,7 @@ JXG.extend(
         // Project the calculated az value to a usable value in the interval [smin,smax]
         // Use modulo if continuous is true
         if (this.evalVisProp('az.continuous')) {
-            az = Mat.wrap(az, smin, smax);
+            az = JSXMath.wrap(az, smin, smax);
         } else {
             if (az > 0) {
                 az = Math.min(smax, az);
@@ -1857,7 +1857,7 @@ JXG.extend(
         // Project the calculated el value to a usable value in the interval [smin,smax]
         // Use modulo if continuous is true and the trackball is disabled
         if (this.evalVisProp('el.continuous') && !this.trackballEnabled) {
-            el = Mat.wrap(el, smin, smax);
+            el = JSXMath.wrap(el, smin, smax);
         } else {
             if (el > 0) {
                 el = Math.min(smax, el);
@@ -1913,10 +1913,10 @@ JXG.extend(
         // Project the calculated bank value to a usable value in the interval [smin,smax]
         if (this.evalVisProp('bank.continuous')) {
             // in continuous mode, wrap value around slider range
-            bank = Mat.wrap(bank, smin, smax);
+            bank = JSXMath.wrap(bank, smin, smax);
         } else {
             // in non-continuous mode, clamp value to slider range
-            bank = Mat.clamp(bank, smin, smax);
+            bank = JSXMath.clamp(bank, smin, smax);
         }
 
         this.bank_slide.setValue(bank);
@@ -2776,7 +2776,7 @@ JXG.createView3D = function (board, parents, attributes) {
 
         if (p && Type.exists(p.element2D)) {
             foot = [1, 0, 0, p.coords[3]];
-            view._w0 = Mat.innerProduct(view.matrix3D[0], foot, 4);
+            view._w0 = JSXMath.innerProduct(view.matrix3D[0], foot, 4);
 
             c3d = view.project2DTo3DPlane(p.element2D, [1, 0, 0, 1], foot);
             if (!view.isInCube(c3d)) {

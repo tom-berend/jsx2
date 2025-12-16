@@ -42,7 +42,7 @@ import {JXG} from "../jxg.js";
 import GeometryElement from "./element.js";
 import {Coords} from "../base/coords.js";
 import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import GeonextParser from "../parser/geonext.js";
 import {Type} from "../utils/type.js";
 
@@ -229,7 +229,7 @@ JXG.extend(
             }
             dx = mp[1] - p.usrCoords[1];
             dy = mp[2] - p.usrCoords[2];
-            dist = Mat.hypot(dx, dy);
+            dist = Math.hypot(dx, dy);
 
             // We have to use usrCoords, since Radius is available in usrCoords only.
             prec += this.evalVisProp('strokewidth') * 0.5;

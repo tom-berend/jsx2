@@ -9,7 +9,7 @@ describe('type suite description', () => {
 });
 //////////////////////////////////////////////////
 import { LooseObject } from '../src/interfaces.js'
-import  Type  from '../src/utils/type.js';
+import { Type } from '../src/utils/type.js';
 // import { Options } from '../src/options.js';
 // import { createPoint } from '../src/base/point.js';
 
@@ -138,8 +138,8 @@ describe('check a few isSomething() methods', () => {
         if (p.label)    //
             expect(Type.isId(b, p.label.id)).toBe(true)
 
-       expect(Type.isPoint(b)).toBe(false)
-       expect(Type.isPoint(p)).toBe(true)
+        expect(Type.isPoint(b)).toBe(false)
+        expect(Type.isPoint(p)).toBe(true)
     });
 });
 ////////////////// prototype test

@@ -34,7 +34,7 @@ import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 
-import Mat from "./math.js";
+import {JSXMath} from "./math.js";
 import Extrapolate from "./extrapolate.js";
 import Numerics from "./numerics.js";
 import Statistics from "./statistics.js";
@@ -45,10 +45,10 @@ import {Type} from "../utils/type.js";
 /**
  * Functions for plotting of curves.
  * @name JXG.Math.Plot
- * @exports Mat.Plot as JXG.Math.Plot
+ * @exports JXG.JSXMath.Plot as JXG.Math.Plot
  * @namespace
  */
-Mat.Plot = {
+JXG.JSXMath.Plot = {
     /**
      * Check if at least one point on the curve is finite and real.
      **/
@@ -60,7 +60,7 @@ Mat.Plot = {
 
         for (i = 0; i < len; i++) {
             p = points[i].usrCoords;
-            if (!isNaN(p[1]) && !isNaN(p[2]) && Math.abs(p[0]) > Mat.eps) {
+            if (!isNaN(p[1]) && !isNaN(p[2]) && Math.abs(p[0]) > JSXMath.eps) {
                 b = true;
                 break;
             }
@@ -182,7 +182,7 @@ Mat.Plot = {
                     y1 = p2[1] - p1[2],
                     den = x1 * x1 + y1 * y1;
 
-                if (den >= Mat.eps) {
+                if (den >= JSXMath.eps) {
                     lbda = (x0 * x1 + y0 * y1) / den;
                     if (lbda > 0) {
                         if (lbda <= 1) {
@@ -195,7 +195,7 @@ Mat.Plot = {
                         }
                     }
                 }
-                return Mat.hypot(x0, y0);
+                return Math.hypot(x0, y0);
             };
 
         JXG.deprecated("Curve.updateParametricCurveOld()");
@@ -375,12 +375,12 @@ Mat.Plot = {
             t,
             p;
 
-        t = t0 + Mat.eps;
+        t = t0 + JSXMath.eps;
         pnt.setCoordinates(COORDS_BY.USER, [curve.X(t, true), curve.Y(t, true)], false);
         p = pnt.usrCoords;
         is_undef = isNaN(p[1] + p[2]);
         if (!is_undef) {
-            t = t0 - Mat.eps;
+            t = t0 - JSXMath.eps;
             pnt.setCoordinates(
                 COORDS_BY.USER,
                 [curve.X(t, true), curve.Y(t, true)],
@@ -774,8 +774,8 @@ Mat.Plot = {
             !isNaN(limes.left_y) &&
             !isNaN(limes.right_x) &&
             !isNaN(limes.right_y) &&
-            (Math.abs(limes.left_x - limes.right_x) > Mat.eps ||
-                Math.abs(limes.left_y - limes.right_y) > Mat.eps)
+            (Math.abs(limes.left_x - limes.right_x) > JSXMath.eps ||
+                Math.abs(limes.left_y - limes.right_y) > JSXMath.eps)
         ) {
             p1 = new Coords(COORDS_BY.SCREEN, pnt, curve.board);
             p1._t = t;
@@ -1143,7 +1143,7 @@ Mat.Plot = {
                 t_good = t;
             }
             ++j;
-        } while (j < max_it && Math.abs(t_good - t_bad) > Mat.eps);
+        } while (j < max_it && Math.abs(t_good - t_bad) > JSXMath.eps);
         return t;
     },
 
@@ -1159,8 +1159,8 @@ Mat.Plot = {
             max_func = function (t) {
                 var c = [curve.X(t, true), curve.Y(t, true)];
                 return -(
-                    Mat.hypot(a[0] - c[0], a[1] - c[1]) +
-                    Mat.hypot(b[0] - c[0], b[1] - c[1])
+                    Math.hypot(a[0] - c[0], a[1] - c[1]) +
+                    Math.hypot(b[0] - c[0], b[1] - c[1])
                 );
             };
 
@@ -1175,7 +1175,7 @@ Mat.Plot = {
      */
     _getJumpPos: function (curve, ta, tb) {
         var max_func = function (t) {
-            var e = Mat.eps * Mat.eps,
+            var e = JSXMath.eps * JSXMath.eps,
                 c1 = [curve.X(t, true), curve.Y(t, true)],
                 c2 = [curve.X(t + e, true), curve.Y(t + e, true)];
             return -Math.abs((c2[1] - c1[1]) / (c2[0] - c1[0]));
@@ -2208,7 +2208,7 @@ Mat.Plot = {
         dx = (x - x1) * curve.board.unitX;
         dy = (y - y1) * curve.board.unitY;
         // console.log("D1", Math.sqrt(dx * dx + dy * dy))
-        if (Mat.hypot(dx, dy) > tol) {
+        if (Math.hypot(dx, dy) > tol) {
             this._recurse_v4(curve, t1, t, x1, y1, x, y, level - 1);
         } else {
             this._insertPoint_v4(curve, [1, x, y], t);
@@ -2216,7 +2216,7 @@ Mat.Plot = {
         dx = (x - x2) * curve.board.unitX;
         dy = (y - y2) * curve.board.unitY;
         // console.log("D2", Math.sqrt(dx * dx + dy * dy), x-x2, y-y2)
-        if (Mat.hypot(dx, dy) > tol) {
+        if (Math.hypot(dx, dy) > tol) {
             this._recurse_v4(curve, t, t2, x, y, x2, y2, level - 1);
         } else {
             this._insertPoint_v4(curve, [1, x, y], t);
@@ -2586,4 +2586,4 @@ Mat.Plot = {
     }
 };
 
-export default Mat.Plot;
+export default JXG.JSXMath.Plot;

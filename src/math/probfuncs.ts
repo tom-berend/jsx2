@@ -31,7 +31,8 @@
 /*jslint nomen: true, plusplus: true*/
 /*eslint no-loss-of-precision: off */
 
-import Mat from "./math.js";
+import {JXG} from "../jxg"
+import {JSXMath} from "./math.js";
 import {Type} from "../utils/type.js";
 
 /**
@@ -47,7 +48,11 @@ import {Type} from "../utils/type.js";
  * @exports Mat.ProbFuncs as JXG.Math.ProbFuncs
  * @namespace
  */
-Mat.ProbFuncs = {
+if(JXG.JSXMath === undefined)
+    JXG.JSXMath= {}
+
+
+JXG.JSXMath.ProbFuncs = {
     MAXNUM: 1.701411834604692317316873e38, // 2**127
     SQRTH: 7.07106781186547524401e-1, // sqrt(2)/2
     SQRT2: 1.4142135623730950488, // sqrt(2)
@@ -617,4 +622,4 @@ Mat.ProbFuncs = {
     }
 };
 
-export default Mat.ProbFuncs;
+export default JXG.JSXMath.ProbFuncs;

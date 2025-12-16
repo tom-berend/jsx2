@@ -31,7 +31,7 @@
 import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Geometry from "../math/geometry.js";
 
 /**
@@ -349,7 +349,7 @@ JXG.extend(
             }
             for (i = 0; i < this.transformations.length; i++) {
                 this.transformations[i].update();
-                c = Mat.matVecMult(this.transformations[i].matrix, c);
+                c = JSXMath.matVecMult(this.transformations[i].matrix, c);
             }
             this.coords = c;
 
@@ -415,8 +415,8 @@ JXG.extend(
                     COORDS_BY.USER,
                     this.view.project3DTo2D(c3d)
                 );
-                // this.zIndex = Mat.matVecMult(this.view.matrix3DRotShift, c3d)[3];
-                this.zIndex = Mat.innerProduct(this.view.matrix3DRotShift[3], c3d);
+                // this.zIndex = JSXMath.matVecMult(this.view.matrix3DRotShift, c3d)[3];
+                this.zIndex = JSXMath.innerProduct(this.view.matrix3DRotShift[3], c3d);
             }
             this._c2d = this.element2D.coords.usrCoords.slice();
 
@@ -449,7 +449,7 @@ JXG.extend(
                 c_pt = pt.coords;
 
             if (c_this[0] * c_this[0] > eps_sq && c_pt[0] * c_pt[0] > eps_sq) {
-                return Mat.hypot(
+                return Math.hypot(
                     c_pt[1] - c_this[1],
                     c_pt[2] - c_this[2],
                     c_pt[3] - c_this[3]
@@ -576,7 +576,7 @@ JXG.extend(
                 !Type.exists(time) ||
                 time === 0
                 // check for tiny move, is this necessary?
-                // Math.abs(where.usrCoords[0] - this.coords.usrCoords[0]) > Mat.eps
+                // Math.abs(where.usrCoords[0] - this.coords.usrCoords[0]) > JSXMath.eps
             ) {
                 this.setPosition([X, Y, Z], true);  // no event here
                 return this.board.update(this);
@@ -585,9 +585,9 @@ JXG.extend(
             // In case there is no callback and we are already at the endpoint we can stop here
             if (
                 !Type.exists(options.callback) &&
-                Math.abs(dX) < Mat.eps &&
-                Math.abs(dY) < Mat.eps &&
-                Math.abs(dZ) < Mat.eps
+                Math.abs(dX) < JSXMath.eps &&
+                Math.abs(dY) < JSXMath.eps &&
+                Math.abs(dZ) < JSXMath.eps
             ) {
                 return this;
             }

@@ -55,12 +55,12 @@
  */
 
 import { JXG } from "../jxg.js";
-import Mat from "../math/math.js";
+import { JSXMath } from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
-import {Coords} from "../base/coords.js";
+import { Coords } from "../base/coords.js";
 
-import {Type} from "../utils/type.js";
+import { Type } from "../utils/type.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 // import Point from "../base/point.js";
 // import Line from "../base/line.js";
@@ -630,8 +630,8 @@ JXG.createMidpoint = function (board, parents, attributes) {
                 var x = a.coords.usrCoords[1] + b.coords.usrCoords[1];
                 if (
                     isNaN(x) ||
-                    Math.abs(a.coords.usrCoords[0]) < Mat.eps ||
-                    Math.abs(b.coords.usrCoords[0]) < Mat.eps
+                    Math.abs(a.coords.usrCoords[0]) < JSXMath.eps ||
+                    Math.abs(b.coords.usrCoords[0]) < JSXMath.eps
                 ) {
                     return NaN;
                 }
@@ -642,8 +642,8 @@ JXG.createMidpoint = function (board, parents, attributes) {
                 var y = a.coords.usrCoords[2] + b.coords.usrCoords[2];
                 if (
                     isNaN(y) ||
-                    Math.abs(a.coords.usrCoords[0]) < Mat.eps ||
-                    Math.abs(b.coords.usrCoords[0]) < Mat.eps
+                    Math.abs(a.coords.usrCoords[0]) < JSXMath.eps ||
+                    Math.abs(b.coords.usrCoords[0]) < JSXMath.eps
                 ) {
                     return NaN;
                 }
@@ -1005,7 +1005,7 @@ JXG.createParallel = function (board, parents, attributes) {
             "point",
             [
                 function () {
-                    return Mat.crossProduct([1, 0, 0], li());
+                    return JSXMath.crossProduct([1, 0, 0], li());
                 }
             ],
             attr
@@ -1272,20 +1272,20 @@ JXG.createAngularBisectorsOfTwoLines = function (board, parents, attributes) {
         "line",
         [
             function () {
-                var d1 = Mat.hypot(l1.stdform[1], l1.stdform[2]),
-                    d2 = Mat.hypot(l2.stdform[1], l2.stdform[2]);
+                var d1 = Math.hypot(l1.stdform[1], l1.stdform[2]),
+                    d2 = Math.hypot(l2.stdform[1], l2.stdform[2]);
 
                 return l1.stdform[0] / d1 - l2.stdform[0] / d2;
             },
             function () {
-                var d1 = Mat.hypot(l1.stdform[1], l1.stdform[2]),
-                    d2 = Mat.hypot(l2.stdform[1], l2.stdform[2]);
+                var d1 = Math.hypot(l1.stdform[1], l1.stdform[2]),
+                    d2 = Math.hypot(l2.stdform[1], l2.stdform[2]);
 
                 return l1.stdform[1] / d1 - l2.stdform[1] / d2;
             },
             function () {
-                var d1 = Mat.hypot(l1.stdform[1], l1.stdform[2]),
-                    d2 = Mat.hypot(l2.stdform[1], l2.stdform[2]);
+                var d1 = Math.hypot(l1.stdform[1], l1.stdform[2]),
+                    d2 = Math.hypot(l2.stdform[1], l2.stdform[2]);
 
                 return l1.stdform[2] / d1 - l2.stdform[2] / d2;
             }
@@ -1301,20 +1301,20 @@ JXG.createAngularBisectorsOfTwoLines = function (board, parents, attributes) {
         "line",
         [
             function () {
-                var d1 = Mat.hypot(l1.stdform[1], l1.stdform[2]),
-                    d2 = Mat.hypot(l2.stdform[1], l2.stdform[2]);
+                var d1 = Math.hypot(l1.stdform[1], l1.stdform[2]),
+                    d2 = Math.hypot(l2.stdform[1], l2.stdform[2]);
 
                 return l1.stdform[0] / d1 + l2.stdform[0] / d2;
             },
             function () {
-                var d1 = Mat.hypot(l1.stdform[1], l1.stdform[2]),
-                    d2 = Mat.hypot(l2.stdform[1], l2.stdform[2]);
+                var d1 = Math.hypot(l1.stdform[1], l1.stdform[2]),
+                    d2 = Math.hypot(l2.stdform[1], l2.stdform[2]);
 
                 return l1.stdform[1] / d1 + l2.stdform[1] / d2;
             },
             function () {
-                var d1 = Mat.hypot(l1.stdform[1], l1.stdform[2]),
-                    d2 = Mat.hypot(l2.stdform[1], l2.stdform[2]);
+                var d1 = Math.hypot(l1.stdform[1], l1.stdform[2]),
+                    d2 = Math.hypot(l2.stdform[1], l2.stdform[2]);
 
                 return l1.stdform[2] / d1 + l2.stdform[2] / d2;
             }
@@ -1578,9 +1578,9 @@ JXG.createIncenter = function (board, parents, attributes) {
                 function () {
                     var a, b, c;
 
-                    a = Mat.hypot(B.X() - C.X(), B.Y() - C.Y());
-                    b = Mat.hypot(A.X() - C.X(), A.Y() - C.Y());
-                    c = Mat.hypot(B.X() - A.X(), B.Y() - A.Y());
+                    a = Math.hypot(B.X() - C.X(), B.Y() - C.Y());
+                    b = Math.hypot(A.X() - C.X(), A.Y() - C.Y());
+                    c = Math.hypot(B.X() - A.X(), B.Y() - A.Y());
 
                     return new Coords(
                         COORDS_BY.USER,
@@ -1763,9 +1763,9 @@ JXG.createIncircle = function (board, parents, attributes) {
             [
                 p,
                 function () {
-                    var a = Mat.hypot(parents[1].X() - parents[2].X(), parents[1].Y() - parents[2].Y()),
-                        b = Mat.hypot(parents[0].X() - parents[2].X(), parents[0].Y() - parents[2].Y()),
-                        c = Mat.hypot(parents[1].X() - parents[0].X(), parents[1].Y() - parents[0].Y()),
+                    var a = Math.hypot(parents[1].X() - parents[2].X(), parents[1].Y() - parents[2].Y()),
+                        b = Math.hypot(parents[0].X() - parents[2].X(), parents[0].Y() - parents[2].Y()),
+                        c = Math.hypot(parents[1].X() - parents[0].X(), parents[1].Y() - parents[0].Y()),
                         s = (a + b + c) / 2;
 
                     return Math.sqrt(((s - a) * (s - b) * (s - c)) / s);
@@ -2784,8 +2784,8 @@ JXG.createInequality = function (board, parents, attributes) {
             // Since this somewhat odd behavior of Geometry.perpendicular is needed in GEONExT,
             // it is circumvented here.
             if (
-                Math.abs(Mat.innerProduct(dp.coords.usrCoords, parents[0].stdform, 3)) >=
-                Mat.eps
+                Math.abs(JSXMath.innerProduct(dp.coords.usrCoords, parents[0].stdform, 3)) >=
+                JSXMath.eps
             ) {
                 dp = Geometry.perpendicular(parents[0], dp, board)[0].usrCoords;
             } else {
@@ -2910,7 +2910,7 @@ JXG.createInequality = function (board, parents, attributes) {
         };
     } else {
         // Not yet practical?
-        f = Type.createFunction(parents[0],board);
+        f = Type.createFunction(parents[0], board);
         a.addParentsFromJCFunctions([f]);
 
         if (!Type.exists(f)) {

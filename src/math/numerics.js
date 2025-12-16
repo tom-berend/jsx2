@@ -41,7 +41,7 @@
 import { JXG } from "../jxg.js";
 import {Type} from "../utils/type.js";
 import { Env } from "../utils/env.js";
-import Mat from "./math.js";
+import {JSXMath} from "./math.js";
 
 // Predefined butcher tableaus for the common Runge-Kutta method (fourth order), Heun method (second order), and Euler method (first order).
 var predefinedButcher = {
@@ -76,11 +76,11 @@ var predefinedButcher = {
 /**
  * The JXG.Math.Numerics namespace holds numerical algorithms, constants, and variables.
  * @name JXG.Math.Numerics
- * @exports Mat.Numerics as JXG.Math.Numerics
+ * @exports JXG.JSXMath.Numerics as JXG.Math.Numerics
  * @namespace
  */
-Mat.Numerics = {
-    //JXG.extend(Mat.Numerics, /** @lends JXG.Math.Numerics */ {
+JXG.JSXMath.Numerics = {
+    //JXG.extend(JXG.JSXMath.Numerics, /** @lends JXG.Math.Numerics */ {
     /**
      * Solves a system of linear equations given by A and b using the Gauss-Jordan-elimination.
      * The algorithm runs in-place. I.e. the entries of A and b are changed.
@@ -98,7 +98,7 @@ Mat.Numerics = {
             Acopy,
             // solution vector, to prevent changing b
             x,
-            eps = Mat.eps,
+            eps = JSXMath.eps,
             // number of columns of A
             n = A.length > 0 ? A[0].length : 0;
 
@@ -140,7 +140,7 @@ Mat.Numerics = {
                 }
             }
 
-            // The absolute values of all coefficients below the j-th row in the j-th column are smaller than JXG.Math.eps.
+            // The absolute values of all coefficients below the j-th row in the j-th column are smaller than JXG.JSXMath.eps.
             if (Math.abs(Acopy[j][j]) < eps) {
                 throw new Error(
                     "JXG.Math.Numerics.Gauss(): The given matrix seems to be singular."
@@ -204,7 +204,7 @@ Mat.Numerics = {
         var k, c, s,
             i, j, p,
             n, M, t,
-            eps = Mat.eps;
+            eps = JSXMath.eps;
 
         n = mat.length;
 
@@ -301,7 +301,7 @@ Mat.Numerics = {
             tt,
             ssum,
             amax,
-            eps = Mat.eps * Mat.eps,
+            eps = JSXMath.eps * JSXMath.eps,
             sum = 0.0,
             n = Ain.length,
             V = [
@@ -1344,7 +1344,7 @@ Mat.Numerics = {
         if (limit > ws.limit) {
             JXG.warn("iteration limit exceeds available workspace");
         }
-        if (epsabs <= 0 && (epsrel < 50 * Mat.eps || epsrel < 0.5e-28)) {
+        if (epsabs <= 0 && (epsrel < 50 * JSXMath.eps || epsrel < 0.5e-28)) {
             JXG.warn("tolerance cannot be acheived with given epsabs and epsrel");
         }
 
@@ -1518,7 +1518,7 @@ Mat.Numerics = {
     Newton: function (f, x, context) {
         var df,
             i = 0,
-            h = Mat.eps,
+            h = JSXMath.eps,
             newf = f.apply(context, [x]);
         // nfev = 1;
 
@@ -1633,7 +1633,7 @@ Mat.Numerics = {
         D10 = this.D(c1.Y, c1);
         D11 = this.D(c2.Y, c2);
 
-        while (F > Mat.eps && count < 10) {
+        while (F > JSXMath.eps && count < 10) {
             a = D00(t1);
             b = -D01(t2);
             c = D10(t1);
@@ -1662,7 +1662,7 @@ Mat.Numerics = {
      * between the curve elements c1 and c2. Transformations of the curves
      * are already taken into regard.
      * <p>
-     * We use a very high accuracy: Mat.eps**3
+     * We use a very high accuracy: JSXMath.eps**3
      *
      * @deprecated
      * @param {JXG.Curve} c1 Curve, Line or Circle
@@ -1693,7 +1693,7 @@ Mat.Numerics = {
         F2 = e * e + f * f;
 
         D = function (t1, t2) {
-            var h = Mat.eps,
+            var h = JSXMath.eps,
                 f1_1 = c1.Ft(t1 - h),
                 f1_2 = c1.Ft(t1 + h),
                 f2_1 = c2.Ft(t2 - h),
@@ -1789,18 +1789,18 @@ Mat.Numerics = {
         } else {
             // General case, arbitrary n
             Ft = F(t, n);
-            F2 = Mat.innerProduct(Ft, Ft, n);
+            F2 = JSXMath.innerProduct(Ft, Ft, n);
 
             while (F2 > eps && count < max_steps) {
-                Dt = Mat.inverse(D(t, n));
+                Dt = JSXMath.inverse(D(t, n));
 
-                vec = Mat.matVecMult(Dt, Ft);
+                vec = JSXMath.matVecMult(Dt, Ft);
                 for (i = 0; i < n; i++) {
                     t[i] -= gamma * vec[i];
                 }
 
                 Ft = F(t, n);
-                F2 = Mat.innerProduct(Ft, Ft, n);
+                F2 = JSXMath.innerProduct(Ft, Ft, n);
 
                 count += 1;
             }
@@ -2339,7 +2339,7 @@ Mat.Numerics = {
             t = "";
             for (j = 0; j < coeffs.length; j++) {
                 c = coeffs[j];
-                if (Math.abs(c) < Mat.eps) {
+                if (Math.abs(c) < JSXMath.eps) {
                     continue;
                 }
                 if (JXG.exists(digits)) {
@@ -2523,7 +2523,7 @@ Mat.Numerics = {
                         Dist: function (p) {
                             var dx = this.X() - p.X(),
                                 dy = this.Y() - p.Y();
-                            return Mat.hypot(dx, dy);
+                            return Math.hypot(dx, dy);
                         }
                     };
 
@@ -2543,7 +2543,7 @@ Mat.Numerics = {
                         Dist: function (p) {
                             var dx = this.X() - p.X(),
                                 dy = this.Y() - p.Y();
-                            return Mat.hypot(dx, dy);
+                            return Math.hypot(dx, dy);
                         }
                     };
 
@@ -2563,13 +2563,13 @@ Mat.Numerics = {
                             dt1 = Math.sqrt(dt1);
                             dt2 = Math.sqrt(dt2);
 
-                            if (dt1 < Mat.eps) {
+                            if (dt1 < JSXMath.eps) {
                                 dt1 = 1.0;
                             }
-                            if (dt0 < Mat.eps) {
+                            if (dt0 < JSXMath.eps) {
                                 dt0 = dt1;
                             }
-                            if (dt2 < Mat.eps) {
+                            if (dt2 < JSXMath.eps) {
                                 dt2 = dt1;
                             }
 
@@ -2783,11 +2783,11 @@ Mat.Numerics = {
                 }
 
                 y = dY;
-                MT = Mat.transpose(M);
-                B = Mat.matMatMult(MT, M);
-                c = Mat.matVecMult(MT, y);
-                coeffs = Mat.Numerics.Gauss(B, c);
-                term = Mat.Numerics.generatePolynomialTerm(coeffs, d, "x", 3);
+                MT = JSXMath.transpose(M);
+                B = JSXMath.matMatMult(MT, M);
+                c = JSXMath.matVecMult(MT, y);
+                coeffs = JXG.JSXMath.Numerics.Gauss(B, c);
+                term = JXG.JSXMath.Numerics.generatePolynomialTerm(coeffs, d, "x", 3);
             }
 
             // Horner's scheme to evaluate polynomial
@@ -3530,7 +3530,7 @@ Mat.Numerics = {
             p,         // Interpolation step is calculated in the form p/q; division
             q,         // operations is delayed until the last moment
             new_step,  // Step at this iteration
-            eps = Mat.eps,
+            eps = JSXMath.eps,
             maxiter = this.maxIterationsRoot,
             niter = 0;
         // nfev = 0;
@@ -3700,7 +3700,7 @@ Mat.Numerics = {
             maxiter = this.maxIterationsRoot,
             rand = 1 + Math.random() * 0.001,
             t = 0.5 * rand,
-            eps = Mat.eps, // 1.e-10,
+            eps = JSXMath.eps, // 1.e-10,
             dlt = 0.00001,
             x1, x2, x3, x,
             f1, f2, f3, y,
@@ -3922,8 +3922,8 @@ Mat.Numerics = {
             range, middle_range, tol_act, new_step,
             p, q, t, ft,
             r = (3.0 - Math.sqrt(5.0)) * 0.5,      // Golden section ratio
-            tol = Mat.eps,
-            sqrteps = Mat.eps, // Math.sqrt(Mat.eps),
+            tol = JSXMath.eps,
+            sqrteps = JSXMath.eps, // Math.sqrt(JSXMath.eps),
             maxiter = this.maxIterationsMinimize,
             niter = 0;
         // nfev = 0;
@@ -4114,9 +4114,9 @@ Mat.Numerics = {
      * <ul>
      *  <li> M = 10000000.0
      *  <li> C = A or B, depending if f(A) <= f(B)
-     *  <li> T = JXG.Math.eps
-     *  <li> E = JXG.Math.eps * JXG.Math.eps
-     *  <li> MACHEP = JXG.Math.eps * JXG.Math.eps * JXG.Math.eps
+     *  <li> T = JXG.JSXMath.eps
+     *  <li> E = JXG.JSXMath.eps * JXG.JSXMath.eps
+     *  <li> MACHEP = JXG.JSXMath.eps * JXG.JSXMath.eps * JXG.JSXMath.eps
      * </ul>
      * @param {function} f Function, whose global minimum is to be found
      * @param {Array} x0 Array of length 2 determining the interval [A, B] for which the global minimum is to be found
@@ -4131,9 +4131,9 @@ Mat.Numerics = {
             z0, z1, z2,
             a, b, c, x,
             m = 10000000.0,
-            t = Mat.eps, // * Mat.eps,
-            e = Mat.eps * Mat.eps,
-            machep = Mat.eps * Mat.eps * Mat.eps;
+            t = JSXMath.eps, // * JSXMath.eps,
+            e = JSXMath.eps * JSXMath.eps,
+            machep = JSXMath.eps * JSXMath.eps * JSXMath.eps;
 
         a = x0[0];
         b = x0[1];
@@ -4686,7 +4686,7 @@ Mat.Numerics = {
                 var d, k, ci, cj, ck,
                     x0, y0, x1, y1,
                     den, lbda,
-                    eps = Mat.eps * Mat.eps,
+                    eps = JSXMath.eps * JSXMath.eps,
                     huge = 10000,
                     dist = 0,
                     f = i;
@@ -5033,4 +5033,4 @@ Mat.Numerics = {
     }
 };
 
-export default Mat.Numerics;
+export default JXG.JSXMath.Numerics;

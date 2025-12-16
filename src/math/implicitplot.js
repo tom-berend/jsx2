@@ -30,7 +30,7 @@
 
 import { JXG } from "../jxg.js";
 import {Type} from "../utils/type.js";
-import Mat from "./math.js";
+import {JSXMath} from "./math.js";
 import Geometry from "./geometry.js";
 import Numerics from "./numerics.js";
 import Quadtree from "./bqdt.js";
@@ -50,7 +50,7 @@ import Quadtree from "./bqdt.js";
  * keep the construction responsive.
  *
  * @name JXG.Math.ImplicitPlot
- * @exports Mat.ImplicitPlot as JXG.Math.ImplicitPlot
+ * @exports JXG.JSXMath.ImplicitPlot as JXG.Math.ImplicitPlot
  * @param {Array} bbox Bounding box of the area in which solutions of the equation
  * are determined.
  * @param {Object} config Configuration object. Default:
@@ -61,7 +61,7 @@ import Quadtree from "./bqdt.js";
  *      max_steps: 1024,      // Max number of points in one call of tracing
  *      alpha_0: 0.05,        // Angle between two successive tangents: smoothness of curve
  *
- *      tol_u0: Mat.eps,      // Tolerance to find starting points for tracing.
+ *      tol_u0: JSXMath.eps,      // Tolerance to find starting points for tracing.
  *      tol_newton: 1.0e-7,   // Tolerance for Newton steps.
  *      tol_cusp: 0.05,       // Tolerance for cusp / bifurcation detection
  *      tol_progress: 0.0001, // If two points are closer than this value, we bail out
@@ -162,7 +162,7 @@ import Quadtree from "./bqdt.js";
  * </script><pre>
  *
  */
-Mat.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
+JXG.JSXMath.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
 
     // Default values
     var cfg_default = {
@@ -171,7 +171,7 @@ Mat.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
         max_steps: 1024,      // Max number of points in one call of tracing
         alpha_0: 0.05,        // Angle between two successive tangents: smoothness of curve
 
-        tol_u0: Mat.eps,      // Tolerance to find starting points for tracing.
+        tol_u0: JSXMath.eps,      // Tolerance to find starting points for tracing.
         tol_newton: 1.0e-7,   // Tolerance for Newton steps.
         tol_cusp: 0.05,       // Tolerance for cusp / bifurcation detection
         tol_progress: 0.0001, // If two points are closer than this value, we bail out
@@ -200,7 +200,7 @@ Mat.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
         this.dfx = dfx;
     } else {
         this.dfx = function (x, y) {
-            var h = Mat.eps * Mat.eps;
+            var h = JSXMath.eps * JSXMath.eps;
             return (this.f(x + h, y) - this.f(x - h, y)) * 0.5 / h;
         };
     }
@@ -209,7 +209,7 @@ Mat.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
         this.dfy = dfy;
     } else {
         this.dfy = function (x, y) {
-            var h = Mat.eps * Mat.eps;
+            var h = JSXMath.eps * JSXMath.eps;
             return (this.f(x, y + h) - this.f(x, y - h)) * 0.5 / h;
         };
     }
@@ -221,7 +221,7 @@ Mat.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
 };
 
 JXG.extend(
-    Mat.ImplicitPlot.prototype,
+    JXG.JSXMath.ImplicitPlot.prototype,
     /** @lends JXG.Math.ImplicitPlot.prototype */ {
 
         /**
@@ -257,14 +257,14 @@ JXG.extend(
                 };
 
             // Vertical lines or circular search:
-            mi_x = Math.min(this.bbox[0], this.bbox[2]) - Mat.eps;
+            mi_x = Math.min(this.bbox[0], this.bbox[2]) - JSXMath.eps;
             ma_x = Math.max(this.bbox[0], this.bbox[2]);
-            mi_y = Math.min(this.bbox[1], this.bbox[3]) + Mat.eps;
+            mi_y = Math.min(this.bbox[1], this.bbox[3]) + JSXMath.eps;
             ma_y = Math.max(this.bbox[1], this.bbox[3]);
 
             if (doVerticalSearch) {
                 delta = this.config.resolution_out / this.config.unitX;
-                delta *= (1 + Mat.eps);
+                delta *= (1 + JSXMath.eps);
                 // console.log("Outer delta x", delta)
 
                 for (x = mi_x; x < ma_x; x += delta) {
@@ -283,7 +283,7 @@ JXG.extend(
             }
             if (doHorizontalSearch) {
                 delta = this.config.resolution_out / this.config.unitY;
-                delta *= (1 + Mat.eps);
+                delta *= (1 + JSXMath.eps);
                 // console.log("Outer delta y", delta)
 
                 for (y = mi_y; y < ma_y; y += delta) {
@@ -348,7 +348,7 @@ JXG.extend(
                 // t = Numerics.chandrupatla(fmi, [t_mi, t_ma]);
 
                 ft = fmi(t);
-                if (Math.abs(ft) > Math.max((ma - mi) * Mat.eps, 0.001)) {
+                if (Math.abs(ft) > Math.max((ma - mi) * JSXMath.eps, 0.001)) {
                     //console.log("searchLine:",  dir, fix, t, "no root " + ft);
                     return false;
                     // throw new Error("searchLine: no root " + ft);
@@ -362,7 +362,7 @@ JXG.extend(
                     delta = this.config.resolution_in / this.config.unitX;
                     // console.log("Inner delta y", delta)
                 }
-                delta *= (1 + Mat.eps);
+                delta *= (1 + JSXMath.eps);
 
                 is_in = this.curveContainsPoint(u0, dataX, dataY,
                     delta * 2,           // Allowed dist from segment
@@ -616,14 +616,14 @@ JXG.extend(
                     );
 
                     if (dist < this.config.loop_dist * h &&
-                        Mat.innerProduct(t_u, t_u_0, 2) > this.config.loop_dir
+                        JSXMath.innerProduct(t_u, t_u_0, 2) > this.config.loop_dir
                     ) {
 
                         // console.log("Loop detected after", steps, 'steps');
                         // console.log("\t", "v", v, "u0:", u0)
                         // console.log("\t", "Dist(v, path0)", dist, config.loop_dist * h)
                         // console.log("\t", "t_u", t_u);
-                        // console.log("\t", "inner:", Mat.innerProduct(t_u, t_u_0, 2));
+                        // console.log("\t", "inner:", JSXMath.innerProduct(t_u, t_u_0, 2));
                         // console.log("\t", "h", h);
 
                         u = u0.slice(1);
@@ -653,7 +653,7 @@ JXG.extend(
                                 // );
 
                                 t_v = this.tangent([pathX[T[i]], pathY[T[i]]]);
-                                if (Mat.innerProduct(t_u, t_v, 2) > this.config.loop_dir) {
+                                if (JSXMath.innerProduct(t_u, t_v, 2) > this.config.loop_dir) {
                                     // console.log("!!!!!!!!!!!!!!! angle is good enough");
                                     break;
                                 }
@@ -744,7 +744,7 @@ JXG.extend(
                     t_v = this.tangent(v);
                 }
 
-                dir = Mat.innerProduct(t_u, t_v, 2);
+                dir = JSXMath.innerProduct(t_u, t_v, 2);
                 dir = Math.max(-1, Math.min(1, dir));
                 alpha = Math.acos(dir);
 
@@ -898,7 +898,7 @@ JXG.extend(
             // In the latter case, if both eigenvalues are zero
             // this is a somewhat crude decision.
             //
-            var h = Mat.eps * Mat.eps * 100,
+            var h = JSXMath.eps * JSXMath.eps * 100,
                 x, y, a, b, c, d, ad,
                 lbda1, lbda2,
                 dis;
@@ -993,9 +993,9 @@ JXG.extend(
          */
         tangent_A: function (A) {
             var t = [-A[1], A[0]],
-                nrm = Mat.norm(t, 2);
+                nrm = JSXMath.norm(t, 2);
 
-            if (nrm < Mat.eps) {
+            if (nrm < JSXMath.eps) {
                 // console.log("Approx. Singularity", t, "is zero", nrm);
             }
             return [t[0] / nrm, t[1] / nrm];
@@ -1009,9 +1009,9 @@ JXG.extend(
          */
         tangent: function (u) {
             var t = [-this.dfy(u[0], u[1]), this.dfx(u[0], u[1])],
-                nrm = Mat.norm(t, 2);
+                nrm = JSXMath.norm(t, 2);
 
-            if (nrm < Mat.eps * Mat.eps) {
+            if (nrm < JSXMath.eps * JSXMath.eps) {
                 // console.log("Singularity", t, "is zero", "at", u, ":", nrm);
                 return false;
             }
@@ -1021,5 +1021,5 @@ JXG.extend(
 
 );
 
-export default Mat.ImplicitPlot;
+export default JXG.JSXMath.ImplicitPlot;
 

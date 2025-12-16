@@ -31,7 +31,7 @@
 import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 
 /**
  * 3D faces
@@ -183,8 +183,8 @@ JXG.extend(
                     c3d = p.coords[face[j]];
                     c2d = this.view.project3DTo2D(c3d);
                     p.coords2D[face[j]] = c2d;
-                    // p.zIndex[face[j]] = Mat.matVecMult(this.view.matrix3DRotShift, c3d)[3];
-                    p.zIndex[face[j]] = Mat.innerProduct(this.view.matrix3DRotShift[3], c3d);
+                    // p.zIndex[face[j]] = JSXMath.matVecMult(this.view.matrix3DRotShift, c3d)[3];
+                    p.zIndex[face[j]] = JSXMath.innerProduct(this.view.matrix3DRotShift[3], c3d);
                 }
                 x.push(c2d[1]);
                 y.push(c2d[2]);
@@ -235,7 +235,7 @@ JXG.extend(
                 if (b.coords.hasOwnProperty(i)) {
                     c = b.coords[i];
                     for (j = 0; j < t.length; j++) {
-                        c = Mat.matVecMult(t[j].matrix, c);
+                        c = JSXMath.matVecMult(t[j].matrix, c);
                     }
                     this.polyhedron.coords[i] = c;
                 }
@@ -275,8 +275,8 @@ JXG.extend(
                 this.vec2 = [p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2], p2[3] - p1[3]];
 
                 // Update Hesse form, i.e. normal and d
-                this.normal = Mat.crossProduct(this.vec1.slice(1), this.vec2.slice(1));
-                nrm = Mat.norm(this.normal);
+                this.normal = JSXMath.crossProduct(this.vec1.slice(1), this.vec2.slice(1));
+                nrm = JSXMath.norm(this.normal);
                 this.normal.unshift(0);
 
                 if (Math.abs(nrm) > 1.e-12) {
@@ -284,7 +284,7 @@ JXG.extend(
                         this.normal[i] /= nrm;
                     }
                 }
-                this.d = Mat.innerProduct(p1, this.normal, 4);
+                this.d = JSXMath.innerProduct(p1, this.normal, 4);
             }
             return this;
         },
@@ -321,7 +321,7 @@ JXG.extend(
 
                 if (this.evalVisProp('shader.type').toLowerCase() === 'angle') {
                     // Angle normal / eye
-                    angle = Mat.innerProduct(this.view.matrix3DRotShift[3], this.normal);
+                    angle = JSXMath.innerProduct(this.view.matrix3DRotShift[3], this.normal);
                     angle = Math.abs(angle);
                     light = minLight + (maxLight - minLight) * angle;
                 } else {

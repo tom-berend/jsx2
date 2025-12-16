@@ -30,12 +30,12 @@
 /*global JXG: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG} from "../jxg.js";
-import JSXMath from "./math.js";
-import {Type} from "../utils/type.js";
+import { JXG } from "../jxg.js";
+import { JSXMath } from "./math.js";
+import { Type } from "../utils/type.js";
 
-if(JXG.JSXMath === undefined)
-    JXG.JSXMath= {}
+if (JXG.JSXMath === undefined)
+    JXG.JSXMath = {}
 
 JXG.JSXMath.DoubleBits = function () {
     var DOUBLE_VIEW = new Float64Array(1),

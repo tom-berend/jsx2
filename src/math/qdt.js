@@ -33,7 +33,7 @@
 /*jslint nomen: true, plusplus: true*/
 
 import { JXG } from "../jxg.js";
-import Mat from "./math.js";
+import {JSXMath} from "./math.js";
 import Geometry from "./geometry.js";
 import { Type } from "../utils/type.js";
 
@@ -41,14 +41,14 @@ import { Type } from "../utils/type.js";
  * Instantiate a new quadtree.
  *
  * @name JXG.Math.Quadtree
- * @exports Mat.Quadtree as JXG.Math.Quadtree
+ * @exports JXG.JSXMath.Quadtree as JXG.Math.Quadtree
  * @param {Array} bbox Bounding box of the new quad (sub)tree.
  * @param {Object} config Configuration object. Default value: to {capacity: 10}
  * @param {Object} [parent] Parent object or null if root.
  *
  * @constructor
  */
-Mat.Quadtree = function (bbox, config, parent) {
+JXG.JSXMath.Quadtree = function (bbox, config={capacity:10}, parent=null) {
     config = config || {
         capacity: 10,
         pointType: 'coords'
@@ -131,7 +131,7 @@ Mat.Quadtree = function (bbox, config, parent) {
 };
 
 JXG.extend(
-    Mat.Quadtree.prototype,
+    JXG.JSXMath.Quadtree.prototype,
     /** @lends JXG.Math.Quadtree.prototype */ {
         /**
          * Checks if the given coordinates are inside of the boundaries of the quadtree.
@@ -200,10 +200,10 @@ JXG.extend(
                 cx = this.xlb + (this.xub - this.xlb) * 0.5,
                 cy = this.ylb + (this.yub - this.ylb) * 0.5;
 
-            this.northWest = new Mat.Quadtree([this.xlb, this.yub, cx, cy], this.config, this);
-            this.northEast = new Mat.Quadtree([cx, this.yub, this.xub, cy], this.config, this);
-            this.southEast = new Mat.Quadtree([this.xlb, cy, cx, this.ylb], this.config, this);
-            this.southWest = new Mat.Quadtree([cx, cy, this.xub, this.ylb], this.config, this);
+            this.northWest = new JXG.JSXMath.Quadtree([this.xlb, this.yub, cx, cy], this.config, this);
+            this.northEast = new JXG.JSXMath.Quadtree([cx, this.yub, this.xub, cy], this.config, this);
+            this.southEast = new JXG.JSXMath.Quadtree([this.xlb, cy, cx, this.ylb], this.config, this);
+            this.southWest = new JXG.JSXMath.Quadtree([cx, cy, this.xub, this.ylb], this.config, this);
 
             // for (i = 0; i < le; i++) {
             //     if (this.northWest.insert(this.points[i])) { continue; }
@@ -369,4 +369,4 @@ JXG.extend(
     }
 );
 
-export default Mat.Quadtree;
+export default JXG.JSXMath.Quadtree;

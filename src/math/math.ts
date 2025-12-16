@@ -37,7 +37,7 @@
  * for namespaces like JXG.Math.Numerics, JXG.Math.Plot, JXG.Math.Statistics, JXG.Math.Clip etc.
  */
 import { JXG } from "../jxg.js";
-import {Type} from "../utils/type.js";
+import { Type } from "../utils/type.js";
 
 var undef,
     /*
@@ -76,13 +76,13 @@ var undef,
  * @namespace
  */
 
-JXG.Math = {
+export class JSXMath {
     /**
      * eps defines the closeness to zero. If the absolute value of a given number is smaller
      * than eps, it is considered to be equal to zero.
      * @type Number
      */
-    eps: 0.000001,
+    static eps = 0.000001
 
     /**
      * Determine the relative difference between two numbers.
@@ -90,14 +90,14 @@ JXG.Math = {
      * @param  {Number} b Second number
      * @returns {Number}  Relative difference between a and b: |a-b| / max(|a|, |b|)
      */
-    relDif: function (a, b) {
+    static relDif(a, b) {
         var c = Math.abs(a),
             d = Math.abs(b);
 
         d = Math.max(c, d);
 
         return d === 0.0 ? 0.0 : Math.abs(a - b) / d;
-    },
+    }
 
     /**
      * The JavaScript implementation of the % operator returns the symmetric modulo.
@@ -106,9 +106,9 @@ JXG.Math = {
      * @param {Number} m
      * @returns {Number} Mathematical modulo <tt>a mod m</tt>
      */
-    mod: function (a, m) {
+    static mod(a, m) {
         return a - Math.floor(a / m) * m;
-    },
+    }
 
     /**
      * Translate <code>x</code> into the interval <code>[a, b)</code> by adding
@@ -117,18 +117,18 @@ JXG.Math = {
      * @param {Number} a
      * @param {Number} b
      */
-    wrap: function (x, a, b) {
+    static wrap(x, a, b) {
         return a + this.mod(x - a, b - a);
-    },
+    }
 
     /**
      * Clamp <code>x</code> within the interval <code>[a, b]</code>. If
      * <code>x</code> is below <code>a</code>, increase it to <code>a</code>. If
      * it's above <code>b</code>, decrease it to <code>b</code>.
      */
-    clamp: function (x, a, b) {
+    static clamp(x, a, b) {
         return Math.min(Math.max(x, a), b);
-    },
+    }
 
     /**
      * A way of clamping a periodic variable. If <code>x</code> is congruent mod
@@ -137,7 +137,7 @@ JXG.Math = {
      * where <code>mid</code> is the mean of <code>a</code> and <code>b</code>,
      * and then clamp it to <code>[a, b]</code> from there.
      */
-    wrapAndClamp: function (x, a, b, period) {
+    static wrapAndClamp(x, a, b, period) {
         var mid = 0.5 * (a + b),
             half_period = 0.5 * period;
 
@@ -150,7 +150,7 @@ JXG.Math = {
             a,
             b
         );
-    },
+    }
 
     /**
      * Initializes a vector of size <tt>n</tt> wih coefficients set to the init value (default 0)
@@ -158,7 +158,7 @@ JXG.Math = {
      * @param {Number} [init=0] Initial value for each coefficient
      * @returns {Array} An array of length <tt>n</tt>
      */
-    vector: function (n, init) {
+    static vector(n, init) {
         var r, i;
 
         init = init || 0;
@@ -169,7 +169,7 @@ JXG.Math = {
         }
 
         return r;
-    },
+    }
 
     /**
      * Initializes a matrix as an array of rows with the given value.
@@ -179,7 +179,7 @@ JXG.Math = {
      * @returns {Array} A <tt>n</tt> times <tt>m</tt>-matrix represented by a
      * two-dimensional array. The inner arrays hold the columns, the outer array holds the rows.
      */
-    matrix: function (n, m, init) {
+    static matrix(n, m, init = 0) {
         var r, i, j;
 
         init = init || 0;
@@ -195,7 +195,7 @@ JXG.Math = {
         }
 
         return r;
-    },
+    }
 
     /**
      * Generates an identity matrix. If n is a number and m is undefined or not a number, a square matrix is generated,
@@ -205,7 +205,7 @@ JXG.Math = {
      * @returns {Array} A square matrix of length <tt>n</tt> with all coefficients equal to 0 except a_(i,i), i out of (1, ..., n), if <tt>m</tt> is undefined or not a number
      * or a <tt>n</tt> times <tt>m</tt>-matrix with a_(i,j) = 0 and a_(i,i) = 1 if m is a number.
      */
-    identity: function (n, m) {
+    static identity(n, m) {
         var r, i;
 
         if (m === undef && typeof m !== 'number') {
@@ -219,7 +219,7 @@ JXG.Math = {
         }
 
         return r;
-    },
+    }
 
     /**
      * Generates a 4x4 matrix for 3D to 2D projections.
@@ -231,7 +231,7 @@ JXG.Math = {
      * @param {Number} f Far
      * @returns {Array} 4x4 Matrix
      */
-    frustum: function (l, r, b, t, n, f) {
+    static frustum(l, r, b, t, n, f) {
         var ret = this.matrix(4, 4);
 
         ret[0][0] = (n * 2) / (r - l);
@@ -255,7 +255,7 @@ JXG.Math = {
         ret[3][3] = 0;
 
         return ret;
-    },
+    }
 
     /**
      * Generates a 4x4 matrix for 3D to 2D projections.
@@ -265,12 +265,12 @@ JXG.Math = {
      * @param {Number} f Far
      * @returns {Array} 4x4 Projection Matrix
      */
-    projection: function (fov, ratio, n, f) {
+    static projection(fov, ratio, n, f) {
         var t = n * Math.tan(fov / 2),
             r = t * ratio;
 
         return this.frustum(-r, r, -t, t, n, f);
-    },
+    }
 
     /**
      * Multiplies a vector vec to a matrix mat: mat * vec. The matrix is interpreted by this function as an array of rows.
@@ -287,7 +287,7 @@ JXG.Math = {
      * c = JXG.Math.matVecMult(A, b);
      * // c === [13, 23];
      */
-    matVecMult: function (mat, vec) {
+    static matVecMult(mat, vec) {
         var i, k, s,
             m = mat.length,
             n = vec.length,
@@ -307,7 +307,7 @@ JXG.Math = {
             }
         }
         return res;
-    },
+    }
 
     /**
      * Multiplies a vector vec to a matrix mat from the left: vec * mat.
@@ -325,7 +325,7 @@ JXG.Math = {
      * c = JXG.Math.vecMatMult(b, A);
      * // c === [18, 16];
      */
-    vecMatMult: function (vec, mat) {
+    static vecMatMult(vec, mat) {
         var i, k, s,
             m = mat.length,
             n = vec.length,
@@ -345,7 +345,7 @@ JXG.Math = {
             }
         }
         return res;
-    },
+    }
 
     /**
      * Computes the product of the two matrices: mat1 * mat2.
@@ -355,7 +355,7 @@ JXG.Math = {
      * @param {Array} mat2 Two-dimensional array of numbers
      * @returns {Array} Two-dimensional Array of numbers containing result
      */
-    matMatMult: function (mat1, mat2) {
+    static matMatMult(mat1, mat2) {
         var i, j, s, k,
             m = mat1.length,
             n = m > 0 ? mat2[0].length : 0,
@@ -372,7 +372,7 @@ JXG.Math = {
             }
         }
         return res;
-    },
+    }
 
     /**
      * Multiply a matrix mat by a scalar alpha: mat * scalar
@@ -381,7 +381,7 @@ JXG.Math = {
      * @param {Number} alpha Scalar
      * @returns {Array} Two-dimensional Array of numbers containing result
      */
-    matNumberMult: function (mat, alpha) {
+    static matNumberMult(mat, alpha) {
         var i, j,
             m = mat.length,
             n = m > 0 ? mat[0].length : 0,
@@ -393,7 +393,7 @@ JXG.Math = {
             }
         }
         return res;
-    },
+    }
 
     /**
      * Compute the sum of two matrices: mat1 + mat2.
@@ -403,7 +403,7 @@ JXG.Math = {
      * @param {Array} mat2 Two-dimensional array of numbers
      * @returns {Array} Two-dimensional Array of numbers containing result
      */
-    matMatAdd: function (mat1, mat2) {
+    static matMatAdd(mat1, mat2) {
         var i, j,
             m = mat1.length,
             n = m > 0 ? mat1[0].length : 0,
@@ -415,14 +415,14 @@ JXG.Math = {
             }
         }
         return res;
-    },
+    }
 
     /**
      * Transposes a matrix given as a two-dimensional array.
      * @param {Array} M The matrix to be transposed
      * @returns {Array} The transpose of M
      */
-    transpose: function (M) {
+    static transpose(M) {
         var MT, i, j, m, n;
 
         // number of rows of M
@@ -438,7 +438,7 @@ JXG.Math = {
         }
 
         return MT;
-    },
+    }
 
     /**
      * Compute the inverse of an <i>(n x n)</i>-matrix by Gauss elimination.
@@ -446,7 +446,7 @@ JXG.Math = {
      * @param {Array} A matrix
      * @returns {Array} Inverse matrix of A or empty array (i.e. []) in case A is singular.
      */
-    inverse: function (Ain) {
+    static inverse(Ain) {
         var i, j, k, r, s,
             eps = this.eps * this.eps,
             ma, swp,
@@ -524,14 +524,14 @@ JXG.Math = {
         }
 
         return A;
-    },
+    }
 
     /**
      * Trace of a square matrix, given as a two-dimensional array.
      * @param {Array} M Square matrix
      * @returns {Number} The trace of M, NaN if M is not square.
      */
-    trace: function (M) {
+    static trace(M) {
         var i, m, n,
             t = 0.0;
 
@@ -547,7 +547,7 @@ JXG.Math = {
         }
 
         return t;
-    },
+    }
 
     /**
      * Inner product of two vectors a and b. n is the length of the vectors.
@@ -556,7 +556,7 @@ JXG.Math = {
      * @param {Number} [n] Length of the Vectors. If not given the length of the first vector is taken.
      * @returns {Number} The inner product of a and b.
      */
-    innerProduct: function (a, b, n) {
+    static innerProduct(a, b, n?) {
         var i,
             s = 0;
 
@@ -569,7 +569,7 @@ JXG.Math = {
         }
 
         return s;
-    },
+    }
 
     /**
      * Calculates the cross product of two vectors both of length three.
@@ -582,13 +582,13 @@ JXG.Math = {
      * @param {Array} c2 Homogeneous coordinates of line or point 2
      * @returns {Array} vector of length 3: homogeneous coordinates of the resulting point / line.
      */
-    crossProduct: function (c1, c2) {
+    static crossProduct(c1, c2) {
         return [
             c1[1] * c2[2] - c1[2] * c2[1],
             c1[2] * c2[0] - c1[0] * c2[2],
             c1[0] * c2[1] - c1[1] * c2[0]
         ];
-    },
+    }
 
     /**
      * Euclidean norm of a vector.
@@ -597,7 +597,7 @@ JXG.Math = {
      * @param {Number} n (Optional) length of the array.
      * @returns {Number} Euclidean norm of the vector.
      */
-    norm: function (a, n) {
+    static norm(a, n?) {
         var i,
             sum = 0.0;
 
@@ -610,7 +610,7 @@ JXG.Math = {
         }
 
         return Math.sqrt(sum);
-    },
+    }
 
     /**
      * Compute a * x + y for a scalar a and vectors x and y.
@@ -620,7 +620,7 @@ JXG.Math = {
      * @param {Array} y
      * @returns {Array}
      */
-    axpy: function (a, x, y) {
+    static axpy(a, x, y) {
         var i,
             le = x.length,
             p = [];
@@ -628,7 +628,7 @@ JXG.Math = {
             p[i] = a * x[i] + y[i];
         }
         return p;
-    },
+    }
 
     /**
      * Compute the factorial of a positive integer. If a non-integer value
@@ -637,19 +637,38 @@ JXG.Math = {
      * @param {Number} n
      * @returns {Number} n! = n*(n-1)*...*2*1
      */
-    factorial: memoizer(function (n) {
-        if (n < 0) {
-            return NaN;
-        }
+    // factorial: memoizer(function(n) {
+    //     if (n < 0) {
+    //         return NaN;
+    //     }
 
-        n = Math.floor(n);
+    //     n = Math.floor(n);
 
+    //     if (n === 0 || n === 1) {
+    //         return 1;
+    //     }
+
+    //     return n * this.factorial(n - 1);
+    // }),
+
+    static factorial(n: number) {   // imple iterative
         if (n === 0 || n === 1) {
             return 1;
         }
 
-        return n * this.factorial(n - 1);
-    }),
+        // Factorial of negative numbers is not defined
+        if (n < 0) {
+            throw new Error("Factorial is not defined for negative numbers.");
+        }
+
+        let result = 1;          // Loop from 2 up to n, multiplying result by each number
+        for (let i = 2; i <= n; i++) {
+            result *= i; // Equivalent to result = result * i
+        }
+
+        return result;
+    }
+
 
     /**
      * Computes the binomial coefficient n over k.
@@ -658,29 +677,58 @@ JXG.Math = {
      * @param {Number} k Fraction will be ignored
      * @returns {Number} The binomial coefficient n over k
      */
-    binomial: memoizer(function (n, k) {
-        var b, i;
+    // binomial: memoizer(function(n, k) {
+    //     var b, i;
 
-        if (k > n || k < 0) {
+    //     if (k > n || k < 0) {
+    //         return NaN;
+    //     }
+
+    //     k = Math.round(k);
+    //     n = Math.round(n);
+
+    //     if (k === 0 || k === n) {
+    //         return 1;
+    //     }
+
+    //     b = 1;
+
+    //     for (i = 0; i < k; i++) {
+    //         b *= n - i;
+    //         b /= i + 1;
+    //     }
+
+    //     return b;
+    // }),
+
+    static binomial(n, k) {
+        // Check if inputs are valid numbers
+        if (typeof n !== 'number' || typeof k !== 'number' || isNaN(n) || isNaN(k)) {
             return NaN;
         }
-
-        k = Math.round(k);
-        n = Math.round(n);
-
+        // Handle edge cases
+        if (k < 0 || k > n) {
+            return 0;
+        }
         if (k === 0 || k === n) {
             return 1;
         }
-
-        b = 1;
-
-        for (i = 0; i < k; i++) {
-            b *= n - i;
-            b /= i + 1;
+        // Optimization: choose the smaller of k and n-k
+        if (n - k < k) {
+            k = n - k;
         }
 
-        return b;
-    }),
+        let coeff = 1;
+        for (let i = 0; i < k; i++) {
+            coeff = coeff * (n - i);
+            coeff = coeff / (i + 1);
+        }
+
+        // Use Math.round() to account for potential floating point errors
+        return Math.round(coeff);
+    }
+
+
 
     /**
      * Calculates the cosine hyperbolicus of x.
@@ -688,11 +736,10 @@ JXG.Math = {
      * @param {Number} x The number the cosine hyperbolicus will be calculated of.
      * @returns {Number} Cosine hyperbolicus of the given value.
      */
-    cosh:
-        Math.cosh ||
-        function (x) {
-            return (Math.exp(x) + Math.exp(-x)) * 0.5;
-        },
+    static cosh(x: number) {
+        return Math.cosh(x)
+        // return (Math.exp(x) + Math.exp(-x)) * 0.5;
+    }
 
     /**
      * Sine hyperbolicus of x.
@@ -700,11 +747,10 @@ JXG.Math = {
      * @param {Number} x The number the sine hyperbolicus will be calculated of.
      * @returns {Number} Sine hyperbolicus of the given value.
      */
-    sinh:
-        Math.sinh ||
-        function (x) {
-            return (Math.exp(x) - Math.exp(-x)) * 0.5;
-        },
+    static sinh(x) {
+        return Math.sinh(x)
+        // return (Math.exp(x) - Math.exp(-x)) * 0.5;
+    }
 
     /**
      * Hyperbolic arc-cosine of a number.
@@ -712,11 +758,10 @@ JXG.Math = {
      * @param {Number} x
      * @returns {Number}
      */
-    acosh:
-        Math.acosh ||
-        function (x) {
-            return Math.log(x + Math.sqrt(x * x - 1));
-        },
+    static acosh(x) {
+        return Math.acosh(x);
+        // return Math.log(x + Math.sqrt(x * x - 1));
+    }
 
     /**
      * Hyperbolic arcsine of a number
@@ -724,14 +769,13 @@ JXG.Math = {
      * @param {Number} x
      * @returns {Number}
      */
-    asinh:
-        Math.asinh ||
-        function (x) {
-            if (x === -Infinity) {
-                return x;
-            }
-            return Math.log(x + Math.sqrt(x * x + 1));
-        },
+    static asinh(x) {
+        return Math.asinh(x);
+        // if (x === -Infinity) {
+        //             return x;
+        //         }
+        //         return Math.log(x + Math.sqrt(x * x + 1));
+    }
 
     /**
      * Computes the cotangent of x.
@@ -739,18 +783,18 @@ JXG.Math = {
      * @param {Number} x The number the cotangent will be calculated of.
      * @returns {Number} Cotangent of the given value.
      */
-    cot: function (x) {
+    static cot(x) {
         return 1 / Math.tan(x);
-    },
+    }
 
     /**
      * Computes the inverse cotangent of x.
      * @param {Number} x The number the inverse cotangent will be calculated of.
      * @returns {Number} Inverse cotangent of the given value.
      */
-    acot: function (x) {
+    static acot(x) {
         return (x >= 0 ? 0.5 : -0.5) * Math.PI - Math.atan(x);
-    },
+    }
 
     /**
      * Compute n-th real root of a real number. n must be strictly positive integer.
@@ -765,7 +809,7 @@ JXG.Math = {
      * nthroot(-27, 3): -3
      * nthroot(-4, 2): NaN
      */
-    nthroot: function (x, n) {
+    static nthroot(x, n) {
         var inv = 1 / n;
 
         if (n <= 0 || Math.floor(n) !== n) {
@@ -787,7 +831,7 @@ JXG.Math = {
 
         // x negative, even root
         return NaN;
-    },
+    }
 
     /**
      * Computes cube root of real number
@@ -797,11 +841,10 @@ JXG.Math = {
      * @param  {Number} x Radicand
      * @returns {Number} Cube root of x.
      */
-    cbrt:
-        Math.cbrt ||
-        function (x) {
-            return this.nthroot(x, 3);
-        },
+    static cbrt(x) {
+        return Math.cbrt(x);
+        // return this.nthroot(x, 3);
+    }
 
     /**
      * Compute base to the power of exponent.
@@ -809,7 +852,7 @@ JXG.Math = {
      * @param {Number} exponent
      * @returns {Number} base to the power of exponent.
      */
-    pow: function (base, exponent) {
+    static pow(base, exponent) {
         if (base === 0) {
             if (exponent === 0) {
                 return 1;
@@ -828,7 +871,7 @@ JXG.Math = {
         }
 
         return NaN;
-    },
+    }
 
     /**
      * Compute base to the power of the rational exponent m / n.
@@ -842,7 +885,7 @@ JXG.Math = {
      * @param {Number} n denominator of exponent
      * @returns {Number} base to the power of exponent.
      */
-    ratpow: function (base, m, n) {
+    static ratpow(base, m, n) {
         var g;
         if (m === 0) {
             return 1;
@@ -853,25 +896,25 @@ JXG.Math = {
 
         g = this.gcd(m, n);
         return this.nthroot(this.pow(base, m / g), n / g);
-    },
+    }
 
     /**
      * Logarithm to base 10.
      * @param {Number} x
      * @returns {Number} log10(x) Logarithm of x to base 10.
      */
-    log10: function (x) {
+    static log10(x) {
         return Math.log(x) / Math.log(10.0);
-    },
+    }
 
     /**
      * Logarithm to base 2.
      * @param {Number} x
      * @returns {Number} log2(x) Logarithm of x to base 2.
      */
-    log2: function (x) {
+    static log2(x) {
         return Math.log(x) / Math.log(2.0);
-    },
+    }
 
     /**
      * Logarithm to arbitrary base b. If b is not given, natural log is taken, i.e. b = e.
@@ -879,13 +922,13 @@ JXG.Math = {
      * @param {Number} b base
      * @returns {Number} log(x, b) Logarithm of x to base b, that is log(x)/log(b).
      */
-    log: function (x, b) {
+    static log(x, b) {
         if (b !== undefined && Type.isNumber(b)) {
             return Math.log(x) / Math.log(b);
         }
 
         return Math.log(x);
-    },
+    }
 
     /**
      * The sign() function returns the sign of a number, indicating whether the number is positive, negative or zero.
@@ -896,15 +939,15 @@ JXG.Math = {
      *    1, -1, 0, -0, NaN, which represent "positive number", "negative number", "positive zero", "negative zero"
      *    and NaN respectively.
      */
-    sign:
-        Math.sign ||
-        function (x) {
-            x = +x; // convert to a number
-            if (x === 0 || isNaN(x)) {
-                return x;
-            }
-            return x > 0 ? 1 : -1;
-        },
+    static sign(x) {
+        return Math.sign(x)
+        // function (x) {
+        //     x = +x; // convert to a number
+        //     if (x === 0 || isNaN(x)) {
+        //         return x;
+        //     }
+        //     return x > 0 ? 1 : -1;
+    }
 
     /**
      * A square & multiply algorithm to compute base to the power of exponent.
@@ -914,7 +957,7 @@ JXG.Math = {
      * @param {Number} exponent
      * @returns {Number} Base to the power of exponent
      */
-    squampow: function (base, exponent) {
+    static squampow(base, exponent) {
         var result;
 
         if (Math.floor(exponent) === exponent) {
@@ -939,7 +982,7 @@ JXG.Math = {
         }
 
         return this.pow(base, exponent);
-    },
+    }
 
     /**
      * Greatest common divisor (gcd) of two numbers.
@@ -949,7 +992,7 @@ JXG.Math = {
      * @param  {Number} b Second number
      * @returns {Number}   gcd(a, b) if a and b are numbers, NaN else.
      */
-    gcd: function (a, b) {
+    static gcd(a, b) {
         var tmp,
             endless = true;
 
@@ -975,7 +1018,7 @@ JXG.Math = {
                 return a;
             }
         }
-    },
+    }
 
     /**
      * Least common multiple (lcm) of two numbers.
@@ -984,7 +1027,7 @@ JXG.Math = {
      * @param  {Number} b Second number
      * @returns {Number}   lcm(a, b) if a and b are numbers, NaN else.
      */
-    lcm: function (a, b) {
+    static lcm(a, b) {
         var ret;
 
         if (!(Type.isNumber(a) && Type.isNumber(b))) {
@@ -997,7 +1040,7 @@ JXG.Math = {
         }
 
         return 0;
-    },
+    }
 
     /**
      * Special use of Math.round function to round not only to integers but also to chosen decimal values.
@@ -1008,7 +1051,7 @@ JXG.Math = {
      * @param {Number} [max] If set, it will be returned the minimum of value and max.
      * @returns {Number} Fitted value.
      */
-    roundToStep: function (value, step, min, max) {
+    static roundToStep(value, step, min?, max?) {
         var n = value,
             tmp, minOr0;
 
@@ -1044,7 +1087,7 @@ JXG.Math = {
         }
 
         return n;
-    },
+    }
 
     /**
      *  Error function, see {@link https://en.wikipedia.org/wiki/Error_function}.
@@ -1053,9 +1096,9 @@ JXG.Math = {
      * @param  {Number} x
      * @returns {Number}
      */
-    erf: function (x) {
-        return this.ProbFuncs.erf(x);
-    },
+    static erf(x) {
+        return JXG.JSXMath.ProbFuncs.erf(x);
+    }
 
     /**
      * Complementary error function, i.e. 1 - erf(x).
@@ -1065,9 +1108,9 @@ JXG.Math = {
      * @param  {Number} x
      * @returns {Number}
      */
-    erfc: function (x) {
-        return this.ProbFuncs.erfc(x);
-    },
+    static erfc(x) {
+        return JXG.JSXMath.ProbFuncs.erfc(x);
+    }
 
     /**
      * Inverse of error function
@@ -1077,9 +1120,9 @@ JXG.Math = {
      * @param  {Number} x
      * @returns {Number}
      */
-    erfi: function (x) {
-        return this.ProbFuncs.erfi(x);
-    },
+    static erfi(x) {
+        return JXG.JSXMath.ProbFuncs.erfi(x);
+    }
 
     /**
      * Normal distribution function
@@ -1088,9 +1131,9 @@ JXG.Math = {
      * @param  {Number} x
      * @returns {Number}
      */
-    ndtr: function (x) {
-        return this.ProbFuncs.ndtr(x);
-    },
+    static ndtr(x) {
+        return JXG.JSXMath.ProbFuncs.ndtr(x);
+    }
 
     /**
      * Inverse of normal distribution function
@@ -1100,9 +1143,9 @@ JXG.Math = {
      * @param  {Number} x
      * @returns {Number}
      */
-    ndtri: function (x) {
-        return this.ProbFuncs.ndtri(x);
-    },
+    static ndtri(x) {
+        return JXG.JSXMath.ProbFuncs.ndtri(x);
+    }
 
     /**
      * Returns sqrt(a * a + b * b) for a variable number of arguments.
@@ -1112,7 +1155,7 @@ JXG.Math = {
      * @param {Number} a Variable number of arguments.
      * @returns Number
      */
-    hypot: function () {
+    static hypot() {
         var i, le, a, sum;
 
         le = arguments.length;
@@ -1121,7 +1164,7 @@ JXG.Math = {
             sum += a * a;
         }
         return Math.sqrt(sum);
-    },
+    }
 
     /**
      * Heaviside unit step function. Returns 0 for x &lt;, 1 for x &gt; 0, and 0.5 for x == 0.
@@ -1129,10 +1172,10 @@ JXG.Math = {
      * @param {Number} x
      * @returns Number
      */
-    hstep: function (x) {
+    static hstep(x) {
         return (x > 0.0) ? 1 :
             ((x < 0.0) ? 0.0 : 0.5);
-    },
+    }
 
     /**
      * Gamma function for real parameters by Lanczos approximation.
@@ -1141,7 +1184,7 @@ JXG.Math = {
      * @param {Number} z
      * @returns Number
      */
-    gamma: function (z) {
+    static gamma(z) {
         var x, y, t, i, le,
             g = 7,
             // n = 9,
@@ -1170,7 +1213,7 @@ JXG.Math = {
             y = Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
         }
         return y;
-    },
+    }
 
     /* ********************  Comparisons and logical operators ************** */
 
@@ -1181,9 +1224,9 @@ JXG.Math = {
      * @param {Number} b
      * @returns {Boolean}
      */
-    lt: function (a, b) {
+    static lt(a, b) {
         return a < b;
-    },
+    }
 
     /**
      * Logical test: a <= b?
@@ -1192,9 +1235,9 @@ JXG.Math = {
      * @param {Number} b
      * @returns {Boolean}
      */
-    leq: function (a, b) {
+    static leq(a, b) {
         return a <= b;
-    },
+    }
 
     /**
      * Logical test: a > b?
@@ -1203,9 +1246,9 @@ JXG.Math = {
      * @param {Number} b
      * @returns {Boolean}
      */
-    gt: function (a, b) {
+    static gt(a, b) {
         return a > b;
-    },
+    }
 
     /**
      * Logical test: a >= b?
@@ -1214,9 +1257,9 @@ JXG.Math = {
      * @param {Number} b
      * @returns {Boolean}
      */
-    geq: function (a, b) {
+    static geq(a, b) {
         return a >= b;
-    },
+    }
 
     /**
      * Logical test: a === b?
@@ -1225,9 +1268,9 @@ JXG.Math = {
      * @param {Number} b
      * @returns {Boolean}
      */
-    eq: function (a, b) {
+    static eq(a, b) {
         return a === b;
-    },
+    }
 
     /**
      * Logical test: a !== b?
@@ -1236,9 +1279,9 @@ JXG.Math = {
      * @param {Number} b
      * @returns {Boolean}
      */
-    neq: function (a, b) {
+    static neq(a, b) {
         return a !== b;
-    },
+    }
 
     /**
      * Logical operator: a && b?
@@ -1247,9 +1290,9 @@ JXG.Math = {
      * @param {Boolean} b
      * @returns {Boolean}
      */
-    and: function (a, b) {
+    static and(a, b) {
         return a && b;
-    },
+    }
 
     /**
      * Logical operator: !a?
@@ -1257,9 +1300,9 @@ JXG.Math = {
      * @param {Boolean} a
      * @returns {Boolean}
      */
-    not: function (a) {
+    static not(a) {
         return !a;
-    },
+    }
 
     /**
      * Logical operator: a || b?
@@ -1268,9 +1311,9 @@ JXG.Math = {
      * @param {Boolean} b
      * @returns {Boolean}
      */
-    or: function (a, b) {
+    static or(a, b) {
         return a || b;
-    },
+    }
 
     /**
      * Logical operator: either a or b?
@@ -1279,9 +1322,9 @@ JXG.Math = {
      * @param {Boolean} b
      * @returns {Boolean}
      */
-    xor: function (a, b) {
+    static xor(a, b) {
         return (a || b) && !(a && b);
-    },
+    }
 
     /**
      *
@@ -1308,7 +1351,7 @@ JXG.Math = {
      * JXG.Math.decToFraction(-10.66666666666667);
      * // Result: [-1, 10, 2, 3 ]
     */
-    decToFraction: function (x, order) {
+    static decToFraction(x, order) {
         var lead, sign, a,
             n, n1, n2,
             d, d1, d2,
@@ -1347,7 +1390,7 @@ JXG.Math = {
             it++;
         }
         return [sign, lead, n, d];
-    },
+    }
 
     /* *************************** Normalize *************************** */
 
@@ -1357,7 +1400,7 @@ JXG.Math = {
      * @param {Array} stdform The standard form to be normalized.
      * @returns {Array} The normalized standard form.
      */
-    normalize: function (stdform) {
+    static normalize(stdform) {
         var n,
             signr,
             a2 = 2 * stdform[3],
@@ -1368,7 +1411,7 @@ JXG.Math = {
         stdform[7] = -stdform[2] / a2;
 
         if (!isFinite(r)) {
-            n = this.hypot(stdform[1], stdform[2]);
+            n = Math.hypot(stdform[1], stdform[2]);
 
             stdform[0] /= n;
             stdform[1] /= n;
@@ -1392,7 +1435,7 @@ JXG.Math = {
         }
 
         return stdform;
-    },
+    }
 
     /**
      * Converts a two-dimensional array to a one-dimensional Float32Array that can be processed by WebGL.
@@ -1400,7 +1443,7 @@ JXG.Math = {
      * @returns {Float32Array} A one-dimensional array containing the matrix in column wise notation. Provides a fall
      * back to the default JavaScript Array if Float32Array is not available.
      */
-    toGL: function (m) {
+    static toGL(m) {
         var v, i, j;
 
         if (typeof Float32Array === 'function') {
@@ -1420,7 +1463,7 @@ JXG.Math = {
         }
 
         return v;
-    },
+    }
 
     /**
      * Theorem of Vieta: Given a set of simple zeroes x_0, ..., x_n
@@ -1434,7 +1477,7 @@ JXG.Math = {
      * @returns {Array} Coefficients of the polynomial.
      *
      */
-    Vieta: function (x) {
+    static Vieta(x) {
         var n = x.length,
             s = [],
             m,
@@ -1451,13 +1494,5 @@ JXG.Math = {
             s[0] += y;
         }
         return s;
-    },
-
-    abs: function (x) { return Math.abs(x) },       // tbtb- rename this class !!
-    random: function (x) { return Math.random() },       // tbtb- rename this class !!
-    round: function (x) { return Math.round(x) },       // tbtb- rename this class !!
-    max: function (a,b) { return Math.max(a,b) },       // tbtb- rename this class !!
-
-};
-
-export default JXG.Math;
+    }
+}

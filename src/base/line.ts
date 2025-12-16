@@ -48,7 +48,7 @@ const dbugColor = `color:white;background-color:black`;
  */
 
 import { JXG } from "../jxg.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import Statistics from "../math/statistics.js";
@@ -212,9 +212,9 @@ JXG.extend(
             // Project the point orthogonally onto the line
             vnew = [0, c[1], c[2]];
             // Orthogonal line to c through v
-            vnew = Mat.crossProduct(vnew, v);
+            vnew = JSXMath.crossProduct(vnew, v);
             // Intersect orthogonal line with line
-            vnew = Mat.crossProduct(vnew, c);
+            vnew = JSXMath.crossProduct(vnew, c);
 
             // Normalize the projected point
             vnew[1] /= vnew[0];
@@ -227,7 +227,7 @@ JXG.extend(
             p2c = p2c.usrCoords.slice(0);
 
             // The defining points are identical
-            if (d < Mat.eps) {
+            if (d < JSXMath.eps) {
                 pos = 0;
             } else {
                 /*
@@ -243,10 +243,10 @@ JXG.extend(
 
                 // At least one point is an ideal point
                 if (d === Number.POSITIVE_INFINITY) {
-                    d = 1 / Mat.eps;
+                    d = 1 / JSXMath.eps;
 
                     // The second point is an ideal point
-                    if (Math.abs(p2c[0]) < Mat.eps) {
+                    if (Math.abs(p2c[0]) < JSXMath.eps) {
                         d /= Geometry.distance([0, 0, 0], p2c);
                         p2c = [1, p1c[1] + p2c[1] * d, p1c[2] + p2c[2] * d];
                         // The first point is an ideal point
@@ -258,7 +258,7 @@ JXG.extend(
                 i = 1;
                 d = p2c[i] - p1c[i];
 
-                if (Math.abs(d) < Mat.eps) {
+                if (Math.abs(d) < JSXMath.eps) {
                     i = 2;
                     d = p2c[i] - p1c[i];
                 }
@@ -348,7 +348,7 @@ JXG.extend(
             );
 
             // If the position of the points or the fixed length function has been changed we have to work.
-            if (d1 > Mat.eps || d2 > Mat.eps || d !== d_new) {
+            if (d1 > JSXMath.eps || d2 > JSXMath.eps || d !== d_new) {
                 drag1 =
                     this.point1.isDraggable &&
                     this.point1.type !== OBJECT_TYPE.GLIDER &&
@@ -362,7 +362,7 @@ JXG.extend(
                 // Then we try to adapt the point that was not dragged
                 // If this point can not be moved (e.g. because it is a glider)
                 // we try move the other point
-                if (d > Mat.eps) {
+                if (d > JSXMath.eps) {
                     if ((d1 > d2 && drag2) || (d1 <= d2 && drag2 && !drag1)) {
                         this.point2.setPositionDirectly(COORDS_BY.USER, [
                             this.point1.X() + ((this.point2.X() - this.point1.X()) * d_new) / d,
@@ -381,7 +381,7 @@ JXG.extend(
                 } else {
                     x = Math.random() - 0.5;
                     y = Math.random() - 0.5;
-                    d = Mat.hypot(x, y);
+                    d = Math.hypot(x, y);
 
                     if (drag2) {
                         this.point2.setPositionDirectly(COORDS_BY.USER, [
@@ -416,7 +416,7 @@ JXG.extend(
          * @private
          */
         updateStdform: function () {
-            var v = Mat.crossProduct(
+            var v = JSXMath.crossProduct(
                 this.point1.coords.usrCoords,
                 this.point2.coords.usrCoords
             );
@@ -448,7 +448,7 @@ JXG.extend(
                         this.point1.coords.usrCoords[2] +
                         this.point2.coords.usrCoords[1] +
                         this.point2.coords.usrCoords[2]
-                    ) && Mat.innerProduct(this.stdform, this.stdform, 3) >= Mat.eps * Mat.eps;
+                    ) && JSXMath.innerProduct(this.stdform, this.stdform, 3) >= JSXMath.eps * JSXMath.eps;
 
                 if (
                     //wasReal &&
@@ -526,7 +526,7 @@ JXG.extend(
          * @returns {Number} The y intersect.
          */
         getRise: function () {
-            if (Math.abs(this.stdform[2]) >= Mat.eps) {
+            if (Math.abs(this.stdform[2]) >= JSXMath.eps) {
                 return -this.stdform[0] / this.stdform[2];
             }
 
@@ -538,7 +538,7 @@ JXG.extend(
          * @returns {Number} The slope of the line or Infinity if the line is parallel to the y-axis.
          */
         Slope: function () {
-            if (Math.abs(this.stdform[2]) >= Mat.eps) {
+            if (Math.abs(this.stdform[2]) >= JSXMath.eps) {
                 return -this.stdform[1] / this.stdform[2];
             }
 
@@ -698,7 +698,7 @@ JXG.extend(
                     case "lft":
                     case "llft":
                     case "ulft":
-                        if (c1[1] < c2[1] + Mat.eps) {
+                        if (c1[1] < c2[1] + JSXMath.eps) {
                             x = c1n[1];
                             y = c1n[2];
                         } else {
@@ -709,7 +709,7 @@ JXG.extend(
                     case "rt":
                     case "lrt":
                     case "urt":
-                        if (c1[1] > c2[1] + Mat.eps) {
+                        if (c1[1] > c2[1] + JSXMath.eps) {
                             x = c1[1];
                             y = c1[2];
                         } else {
@@ -728,7 +728,7 @@ JXG.extend(
 
                 dx = c2[1] - c1[1];
                 dy = c2[2] - c1[2];
-                d = Mat.hypot(dx, dy);
+                d = Math.hypot(dx, dy);
 
                 if (xy.pos.indexOf('px') >= 0 ||
                     xy.pos.indexOf('fr') >= 0 ||
@@ -770,20 +770,20 @@ JXG.extend(
                     fs = this.label.evalVisProp('fontsize');
                 }
 
-                if (Math.abs(x) < Mat.eps) {
+                if (Math.abs(x) < JSXMath.eps) {
                     x = fs;
                 } else if (
-                    this.board.canvasWidth + Mat.eps > x &&
-                    x > this.board.canvasWidth - fs - Mat.eps
+                    this.board.canvasWidth + JSXMath.eps > x &&
+                    x > this.board.canvasWidth - fs - JSXMath.eps
                 ) {
                     x = this.board.canvasWidth - fs;
                 }
 
-                if (Mat.eps + fs > y && y > -Mat.eps) {
+                if (JSXMath.eps + fs > y && y > -JSXMath.eps) {
                     y = fs;
                 } else if (
-                    this.board.canvasHeight + Mat.eps > y &&
-                    y > this.board.canvasHeight - fs - Mat.eps
+                    this.board.canvasHeight + JSXMath.eps > y &&
+                    y > this.board.canvasHeight - fs - JSXMath.eps
                 ) {
                     y = this.board.canvasHeight - fs;
                 }
@@ -886,7 +886,7 @@ JXG.extend(
                         // projectCoordsToLine
                         /*
                         v = [0, this.stdform[1], this.stdform[2]];
-                        v = Mat.crossProduct(v, c1.usrCoords);
+                        v = JSXMath.crossProduct(v, c1.usrCoords);
                         c2 = Geometry.meetLineLine(v, this.stdform, 0, this.board);
                         */
                         c2 = Geometry.projectPointToLine({ coords: c1 }, this, this.board);
@@ -942,7 +942,7 @@ JXG.extend(
             //     c = this.point1.coords.usrCoords,
             //     b = this.stdform[2];
 
-            // x = (Math.abs(c[0]) > Mat.eps) ? c[1] : c[1];
+            // x = (Math.abs(c[0]) > JSXMath.eps) ? c[1] : c[1];
             // t = (t - 0.5) * 2;
 
             // return (1 - Math.abs(t)) * x - t * b;
@@ -978,7 +978,7 @@ JXG.extend(
             //     c = this.point1.coords.usrCoords,
             //     a = this.stdform[1];
 
-            // y = (Math.abs(c[0]) > Mat.eps) ? c[2] : c[2];
+            // y = (Math.abs(c[0]) > JSXMath.eps) ? c[2] : c[2];
             // t = (t - 0.5) * 2;
 
             // return (1 - Math.abs(t)) * y + t * a;
@@ -1014,7 +1014,7 @@ JXG.extend(
             // var z,
             //     c = this.point1.coords.usrCoords;
 
-            // z = (Math.abs(c[0]) > Mat.eps) ? c[0] : c[0];
+            // z = (Math.abs(c[0]) > JSXMath.eps) ? c[0] : c[0];
             // t = (t - 0.5) * 2;
 
             // return (1 - Math.abs(t)) * z;
@@ -2121,8 +2121,8 @@ JXG.createTangent = function (board, parents, attributes) {
                             f = c_org.Y;
                             for (i = 0; i < slides.length; i++) {
                                 slides[i].updateTransformMatrix();
-                                invMat = Mat.inverse(slides[i].transformMat);
-                                po = Mat.matVecMult(invMat, po);
+                                invMat = JSXMath.inverse(slides[i].transformMat);
+                                po = JSXMath.matVecMult(invMat, po);
                             }
 
                             if (p.type !== OBJECT_TYPE.GLIDER) {
@@ -2145,8 +2145,8 @@ JXG.createTangent = function (board, parents, attributes) {
                         if (isTransformed) {
                             // Transform the line to the transformed curve
                             for (i = slides.length - 1; i >= 0; i--) {
-                                invMat = Mat.transpose(Mat.inverse(slides[i].transformMat));
-                                li = Mat.matVecMult(invMat, li);
+                                invMat = JSXMath.transpose(JSXMath.inverse(slides[i].transformMat));
+                                li = JSXMath.matVecMult(invMat, li);
                             }
                         }
 
@@ -2224,7 +2224,7 @@ JXG.createTangent = function (board, parents, attributes) {
                     dy = (1 - t) * (1 - t) * (B[2] - A[2]) +
                         2 * (1 - t) * t * (C[2] - B[2]) +
                         t * t * (D[2] - C[2]);
-                    d = Mat.hypot(dx, dy);
+                    d = Math.hypot(dx, dy);
                     dx /= d;
                     dy /= d;
                     p1 = p.coords.usrCoords;
@@ -2327,7 +2327,7 @@ JXG.createTangent = function (board, parents, attributes) {
             "line",
             [
                 function () {
-                    return Mat.matVecMult(c.quadraticform, p.coords.usrCoords);
+                    return JSXMath.matVecMult(c.quadraticform, p.coords.usrCoords);
                 }
             ],
             attr
@@ -2429,7 +2429,7 @@ JXG.createNormal = function (board, parents, attributes) {
             "point",
             [
                 function () {
-                    var p = Mat.crossProduct([1, 0, 0], c.stdform);
+                    var p = JSXMath.crossProduct([1, 0, 0], c.stdform);
                     return [p[0], -p[2], p[1]];
                 }
             ],
@@ -2500,8 +2500,8 @@ JXG.createNormal = function (board, parents, attributes) {
                             f = c_org.Y;
                             for (i = 0; i < slides.length; i++) {
                                 slides[i].updateTransformMatrix();
-                                invMat = Mat.inverse(slides[i].transformMat);
-                                po = Mat.matVecMult(invMat, po);
+                                invMat = JSXMath.inverse(slides[i].transformMat);
+                                po = JSXMath.matVecMult(invMat, po);
                             }
 
                             if (p.type !== OBJECT_TYPE.GLIDER) {
@@ -2523,8 +2523,8 @@ JXG.createNormal = function (board, parents, attributes) {
                         if (isTransformed) {
                             // Transform the line to the transformed curve
                             for (i = slides.length - 1; i >= 0; i--) {
-                                invMat = Mat.transpose(Mat.inverse(slides[i].transformMat));
-                                li = Mat.matVecMult(invMat, li);
+                                invMat = JSXMath.transpose(JSXMath.inverse(slides[i].transformMat));
+                                li = JSXMath.matVecMult(invMat, li);
                             }
                         }
 
@@ -2581,10 +2581,10 @@ JXG.createNormal = function (board, parents, attributes) {
                         p1[1] + lbda * (p2[1] - p1[1]),
                         p1[2] + lbda * (p2[2] - p1[2])
                     ];
-                    li = Mat.crossProduct(p1, p2);
-                    pp = Mat.crossProduct([1, 0, 0], li);
+                    li = JSXMath.crossProduct(p1, p2);
+                    pp = JSXMath.crossProduct([1, 0, 0], li);
                     pp = [pp[0], -pp[2], pp[1]];
-                    li = Mat.crossProduct(p_org, pp);
+                    li = JSXMath.crossProduct(p_org, pp);
 
                 } else {
                     A = points[i].usrCoords;
@@ -2599,7 +2599,7 @@ JXG.createNormal = function (board, parents, attributes) {
                         (1 - t) * (1 - t) * (B[2] - A[2]) +
                         2 * (1 - t) * t * (C[2] - B[2]) +
                         t * t * (D[2] - C[2]);
-                    d = Mat.hypot(dx, dy);
+                    d = Math.hypot(dx, dy);
                     dx /= d;
                     dy /= d;
                     p1 = p.coords.usrCoords;
@@ -2827,7 +2827,7 @@ JXG.createRadicalAxis = function (board, parents, attributes) {
                 var a = el1.stdform,
                     b = el2.stdform;
 
-                return Mat.matVecMult(Mat.transpose([a.slice(0, 3), b.slice(0, 3)]), [
+                return JSXMath.matVecMult(JSXMath.transpose([a.slice(0, 3), b.slice(0, 3)]), [
                     b[3],
                     -a[3]
                 ]);

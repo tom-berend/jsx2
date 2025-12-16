@@ -371,7 +371,7 @@ JXG.createMesh3D = function (board, parents, attributes) {
             v2[i] /= l2;
         }
 
-        // sol = Mat.Geometry.getPlaneBounds(v1, v2, q, s1, e1);
+        // sol = JXG.JSXMath.Geometry.getPlaneBounds(v1, v2, q, s1, e1);
         // if (sol !== null) {
         //     s1 = sol[0];
         //     e1 = sol[1];

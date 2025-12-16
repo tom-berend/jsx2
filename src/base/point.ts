@@ -40,7 +40,7 @@
 
 import { JXG } from "../jxg.js";
 import Options from "../options.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "./element.js";
@@ -161,7 +161,7 @@ JXG.extend(
             }
             for (i = 1; i < this.transformations.length; i++) {
                 this.transformations[i].update();
-                c = Mat.matVecMult(this.transformations[i].matrix, c);
+                c = JSXMath.matVecMult(this.transformations[i].matrix, c);
             }
             this.coords.setCoordinates(COORDS_BY.USER, c);
 
@@ -371,7 +371,7 @@ JXG.extend(
         isOn: function (el, tol) {
             var arr, crds;
 
-            tol = tol || Mat.eps;
+            tol = tol || JSXMath.eps;
 
             if (Type.isPoint(el)) {
                 return this.Dist(el) < tol;

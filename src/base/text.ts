@@ -53,7 +53,7 @@ import GeometryElement from "./element.js";
 import GeonextParser from "../parser/geonext.js";
 import { Env } from "../utils/env.js";
 import {Type} from "../utils/type.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import CoordsElement from "./coordselement.js";
 
 var priv = {
@@ -170,8 +170,8 @@ JXG.extend(
             if (this.transformations.length > 0) {
                 //Transform the mouse/touch coordinates
                 // back to the original position of the text.
-                lft = Mat.matVecMult(
-                    Mat.inverse(this.board.renderer.joinTransforms(this, this.transformations)),
+                lft = JSXMath.matVecMult(
+                    JSXMath.inverse(this.board.renderer.joinTransforms(this, this.transformations)),
                     [1, x, y]
                 );
                 x = lft[1];

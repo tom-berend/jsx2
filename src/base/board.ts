@@ -58,7 +58,7 @@ import { Env } from '../utils/env.js';
 // import Composition from './composition.js';
 import GeometryElement from './element.js';
 import { SVGRenderer } from '../renderer/svg.js';
-import JSXMath from '../math/math.js';
+import { JSXMath } from '../math/math.js';
 import createText from '../base/text.js'
 import createPoint from '../base/point.js'
 import Statistics from '../math/statistics.js';
@@ -391,7 +391,7 @@ export class Board extends Events {
      * @type Array
      * @see JXG.Board#moveObject
      */
-    drag_position = [0, 0];
+    drag_position:number|any[] = [0, 0];
 
     /**
      * References to the object that is dragged with the mouse on the board.
@@ -5782,8 +5782,8 @@ export class Board extends Events {
             box = this.getBoundingBox();    // This is the actual bounding box.
         }
 
-        // this.canvasWidth = Math.max(parseFloat(canvasWidth), Math.eps);
-        // this.canvasHeight = Math.max(parseFloat(canvasHeight), Math.eps);
+        // this.canvasWidth = Math.max(parseFloat(canvasWidth), JSXMath.eps);
+        // this.canvasHeight = Math.max(parseFloat(canvasHeight), JSXMath.eps);
         this.canvasWidth = parseFloat(canvasWidth);
         this.canvasHeight = parseFloat(canvasHeight);
 

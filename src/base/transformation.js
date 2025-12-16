@@ -38,7 +38,7 @@
 
 import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import {Type} from "../utils/type.js";
 
 /**
@@ -268,13 +268,13 @@ JXG.extend(
                         v = params[0].stdform;
                     } else if (params.length === 2) {
                         // two points
-                        v = Mat.crossProduct(
+                        v = JSXMath.crossProduct(
                             params[1].coords.usrCoords,
                             params[0].coords.usrCoords
                         );
                     } else if (params.length === 4) {
                         // two points coordinates [px,py,qx,qy]
-                        v = Mat.crossProduct(
+                        v = JSXMath.crossProduct(
                             [1, this.evalParam(2), this.evalParam(3)],
                             [1, this.evalParam(0), this.evalParam(1)]
                         );
@@ -544,7 +544,7 @@ JXG.extend(
                             [0, 0, 1, 0],
                             [0, 0, 0, 1]
                         ],
-                        nrm = Mat.norm(n);
+                        nrm = JSXMath.norm(n);
 
                     if (n.length === 3) {
                         n1 = n[0] / nrm;
@@ -579,8 +579,8 @@ JXG.extend(
                         [0, n2 * n1 * (1 - co) + n3 * si, n2 * n2 * (1 - co) +      co, n2 * n3 * (1 - co) - n1 * si],
                         [0, n3 * n1 * (1 - co) - n2 * si, n3 * n2 * (1 - co) + n1 * si, n3 * n3 * (1 - co) +      co]
                     ];
-                    this.matrix = Mat.matMatMult(this.matrix, m1);
-                    this.matrix = Mat.matMatMult(m2, this.matrix);
+                    this.matrix = JSXMath.matMatMult(this.matrix, m1);
+                    this.matrix = JSXMath.matMatMult(m2, this.matrix);
                 };
             }
         },
@@ -608,7 +608,7 @@ JXG.extend(
                 c = p.coords.usrCoords;
             }
 
-            return Mat.matVecMult(this.matrix, c);
+            return JSXMath.matVecMult(this.matrix, c);
         },
 
         /**
@@ -628,9 +628,9 @@ JXG.extend(
             for (i = 0; i < len; i++) {
                 this.update();
                 if (this.is3D) {
-                    p[i].coords = Mat.matVecMult(this.matrix, p[i].coords);
+                    p[i].coords = JSXMath.matVecMult(this.matrix, p[i].coords);
                 } else {
-                    c = Mat.matVecMult(this.matrix, p[i].coords.usrCoords);
+                    c = JSXMath.matVecMult(this.matrix, p[i].coords.usrCoords);
                     p[i].coords.setCoordinates(COORDS_BY.USER, c);
                 }
             }
@@ -752,7 +752,7 @@ JXG.extend(
             this.update();
             t.update();
 
-            res = Mat.matMatMult(t.matrix, this.matrix);
+            res = JSXMath.matMatMult(t.matrix, this.matrix);
 
             this.update = function () {
                 this.matrix = res;

@@ -41,7 +41,7 @@
 
 import { JXG } from "../jxg.js";
 import {Type} from "./type.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 
 // private constants and helper functions
 
@@ -414,7 +414,7 @@ JXG.hsv2rgb = function (H, S, V) {
     H = ((H % 360.0) + 360.0) % 360;
 
     if (S === 0) {
-        if (isNaN(H) || H < Mat.eps) {
+        if (isNaN(H) || H < JSXMath.eps) {
             R = V;
             G = V;
             B = V;

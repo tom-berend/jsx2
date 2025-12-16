@@ -79,7 +79,7 @@
 /*jslint nomen: true, plusplus: true, continue: true*/
 
 import { JXG } from "../jxg.js";
-import Mat from "./math.js";
+import {JSXMath} from "./math.js";
 // import {Type} from "../utils/type.js";
 
 /**
@@ -931,7 +931,7 @@ JXG.JSXMath.Nlp = {
                                     this.PART(this.COL(z, k), 1, n),
                                     this.PART(this.COL(a, kk), 1, n)
                                 );
-                                temp = Mat.hypot(sp, zdota[kp]);
+                                temp = Math.hypot(sp, zdota[kp]);
                                 alpha = zdota[kp] / temp;
                                 beta = sp / temp;
                                 zdota[kp] = alpha * zdota[k];
@@ -992,7 +992,7 @@ JXG.JSXMath.Nlp = {
                                 tot = sp;
                             } else {
                                 kp = k + 1;
-                                temp = Mat.hypot(sp, tot);
+                                temp = Math.hypot(sp, tot);
                                 alpha = sp / temp;
                                 beta = tot / temp;
                                 tot = temp;
@@ -1071,7 +1071,7 @@ JXG.JSXMath.Nlp = {
                                         this.PART(this.COL(z, k), 1, n),
                                         this.PART(this.COL(a, kw), 1, n)
                                     );
-                                    temp = Mat.hypot(sp, zdota[kp]);
+                                    temp = Math.hypot(sp, zdota[kp]);
                                     alpha = zdota[kp] / temp;
                                     beta = sp / temp;
                                     zdota[kp] = alpha * zdota[k];
@@ -1119,7 +1119,7 @@ JXG.JSXMath.Nlp = {
                                 this.PART(this.COL(z, k), 1, n),
                                 this.PART(this.COL(a, kk), 1, n)
                             );
-                            temp = Mat.hypot(sp, zdota[nact]);
+                            temp = Math.hypot(sp, zdota[nact]);
                             alpha = zdota[nact] / temp;
                             beta = sp / temp;
                             zdota[nact] = alpha * zdota[k];

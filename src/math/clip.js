@@ -38,11 +38,11 @@
  * * Check if input polygons are closed. If not, handle this case.
  */
 
-// import {JXG} from "../jxg.js";
+import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 
-import Mat from "./math.js";
+import {JSXMath} from "./math.js";
 import Geometry from "./geometry.js";
 import {Type} from "../utils/type.js";
 
@@ -50,10 +50,10 @@ import {Type} from "../utils/type.js";
  * Math.Clip namespace definition. This namespace contains algorithms for Boolean operations on paths, i.e.
  * intersection, union and difference of paths. Base is the Greiner-Hormann algorithm.
  * @name JXG.Math.Clip
- * @exports Mat.Clip as JXG.Math.Clip
+ * @exports JXG.JSXMath.Clip as JXG.Math.Clip
  * @namespace
  */
-Mat.Clip = {
+JXG.JSXMath.Clip = {
     _isSeparator: function (node) {
         return isNaN(node.coords.usrCoords[1]) && isNaN(node.coords.usrCoords[2]);
     },
@@ -146,7 +146,7 @@ Mat.Clip = {
 
     _addToList: function (list, coords, pos) {
         var len = list.length,
-            eps = Mat.eps * Mat.eps;
+            eps = JSXMath.eps * JSXMath.eps;
 
         if (
             len > 0 &&
@@ -239,7 +239,7 @@ Mat.Clip = {
 
     _inbetween: function (q, p1, p2) {
         var alpha,
-            eps = Mat.eps * Mat.eps,
+            eps = JSXMath.eps * JSXMath.eps,
             px = p2[1] - p1[1],
             py = p2[2] - p1[2],
             qx = q[1] - p1[1],
@@ -319,7 +319,7 @@ Mat.Clip = {
 
     _noOverlap: function (p1, p2, q1, q2) {
         var k,
-            eps = Math.sqrt(Mat.eps),
+            eps = Math.sqrt(JSXMath.eps),
             minp,
             maxp,
             minq,
@@ -351,7 +351,7 @@ Mat.Clip = {
      * @see JXG.Math.Clip.Vertex
      */
     findIntersections: function (S, C, board) {
-        var res = [], eps = Mat.eps * 100,
+        var res = [], eps = JSXMath.eps * 100,
             i, j, crds,
             S_le = S.length,
             C_le = C.length,
@@ -430,7 +430,7 @@ Mat.Clip = {
                         res[2] * d2 > -eps &&
                         res[2] < 1 - eps / d2) ||
                     // Collinear segments
-                    (res[1] === Infinity && res[2] === Infinity && Mat.norm(res[0], 3) < eps)
+                    (res[1] === Infinity && res[2] === Infinity && JSXMath.norm(res[0], 3) < eps)
                 ) {
                     crds = new Coords(COORDS_BY.USER, res[0], board);
                     type = 'X';
@@ -465,7 +465,7 @@ Mat.Clip = {
                     } else if (
                         res[1] === Infinity &&
                         res[2] === Infinity &&
-                        Mat.norm(res[0], 3) < eps
+                        JSXMath.norm(res[0], 3) < eps
                     ) {
                         // console.log(C_intersect);
 
@@ -637,20 +637,20 @@ Mat.Clip = {
                 // then there will be two adjacent points with
                 // the same coordinate.
                 // In that case, we proceed to the next node.
-                if (Geometry.distance(P.coords.usrCoords, Pp, 3) < Mat.eps) {
+                if (Geometry.distance(P.coords.usrCoords, Pp, 3) < JSXMath.eps) {
                     Pp = P._next._next.coords.usrCoords;
                 }
-                if (Geometry.distance(P.coords.usrCoords, Pm, 3) < Mat.eps) {
+                if (Geometry.distance(P.coords.usrCoords, Pm, 3) < JSXMath.eps) {
                     Pm = P._prev._prev.coords.usrCoords;
                 }
 
                 Q = P.neighbour;
                 Qm = Q._prev.coords.usrCoords; // Q-
                 Qp = Q._next.coords.usrCoords; // Q+
-                if (Geometry.distance(Q.coords.usrCoords, Qp, 3) < Mat.eps) {
+                if (Geometry.distance(Q.coords.usrCoords, Qp, 3) < JSXMath.eps) {
                     Qp = Q._next._next.coords.usrCoords;
                 }
-                if (Geometry.distance(Q.coords.usrCoords, Qm, 3) < Mat.eps) {
+                if (Geometry.distance(Q.coords.usrCoords, Qm, 3) < JSXMath.eps) {
                     Qm = Q._prev._prev.coords.usrCoords;
                 }
 
@@ -667,8 +667,8 @@ Mat.Clip = {
                 s4 = det(P.coords.usrCoords, Pp, Qm);
 
                 if (s1 === 0 && s2 === 0 && s3 === 0 && s4 === 0) {
-                    P.coords.usrCoords[1] *= 1 + Math.random() * Mat.eps;
-                    P.coords.usrCoords[2] *= 1 + Math.random() * Mat.eps;
+                    P.coords.usrCoords[1] *= 1 + Math.random() * JSXMath.eps;
+                    P.coords.usrCoords[2] *= 1 + Math.random() * JSXMath.eps;
                     Q.coords.usrCoords[1] = P.coords.usrCoords[1];
                     Q.coords.usrCoords[2] = P.coords.usrCoords[2];
                     s1 = det(P.coords.usrCoords, Pm, Qm);
@@ -954,7 +954,7 @@ Mat.Clip = {
                                     Q[(j + 1) % leQ].coords.usrCoords,
                                     M
                                 )
-                            ) < Mat.eps
+                            ) < JSXMath.eps
                         ) {
                             is_on_Q = true;
                             break;
@@ -1557,7 +1557,7 @@ Mat.Clip = {
 
     /**
      * Count intersection points of type 'X'.
-     * @param {JXG.Mat.Clip.Vertex} intersections
+     * @param {JXG.JXG.JSXMath.Clip.Vertex} intersections
      * @returns Number
      * @private
      */
@@ -1932,7 +1932,7 @@ Mat.Clip = {
         len = S.length;
         if (
             len > 0 &&
-            Geometry.distance(S[0].coords.usrCoords, S[len - 1].coords.usrCoords, 3) < Mat.eps
+            Geometry.distance(S[0].coords.usrCoords, S[len - 1].coords.usrCoords, 3) < JSXMath.eps
         ) {
             S.pop();
         }
@@ -1943,7 +1943,7 @@ Mat.Clip = {
         if (
             len > 0 &&
             Geometry.distance(C[0].coords.usrCoords, C[len - 1].coords.usrCoords, 3) <
-                Mat.eps * Mat.eps
+                JSXMath.eps * JSXMath.eps
         ) {
             C.pop();
         }
@@ -2203,6 +2203,6 @@ Mat.Clip = {
     }
 };
 
-// JXG.extend(Mat.Clip, /** @lends JXG.Math.Clip */ {});
+// JXG.extend(JXG.JSXMath.Clip, /** @lends JXG.Math.Clip */ {});
 
-export default Mat.Clip;
+export default JXG.JSXMath.Clip;

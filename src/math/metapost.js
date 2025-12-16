@@ -64,18 +64,19 @@
  * by D.E. Knuth and J.D. Hobby.
  */
 
+import {JXG} from "../jxg.js"
 import {Type} from "../utils/type.js";
-import Mat from "./math.js";
+import {JSXMath} from "./math.js";
 
 /**
  * The JXG.Math.Metapost namespace holds algorithms translated from Metapost
  * by D.E. Knuth and J.D. Hobby.
  *
  * @name JXG.Math.Metapost
- * @exports Mat.Metapost as JXG.Math.Metapost
+ * @exports JXG.JSXMath.Metapost as JXG.Math.Metapost
  * @namespace
  */
-Mat.Metapost = {
+JXG.JSXMath.Metapost = {
     MP_ENDPOINT: 0,
     MP_EXPLICIT: 1,
     MP_GIVEN: 2,
@@ -472,7 +473,7 @@ Mat.Metapost = {
      * @private
      */
     mp_pyth_add: function (a, b) {
-        return Mat.hypot(a, b);
+        return Math.hypot(a, b);
     },
 
     /**
@@ -754,4 +755,4 @@ Mat.Metapost = {
         }
 };
 
-export default Mat.Metapost;
+export default JXG.JSXMath.Metapost;

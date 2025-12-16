@@ -37,7 +37,7 @@ import {AbstractRenderer} from "./abstract.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
 import Color from "../utils/color.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Numerics from "../math/numerics.js";
 
 /**
@@ -267,28 +267,28 @@ JXG.extend(
                 } // default (ev_ay === 'top') offset[1] = 0;
 
                 // Compute maxX, maxY, minX, minY
-                p[0] = Mat.matVecMult(m, [
+                p[0] = JSXMath.matVecMult(m, [
                     1,
                     el.coords.scrCoords[1] - offset[0] * el.size[0],
                     el.coords.scrCoords[2] + (1 - offset[1]) * el.size[1] + this.vOffsetText
                 ]);
                 p[0][1] /= p[0][0];
                 p[0][2] /= p[0][0];
-                p[1] = Mat.matVecMult(m, [
+                p[1] = JSXMath.matVecMult(m, [
                     1,
                     el.coords.scrCoords[1] + (1 - offset[0]) * el.size[0],
                     el.coords.scrCoords[2] + (1 - offset[1]) * el.size[1] + this.vOffsetText
                 ]);
                 p[1][1] /= p[1][0];
                 p[1][2] /= p[1][0];
-                p[2] = Mat.matVecMult(m, [
+                p[2] = JSXMath.matVecMult(m, [
                     1,
                     el.coords.scrCoords[1] + (1 - offset[0]) * el.size[0],
                     el.coords.scrCoords[2] - offset[1] * el.size[1] + this.vOffsetText
                 ]);
                 p[2][1] /= p[2][0];
                 p[2][2] /= p[2][0];
-                p[3] = Mat.matVecMult(m, [
+                p[3] = JSXMath.matVecMult(m, [
                     1,
                     el.coords.scrCoords[1] - offset[0] * el.size[0],
                     el.coords.scrCoords[2] - offset[1] * el.size[1] + this.vOffsetText
@@ -401,24 +401,24 @@ JXG.extend(
                 */
 
                 m = this.joinTransforms(el, t);
-                p[0] = Mat.matVecMult(m, el.coords.scrCoords);
+                p[0] = JSXMath.matVecMult(m, el.coords.scrCoords);
                 p[0][1] /= p[0][0];
                 p[0][2] /= p[0][0];
-                p[1] = Mat.matVecMult(m, [
+                p[1] = JSXMath.matVecMult(m, [
                     1,
                     el.coords.scrCoords[1] + el.size[0],
                     el.coords.scrCoords[2]
                 ]);
                 p[1][1] /= p[1][0];
                 p[1][2] /= p[1][0];
-                p[2] = Mat.matVecMult(m, [
+                p[2] = JSXMath.matVecMult(m, [
                     1,
                     el.coords.scrCoords[1] + el.size[0],
                     el.coords.scrCoords[2] - el.size[1]
                 ]);
                 p[2][1] /= p[2][0];
                 p[2][2] /= p[2][0];
-                p[3] = Mat.matVecMult(m, [
+                p[3] = JSXMath.matVecMult(m, [
                     1,
                     el.coords.scrCoords[1],
                     el.coords.scrCoords[2] - el.size[1]

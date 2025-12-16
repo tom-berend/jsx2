@@ -36,7 +36,7 @@
 import { JXG } from '../jxg.js';
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Type } from '../utils/type.js';
-import Mat from '../math/math.js';
+import {JSXMath} from '../math/math.js';
 import Geometry from '../math/geometry.js';
 
 // -----------------------
@@ -216,7 +216,7 @@ JXG.extend(
             }
             for (i = 0; i < this.transformations.length; i++) {
                 this.transformations[i].update();
-                c = Mat.matVecMult(this.transformations[i].matrix, c);
+                c = JSXMath.matVecMult(this.transformations[i].matrix, c);
             }
             this.vec = c;
 
@@ -274,7 +274,7 @@ JXG.extend(
                     p[1] - p0_coords[1],
                     p[2] - p0_coords[2]
                 ],
-                t = Mat.innerProduct(diff, dir) / Mat.innerProduct(dir, dir),
+                t = JSXMath.innerProduct(diff, dir) / JSXMath.innerProduct(dir, dir),
                 t_clamped = Math.min(Math.max(t, Type.evaluate(this.range[0])), Type.evaluate(this.range[1])),
                 c3d;
 
@@ -305,8 +305,8 @@ JXG.extend(
             c3d[1] *= 0.5;
             c3d[2] *= 0.5;
             c3d[3] *= 0.5;
-            // this.zIndex = Mat.matVecMult(this.view.matrix3DRotShift, c3d)[3];
-            this.zIndex = Mat.innerProduct(this.view.matrix3DRotShift[3], c3d);
+            // this.zIndex = JSXMath.matVecMult(this.view.matrix3DRotShift, c3d)[3];
+            this.zIndex = JSXMath.innerProduct(this.view.matrix3DRotShift[3], c3d);
 
             return this;
         }
@@ -924,8 +924,8 @@ JXG.extend(
 
             v1 = this.vec1.slice();
             v2 = this.vec2.slice();
-            l1 = Mat.norm(v1, 3);
-            l2 = Mat.norm(v2, 3);
+            l1 = JSXMath.norm(v1, 3);
+            l2 = JSXMath.norm(v2, 3);
             for (i = 0; i < 3; i++) {
                 v1[i] /= l1;
                 v2[i] /= l2;
@@ -1047,16 +1047,16 @@ JXG.extend(
                 // this.updateCoords();
             }
 
-            this.normal = Mat.crossProduct(this.vec1.slice(1), this.vec2.slice(1));
+            this.normal = JSXMath.crossProduct(this.vec1.slice(1), this.vec2.slice(1));
 
-            len = Mat.norm(this.normal);
-            if (Math.abs(len) > Mat.eps * Mat.eps) {
+            len = JSXMath.norm(this.normal);
+            if (Math.abs(len) > JSXMath.eps * JSXMath.eps) {
                 for (i = 0; i < 3; i++) {
                     this.normal[i] /= len;
                 }
             }
             this.normal.unshift(0);
-            this.d = Mat.innerProduct(this.point.coords, this.normal, 4);
+            this.d = JSXMath.innerProduct(this.point.coords, this.normal, 4);
 
             return this;
         },
@@ -1123,7 +1123,7 @@ JXG.extend(
 
                     // Use the Hesse normal form of front plane to intersect it with the plane
                     // d is the rhs of the Hesse normal form of the front plane.
-                    d = Mat.innerProduct(p, view.defaultAxes[planes[j]].normal, 4);
+                    d = JSXMath.innerProduct(p, view.defaultAxes[planes[j]].normal, 4);
                     p = view.intersectionPlanePlane(this, view.defaultAxes[planes[j]], d);
 
                     if (p[0] !== false && p[1] !== false) {
@@ -1198,8 +1198,8 @@ JXG.extend(
                 q = this.point.coords;
                 v1 = this.vec1.slice();
                 v2 = this.vec2.slice();
-                l1 = Mat.norm(v1, 4);
-                l2 = Mat.norm(v2, 4);
+                l1 = JSXMath.norm(v1, 4);
+                l2 = JSXMath.norm(v2, 4);
                 for (i = 1; i < 4; i++) {
                     v1[i] /= l1;
                     v2[i] /= l2;
@@ -1262,8 +1262,8 @@ JXG.extend(
 
             for (i = 0; i < this.transformations.length; i++) {
                 this.transformations[i].update();
-                c1 = Mat.matVecMult(this.transformations[i].matrix, c1);
-                c2 = Mat.matVecMult(this.transformations[i].matrix, c2);
+                c1 = JSXMath.matVecMult(this.transformations[i].matrix, c1);
+                c2 = JSXMath.matVecMult(this.transformations[i].matrix, c2);
             }
             this.vec1 = c1;
             this.vec2 = c2;

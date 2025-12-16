@@ -30,15 +30,16 @@
 /*global JXG: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import Mat from "./math.js";
+import {JXG} from "../jxg.js"
+import {JSXMath} from "./math.js";
 
 /**
  * Functions for extrapolation of sequences. Used for finding limits of sequences which is used for curve plotting.
  * @name JXG.Math.Extrapolate
- * @exports Mat.Extrapolate as JXG.Math.Extrapolate
+ * @exports JXG.JSXMath.Extrapolate as JXG.Math.Extrapolate
  * @namespace
  */
-Mat.Extrapolate = {
+JXG.JSXMath.Extrapolate = {
     upper: 15,
     infty: 1e4,
 
@@ -426,8 +427,8 @@ Mat.Extrapolate = {
         //         console.log(algs[i], t, res)
         //     }
         // }
-        // return [f(x0 + Math.sign(h0) * Math.sqrt(Mat.eps)), 'direct', 0];
+        // return [f(x0 + Math.sign(h0) * Math.sqrt(JSXMath.eps)), 'direct', 0];
     }
 };
 
-export default Mat.Extrapolate;
+export default JXG.JSXMath.Extrapolate;

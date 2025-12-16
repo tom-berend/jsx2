@@ -36,7 +36,7 @@
  */
 
 import { JXG } from "../jxg.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import Statistics from "../math/statistics.js";
@@ -289,7 +289,7 @@ JXG.extend(
                     i = 1;
                     d = p2c[i] - p1c[i];
 
-                    if (Math.abs(d) < Mat.eps) {
+                    if (Math.abs(d) < JSXMath.eps) {
                         i = 2;
                         d = p2c[i] - p1c[i];
                     }
@@ -333,7 +333,7 @@ JXG.extend(
                 d = p1c.distance(COORDS_BY.USER, p2c);
 
                 // The defining points are identical
-                if (d < Mat.eps) {
+                if (d < JSXMath.eps) {
                     //this.coords.setCoordinates(COORDS_BY.USER, p1c);
                     newCoords = p1c;
                     doRound = true;
@@ -344,11 +344,11 @@ JXG.extend(
                     p2c = p2c.usrCoords.slice(0);
 
                     // The second point is an ideal point
-                    if (Math.abs(p2c[0]) < Mat.eps) {
+                    if (Math.abs(p2c[0]) < JSXMath.eps) {
                         i = 1;
                         d = p2c[i];
 
-                        if (Math.abs(d) < Mat.eps) {
+                        if (Math.abs(d) < JSXMath.eps) {
                             i = 2;
                             d = p2c[i];
                         }
@@ -359,11 +359,11 @@ JXG.extend(
                         newPos = (sgn * d) / (d + 1);
 
                         // The first point is an ideal point
-                    } else if (Math.abs(p1c[0]) < Mat.eps) {
+                    } else if (Math.abs(p1c[0]) < JSXMath.eps) {
                         i = 1;
                         d = p1c[i];
 
-                        if (Math.abs(d) < Mat.eps) {
+                        if (Math.abs(d) < JSXMath.eps) {
                             i = 2;
                             d = p1c[i];
                         }
@@ -380,7 +380,7 @@ JXG.extend(
                         i = 1;
                         d = p2c[i] - p1c[i];
 
-                        if (Math.abs(d) < Mat.eps) {
+                        if (Math.abs(d) < JSXMath.eps) {
                             i = 2;
                             d = p2c[i] - p1c[i];
                         }
@@ -400,7 +400,7 @@ JXG.extend(
                     // Second, call update(fromParent==true) to make the positioning snappier.
                     ev_sw = this.evalVisProp('snapwidth');
                     if (
-                        ev_sw > 0.0 && Math.abs(this._smax - this._smin) >= Mat.eps
+                        ev_sw > 0.0 && Math.abs(this._smax - this._smin) >= JSXMath.eps
                     ) {
                         newPos = Math.max(Math.min(newPos, 1), 0);
                         // v = newPos * (this._smax - this._smin) + this._smin;
@@ -415,7 +415,7 @@ JXG.extend(
                 p1c = slide.point1.coords;
                 if (
                     !slide.evalVisProp('straightfirst') &&
-                    Math.abs(p1c.usrCoords[0]) > Mat.eps &&
+                    Math.abs(p1c.usrCoords[0]) > JSXMath.eps &&
                     newPos < 0
                 ) {
                     newCoords = p1c;
@@ -426,7 +426,7 @@ JXG.extend(
                 p2c = slide.point2.coords;
                 if (
                     !slide.evalVisProp('straightlast') &&
-                    Math.abs(p2c.usrCoords[0]) > Mat.eps &&
+                    Math.abs(p2c.usrCoords[0]) > JSXMath.eps &&
                     newPos > 1
                 ) {
                     newCoords = p2c;
@@ -479,7 +479,7 @@ JXG.extend(
                     if (this.visProp.isgeonext) {
                         delta = 1.0;
                     }
-                    if (Math.abs(delta) > Mat.eps) {
+                    if (Math.abs(delta) > JSXMath.eps) {
                         newPos /= delta;
                     }
                 } else {
@@ -507,8 +507,8 @@ JXG.extend(
                         if (isTransformed) {
                             for (i = 0; i < slides.length; i++) {
                                 slides[i].updateTransformMatrix();
-                                invMat = Mat.inverse(slides[i].transformMat);
-                                cu = Mat.matVecMult(invMat, cu);
+                                invMat = JSXMath.inverse(slides[i].transformMat);
+                                cu = JSXMath.matVecMult(invMat, cu);
                             }
                             cp = new Coords(COORDS_BY.USER, cu, this.board).usrCoords;
                             c = Geometry.projectCoordsToCurve(
@@ -523,13 +523,13 @@ JXG.extend(
                             // the transformations "by hand".
                             cu = c[0].usrCoords;
                             for (i = slides.length - 2; i >= 0; i--) {
-                                cu = Mat.matVecMult(slides[i].transformMat, cu);
+                                cu = JSXMath.matVecMult(slides[i].transformMat, cu);
                             }
                             c[0] = new Coords(COORDS_BY.USER, cu, this.board);
                         } else {
                             slide.updateTransformMatrix();
-                            invMat = Mat.inverse(slide.transformMat);
-                            cu = Mat.matVecMult(invMat, cu);
+                            invMat = JSXMath.inverse(slide.transformMat);
+                            cu = JSXMath.matVecMult(invMat, cu);
                             cp = new Coords(COORDS_BY.USER, cu, this.board).usrCoords;
                             c = Geometry.projectCoordsToCurve(
                                 cp[1],
@@ -575,7 +575,7 @@ JXG.extend(
             snapValueDistance = this.evalVisProp('snapvaluedistance');
 
             if (Type.isArray(snapValues) &&
-                Math.abs(this._smax - this._smin) >= Mat.eps &&
+                Math.abs(this._smax - this._smin) >= JSXMath.eps &&
                 snapValueDistance > 0.0) {
                 for (i = 0; i < snapValues.length; i++) {
                     d = Math.abs(pos * (this._smax - this._smin) + this._smin - snapValues[i]);
@@ -628,8 +628,8 @@ JXG.extend(
                 ) {
                     c = [0, 0, 0];
                     // The second point is an ideal point
-                } else if (Math.abs(p2c[0]) < Mat.eps) {
-                    lbda = Math.min(Math.abs(this.position), 1 - Mat.eps);
+                } else if (Math.abs(p2c[0]) < JSXMath.eps) {
+                    lbda = Math.min(Math.abs(this.position), 1 - JSXMath.eps);
                     lbda /= 1.0 - lbda;
 
                     if (this.position < 0) {
@@ -642,9 +642,9 @@ JXG.extend(
                         p1c[2] + lbda * p2c[2]
                     ];
                     // The first point is an ideal point
-                } else if (Math.abs(p1c[0]) < Mat.eps) {
-                    lbda = Math.max(this.position, Mat.eps);
-                    lbda = Math.min(lbda, 2 - Mat.eps);
+                } else if (Math.abs(p1c[0]) < JSXMath.eps) {
+                    lbda = Math.max(this.position, JSXMath.eps);
+                    lbda = Math.min(lbda, 2 - JSXMath.eps);
 
                     if (lbda > 1) {
                         lbda = (lbda - 1) / (lbda - 2);
@@ -741,7 +741,7 @@ JXG.extend(
                         }
 
                         this.position = angle;
-                        if (Math.abs(delta) > Mat.eps) {
+                        if (Math.abs(delta) > JSXMath.eps) {
                             this.position /= delta;
                         }
                     }
@@ -767,7 +767,7 @@ JXG.extend(
                         for (i = slides.length - 2; i >= 0; i--) {
                             c = new Coords(
                                 COORDS_BY.USER,
-                                Mat.matVecMult(slides[i].transformMat, c),
+                                JSXMath.matVecMult(slides[i].transformMat, c),
                                 this.board
                             ).usrCoords;
                         }
@@ -794,7 +794,7 @@ JXG.extend(
                 this.isReal = !isNaN(this.coords.usrCoords[1] + this.coords.usrCoords[2]);
                 //Homogeneous coords: ideal point
                 this.isReal =
-                    Math.abs(this.coords.usrCoords[0]) > Mat.eps ? this.isReal : false;
+                    Math.abs(this.coords.usrCoords[0]) > JSXMath.eps ? this.isReal : false;
 
                 if (
                     // wasReal &&
@@ -1218,9 +1218,9 @@ JXG.extend(
                 }
                 m = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
                 for (i = 0; i < this.transformations.length; i++) {
-                    m = Mat.matMatMult(this.transformations[i].matrix, m);
+                    m = JSXMath.matMatMult(this.transformations[i].matrix, m);
                 }
-                newCoords = Mat.matVecMult(Mat.inverse(m), newCoords);
+                newCoords = JSXMath.matVecMult(JSXMath.inverse(m), newCoords);
 
                 this.initialCoords.setCoordinates(COORDS_BY.USER, newCoords);
                 if (this.elementClass !== OBJECT_CLASS.POINT) {
@@ -1704,7 +1704,7 @@ JXG.extend(
             }
             for (i = 1; i < this.transformations.length; i++) {
                 this.transformations[i].update();
-                c = Mat.matVecMult(this.transformations[i].matrix, c);
+                c = JSXMath.matVecMult(this.transformations[i].matrix, c);
             }
             this.actualCoords.setCoordinates(COORDS_BY.USER, c);
 
@@ -2047,7 +2047,7 @@ JXG.extend(
             if (
                 !Type.exists(time) ||
                 time === 0 ||
-                Math.abs(where.usrCoords[0] - this.coords.usrCoords[0]) > Mat.eps
+                Math.abs(where.usrCoords[0] - this.coords.usrCoords[0]) > JSXMath.eps
             ) {
                 this.setPosition(COORDS_BY.USER, where.usrCoords);
                 return this.board.update(this);
@@ -2056,8 +2056,8 @@ JXG.extend(
             // In case there is no callback and we are already at the endpoint we can stop here
             if (
                 !Type.exists(options.callback) &&
-                Math.abs(dX) < Mat.eps &&
-                Math.abs(dY) < Mat.eps
+                Math.abs(dX) < JSXMath.eps &&
+                Math.abs(dY) < JSXMath.eps
             ) {
                 return this;
             }

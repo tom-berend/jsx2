@@ -34,7 +34,7 @@
 
 import { JXG } from "./jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "./base/constants.js";
-import Mat from "./math/math.js";
+import {JSXMath} from "./math/math.js";
 import Color from "./utils/color.js";
 import {Type} from "./utils/type.js";
 
@@ -5801,9 +5801,9 @@ JXG.Options = {
          *
          * @name ImplicitCurve#tol_0
          * @type {Number|Function}
-         * @default JXG.Math.eps
+         * @default JXG.JSXMath.eps
          */
-        tol_u0: Mat.eps,
+        tol_u0: JSXMath.eps,
 
         /**
          * Tolerance for the Newton steps.
@@ -10055,7 +10055,7 @@ JXG.Validator = (function () {
             return Type.isNumber(v, true, false);
         },
         validateInteger = function (v) {
-            return (Math.abs(v - Math.round(v)) < Mat.eps);
+            return (Math.abs(v - Math.round(v)) < JSXMath.eps);
         },
         validateNotNegativeInteger = function (v) {
             return validateInteger(v) && v >= 0;

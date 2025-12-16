@@ -9,7 +9,7 @@ import './utils/xml.js';
 import './utils/event.js';
 import './utils/expect.js';
 import './math/math.js';
-import './math/probfuncs.js';
+// import './math/probfuncs.js';
 // import './math/ia.js';
 import './math/extrapolate.js';
 import './math/qdt.js';

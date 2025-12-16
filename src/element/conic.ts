@@ -40,7 +40,7 @@ import { JXG } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Numerics from "../math/numerics.js";
 import Geometry from "../math/geometry.js";
 import {Type} from "../utils/type.js";
@@ -653,7 +653,7 @@ JXG.createParabola = function (board, parents, attributes) {
             function () {
                 /*
                 var v = [0, l.stdform[1], l.stdform[2]];
-                v = Mat.crossProduct(v, F1.coords.usrCoords);
+                v = JSXMath.crossProduct(v, F1.coords.usrCoords);
                 return Geometry.meetLineLine(v, l.stdform, 0, board).usrCoords;
                 */
                 return Geometry.projectPointToLine(F1, l, board).usrCoords;
@@ -994,10 +994,10 @@ JXG.createConic = function (board, parents, attributes) {
                 [0, 0, 0]
             ];
 
-        Mv = Mat.matVecMult(B, p);
-        pBp = Mat.innerProduct(p, Mv);
-        Mv = Mat.matVecMult(A, p);
-        pAp = Mat.innerProduct(p, Mv);
+        Mv = JSXMath.matVecMult(B, p);
+        pBp = JSXMath.innerProduct(p, Mv);
+        Mv = JSXMath.matVecMult(A, p);
+        pAp = JSXMath.innerProduct(p, Mv);
 
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
@@ -1040,8 +1040,8 @@ JXG.createConic = function (board, parents, attributes) {
                 }
 
                 // Compute the quadratic form
-                c1 = degconic(Mat.crossProduct(p[0], p[1]), Mat.crossProduct(p[2], p[3]));
-                c2 = degconic(Mat.crossProduct(p[0], p[2]), Mat.crossProduct(p[1], p[3]));
+                c1 = degconic(JSXMath.crossProduct(p[0], p[1]), JSXMath.crossProduct(p[2], p[3]));
+                c2 = degconic(JSXMath.crossProduct(p[0], p[2]), JSXMath.crossProduct(p[1], p[3]));
                 M = fitConic(c1, c2, p[4]);
             } else {
                 for (i = 0; i < 3; i++) {
@@ -1069,7 +1069,7 @@ JXG.createConic = function (board, parents, attributes) {
 
             // Normalize the Eigenvectors
             // for (i = 0; i < 3; i++) {
-            //     // len = Mat.hypot(eigen[1][0][i], eigen[1][1][i], eigen[1][2][i])
+            //     // len = Math.hypot(eigen[1][0][i], eigen[1][1][i], eigen[1][2][i])
             //     for (j = 0; j < 3; j++) {
             //         len += eigen[1][j][i] * eigen[1][j][i];
             //     }
@@ -1086,11 +1086,11 @@ JXG.createConic = function (board, parents, attributes) {
 
         // The degenerate cases with eigen[0][i][i]==0 are not handled correct yet.
         if (eigen[0][1][1] <= 0.0 && eigen[0][2][2] <= 0.0) {
-            v = Mat.matVecMult(rotationMatrix, [1 / c, Math.cos(phi) / a, Math.sin(phi) / b]);
+            v = JSXMath.matVecMult(rotationMatrix, [1 / c, Math.cos(phi) / a, Math.sin(phi) / b]);
         } else if (eigen[0][1][1] <= 0.0 && eigen[0][2][2] > 0.0) {
-            v = Mat.matVecMult(rotationMatrix, [Math.cos(phi) / c, 1 / a, Math.sin(phi) / b]);
+            v = JSXMath.matVecMult(rotationMatrix, [Math.cos(phi) / c, 1 / a, Math.sin(phi) / b]);
         } else if (eigen[0][2][2] < 0.0) {
-            v = Mat.matVecMult(rotationMatrix, [Math.sin(phi) / c, Math.cos(phi) / a, 1 / b]);
+            v = JSXMath.matVecMult(rotationMatrix, [Math.sin(phi) / c, Math.cos(phi) / a, 1 / b]);
         }
 
         if (Type.exists(v)) {

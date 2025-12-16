@@ -34,7 +34,7 @@
 
 import { JXG } from "../jxg.js";
 import Geometry from "../math/geometry.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Statistics from "../math/statistics.js";
 import {Coords} from "../base/coords.js";
 
@@ -305,7 +305,7 @@ JXG.createSector = function (board, parents, attributes) {
             }
             /*
                 v = [0, el.line1.stdform[1], el.line1.stdform[2]];
-                v = Mat.crossProduct(v, parents[2]);
+                v = JSXMath.crossProduct(v, parents[2]);
                 v = Geometry.meetLineLine(v, el.line1.stdform, 0, board);
                 */
             v = Geometry.projectPointToLine(
@@ -315,7 +315,7 @@ JXG.createSector = function (board, parents, attributes) {
             );
             v = Statistics.subtract(v.usrCoords, s.usrCoords);
             el.direction1 =
-                Mat.innerProduct(v, [0, el.line1.stdform[2], -el.line1.stdform[1]], 3) >= 0
+                JSXMath.innerProduct(v, [0, el.line1.stdform[2], -el.line1.stdform[1]], 3) >= 0
                     ? +1
                     : -1;
         } else {
@@ -329,7 +329,7 @@ JXG.createSector = function (board, parents, attributes) {
             }
             /*
                 v = [0, el.line2.stdform[1], el.line2.stdform[2]];
-                v = Mat.crossProduct(v, parents[3]);
+                v = JSXMath.crossProduct(v, parents[3]);
                 v = Geometry.meetLineLine(v, el.line2.stdform, 0, board);
                 */
             v = Geometry.projectPointToLine(
@@ -339,7 +339,7 @@ JXG.createSector = function (board, parents, attributes) {
             );
             v = Statistics.subtract(v.usrCoords, s.usrCoords);
             el.direction2 =
-                Mat.innerProduct(v, [0, el.line2.stdform[2], -el.line2.stdform[1]], 3) >= 0
+                JSXMath.innerProduct(v, [0, el.line2.stdform[2], -el.line2.stdform[1]], 3) >= 0
                     ? +1
                     : -1;
         } else {
@@ -361,16 +361,16 @@ JXG.createSector = function (board, parents, attributes) {
             var r,
                 l1, l2,
                 eps = 1.0e-14,
-                A = [0, 0, 0],
-                B = [0, 0, 0],
-                C = [0, 0, 0],
+                A:number|any[] = [0, 0, 0],
+                B:number|any[] = [0, 0, 0],
+                C:number|any[] = [0, 0, 0],
                 ar;
 
             l1 = this.line1;
             l2 = this.line2;
 
             // Intersection point of the lines
-            B = Mat.crossProduct(l1.stdform, l2.stdform);
+            B = JSXMath.crossProduct(l1.stdform, l2.stdform);
             if (Geometry.distance(B, [0, 0, 0], 3) < eps) {
                 // Parallel lines
                 if (
@@ -405,9 +405,9 @@ JXG.createSector = function (board, parents, attributes) {
             this.point3.coords = new Coords(COORDS_BY.USER, C, el.board);
 
             if (
-                Math.abs(A[0]) < Mat.eps ||
-                Math.abs(B[0]) < Mat.eps ||
-                Math.abs(C[0]) < Mat.eps
+                Math.abs(A[0]) < JSXMath.eps ||
+                Math.abs(B[0]) < JSXMath.eps ||
+                Math.abs(C[0]) < JSXMath.eps
             ) {
                 this.dataX = [NaN];
                 this.dataY = [NaN];
@@ -767,7 +767,7 @@ JXG.createSector = function (board, parents, attributes) {
             vecx = coords.usrCoords[1] - pmc[1];
             vecy = coords.usrCoords[2] - pmc[2];
 
-            len = Mat.hypot(vecx, vecy);
+            len = Math.hypot(vecx, vecy);
             vecx = (vecx * (len + dx)) / len;
             vecy = (vecy * (len + dy)) / len;
             vec = [pmc[1] + vecx, pmc[2] + vecy];
@@ -1506,7 +1506,7 @@ JXG.createAngle = function (board, parents, attributes) {
                 // Immediately apply the transformation.
                 // This prevents that jumping elements can be watched.
                 t1.update();
-                p.moveTo(Mat.matVecMult(t1.matrix, q.coords.usrCoords));
+                p.moveTo(JSXMath.matVecMult(t1.matrix, q.coords.usrCoords));
 
                 if (Type.isFunction(val)) {
                     /**
@@ -1528,8 +1528,8 @@ JXG.createAngle = function (board, parents, attributes) {
                 });
                 p.coords.on("update", function () {
                     t2.update();
-                    // q.moveTo(Mat.matVecMult(t2.matrix, p.coords.usrCoords));
-                    q.setPositionDirectly(COORDS_BY.USER, Mat.matVecMult(t2.matrix, p.coords.usrCoords));
+                    // q.moveTo(JSXMath.matVecMult(t2.matrix, p.coords.usrCoords));
+                    q.setPositionDirectly(COORDS_BY.USER, JSXMath.matVecMult(t2.matrix, p.coords.usrCoords));
                 });
 
                 p.setParents(q);
@@ -1605,12 +1605,12 @@ JXG.createAngle = function (board, parents, attributes) {
         A = [1, B[1] + ((A[1] - B[1]) * r) / d1, B[2] + ((A[2] - B[2]) * r) / d1];
         C = [1, B[1] + ((C[1] - B[1]) * r) / d2, B[2] + ((C[2] - B[2]) * r) / d2];
 
-        v = Mat.crossProduct(C, B);
+        v = JSXMath.crossProduct(C, B);
         l1 = [-A[1] * v[1] - A[2] * v[2], A[0] * v[1], A[0] * v[2]];
-        v = Mat.crossProduct(A, B);
+        v = JSXMath.crossProduct(A, B);
         l2 = [-C[1] * v[1] - C[2] * v[2], C[0] * v[1], C[0] * v[2]];
 
-        v = Mat.crossProduct(l1, l2);
+        v = JSXMath.crossProduct(l1, l2);
         v[1] /= v[0];
         v[2] /= v[0];
 
@@ -1643,7 +1643,7 @@ JXG.createAngle = function (board, parents, attributes) {
             deg = 360.0 - deg;
         }
 
-        if (Math.abs(deg - 90.0) < this.evalVisProp('orthosensitivity') + Mat.eps) {
+        if (Math.abs(deg - 90.0) < this.evalVisProp('orthosensitivity') + JSXMath.eps) {
             type = this.evalVisProp('orthotype');
         }
 
@@ -1710,7 +1710,7 @@ JXG.createAngle = function (board, parents, attributes) {
                     [B[1] - 0.5 * B[1] * co + 0.5 * B[2] * si, co * 0.5, -si * 0.5],
                     [B[2] - 0.5 * B[1] * si - 0.5 * B[2] * co, si * 0.5, co * 0.5]
                 ];
-                return Mat.matVecMult(mat, A);
+                return JSXMath.matVecMult(mat, A);
             }
         ],
         attrsub
@@ -1834,7 +1834,7 @@ JXG.createAngle = function (board, parents, attributes) {
                 [B[1] - 0.5 * B[1] * co + 0.5 * B[2] * si, co * 0.5, -si * 0.5],
                 [B[2] - 0.5 * B[1] * si - 0.5 * B[2] * co, si * 0.5, co * 0.5]
             ];
-            vec = Mat.matVecMult(mat, A);
+            vec = JSXMath.matVecMult(mat, A);
             vec[1] /= vec[0];
             vec[2] /= vec[0];
             vec[0] /= vec[0];

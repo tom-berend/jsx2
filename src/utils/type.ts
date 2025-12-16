@@ -44,7 +44,7 @@ import { LooseObject } from '../interfaces.js'
 
 import { JXG } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
-import JSXMath from "../math/math.js";
+import { JSXMath } from "../math/math.js";
 
 export class Type {
     /**

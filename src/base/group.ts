@@ -39,7 +39,7 @@
 
 import { JXG } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import {Type} from "../utils/type.js";
 
@@ -262,7 +262,7 @@ JXG.extend(
 
                     t.unshift(0);
                     for (i = 0; i < obj.transformations.length; i++) {
-                        t = Mat.matVecMult(obj.transformations[i].matrix, t);
+                        t = JSXMath.matVecMult(obj.transformations[i].matrix, t);
                     }
                     t.shift();
                 }
@@ -304,7 +304,7 @@ JXG.extend(
                     t.update(); // t.update initializes t.matrix, which is needed if the action element is the first group element.
                 } else if (drag.action === 'scaling') {
                     s = Geometry.distance(this.coords[drag.id].usrCoords.slice(1), center);
-                    if (Math.abs(s) < Mat.eps) {
+                    if (Math.abs(s) < JSXMath.eps) {
                         return this;
                     }
                     s = Geometry.distance(obj.coords.usrCoords.slice(1), center) / s;
@@ -390,7 +390,7 @@ JXG.extend(
                 if (this.objects.hasOwnProperty(el)) {
                     obj = this.objects[el].point;
 
-                    if (obj.coords.distance(COORDS_BY.USER, this.coords[el]) > Mat.eps) {
+                    if (obj.coords.distance(COORDS_BY.USER, this.coords[el]) > JSXMath.eps) {
                         changed.push(obj.id);
                     }
                 }
@@ -499,7 +499,7 @@ JXG.extend(
                             if (drag.action === "rotation" || drag.action === 'scaling') {
                                 obj.coords.setCoordinates(
                                     COORDS_BY.USER,
-                                    Mat.matVecMult(t.matrix, this.coords[obj.id].usrCoords)
+                                    JSXMath.matVecMult(t.matrix, this.coords[obj.id].usrCoords)
                                 );
                             }
                         }

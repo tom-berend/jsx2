@@ -32,7 +32,7 @@
 import { JXG } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import {Type} from "../utils/type.js";
-import Mat from '../math/math.js';
+import {JSXMath} from '../math/math.js';
 import Geometry from '../math/geometry.js';
 
 /**
@@ -117,16 +117,16 @@ JXG.Circle3D = function (view, center, normal, radius, attributes) {
     // [1, 0, 0] or [-0.5, sqrt(3)/2, 0]---whichever is further away on the unit
     // sphere. every vector is at least 60 degrees from one of these, which
     // should be good enough to make the frame vector numerically accurate
-    this.frame1 = Mat.crossProduct(this.normal.slice(1), [1, 0, 0]);
+    this.frame1 = JSXMath.crossProduct(this.normal.slice(1), [1, 0, 0]);
     this.frame1.unshift(0);
-    altFrame1 = Mat.crossProduct(this.normal.slice(1), [-0.5, 0.8660254037844386, 0]); // [1/2, sqrt(3)/2, 0]
+    altFrame1 = JSXMath.crossProduct(this.normal.slice(1), [-0.5, 0.8660254037844386, 0]); // [1/2, sqrt(3)/2, 0]
     altFrame1.unshift(0);
-    if (Mat.norm(altFrame1) > Mat.norm(this.frame1)) {
+    if (JSXMath.norm(altFrame1) > JSXMath.norm(this.frame1)) {
         this.frame1 = altFrame1;
     }
 
     // initialize the second frame vector
-    this.frame2 = Mat.crossProduct(this.normal.slice(1), this.frame1.slice(1));
+    this.frame2 = JSXMath.crossProduct(this.normal.slice(1), this.frame1.slice(1));
     this.frame2.unshift(0);
 
     // scale both frame vectors to unit length
@@ -206,8 +206,8 @@ JXG.extend(
 
         normalizeFrame: function () {
             // normalize frame
-            var len1 = Mat.norm(this.frame1),
-                len2 = Mat.norm(this.frame2),
+            var len1 = JSXMath.norm(this.frame1),
+                len2 = JSXMath.norm(this.frame2),
                 i;
 
             for (i = 0; i < 4; i++) {
@@ -226,7 +226,7 @@ JXG.extend(
             this.normal = Type.evaluate(this.normalFunc);
 
             // scale normal to unit length
-            len = Mat.norm(this.normal);
+            len = JSXMath.norm(this.normal);
             if (Math.abs(len) > eps) {
                 for (i = 0; i < 4; i++) {
                     this.normal[i] /= len;
@@ -237,9 +237,9 @@ JXG.extend(
         },
 
         updateFrame: function () {
-            this.frame1 = Mat.crossProduct(this.frame2.slice(1), this.normal.slice(1));
+            this.frame1 = JSXMath.crossProduct(this.frame2.slice(1), this.normal.slice(1));
             this.frame1.unshift(0);
-            this.frame2 = Mat.crossProduct(this.normal.slice(1), this.frame1.slice(1));
+            this.frame2 = JSXMath.crossProduct(this.normal.slice(1), this.frame1.slice(1));
             this.frame2.unshift(0);
             this.normalizeFrame();
 

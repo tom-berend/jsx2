@@ -268,7 +268,7 @@ JXG.Parse3D = {
                 coords = li.split(' ').slice(1).map((x) => parseFloat(x));
                 found = false;
                 for (j = 0; j < vertices.length; j++) {
-                    if (JXG.Math.Geometry.distance(vertices[j], coords, 3) < JXG.Math.eps) {
+                    if (JXG.Math.Geometry.distance(vertices[j], coords, 3) < JXG.JSXMath.eps) {
                         // Debug:
                         // console.log("Point already defined")
                         found = true;

@@ -30,7 +30,7 @@
 
 import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import {Type} from "../utils/type.js";
 
@@ -214,9 +214,9 @@ JXG.extend(
                 c3d = this.baseElement.evalF(u, v);
             }
             c3d.unshift(1);
-            c3d = Mat.matVecMult(t[0].matrix, c3d);
+            c3d = JSXMath.matVecMult(t[0].matrix, c3d);
             for (i = 1; i < t.length; i++) {
-                c3d = Mat.matVecMult(t[i].matrix, c3d);
+                c3d = JSXMath.matVecMult(t[i].matrix, c3d);
             }
 
             return c3d.slice(1);
@@ -341,7 +341,7 @@ JXG.extend(
                             c = this.baseElement.points[i][j];
                         }
                         for (k = 0; k < t.length; k++) {
-                            c = Mat.matVecMult(t[k].matrix, c);
+                            c = JSXMath.matVecMult(t[k].matrix, c);
                         }
 
                         if (this === this.baseElement) {

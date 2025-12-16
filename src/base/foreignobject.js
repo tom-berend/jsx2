@@ -40,7 +40,7 @@ import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 import GeometryElement from "./element.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import {Type} from "../utils/type.js";
 import CoordsElement from "./coordselement.js";
 
@@ -157,7 +157,7 @@ JXG.extend(
             // v is the vector from anchor point to the drag point
             c = c.usrCoords;
             v = [c[0] - this.span[0][0], c[1] - this.span[0][1], c[2] - this.span[0][2]];
-            dot = Mat.innerProduct; // shortcut
+            dot = JSXMath.innerProduct; // shortcut
 
             // Project the drag point to the sides.
             p = dot(v, this.span[1]);
@@ -247,7 +247,7 @@ JXG.extend(
                 // Transform the three corners
                 for (i = 0; i < len; i++) {
                     for (j = 0; j < 3; j++) {
-                        v[j] = Mat.matVecMult(this.transformations[i].matrix, v[j]);
+                        v[j] = JSXMath.matVecMult(this.transformations[i].matrix, v[j]);
                     }
                 }
                 // Normalize the vectors

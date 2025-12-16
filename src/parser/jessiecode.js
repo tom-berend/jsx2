@@ -39,7 +39,7 @@
 import { JXG } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import Text from "../base/text.js";
-import Mat from "../math/math.js";
+import {JSXMath} from "../math/math.js";
 import Interval from "../math/ia.js";
 import Geometry from "../math/geometry.js";
 import Statistics from "../math/statistics.js";
@@ -64,10 +64,10 @@ if (!Object.create) {
 
 var priv = {
     modules: {
-        'math': Mat,
+        'math': JSXMath,
         'math/geometry': Geometry,
         'math/statistics': Statistics,
-        'math/numerics': Mat.Numerics
+        'math/numerics': JXG.JSXMath.Numerics
     }
 };
 
@@ -1617,7 +1617,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
                         /* eslint-enable eqeqeq */
                         break;
                     case 'op_approx':
-                        ret = Math.abs(this.execute(node.children[0]) - this.execute(node.children[1])) < Mat.eps;
+                        ret = Math.abs(this.execute(node.children[0]) - this.execute(node.children[1])) < JSXMath.eps;
                         break;
                     case 'op_gt':
                         ret = this.execute(node.children[0]) > this.execute(node.children[1]);
@@ -2251,7 +2251,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
             res = Interval.mul(a, b);
         } else if (Type.isArray(a) && Type.isArray(b)) {
             len = Math.min(a.length, b.length);
-            res = Mat.innerProduct(a, b, len);
+            res = JSXMath.innerProduct(a, b, len);
         } else if (Type.isNumber(a) && Type.isArray(b)) {
             len = b.length;
             res = [];
@@ -2317,10 +2317,10 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
             res = [];
 
             for (i = 0; i < len; i++) {
-                res[i] = Mat.mod(a[i], b, true);
+                res[i] = JSXMath.mod(a[i], b, true);
             }
         } else if (Type.isNumber(a) && Type.isNumber(b)) {
-            res = Mat.mod(a, b, true);
+            res = JSXMath.mod(a, b, true);
         } else {
             this._error('Operation * not defined on operands ' + typeof a + ' and ' + typeof b);
         }

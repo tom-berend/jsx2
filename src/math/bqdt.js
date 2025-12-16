@@ -33,7 +33,7 @@
 /*jslint nomen: true, plusplus: true*/
 
 import { JXG } from "../jxg.js";
-import Mat from "./math.js";
+import {JSXMath} from "./math.js";
 import {Type} from "../utils/type.js";
 
 /**
@@ -42,7 +42,7 @@ import {Type} from "../utils/type.js";
  * The box quadtree has four sub-quadtress which maybe null if not needed.
  *
  * @name JXG.Math.BoxQuadtree
- * @exports Mat.BoxQuadtree as JXG.Math.BoxQuadtree
+ * @exports JXG.JSXMath.BoxQuadtree as JXG.Math.BoxQuadtree
  *
  * @param {Number} depth Maximum recursion depth.
  * @param {Number} capacity Maximum number of items stored in this node.
@@ -52,7 +52,7 @@ import {Type} from "../utils/type.js";
  *
  * @constructor
  */
-Mat.BoxQuadtree = function (depth, capacity, bbox) {
+JXG.JSXMath.BoxQuadtree = function (depth, capacity, bbox) {
     var l, t, r, b;
 
     // console.log("---------------------------------------")
@@ -155,7 +155,7 @@ Mat.BoxQuadtree = function (depth, capacity, bbox) {
 };
 
 JXG.extend(
-    Mat.BoxQuadtree.prototype,
+    JXG.JSXMath.BoxQuadtree.prototype,
     /** @lends JXG.Math.BoxQuadtree.prototype */ {
 
         /**
@@ -491,4 +491,4 @@ JXG.extend(
     }
 );
 
-export default Mat.BoxQuadtree;
+export default JXG.JSXMath.BoxQuadtree;

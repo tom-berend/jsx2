@@ -32,9 +32,9 @@
 /*global JXG: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG} from "../jxg.js";
-import Mat from "./math.js";
-import {Type} from "../utils/type.js";
+import { JXG } from "../jxg.js";
+import { JSXMath } from "./math.js";
+import { Type } from "../utils/type.js";
 
 /**
  * Functions for mathematical statistics. Most functions are like in the statistics package R.
@@ -42,7 +42,10 @@ import {Type} from "../utils/type.js";
  * @exports Mat.Statistics as JXG.Math.Statistics
  * @namespace
  */
-Mat.Statistics = {
+if(JXG.JSXMath == undefined)
+    JXG.JSXMath = {}
+
+JXG.JSXMath.Statistics = {
     /**
      * Sums up all elements of the given array.
      * @param {Array} arr An array of numbers.
@@ -393,7 +396,7 @@ Mat.Statistics = {
      */
     divide: function () {
         JXG.deprecated("Statistics.divide()", "Statistics.div()");
-        Mat.Statistics.div.apply(Mat.Statistics, arguments);
+        JXG.JSXMath.Statistics.div.apply(Mat.Statistics, arguments);
     },
 
     /**
@@ -416,7 +419,7 @@ Mat.Statistics = {
         math = Type.def(math, false);
 
         if (math) {
-            mod = Mat.mod;
+            mod = JSXMath.mod;
         }
 
         arr1 = Type.evalSlider(arr1);
@@ -588,7 +591,7 @@ Mat.Statistics = {
             tmpslopes.length = 0;
 
             for (j = 0; j < coords.length; j++) {
-                if (Math.abs(coords[j].usrCoords[1] - coords[i].usrCoords[1]) > Mat.eps) {
+                if (Math.abs(coords[j].usrCoords[1] - coords[i].usrCoords[1]) > JSXMath.eps) {
                     tmpslopes[j] =
                         (coords[j].usrCoords[2] - coords[i].usrCoords[2]) /
                         (coords[j].usrCoords[1] - coords[i].usrCoords[1]);
@@ -1411,4 +1414,4 @@ Mat.Statistics = {
     }
 };
 
-export default Mat.Statistics;
+export default JXG.JSXMath.Statistics;

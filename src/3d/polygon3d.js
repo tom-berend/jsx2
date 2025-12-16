@@ -32,7 +32,7 @@
 import { JXG } from '../jxg.js';
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Type } from '../utils/type.js';
-import Mat from '../math/math.js';
+import {JSXMath} from '../math/math.js';
 
 /**
  * Constructor for 3D polygons.
@@ -107,8 +107,8 @@ JXG.extend(
             c3d[2] /= le;
             c3d[3] /= le;
 
-            // this.zIndex = Mat.matVecMult(this.view.matrix3DRotShift, c3d)[3];
-            this.zIndex = Mat.innerProduct(this.view.matrix3DRotShift[3], c3d);
+            // this.zIndex = JSXMath.matVecMult(this.view.matrix3DRotShift, c3d)[3];
+            this.zIndex = JSXMath.innerProduct(this.view.matrix3DRotShift[3], c3d);
 
             return this;
         }

@@ -38,16 +38,16 @@
  */
 
 import {JXG} from "../jxg.js";
-import Mat from "./math.js";
+import {JSXMath} from "./math.js";
 import {Type} from "../utils/type.js";
 
 /**
  * The JXG.Math.Poly namespace holds algorithms to create and manipulate polynomials.
  * @name JXG.Math.Poly
- * @exports Mat.Poly as JXG.Math.Poly
+ * @exports JXG.JSXMath.Poly as JXG.Math.Poly
  * @namespace
  */
-Mat.Poly = {};
+JXG.JSXMath.Poly = {};
 
 /**
  * Define a polynomial ring over R.
@@ -55,7 +55,7 @@ Mat.Poly = {};
  * @name JXG.Math.Poly.Ring
  * @param {Array} variables List of indeterminates.
  */
-Mat.Poly.Ring = function (variables) {
+JXG.JSXMath.Poly.Ring = function (variables) {
     /**
      * A list of variables in this polynomial ring.
      * @type Array
@@ -64,7 +64,7 @@ Mat.Poly.Ring = function (variables) {
 };
 
 JXG.extend(
-    Mat.Poly.Ring.prototype,
+    JXG.JSXMath.Poly.Ring.prototype,
     /** @lends JXG.Math.Poly.Ring.prototype */ {
         // nothing yet.
     }
@@ -78,7 +78,7 @@ JXG.extend(
  * @param {Number} coefficient
  * @param {Array} exponents An array of exponents, corresponding to ring
  */
-Mat.Poly.Monomial = function (ring, coefficient, exponents) {
+JXG.JSXMath.Poly.Monomial = function (ring, coefficient, exponents) {
     var i;
 
     if (!Type.exists(ring)) {
@@ -116,7 +116,7 @@ Mat.Poly.Monomial = function (ring, coefficient, exponents) {
 };
 
 JXG.extend(
-    Mat.Poly.Monomial.prototype,
+    JXG.JSXMath.Poly.Monomial.prototype,
     /** @lends JXG.Math.Poly.Monomial.prototype */ {
         /**
          * Creates a deep copy of the monomial.
@@ -126,7 +126,7 @@ JXG.extend(
          * @memberof JXG.Math.Poly.Monomial
          */
         copy: function () {
-            return new Mat.Poly.Monomial(this.ring, this.coefficient, this.exponents);
+            return new JXG.JSXMath.Poly.Monomial(this.ring, this.coefficient, this.exponents);
         },
 
         /**
@@ -155,7 +155,7 @@ JXG.extend(
  * @param {JXG.Math.Poly.Ring} ring A polynomial ring.
  * @param {String} str TODO String representation of the polynomial, will be parsed.
  */
-Mat.Poly.Polynomial = function (ring, str) {
+JXG.JSXMath.Poly.Polynomial = function (ring, str) {
     var parse = function () {},
         mons;
 
@@ -185,7 +185,7 @@ Mat.Poly.Polynomial = function (ring, str) {
 };
 
 JXG.extend(
-    Mat.Poly.Polynomial.prototype,
+    JXG.JSXMath.Poly.Polynomial.prototype,
     /** @lends JXG.Math.Poly.Polynomial.prototype */ {
         /**
          * Find a monomial with the given signature, i.e. exponent vector.
@@ -285,7 +285,7 @@ JXG.extend(
         copy: function () {
             var i, p;
 
-            p = new Mat.Poly.Polynomial(this.ring);
+            p = new JXG.JSXMath.Poly.Polynomial(this.ring);
 
             for (i = 0; i < this.monomials.length; i++) {
                 p.monomials.push(this.monomials[i].copy());
@@ -311,4 +311,4 @@ JXG.extend(
     }
 );
 
-export default Mat.Poly;
+export default JXG.JSXMath.Poly;

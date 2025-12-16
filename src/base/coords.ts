@@ -38,7 +38,7 @@ const dbugColor = `color:black;background-color:white`;
 
 import type { Board } from './board.js'
 import {Events} from '../utils/event.js'
-import  Math  from "../math/math.js";
+import  {JSXMath}  from "../math/math.js";
 import { COORDS_BY, OBJECT_TYPE, OBJECT_CLASS } from "./constants.js";
 import  GeometryElement  from "./element.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js";
@@ -117,7 +117,7 @@ export class Coords extends Events{   // tbtb - should NOT extend event!!
      * @private
      */
     normalizeUsrCoords() {
-        if (Math.abs(this.usrCoords[0]) > Math.eps) {
+        if (Math.abs(this.usrCoords[0]) > JSXMath.eps) {
             this.usrCoords[1] /= this.usrCoords[0];
             this.usrCoords[2] /= this.usrCoords[0];
             this.usrCoords[0] = 1.0;
@@ -178,7 +178,7 @@ export class Coords extends Events{   // tbtb - should NOT extend event!!
             f = ucr[0] - c[0];
             sum = f * f;
 
-            if (sum > Math.eps * Math.eps) {
+            if (sum > JSXMath.eps * JSXMath.eps) {
                 return Number.POSITIVE_INFINITY;
             }
             return Math.hypot(ucr[1] - c[1], ucr[2] - c[2]);
@@ -265,7 +265,7 @@ export class Coords extends Events{   // tbtb - should NOT extend event!!
     computeIsReal() {
         return (
             !isNaN(this.usrCoords[1] + this.usrCoords[2]) &&
-            Math.abs(this.usrCoords[0]) > Math.eps
+            Math.abs(this.usrCoords[0]) > JSXMath.eps
         );
     }
 
