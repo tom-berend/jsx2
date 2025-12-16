@@ -41,7 +41,8 @@
 import { JXG } from "../jxg.js";
 import Mat from "../math/math.js";
 import { COORDS_BY } from "../base/constants.js";
-import Coords from "../base/coords.js";
+import {Coords} from "../base/coords.js";
+
 import Type from "../utils/type.js";
 import Point from "../base/point.js";
 

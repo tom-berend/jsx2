@@ -39,7 +39,7 @@
 import { JXG } from "../jxg.js";
 import Clip from "../math/clip.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
-import Coords from "./coords.js";
+import {Coords} from "../base/coords.js";
 import Geometry from "../math/geometry.js";
 import GeometryElement from "./element.js";
 import GeonextParser from "../parser/geonext.js";

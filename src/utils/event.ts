@@ -50,7 +50,7 @@ type argVals = string | number | Boolean  // arguments for event handlers
  * @namespace
  */
 
-export class Event {
+export class Events {
     /**
      * Holds the registered event handlers.
      */
@@ -181,5 +181,5 @@ export class Event {
     }
 }
 
-export let EventEmitter = new Event()   // TBTB - NO!! this is parent of GeometryElement
+export let EventEmitter = new Events()   // TBTB - NO!! this is parent of GeometryElement
 

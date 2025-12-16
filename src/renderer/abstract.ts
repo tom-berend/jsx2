@@ -54,7 +54,8 @@ import { JXG } from '../jxg.js'
 import { LooseObject } from "../interfaces.js";
 import Options from "../options.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js'
-import Coords from "../base/coords.js";
+import {Coords} from "../base/coords.js";
+
 // import { Constants } from "../base/constants.js";
 import Math from "../math/math.js";
 import Geometry from "../math/geometry.js";

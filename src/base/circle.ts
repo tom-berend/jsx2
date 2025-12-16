@@ -40,7 +40,7 @@
 
 import {JXG} from "../jxg.js";
 import GeometryElement from "./element.js";
-import Coords from "./coords.js";
+import {Coords} from "../base/coords.js";
 import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Mat from "../math/math.js";
 import GeonextParser from "../parser/geonext.js";

@@ -39,7 +39,8 @@
 import {JXG} from "../jxg.js";
 import Type from "./type.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import Coords from "../base/coords.js";
+import {Coords} from "../base/coords.js";
+
 
 /**
  * The JXG.Expect namespace provides method to normalize access on coordinates,

@@ -38,7 +38,7 @@
 
 import { JXG } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
-import Coords from "./coords.js";
+import {Coords} from "../base/coords.js";
 import GeometryElement from "./element.js";
 import Mat from "../math/math.js";
 import Type from "../utils/type.js";

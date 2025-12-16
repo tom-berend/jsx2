@@ -39,7 +39,8 @@ import { Env } from "../utils/env.js";
 import Type from "../utils/type.js";
 import UUID from "../utils/uuid.js";
 import Color from "../utils/color.js";
-import Coords from "../base/coords.js";
+import {Coords} from "../base/coords.js";
+
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";

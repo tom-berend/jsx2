@@ -51,7 +51,7 @@ import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import Statistics from "../math/statistics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
-import Coords from "./coords.js";
+import { Coords } from "../base/coords.js";
 import GeometryElement from "./element.js";
 import Type from "../utils/type.js";
 
@@ -664,12 +664,14 @@ JXG.extend(
                 ev_sf = this.evalVisProp('straightfirst'),
                 ev_sl = this.evalVisProp('straightlast');
 
+            console.warn('%c line getLabelAnchor','color:red;')
+
             if (ev_sf || ev_sl) {
                 Geometry.calcStraight(this, c1, c2, 0);
             }
 
-            c1 = c1.scrCoords;
-            c2 = c2.scrCoords;
+            let c1n = c1.scrCoords;
+            let c2n = c2.scrCoords;
 
             if (!Type.exists(this.label)) {
                 return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
@@ -684,22 +686,22 @@ JXG.extend(
                 // Old positioning commands
                 switch (pos) {
                     case 'last':
-                        x = c2[1];
-                        y = c2[2];
+                        x = c2n[1];
+                        y = c2n[2];
                         break;
                     case 'first':
-                        x = c1[1];
-                        y = c1[2];
+                        x = c1n[1];
+                        y = c1n[2];
                         break;
                     case "lft":
                     case "llft":
                     case "ulft":
                         if (c1[1] < c2[1] + Mat.eps) {
-                            x = c1[1];
-                            y = c1[2];
+                            x = c1n[1];
+                            y = c1n[2];
                         } else {
-                            x = c2[1];
-                            y = c2[2];
+                            x = c2n[1];
+                            y = c2n[2];
                         }
                         break;
                     case "rt":

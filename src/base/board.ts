@@ -44,7 +44,7 @@ const dbugColor = `color:black;background-color:aliceblue`;
 import { LooseObject } from '../interfaces.js';
 import { JXG } from '../jxg.js';
 import { BOARD_MODE, BOARD_QUALITY, OBJECT_CLASS, OBJECT_TYPE, COORDS_BY, Version } from './constants.js';
-import Coords from './coords.js';
+import { Coords } from './coords.js';
 import Options from '../options.js';
 import Numerics from '../math/numerics.js'
 import Geometry from '../math/geometry.js';
@@ -53,8 +53,8 @@ import Complex from '../math/complex.js';
 // import {JessieCode} from '../parser/jessiecode.js';
 import Color from '../utils/color.js';
 import Type from '../utils/type.js';
-import { Event } from '../utils/event.js';
-import {Env} from '../utils/env.js';
+import { Events } from '../utils/event.js';
+import { Env } from '../utils/env.js';
 // import Composition from './composition.js';
 import GeometryElement from './element.js';
 import { SVGRenderer } from '../renderer/svg.js';
@@ -92,7 +92,7 @@ import { Dim } from '../interfaces.js'
  * @borrows JXG.EventEmitter#triggerEventHandlers as this.triggerEventHandlers
  * @borrows JXG.EventEmitter#eventHandlers as this.eventHandlers
  */
-export class Board extends Event {
+export class Board extends Events {
     /**
      * Constant: the small gray version indicator in the top left corner of every JSXGraph board (if
      * showCopyright is not set to false on board creation).
@@ -1041,7 +1041,7 @@ export class Board extends Event {
     /**
      * Returns false if the event has been triggered faster than the maximum frame rate.
      *
-     * @param {Event} evt Event object given by the browser (unused)
+     * @param {Events} evt Event object given by the browser (unused)
      * @returns {Boolean} If the event has been triggered faster than the maximum frame rate, false is returned.
      * @private
      * @see JXG.Board#pointerMoveListener
@@ -1385,12 +1385,12 @@ export class Board extends Event {
     /**
      * Get the position of the pointing device in screen coordinates, relative to the upper left corner
      * of the host tag.
-     * @param {Event} e Event object given by the browser.
+     * @param {Events} e Event object given by the browser.
      * @param {Number} [i] Only use in case of touch events. This determines which finger to use and should not be set
      * for mouseevents.
      * @returns {Array} Contains the mouse coordinates in screen coordinates, ready for {@link JXG.Coords}
      */
-    getMousePosition(e: Event, i?: number) {
+    getMousePosition(e: Events, i?: number) {
         var cPos = this.getCoordsTopLeftCorner(),
             absPos,
             v;
@@ -2066,7 +2066,7 @@ export class Board extends Event {
      * Suppresses the default event handling.
      * Used for context menu.
      *
-     * @param {Event} e
+     * @param {Events} e
      * @returns {Boolean} false
      */
     suppressDefault(e) {
@@ -2500,7 +2500,7 @@ export class Board extends Event {
     /**
      * Triggered on iOS/Safari while the user inputs a gesture (e.g. pinch) and is used to zoom into the board.
      * Works on iOS/Safari and Android.
-     * @param {Event} evt Browser event object
+     * @param {Events} evt Browser event object
      * @returns {Boolean}
      */
     gestureChangeListener(evt) {
@@ -2640,7 +2640,7 @@ export class Board extends Event {
     /**
      * Called by iOS/Safari as soon as the user starts a gesture. Works natively on iOS/Safari,
      * on Android we emulate it.
-     * @param {Event} evt
+     * @param {Events} evt
      * @returns {Boolean}
      */
     gestureStartListener(evt) {
@@ -2810,7 +2810,7 @@ export class Board extends Event {
      * @see JXG.Board#initMoveObject
      * @see JXG.Board#moveObject
      *
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      * @returns {String} 'mouse', 'pen', or 'touch'
      * @private
      */
@@ -2835,7 +2835,7 @@ export class Board extends Event {
 
     /**
      * This method is called by the browser when a pointing device is pressed on the screen.
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      * @param {Object} object If the object to be dragged is already known, it can be submitted via this parameter
      * @param {Boolean} [allowDefaultEventHandling=false] If true event is not canceled, i.e. prevent call of evt.preventDefault()
      * @returns {Boolean} false if the first finger event is sent twice, or not a browser, or in selection mode. Otherwise returns true.
@@ -3038,7 +3038,7 @@ export class Board extends Event {
     /**
      * Internal handling of click events for pointers and mouse.
      *
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      * @param {Array} evtArray list of event names
      * @private
      */
@@ -3098,7 +3098,7 @@ export class Board extends Event {
     /**
      * Internal handling of dblclick events for pointers and mouse.
      *
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      * @param {Array} evtArray list of event names
      * @private
      */
@@ -3128,7 +3128,7 @@ export class Board extends Event {
 
     /**
      * This method is called by the browser when a pointer device clicks on the screen.
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      */
     pointerClickListener(evt) {
         this._handleClicks(evt, ['click', 'pointerclick']);
@@ -3136,7 +3136,7 @@ export class Board extends Event {
 
     /**
      * This method is called by the browser when a pointer device double clicks on the screen.
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      */
     pointerDblClickListener(evt) {
         this._handleDblClicks(evt, ['dblclick', 'pointerdblclick']);
@@ -3144,7 +3144,7 @@ export class Board extends Event {
 
     /**
      * This method is called by the browser when the mouse device clicks on the screen.
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      */
     mouseClickListener(evt) {
         this._handleClicks(evt, ['click', 'mouseclick']);
@@ -3152,7 +3152,7 @@ export class Board extends Event {
 
     /**
      * This method is called by the browser when the mouse device double clicks on the screen.
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      */
     mouseDblClickListener(evt) {
         this._handleDblClicks(evt, ['dblclick', 'mousedblclick']);
@@ -3175,7 +3175,7 @@ export class Board extends Event {
 
     /**
      * Called periodically by the browser while the user moves a pointing device across the screen.
-     * @param {Event} evt
+     * @param {Events} evt
      * @returns {Boolean}
      */
     pointerMoveListener(evt) {
@@ -3289,7 +3289,7 @@ export class Board extends Event {
     /**
      * Triggered as soon as the user stops touching the device with at least one finger.
      *
-     * @param {Event} evt
+     * @param {Events} evt
      * @returns {Boolean}
      */
     pointerUpListener(evt) {
@@ -3394,7 +3394,7 @@ export class Board extends Event {
      * after the pointerup event further pointermove events are fired and elements get highlighted.
      * This highlighting has to be cancelled.
      *
-     * @param {Event} evt
+     * @param {Events} evt
      * @returns {Boolean}
      */
     pointerLeaveListener(evt) {
@@ -3410,7 +3410,7 @@ export class Board extends Event {
 
     /**
      * This method is called by the browser when a finger touches the surface of the touch-device.
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      * @returns {Boolean} ...
      */
     touchStartListener(evt) {
@@ -3640,7 +3640,7 @@ export class Board extends Event {
 
     /**
      * Called periodically by the browser while the user moves his fingers across the device.
-     * @param {Event} evt
+     * @param {Events} evt
      * @returns {Boolean}
      */
     touchMoveListener(evt) {
@@ -3778,7 +3778,7 @@ export class Board extends Event {
 
     /**
      * Triggered as soon as the user stops touching the device with at least one finger.
-     * @param {Event} evt
+     * @param {Events} evt
      * @returns {Boolean}
      */
     touchEndListener(evt) {
@@ -3930,7 +3930,7 @@ export class Board extends Event {
 
     /**
      * This method is called by the browser when the mouse button is clicked.
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      * @returns {Boolean} True if no element is found under the current mouse pointer, false otherwise.
      */
     mouseDownListener(evt) {
@@ -4016,7 +4016,7 @@ export class Board extends Event {
 
     /**
      * This method is called by the browser when the mouse is moved.
-     * @param {Event} evt The browsers event object.
+     * @param {Events} evt The browsers event object.
      */
     mouseMoveListener(evt) {
         var pos;
@@ -4063,7 +4063,7 @@ export class Board extends Event {
 
     /**
      * This method is called by the browser when the mouse button is released.
-     * @param {Event} evt
+     * @param {Events} evt
      */
     mouseUpListener(evt) {
         var i;
@@ -4115,7 +4115,7 @@ export class Board extends Event {
 
     /**
      * Handler for mouse wheel events. Used to zoom in and out of the board.
-     * @param {Event} evt
+     * @param {Events} evt
      * @returns {Boolean}
      */
     mouseWheelListener(evt) {
@@ -4165,7 +4165,7 @@ export class Board extends Event {
      * <p>
      * Keyboard control (move, pan, and zoom) is disabled if an HTML element of type input or textarea has received focus.
      *
-     * @param  {Event} evt The browser's event object
+     * @param  {Events} evt The browser's event object
      *
      * @see JXG.Board#keyboard
      * @see JXG.Board#keyFocusInListener
@@ -4351,7 +4351,7 @@ export class Board extends Event {
      * @see JXG.Board#keyDownListener
      * @see JXG.Board#keyboard
      *
-     * @param  {Event} evt The browser's event object
+     * @param  {Events} evt The browser's event object
      */
     keyFocusInListener(evt) {
         var id_node = evt.target.id,
@@ -4384,7 +4384,7 @@ export class Board extends Event {
      * @see JXG.Board#keyDownListener
      * @see JXG.Board#keyboard
      *
-     * @param  {Event} evt The browser's event object
+     * @param  {Events} evt The browser's event object
      */
     keyFocusOutListener(evt) {
         if (!this.attr.keyboard.enabled) {
@@ -4554,7 +4554,7 @@ export class Board extends Event {
 
     /**
      * Listener to watch for scroll events. Sets board._isScrolling = true
-     * @param  {Event} evt The browser's event object
+     * @param  {Events} evt The browser's event object
      *
      * @see JXG.Board#startResizeObserver
      * @see JXG.Board#resizeListener
@@ -4616,7 +4616,7 @@ export class Board extends Event {
 
     /**
      * Update the container before and after printing.
-     * @param {Event} [evt]
+     * @param {Events} [evt]
      */
     printListener() {
         this.updateContainerDims();
@@ -4909,7 +4909,7 @@ export class Board extends Event {
 
     /**
      * This method calculates the user coords of the current mouse coordinates.
-     * @param {Event} evt Event object containing the mouse coordinates.
+     * @param {Events} evt Event object containing the mouse coordinates.
      * @returns {Array} Coordinates [x, y] of the mouse in user coordinates.
      * @example
      * board.on('up', function (evt) {
@@ -4954,7 +4954,7 @@ export class Board extends Event {
 
     /**
      * Collects all elements under current mouse position plus current user coordinates of mouse cursor.
-     * @param {Event} evt Event object containing the mouse coordinates.
+     * @param {Events} evt Event object containing the mouse coordinates.
      * @returns {Array} Array of elements at the current mouse position plus current user coordinates of mouse.
      * @see JXG.Board#getUsrCoordsOfMouse
      * @see JXG.Board#getAllObjectsUnderMouse
@@ -4968,7 +4968,7 @@ export class Board extends Event {
 
     /**
      * Collects all elements under current mouse position.
-     * @param {Event} evt Event object containing the mouse coordinates.
+     * @param {Events} evt Event object containing the mouse coordinates.
      * @returns {Array} Array of elements at the current mouse position.
      * @see JXG.Board#getAllUnderMouse
      */
@@ -7513,7 +7513,7 @@ export class Board extends Event {
      * @event
      * @description Whenever the {@link JXG.Board#setAttribute} is called.
      * @name JXG.Board#attribute
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__attribute(e) { }
 
@@ -7521,7 +7521,7 @@ export class Board extends Event {
      * @event
      * @description Whenever the user starts to touch or click the board.
      * @name JXG.Board#down
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__down(e) { }
 
@@ -7529,7 +7529,7 @@ export class Board extends Event {
      * @event
      * @description Whenever the user starts to click on the board.
      * @name JXG.Board#mousedown
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__mousedown(e) { }
 
@@ -7537,7 +7537,7 @@ export class Board extends Event {
      * @event
      * @description Whenever the user taps the pen on the board.
      * @name JXG.Board#pendown
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__pendown(e) { }
 
@@ -7546,7 +7546,7 @@ export class Board extends Event {
      * @description Whenever the user starts to click on the board with a
      * device sending pointer events.
      * @name JXG.Board#pointerdown
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__pointerdown(e) { }
 
@@ -7554,7 +7554,7 @@ export class Board extends Event {
      * @event
      * @description Whenever the user starts to touch the board.
      * @name JXG.Board#touchstart
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__touchstart(e) { }
 
@@ -7562,7 +7562,7 @@ export class Board extends Event {
      * @event
      * @description Whenever the user stops to touch or click the board.
      * @name JXG.Board#up
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__up(e) { }
 
@@ -7570,7 +7570,7 @@ export class Board extends Event {
      * @event
      * @description Whenever the user releases the mousebutton over the board.
      * @name JXG.Board#mouseup
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__mouseup(e) { }
 
@@ -7579,7 +7579,7 @@ export class Board extends Event {
      * @description Whenever the user releases the mousebutton over the board with a
      * device sending pointer events.
      * @name JXG.Board#pointerup
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__pointerup(e) { }
 
@@ -7587,7 +7587,7 @@ export class Board extends Event {
      * @event
      * @description Whenever the user stops touching the board.
      * @name JXG.Board#touchend
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__touchend(e) { }
 
@@ -7596,7 +7596,7 @@ export class Board extends Event {
      * @description Whenever the user clicks on the board.
      * @name JXG.Board#click
      * @see JXG.Board#clickDelay
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__click(e) { }
 
@@ -7608,7 +7608,7 @@ export class Board extends Event {
      * @name JXG.Board#dblclick
      * @see JXG.Board#clickDelay
      * @see JXG.Board#dblClickSuppressClick
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__dblclick(e) { }
 
@@ -7616,7 +7616,7 @@ export class Board extends Event {
      * @event
      * @description Whenever the user clicks on the board with a mouse device.
      * @name JXG.Board#mouseclick
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__mouseclick(e) { }
 
@@ -7625,7 +7625,7 @@ export class Board extends Event {
      * @description Whenever the user double clicks on the board with a mouse device.
      * @name JXG.Board#mousedblclick
      * @see JXG.Board#clickDelay
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__mousedblclick(e) { }
 
@@ -7633,7 +7633,7 @@ export class Board extends Event {
      * @event
      * @description Whenever the user clicks on the board with a pointer device.
      * @name JXG.Board#pointerclick
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__pointerclick(e) { }
 
@@ -7644,7 +7644,7 @@ export class Board extends Event {
      * on mobile browsers.
      * @name JXG.Board#pointerdblclick
      * @see JXG.Board#clickDelay
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      */
     __evt__pointerdblclick(e) { }
 
@@ -7652,7 +7652,7 @@ export class Board extends Event {
      * @event
      * @description This event is fired whenever the user is moving the finger or mouse pointer over the board.
      * @name JXG.Board#move
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
      * @see JXG.Board#mode
      */
@@ -7662,7 +7662,7 @@ export class Board extends Event {
      * @event
      * @description This event is fired whenever the user is moving the mouse over the board.
      * @name JXG.Board#mousemove
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
      * @see JXG.Board#mode
      */
@@ -7672,7 +7672,7 @@ export class Board extends Event {
      * @event
      * @description This event is fired whenever the user is moving the pen over the board.
      * @name JXG.Board#penmove
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
      * @see JXG.Board#mode
      */
@@ -7683,7 +7683,7 @@ export class Board extends Event {
      * @description This event is fired whenever the user is moving the mouse over the board with a
      * device sending pointer events.
      * @name JXG.Board#pointermove
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
      * @see JXG.Board#mode
      */
@@ -7693,7 +7693,7 @@ export class Board extends Event {
      * @event
      * @description This event is fired whenever the user is moving the finger over the board.
      * @name JXG.Board#touchmove
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
      * @see JXG.Board#mode
      */
@@ -7704,7 +7704,7 @@ export class Board extends Event {
      * @description This event is fired whenever the user is moving an element over the board by
      * pressing arrow keys on a keyboard.
      * @name JXG.Board#keymove
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
      * @see JXG.Board#mode
      */
@@ -7714,7 +7714,7 @@ export class Board extends Event {
      * @event
      * @description Whenever an element is highlighted this event is fired.
      * @name JXG.Board#hit
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      * @param {JXG.GeometryElement} el The hit element.
      * @param target
      *
@@ -7745,7 +7745,7 @@ export class Board extends Event {
      * @description Whenever an element is highlighted this event is fired.
      * @name JXG.Board#mousehit
      * @see JXG.Board#hit
-     * @param {Event} e The browser's event object.
+     * @param {Events} e The browser's event object.
      * @param {JXG.GeometryElement} el The hit element.
      * @param target
      */

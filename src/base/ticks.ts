@@ -45,7 +45,7 @@ import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "./element.js";
-import Coords from "./coords.js";
+import {Coords} from "../base/coords.js";
 import Type from "../utils/type.js";
 
 /**

@@ -40,7 +40,8 @@
 import { JXG } from "../jxg.js";
 import Geometry from "../math/geometry.js";
 import Mat from "../math/math.js";
-import Coords from "../base/coords.js";
+import {Coords} from "../base/coords.js";
+
 import Circle from "../base/circle.js";
 import Type from "../utils/type.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";

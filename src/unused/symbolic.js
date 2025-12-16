@@ -39,7 +39,8 @@
  */
 
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import Coords from "../base/coords.js";
+import {Coords} from "../base/coords.js";
+
 import Mat from "./math.js";
 import Geometry from "./geometry.js";
 import Server from "../server/server.js";
