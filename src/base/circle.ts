@@ -44,7 +44,7 @@ import {Coords} from "../base/coords.js";
 import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import Mat from "../math/math.js";
 import GeonextParser from "../parser/geonext.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * A circle consists of all points with a given distance from one point. This point is called center, the distance is called radius.

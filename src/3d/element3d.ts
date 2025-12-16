@@ -29,7 +29,7 @@
 /*global JXG:true, define: true*/
 
 import {JXG} from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * Constructs a new GeometryElement3D object.

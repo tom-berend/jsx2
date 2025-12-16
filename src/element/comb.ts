@@ -33,7 +33,7 @@
  */
 
 import { JXG } from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * @class A marker to display domains of inequalities.

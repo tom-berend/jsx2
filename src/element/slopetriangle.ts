@@ -37,7 +37,7 @@
  */
 
 import { JXG } from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import Polygon from "../base/polygon.js";
 
@@ -262,7 +262,7 @@ JXG.createSlopeTriangle = function (board, parents, attributes) {
     };
     el.inherits.push(glider, basepoint, baseline, toppoint, label);
 
-    el.methodMap = JXG.deepCopy(el.methodMap, {
+    el.methodMap = Type.deepCopy(el.methodMap, {
         tangent: "tangent",
         glider: "glider",
         basepoint: "basepoint",

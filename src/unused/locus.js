@@ -34,7 +34,7 @@
 
 import {JXG} from "../jxg.js";
 import Symbolic from "../math/symbolic.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * @class This element is used to visualize the locus of a given dependent point.

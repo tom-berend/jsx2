@@ -46,7 +46,7 @@ import Numerics from "../math/numerics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "./element.js";
 import {Coords} from "../base/coords.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * Creates ticks for an axis.

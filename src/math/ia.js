@@ -32,7 +32,7 @@
 
 import {JXG} from "../jxg.js";
 import Mat from "./math.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 JXG.Math.DoubleBits = function () {
     var DOUBLE_VIEW = new Float64Array(1),

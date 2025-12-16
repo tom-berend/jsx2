@@ -39,7 +39,7 @@ import { JXG } from "../jxg.js";
 import Options from "../options.js";
 import { AbstractRenderer } from "./abstract.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import Color from "../utils/color.js";
 import Base64 from "../utils/base64.js";
 import Numerics from "../math/numerics.js";
@@ -83,6 +83,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     touchpoints: HTMLElement[] = []
 
+    suspendHandle: number // id for suspendRedraw  //https://developer.mozilla.org/en-US/docs/Web/API/SVGSVGElement
 
 
     /**
@@ -2267,8 +2268,7 @@ export class SVGRenderer extends AbstractRenderer {
       */
     suspendRedraw() {
         // It seems to be important for the Linux version of firefox
-        console.warn('suspendRedraw is Depreciated')
-        // this.suspendHandle = this.svgRoot.suspendRedraw(10000);
+        this.suspendHandle = (this.svgRoot as SVGSVGElement).suspendRedraw(10000);
     }
 
     /**
@@ -2276,8 +2276,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG.AbstractRenderer#suspendRedraw
      */
     unsuspendRedraw() {
-        console.warn('suspendRedraw is Depreciated')
-        // this.svgRoot.unsuspendRedraw(this.suspendHandle);
+        (this.svgRoot as SVGSVGElement).unsuspendRedraw(this.suspendHandle);
 
     }
 

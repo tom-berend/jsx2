@@ -43,7 +43,7 @@ import Mat from "../math/math.js";
 import Interval from "../math/ia.js";
 import Geometry from "../math/geometry.js";
 import Statistics from "../math/statistics.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import { Env } from "../utils/env.js";
 
 // IE 6-8 compatibility
@@ -2683,7 +2683,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
             if (FORBIDDEN.indexOf(name) >= 0) {
                 return;
-            } else if (JXG.isFunction(that)) {
+            } else if (Type.isFunction(that)) {
                 return {
                     name: name,
                     type: 'function',

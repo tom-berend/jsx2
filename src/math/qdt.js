@@ -32,9 +32,10 @@
 /*global JXG:true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
+import { JXG } from "../jxg.js";
 import Mat from "./math.js";
 import Geometry from "./geometry.js";
-import Type from "../utils/type.js";
+import { Type } from "../utils/type.js";
 
 /**
  * Instantiate a new quadtree.
@@ -129,7 +130,7 @@ Mat.Quadtree = function (bbox, config, parent) {
 
 };
 
-Type.extend(
+JXG.extend(
     Mat.Quadtree.prototype,
     /** @lends JXG.Math.Quadtree.prototype */ {
         /**
@@ -306,7 +307,7 @@ Type.extend(
                             }
                         }
                         break;
-               }
+                }
 
 
                 if (this.northWest === null) {
@@ -341,7 +342,7 @@ Type.extend(
          *
          * @returns {Array}
          */
-        getAllPoints: function() {
+        getAllPoints: function () {
             var pointsList = [];
             this.getAllPointsRecursive(pointsList);
             return pointsList;

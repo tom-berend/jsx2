@@ -36,10 +36,10 @@
  * @fileoverview expect.js provides utilities for parameter magic by normalizing multi-type parameters.
  */
 
-import {JXG} from "../jxg.js";
-import Type from "./type.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import {Coords} from "../base/coords.js";
+import { JXG } from "../jxg.js";
+import { Type } from "./type.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
+import { Coords } from "../base/coords.js";
 
 
 /**

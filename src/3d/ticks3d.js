@@ -33,7 +33,7 @@
  * view3d bounding box bbox3D.
  */
 import {JXG} from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import Mat from "../math/math.js";
 
 /**

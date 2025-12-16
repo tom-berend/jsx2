@@ -45,7 +45,7 @@ import {Coords} from "../base/coords.js";
 import Mat from "./math.js";
 import Stat from "../math/statistics.js";
 import Numerics from "./numerics.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import Expect from "../utils/expect.js";
 
 /**

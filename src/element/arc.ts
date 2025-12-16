@@ -43,7 +43,7 @@ import Mat from "../math/math.js";
 import {Coords} from "../base/coords.js";
 
 import Circle from "../base/circle.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 
 /**
@@ -447,7 +447,7 @@ JXG.createArc = function (board, parents, attributes) {
     // documentation in jxg.circle
     el.updateStdform = Circle.prototype.updateStdform;
 
-    el.methodMap = JXG.deepCopy(el.methodMap, {
+    el.methodMap = Type.deepCopy(el.methodMap, {
         getRadius: "getRadius",
         radius: "Radius",
         Radius: "Radius",

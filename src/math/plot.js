@@ -40,7 +40,7 @@ import Numerics from "./numerics.js";
 import Statistics from "./statistics.js";
 import Geometry from "./geometry.js";
 import IntervalArithmetic from "./ia.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * Functions for plotting of curves.

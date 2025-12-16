@@ -59,7 +59,7 @@ import {Coords} from "../base/coords.js";
 // import { Constants } from "../base/constants.js";
 import Math from "../math/math.js";
 import Geometry from "../math/geometry.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import {Env} from "../utils/env.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "../base/element.js";

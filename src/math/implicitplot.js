@@ -28,7 +28,8 @@
 
 "use strict";
 
-import Type from "../utils/type.js";
+import { JXG } from "../jxg.js";
+import {Type} from "../utils/type.js";
 import Mat from "./math.js";
 import Geometry from "./geometry.js";
 import Numerics from "./numerics.js";
@@ -219,7 +220,7 @@ Mat.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
     this.components = [];
 };
 
-Type.extend(
+JXG.extend(
     Mat.ImplicitPlot.prototype,
     /** @lends JXG.Math.ImplicitPlot.prototype */ {
 

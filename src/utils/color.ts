@@ -40,7 +40,7 @@
  */
 
 import { JXG } from "../jxg.js";
-import Type from "./type.js";
+import {Type} from "./type.js";
 import Mat from "../math/math.js";
 
 // private constants and helper functions

@@ -36,8 +36,8 @@
  * @fileoverview The JXG.Dump namespace provides methods to save a board to javascript.
  */
 
-import {JXG} from "../jxg.js";
-import Type from "./type.js";
+import { JXG } from "../jxg.js";
+import { Type } from "./type.js";
 
 /**
  * The JXG.Dump namespace provides classes and methods to save a board to javascript.
@@ -350,11 +350,11 @@ JXG.Dump = {
         for (i = 0; i < dump.methods.length; i++) {
             script.push(
                 dump.methods[i].obj +
-                    "." +
-                    dump.methods[i].method +
-                    "(" +
-                    this.arrayToParamStr(dump.methods[i].params, this.toJCAN) +
-                    ");"
+                "." +
+                dump.methods[i].method +
+                "(" +
+                this.arrayToParamStr(dump.methods[i].params, this.toJCAN) +
+                ");"
             );
             script.push("");
         }
@@ -362,11 +362,11 @@ JXG.Dump = {
         for (i = 0; i < dump.props.length; i++) {
             script.push(
                 dump.props[i].obj +
-                    "." +
-                    dump.props[i].prop +
-                    " = " +
-                    this.toJCAN(dump.props[i].val) +
-                    ";"
+                "." +
+                dump.props[i].prop +
+                " = " +
+                this.toJCAN(dump.props[i].val) +
+                ";"
             );
             script.push("");
         }
@@ -393,12 +393,12 @@ JXG.Dump = {
         for (i = 0; i < elements.length; i++) {
             script.push(
                 'board.create("' +
-                    elements[i].type +
-                    '", [' +
-                    elements[i].parents.join(", ") +
-                    "], " +
-                    Type.toJSON(elements[i].attributes) +
-                    ");"
+                elements[i].type +
+                '", [' +
+                elements[i].parents.join(", ") +
+                "], " +
+                Type.toJSON(elements[i].attributes) +
+                ");"
             );
 
             if (elements[i].type === 'axis') {
@@ -407,10 +407,10 @@ JXG.Dump = {
                 if (board.objects[id].defaultTicks === null) {
                     script.push(
                         'board.objects["' +
-                            id +
-                            '"].removeTicks(board.objects["' +
-                            id +
-                            '"].defaultTicks);'
+                        id +
+                        '"].removeTicks(board.objects["' +
+                        id +
+                        '"].defaultTicks);'
                     );
                 }
             }
@@ -419,11 +419,11 @@ JXG.Dump = {
         for (i = 0; i < dump.methods.length; i++) {
             script.push(
                 dump.methods[i].obj +
-                    "." +
-                    dump.methods[i].method +
-                    "(" +
-                    this.arrayToParamStr(dump.methods[i].params, Type.toJSON) +
-                    ");"
+                "." +
+                dump.methods[i].method +
+                "(" +
+                this.arrayToParamStr(dump.methods[i].params, Type.toJSON) +
+                ");"
             );
             script.push("");
         }
@@ -431,11 +431,11 @@ JXG.Dump = {
         for (i = 0; i < dump.props.length; i++) {
             script.push(
                 dump.props[i].obj +
-                    "." +
-                    dump.props[i].prop +
-                    " = " +
-                    Type.toJSON(dump.props[i].val) +
-                    ";"
+                "." +
+                dump.props[i].prop +
+                " = " +
+                Type.toJSON(dump.props[i].val) +
+                ";"
             );
             script.push("");
         }

@@ -34,7 +34,7 @@
  */
 
 import {JXG} from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 // import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 // import Text from "../base/text.js";
 // import Mat from "../math/math.js";

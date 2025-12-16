@@ -37,7 +37,7 @@ import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 import Statistics from "../math/statistics.js";
 import Geometry from "../math/geometry.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import GeometryElement from "./element.js";
 
 /**
@@ -151,7 +151,7 @@ JXG.Polygon = function (board, vertices, attributes) {
     // create label
     this.createLabel();
 
-    this.methodMap = JXG.deepCopy(this.methodMap, {
+    this.methodMap = Type.deepCopy(this.methodMap, {
         borders: "borders",
         vertices: "vertices",
         A: "Area",

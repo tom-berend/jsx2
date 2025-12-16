@@ -39,7 +39,7 @@
  */
 
 import { JXG } from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import { Env } from "../utils/env.js";
 import Mat from "./math.js";
 

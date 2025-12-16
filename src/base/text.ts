@@ -52,7 +52,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "./element.js";
 import GeonextParser from "../parser/geonext.js";
 import { Env } from "../utils/env.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import Mat from "../math/math.js";
 import CoordsElement from "./coordselement.js";
 

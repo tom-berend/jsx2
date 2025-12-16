@@ -32,7 +32,7 @@
 /*eslint no-loss-of-precision: off */
 
 import Mat from "./math.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * Probability functions, e.g. error function,

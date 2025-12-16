@@ -41,7 +41,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 import GeometryElement from "./element.js";
 import Mat from "../math/math.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import CoordsElement from "./coordselement.js";
 
 /**
@@ -104,7 +104,7 @@ JXG.Image = function (board, coords, attributes, url, size) {
     this.board.renderer.drawImage(this);
     this.board.finalizeAdding(this);
 
-    this.methodMap = JXG.deepCopy(this.methodMap, {
+    this.methodMap = Type.deepCopy(this.methodMap, {
         addTransformation: "addTransform",
         trans: "addTransform",
         W: "W",

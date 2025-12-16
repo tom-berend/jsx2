@@ -36,7 +36,7 @@ import { JXG } from "../jxg.js";
 import { AbstractRenderer } from "./abstract.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Env } from "../utils/env.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import UUID from "../utils/uuid.js";
 import Color from "../utils/color.js";
 import {Coords} from "../base/coords.js";

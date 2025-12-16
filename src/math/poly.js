@@ -39,7 +39,7 @@
 
 import {JXG} from "../jxg.js";
 import Mat from "./math.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * The JXG.Math.Poly namespace holds algorithms to create and manipulate polynomials.

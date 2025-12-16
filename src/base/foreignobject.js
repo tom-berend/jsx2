@@ -41,7 +41,7 @@ import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 import GeometryElement from "./element.js";
 import Mat from "../math/math.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import CoordsElement from "./coordselement.js";
 
 /**
@@ -109,7 +109,7 @@ JXG.ForeignObject = function (board, coords, attributes, content, size) {
     this.board.renderer.drawForeignObject(this);
     this.board.finalizeAdding(this);
 
-    this.methodMap = JXG.deepCopy(this.methodMap, {
+    this.methodMap = Type.deepCopy(this.methodMap, {
         addTransformation: "addTransform",
         trans: "addTransform",
         W: "W",

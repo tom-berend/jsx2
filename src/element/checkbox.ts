@@ -39,7 +39,7 @@
 import {JXG} from "../jxg.js";
 import { OBJECT_TYPE } from "../base/constants.js";
 import {Env} from "../utils/env.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 var priv = {
     /**

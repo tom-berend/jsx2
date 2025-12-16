@@ -39,7 +39,7 @@ import {Coords} from "../base/coords.js";
 import GeometryElement from "./element.js";
 import DataSource from "../parser/datasource.js";
 import Color from "../utils/color.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import {Env} from "../utils/env.js";
 // import Statistics from "../math/statistics.js";
 // import Curve from "./curve.js";

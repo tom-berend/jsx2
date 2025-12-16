@@ -37,7 +37,7 @@
  * for namespaces like JXG.Math.Numerics, JXG.Math.Plot, JXG.Math.Statistics, JXG.Math.Clip etc.
  */
 import { JXG } from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 var undef,
     /*

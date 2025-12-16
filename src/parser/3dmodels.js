@@ -34,7 +34,7 @@
  * @fileoverview In this file the namespace JXG.Parse3D is defined.
  */
 import {JXG} from "../jxg.js";
-// import Type from "../utils/type.js";
+// import {Type} from "../utils/type.js";
 
 /**
  * Namespace Parse3D. Contains parsers for 3D models like STL.

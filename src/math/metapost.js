@@ -64,7 +64,7 @@
  * by D.E. Knuth and J.D. Hobby.
  */
 
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import Mat from "./math.js";
 
 /**

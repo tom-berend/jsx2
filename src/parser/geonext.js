@@ -34,7 +34,7 @@
 
 import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * Parser helper routines. The methods in here are for parsing expressions in Geonext Syntax.

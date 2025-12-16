@@ -39,7 +39,7 @@
  */
 
 import { JXG } from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import GeometryElement from "../base/element.js";
 import Prefix from "../parser/prefix.js";
 import { OBJECT_TYPE } from "../base/constants.js";
@@ -177,7 +177,7 @@ JXG.createTapemeasure = function (board, parents, attributes) {
         ti.dump = false;
     }
 
-    li.methodMap = JXG.deepCopy(li.methodMap, {
+    li.methodMap = Type.deepCopy(li.methodMap, {
         Value: "Value"
     });
 

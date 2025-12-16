@@ -38,7 +38,7 @@
  */
 
 import {JXG} from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 JXG.DataSource = function () {
     this.data = [];

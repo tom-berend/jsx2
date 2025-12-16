@@ -2486,13 +2486,13 @@
                             if (arr.length >= 3 && JXG.trim(arr[2]) !== "") {
                                 set_str = arr[2] + set_str;
                             }
-                            if (arr.length >= 4 && JXG.isFunction(arr[3])) {
+                            if (arr.length >= 4 && Type.isFunction(arr[3])) {
                                 ctx_set_str.unshift(arr[3]);
                             }
                             if (arr.length >= 1 && JXG.trim(arr[0]) !== "") {
                                 reset_str += arr[0];
                             }
-                            if (arr.length >= 2 && JXG.isFunction(arr[1])) {
+                            if (arr.length >= 2 && Type.isFunction(arr[1])) {
                                 ctx_reset_str.push(arr[1]);
                             }
                         }
@@ -2505,7 +2505,7 @@
                         // Adapt the steps to the new IDs
                         for (el in step.args.steps) {
                             if (step.args.steps.hasOwnProperty(el)) {
-                                step2 = JXG.deepCopy(step_log[step.args.steps[el]]);
+                                step2 = Type.deepCopy(step_log[step.args.steps[el]]);
 
                                 if (step2.type === JXG.GENTYPE_COPY) {
                                     for (i = 0; i < step2.args.map.length; i++) {
@@ -2544,7 +2544,7 @@
                                 set_str += arr[0];
                             }
 
-                            if (JXG.isFunction(arr[1])) {
+                            if (Type.isFunction(arr[1])) {
                                 ctx_set_str.push(arr[1]);
                             }
 
@@ -2552,7 +2552,7 @@
                                 reset_str = arr[2] + reset_str;
                             }
 
-                            if (JXG.isFunction(arr[3])) {
+                            if (Type.isFunction(arr[3])) {
                                 ctx_reset_str.unshift(arr[3]);
                             }
                         }

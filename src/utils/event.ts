@@ -40,8 +40,8 @@ import { LooseObject } from "../interfaces.js";
  * @fileoverview In this file the EventEmitter interface is defined.
  */
 
-import {JXG} from "../jxg.js";
-import Type from "./type.js";
+import { JXG } from "../jxg.js";
+import { Type } from "./type.js";
 
 type argVals = string | number | Boolean  // arguments for event handlers
 
@@ -110,7 +110,7 @@ export class Events {
      * @param {Object} [context] The context the handler will be called in, default is the element itself.
      * @returns Reference to the object.
      */
-    on(event:string, handler:Function, context:Object=this) {
+    on(event: string, handler: Function, context: Object = this) {
         if (dbug) console.warn(`%c event: on(event: ${event}`, dbugColor)
 
         if (!Type.isArray(this.eventHandlers[event])) {
@@ -168,7 +168,7 @@ export class Events {
      * @param {Object} o
      */
     eventify(o: LooseObject) {  // tbb Board | GeometryEvent
-                if (dbug) console.warn(`%c event: eventify ${o.id}`, dbugColor)
+        if (dbug) console.warn(`%c event: eventify ${o.id}`, dbugColor)
 
         o.eventHandlers = {
             clicks: 0 // Needed to handle dblclicks

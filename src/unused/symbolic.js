@@ -44,7 +44,7 @@ import {Coords} from "../base/coords.js";
 import Mat from "./math.js";
 import Geometry from "./geometry.js";
 import Server from "../server/server.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 var undef;
 

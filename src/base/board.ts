@@ -52,7 +52,7 @@ import Complex from '../math/complex.js';
 // import {Statistics} from '../math/statistics.js';
 // import {JessieCode} from '../parser/jessiecode.js';
 import Color from '../utils/color.js';
-import Type from '../utils/type.js';
+import { Type } from '../utils/type.js';
 import { Events } from '../utils/event.js';
 import { Env } from '../utils/env.js';
 // import Composition from './composition.js';
@@ -7080,7 +7080,7 @@ export class Board extends Events {
                 if (deficiency !== 'none') {
                     if (this.currentCBDef === 'none') {
                         // this could be accomplished by JXG.extend, too. But do not use
-                        // JXG.deepCopy as this could result in an infinite loop because in
+                        // Type.deepCopy as this could result in an infinite loop because in
                         // visProp there could be geometry elements which contain the board which
                         // contains all objects which contain board etc.
                         o.visPropOriginal = {

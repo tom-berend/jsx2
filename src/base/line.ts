@@ -53,7 +53,7 @@ import Statistics from "../math/statistics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 import GeometryElement from "./element.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * The Line class is a basic class for all kind of line objects, e.g. line, arrow, and axis. It is usually defined by two points and can
@@ -138,7 +138,7 @@ JXG.Line = function (board, p1, p2, attributes) {
     // create Label
     this.createLabel();
 
-    this.methodMap = JXG.deepCopy(this.methodMap, {
+    this.methodMap = Type.deepCopy(this.methodMap, {
         point1: "point1",
         point2: "point2",
         getSlope: "Slope",
@@ -1317,7 +1317,7 @@ JXG.createLine = function (board, parents, attributes) {
             if (Type.isNumber(parents[i])) {
                 // createFunction will just wrap a function around our constant number
                 // that does nothing else but to return that number.
-                c[i] = Type.createFunction(parents[i]);
+                c[i] = Type.createFunction(parents[i],board);
             } else if (Type.isFunction(parents[i])) {
                 c[i] = parents[i];
                 isDraggable = false;

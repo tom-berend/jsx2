@@ -32,7 +32,7 @@ import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import Mat from "../math/math.js";
 import Geometry from "../math/geometry.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * Constructor for 3D surfaces.

@@ -34,7 +34,7 @@
  */
 
 import { JXG } from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * @class  A vector field on a plane can be visualized as a collection of arrows

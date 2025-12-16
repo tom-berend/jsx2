@@ -60,7 +60,7 @@ import Geometry from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
 import {Coords} from "../base/coords.js";
 
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 // import Point from "../base/point.js";
 // import Line from "../base/line.js";
@@ -2630,7 +2630,7 @@ JXG.createIntegral = function (board, parents, attributes) {
      */
     p.curveRight = pb_on_curve;
 
-    p.methodMap = JXG.deepCopy(p.methodMap, {
+    p.methodMap = Type.deepCopy(p.methodMap, {
         curveLeft: "curveLeft",
         baseLeft: "baseLeft",
         curveRight: "curveRight",
@@ -2910,7 +2910,7 @@ JXG.createInequality = function (board, parents, attributes) {
         };
     } else {
         // Not yet practical?
-        f = Type.createFunction(parents[0]);
+        f = Type.createFunction(parents[0],board);
         a.addParentsFromJCFunctions([f]);
 
         if (!Type.exists(f)) {

@@ -9,9 +9,9 @@ describe('type suite description', () => {
 });
 //////////////////////////////////////////////////
 import { LooseObject } from '../src/interfaces.js'
-import { Type } from '../src/utils/type.js';
-import { Options } from '../src/options.js';
-import { createPoint } from '../src/base/point.js';
+import  Type  from '../src/utils/type.js';
+// import { Options } from '../src/options.js';
+// import { createPoint } from '../src/base/point.js';
 
 // // temporary for testing
 // class Board {

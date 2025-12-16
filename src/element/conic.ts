@@ -43,7 +43,7 @@ import {Coords} from "../base/coords.js";
 import Mat from "../math/math.js";
 import Numerics from "../math/numerics.js";
 import Geometry from "../math/geometry.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * @class An ellipse is a special conic section given by two points (the foci) and a third point on the ellipse or

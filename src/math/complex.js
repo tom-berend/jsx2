@@ -39,7 +39,7 @@
  */
 
 import {JXG} from "../jxg.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * Creates a new complex number. See also {@link JXG.C}.

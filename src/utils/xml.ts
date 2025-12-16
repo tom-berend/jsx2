@@ -33,7 +33,7 @@
 /*jslint nomen: true, plusplus: true*/
 
 import {JXG} from "../jxg.js";
-import Type from "./type.js";
+import {Type} from "./type.js";
 
 /**
  * Holds browser independent xml parsing routines. Won't work in environments other than browsers.

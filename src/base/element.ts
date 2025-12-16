@@ -40,7 +40,7 @@ import Statistics from "../math/statistics.js";
 import Options from "../options.js";
 import { EventEmitter } from "../utils/event.js";
 import Color from "../utils/color.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * Constructs a new GeometryElement object.
@@ -1597,7 +1597,7 @@ JXG.extend(
                 }
             }
 
-            if (JXG.isFunction(val)) {
+            if (Type.isFunction(val)) {
                 // For labels supply the anchor element as parameter.
                 if (this.visProp.islabel === true && Type.exists(this.visProp.anchor)) {
                     // 3D: supply the 3D element
@@ -1654,7 +1654,7 @@ JXG.extend(
          * @see JXG#evaluate
          */
         eval: function (val) {
-            if (JXG.isFunction(val)) {
+            if (Type.isFunction(val)) {
                 // For labels supply the anchor element as parameter.
                 if (this.visProp.islabel === true && Type.exists(this.visProp.anchor)) {
                     // 3D: supply the 3D element

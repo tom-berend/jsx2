@@ -390,44 +390,6 @@ export class JXG {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Store a reference to every board in this central list. This will at some point
      * replace this.JSXGraph.boards.

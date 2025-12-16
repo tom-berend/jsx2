@@ -44,7 +44,7 @@ import {Coords} from "../base/coords.js";
 
 import Mat from "./math.js";
 import Geometry from "./geometry.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * Math.Clip namespace definition. This namespace contains algorithms for Boolean operations on paths, i.e.

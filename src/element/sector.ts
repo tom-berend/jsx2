@@ -39,7 +39,7 @@ import Statistics from "../math/statistics.js";
 import {Coords} from "../base/coords.js";
 
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
-import Type from "../utils/type.js";
+import {Type} from "../utils/type.js";
 
 /**
  * @class A circular sector is a subarea of the area enclosed by a circle. It is enclosed by two radii and an arc.
@@ -346,7 +346,7 @@ JXG.createSector = function (board, parents, attributes) {
             el.direction2 = parents[3] >= 0 ? 1 : -1;
         }
 
-        el.methodMap = JXG.deepCopy(el.methodMap, {
+        el.methodMap = Type.deepCopy(el.methodMap, {
             arc: "arc",
             center: "center",
             line1: "line1",
@@ -504,7 +504,7 @@ JXG.createSector = function (board, parents, attributes) {
             el.point4.addChild(el);
         }
 
-        el.methodMap = JXG.deepCopy(el.methodMap, {
+        el.methodMap = Type.deepCopy(el.methodMap, {
             arc: "arc",
             center: "center",
             radiuspoint: "radiuspoint",
@@ -904,7 +904,7 @@ JXG.createSector = function (board, parents, attributes) {
         };
     }
 
-    el.methodMap = JXG.deepCopy(el.methodMap, {
+    el.methodMap = Type.deepCopy(el.methodMap, {
         radius: "Radius",
         Radius: "Radius",
         getRadius: "Radius",
