@@ -61,7 +61,7 @@ import { SVGRenderer } from '../renderer/svg.js';
 import { JSXMath } from '../math/math.js';
 import createText from '../base/text.js'
 import createPoint from '../base/point.js'
-import Statistics from '../math/statistics.js';
+import {Statistics} from '../math/statistics.js';
 import { AbstractRenderer } from '../renderer/abstract.js';
 import { Dim } from '../interfaces.js'
 // import { Infobox } from './infobox.js';

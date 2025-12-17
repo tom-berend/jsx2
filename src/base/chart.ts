@@ -41,7 +41,7 @@ import DataSource from "../parser/datasource.js";
 import Color from "../utils/color.js";
 import {Type} from "../utils/type.js";
 import {Env} from "../utils/env.js";
-// import Statistics from "../math/statistics.js";
+// import {Statistics} from "../math/statistics.js";
 // import Curve from "./curve.js";
 // import Point from "./point.js";
 // import Text from "./text.js";

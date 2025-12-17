@@ -38,21 +38,23 @@ import { Type } from "../utils/type.js";
 
 /**
  * Functions for mathematical statistics. Most functions are like in the statistics package R.
- * @name Geometry.Statistics
- * @exports Mat.Statistics as Geometry.Statistics
+ * @name Statistics
+ * @exports Mat.Statistics as Statistics
  * @namespace
  */
-if(JXG.JSXMath == undefined)
-    JXG.JSXMath = {}
 
-JXG.JSXMath.Statistics = {
+export class Statistics {
+
+    static spare        // Gaussian cache?
+    static hasSpare
+
     /**
      * Sums up all elements of the given array.
      * @param {Array} arr An array of numbers.
      * @returns {Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    sum: function (arr) {
+    static sum(arr) {
         var i,
             len = arr.length,
             res = 0;
@@ -61,15 +63,15 @@ JXG.JSXMath.Statistics = {
             res += arr[i];
         }
         return res;
-    },
+    }
 
     /**
      * Multiplies all elements of the given array.
      * @param {Array} arr An array of numbers.
      * @returns {Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    prod: function (arr) {
+    static prod(arr) {
         var i,
             len = arr.length,
             res = 1;
@@ -78,35 +80,36 @@ JXG.JSXMath.Statistics = {
             res *= arr[i];
         }
         return res;
-    },
+    }
 
     /**
      * Determines the mean value of the values given in an array.
      * @param {Array} arr
      * @returns {Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    mean: function (arr) {
+    static mean(arr) {
         if (arr.length > 0) {
             return this.sum(arr) / arr.length;
         }
 
         return 0.0;
-    },
+    }
 
     /**
      * The median of a finite set of values is the value that divides the set
      * into two equal sized subsets.
      * @param {Array} arr The set of values.
      * @returns {Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    median: function (arr) {
+    static median(arr) {
         var tmp, len;
 
         if (arr.length > 0) {
             if (ArrayBuffer.isView(arr)) {
-                tmp = new Float64Array(arr);
+                throw new Error('this needs to be tested!!') // tbtb
+                // tmp = new Float64Array(arr);
                 tmp.sort();
             } else {
                 tmp = arr.slice(0);
@@ -118,14 +121,14 @@ JXG.JSXMath.Statistics = {
 
             if (len & 1) {
                 // odd
-                return tmp[parseInt(len * 0.5, 10)];
+                return tmp[len * 0.5];
             }
-
-            return (tmp[len * 0.5 - 1] + tmp[len * 0.5]) * 0.5;
+            throw new Error('this needs to be tested!!') // tbtb
+            return (tmp[Math.floor(len * 0.5 - 1)] + tmp[Math.floor(len * 0.5) * 0.5]);
         }
 
         return 0.0;
-    },
+    }
 
     /**
      * The P-th percentile ( <i>0 < P ≤ 100</i> ) of a list of <i>N</i> ordered values (sorted from least to greatest)
@@ -139,7 +142,7 @@ JXG.JSXMath.Statistics = {
      * @returns {Number|Array} Depending if a number or an array is the input for percentile, a number or an array containing the percentiles
      * is returned.
      */
-    percentile: function (arr, percentile) {
+    static percentile(arr, percentile) {
         var tmp,
             len,
             i,
@@ -149,7 +152,8 @@ JXG.JSXMath.Statistics = {
 
         if (arr.length > 0) {
             if (ArrayBuffer.isView(arr)) {
-                tmp = new Float64Array(arr);
+                throw new Error('this needs to be tested!!') // tbtb
+                // tmp = new Float64Array(arr);
                 tmp.sort();
             } else {
                 tmp = arr.slice(0);
@@ -182,16 +186,16 @@ JXG.JSXMath.Statistics = {
         }
 
         return 0.0;
-    },
+    }
 
     /**
      * Bias-corrected sample variance. A variance is a measure of how far a
      * set of numbers are spread out from each other.
      * @param {Array} arr
      * @returns {Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    variance: function (arr) {
+    static variance(arr) {
         var m,
             res,
             i,
@@ -207,30 +211,30 @@ JXG.JSXMath.Statistics = {
         }
 
         return 0.0;
-    },
+    }
 
     /**
      * Determines the <strong>s</strong>tandard <strong>d</strong>eviation which shows how much
      * variation there is from the average value of a set of numbers.
      * @param {Array} arr
      * @returns {Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    sd: function (arr) {
+    static sd(arr) {
         return Math.sqrt(this.variance(arr));
-    },
+    }
 
     /**
-     * Weighted mean value is basically the same as {@link Geometry.Statistics.mean} but here the values
+     * Weighted mean value is basically the same as {@link Statistics.mean} but here the values
      * are weighted, i.e. multiplied with another value called <em>weight</em>. The weight values are given
      * as a second array with the same length as the value array..
      * @throws {Error} If the dimensions of the arrays don't match.
      * @param {Array} arr Set of alues.
      * @param {Array} w Weight values.
      * @returns {Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    weightedMean: function (arr, w) {
+    static weightedMean(arr, w) {
         if (arr.length !== w.length) {
             throw new Error(
                 "JSXGraph error (Math.Statistics.weightedMean): Array dimension mismatch."
@@ -242,7 +246,7 @@ JXG.JSXMath.Statistics = {
         }
 
         return 0.0;
-    },
+    }
 
     /**
      * Extracts the maximum value from the array.
@@ -250,11 +254,11 @@ JXG.JSXMath.Statistics = {
      * @returns {Number} The highest number from the array. It returns <tt>NaN</tt> if not every element could be
      * interpreted as a number and <tt>-Infinity</tt> if an empty array is given or no element could be interpreted
      * as a number.
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    max: function (arr) {
+    static max(arr) {
         return Math.max.apply(this, arr);
-    },
+    }
 
     /**
      * Extracts the minimum value from the array.
@@ -262,32 +266,32 @@ JXG.JSXMath.Statistics = {
      * @returns {Number} The lowest number from the array. It returns <tt>NaN</tt> if not every element could be
      * interpreted as a number and <tt>Infinity</tt> if an empty array is given or no element could be interpreted
      * as a number.
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    min: function (arr) {
+    static min(arr) {
         return Math.min.apply(this, arr);
-    },
+    }
 
     /**
      * Determines the lowest and the highest value from the given array.
      * @param {Array} arr
      * @returns {Array} The minimum value as the first and the maximum value as the second value.
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    range: function (arr) {
+    static range(arr) {
         return [this.min(arr), this.max(arr)];
-    },
+    }
 
     /**
      * Determines the absolute value of every given value.
      * @param {Array|Number} arr
      * @returns {Array|Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    abs: function (arr) {
+    static abs(arr: number[] | number) {
         var i, len, res;
 
-        if (Type.isArray(arr)) {
+        if (Array.isArray(arr)) {
             if (arr.map) {
                 res = arr.map(Math.abs);
             } else {
@@ -299,12 +303,13 @@ JXG.JSXMath.Statistics = {
                 }
             }
         } else if (ArrayBuffer.isView(arr)) {
-            res = arr.map(Math.abs);
+            throw new Error('this needs to be tested!!') // tbtb
+            // res = arr.map(Math.abs);
         } else {
             res = Math.abs(arr);
         }
         return res;
-    },
+    }
 
     /**
      * Adds up two (sequences of) values. If one value is an array and the other one is a number the number
@@ -313,9 +318,9 @@ JXG.JSXMath.Statistics = {
      * @param {Array|Number} arr1
      * @param {Array|Number} arr2
      * @returns {Array|Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    add: function (arr1, arr2) {
+    static add(arr1, arr2) {
         var i,
             len,
             res = [];
@@ -346,7 +351,7 @@ JXG.JSXMath.Statistics = {
         }
 
         return res;
-    },
+    }
 
     /**
      * Divides two (sequences of) values. If two arrays are given and the lengths don't match the shortest length
@@ -354,12 +359,12 @@ JXG.JSXMath.Statistics = {
      * @param {Array|Number} arr1 Dividend
      * @param {Array|Number} arr2 Divisor
      * @returns {Array|Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    div: function (arr1, arr2) {
+    static div(arr1, arr2) {
         var i,
             len,
-            res = [];
+            res: number[] | number = [];   // tbtb - ugly!
 
         arr1 = Type.evalSlider(arr1);
         arr2 = Type.evalSlider(arr2);
@@ -387,17 +392,17 @@ JXG.JSXMath.Statistics = {
         }
 
         return res;
-    },
+    }
 
     /**
      * @function
-     * @deprecated Use {@link Geometry.Statistics.div} instead.
-     * @memberof Geometry.Statistics
+     * @deprecated Use {@link Statistics.div} instead.
+     * @memberof Statistics
      */
-    divide: function () {
+    static divide() {
         JXG.deprecated("Statistics.divide()", "Statistics.div()");
-        JXG.JSXMath.Statistics.div.apply(Mat.Statistics, arguments);
-    },
+        Statistics.div.apply(Statistics, arguments);
+    }
 
     /**
      * Divides two (sequences of) values and returns the remainder. If two arrays are given and the lengths don't
@@ -406,15 +411,15 @@ JXG.JSXMath.Statistics = {
      * @param {Array|Number} arr2 Divisor
      * @param {Boolean} [math=false] Mathematical mod or symmetric mod? Default is symmetric, the JavaScript <tt>%</tt> operator.
      * @returns {Array|Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    mod: function (arr1, arr2, math) {
+    static mod(arr1, arr2, math) {
         var i,
             len,
-            res = [],
-            mod = function (a, m) {
-                return a % m;
-            };
+            res: number[] | number = [];   // tbtb - ugly!
+        let mod = function (a, m) {
+            return a % m;
+        };
 
         math = Type.def(math, false);
 
@@ -448,7 +453,7 @@ JXG.JSXMath.Statistics = {
         }
 
         return res;
-    },
+    }
 
     /**
      * Multiplies two (sequences of) values. If one value is an array and the other one is a number the number
@@ -457,12 +462,12 @@ JXG.JSXMath.Statistics = {
      * @param {Array|Number} arr1
      * @param {Array|Number} arr2
      * @returns {Array|Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    multiply: function (arr1, arr2) {
+    static multiply(arr1, arr2) {
         var i,
             len,
-            res = [];
+            res: number[] | number = [];   // tbtb - ugly!
 
         arr1 = Type.evalSlider(arr1);
         arr2 = Type.evalSlider(arr2);
@@ -490,7 +495,7 @@ JXG.JSXMath.Statistics = {
         }
 
         return res;
-    },
+    }
 
     /**
      * Subtracts two (sequences of) values. If two arrays are given and the lengths don't match the shortest
@@ -498,12 +503,12 @@ JXG.JSXMath.Statistics = {
      * @param {Array|Number} arr1 Minuend
      * @param {Array|Number} arr2 Subtrahend
      * @returns {Array|Number}
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    subtract: function (arr1, arr2) {
+    static subtract(arr1, arr2) {
         var i,
             len,
-            res = [];
+            res: number[] | number = [];   // tbtb - ugly!
 
         arr1 = Type.evalSlider(arr1);
         arr2 = Type.evalSlider(arr2);
@@ -531,7 +536,7 @@ JXG.JSXMath.Statistics = {
         }
 
         return res;
-    },
+    }
 
     /**
      * The Theil-Sen estimator can be used to determine a more robust linear regression of a set of sample
@@ -541,12 +546,12 @@ JXG.JSXMath.Statistics = {
      * JavaScript array.map:
      *
      * <pre>
-     * Geometry.Statistics.TheilSenRegression(a.map(el => el.coords));
+     * Statistics.TheilSenRegression(a.map(el => el.coords));
      * </pre>
      *
      * @param {Array} coords Array of {@link JXG.Coords}.
      * @returns {Array} A stdform array of the regression line.
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      *
      * @example
      * var board = JXG.JSXGraph.initBoard('jxgbox', { boundingbox: [-6,6,6,-6], axis : true });
@@ -556,7 +561,7 @@ JXG.JSXMath.Statistics = {
      * a[2]=board.create('point', [0,3]);
      *
      * board.create('line', [
-     *     () => Geometry.Statistics.TheilSenRegression(a.map(el => el.coords))
+     *     () => Statistics.TheilSenRegression(a.map(el => el.coords))
      *   ],
      *   {strokeWidth:1, strokeColor:'black'});
      *
@@ -571,7 +576,7 @@ JXG.JSXMath.Statistics = {
      *     a[2]=board.create('point', [0,3]);
      *
      *     board.create('line', [
-     *         () => Geometry.Statistics.TheilSenRegression(a.map(el => el.coords))
+     *         () => Statistics.TheilSenRegression(a.map(el => el.coords))
      *       ],
      *       {strokeWidth:1, strokeColor:'black'});
      *
@@ -580,7 +585,7 @@ JXG.JSXMath.Statistics = {
      * </script><pre>
      *
      */
-    TheilSenRegression: function (coords) {
+    static TheilSenRegression(coords) {
         var i,
             j,
             slopes = [],
@@ -603,7 +608,7 @@ JXG.JSXMath.Statistics = {
         }
 
         return [this.median(yintercepts), this.median(slopes), -1];
-    },
+    }
 
     /**
      * Generate values of a standard normal random variable with the Marsaglia polar method, see
@@ -613,9 +618,10 @@ JXG.JSXMath.Statistics = {
      * @param {Number} mean mean value of the normal distribution
      * @param {Number} stdDev standard deviation of the normal distribution
      * @returns {Number} value of a standard normal random variable
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    generateGaussian: function (mean, stdDev) {
+
+    static generateGaussian(mean, stdDev) {
         var u, v, s;
 
         if (this.hasSpare) {
@@ -634,17 +640,17 @@ JXG.JSXMath.Statistics = {
         this.spare = v * s;
         this.hasSpare = true;
         return mean + stdDev * u * s;
-    },
+    }
 
     /**
      * Generate value of a standard normal random variable with given mean and standard deviation.
-     * Alias for {@link Geometry.Statistics#generateGaussian}
+     * Alias for {@link Statistics#generateGaussian}
      *
      * @param {Number} mean
      * @param {Number} stdDev
      * @returns Number
-     * @memberof Geometry.Statistics
-     * @see Geometry.Statistics.generateGaussian
+     * @memberof Statistics
+     * @see Statistics.generateGaussian
      * @example
      *  let board = JXG.JSXGraph.initBoard('JXGbox',
      *       { boundingbox: [-5, 1.5, 5, -.03], axis: true});
@@ -659,10 +665,10 @@ JXG.JSXMath.Statistics = {
      *   let labelY = 1.2
      *   runs.forEach((run,i) => {
      *       board.create('segment',[[1.0,labelY-(i/20)],[2.0,labelY-(i/20)]],{strokeColor:run[2]})
-     *       board.create('text',[2.5,labelY-(i/20),`&mu;=${run[0]}, &#963;<sup>2</sup>=${run[1]}`])
+     *       board.create('text',[2.5,labelY-(i/20),`&mu;=${run[0]} &#963;<sup>2</sup>=${run[1]}`])
      *
-     *       let x = Array(50000).fill(0).map(() => Geometry.Statistics.randomNormal(run[0],Math.sqrt(run[1])))  // sqrt so Std Dev, not Variance
-     *       let res = Geometry.Statistics.histogram(x, { bins: 40, density: true, cumulative: false, range: false });
+     *       let x = Array(50000).fill(0).map(() => Statistics.randomNormal(run[0],Math.sqrt(run[1])))  // sqrt so Std Dev, not Variance
+     *       let res = Statistics.histogram(x, { bins: 40, density: true, cumulative: false, range: false });
      *       board.create('curve', [res[1], res[0]], { strokeColor: run[2], strokeWidth:2});
      *   })
      *
@@ -682,30 +688,30 @@ JXG.JSXMath.Statistics = {
      *   let labelY = 1.2
      *   runs.forEach((run,i) => {
      *       board.create('segment',[[1.0,labelY-(i/20)],[2.0,labelY-(i/20)]],{strokeColor:run[2]})
-     *       board.create('text',[2.5,labelY-(i/20),`&mu;=${run[0]}, &#963;<sup>2</sup>=${run[1]}`])
+     *       board.create('text',[2.5,labelY-(i/20),`&mu;=${run[0]} &#963;<sup>2</sup>=${run[1]}`])
      *
-     *       let x = Array(50000).fill(0).map(() => Geometry.Statistics.randomNormal(run[0],Math.sqrt(run[1])))  // sqrt so Std Dev, not Variance
-     *       let res = Geometry.Statistics.histogram(x, { bins: 40, density: true, cumulative: false, range: false });
+     *       let x = Array(50000).fill(0).map(() => Statistics.randomNormal(run[0],Math.sqrt(run[1])))  // sqrt so Std Dev, not Variance
+     *       let res = Statistics.histogram(x, { bins: 40, density: true, cumulative: false, range: false });
      *       board.create('curve', [res[1], res[0]], { strokeColor: run[2], strokeWidth:2});
      *   })
      * }
      * </script><pre>
 
      */
-    randomNormal: function (mean, stdDev) {
+    static randomNormal(mean, stdDev) {
         return this.generateGaussian(mean, stdDev);
-    },
+    }
 
     /**
      * Generate value of a uniform distributed random variable in the interval [a, b].
      * @param {Number} a
      * @param {Number} b
      * @returns Number
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    randomUniform: function (a, b) {
+    static randomUniform(a, b) {
         return Math.random() * (b - a) + a;
-    },
+    }
 
     /**
      * Generate value of a random variable with exponential distribution, i.e.
@@ -715,7 +721,7 @@ JXG.JSXMath.Statistics = {
      *
      * @param {Number} lambda <i>&gt; 0</i>
      * @returns Number
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      * @example
      *  let board = JXG.JSXGraph.initBoard('JXGbox',
      *       { boundingbox: [-.5, 1.5, 5, -.1], axis: true});
@@ -731,8 +737,8 @@ JXG.JSXMath.Statistics = {
      *       board.create('segment',[[1.8,labelY-(i/20)],[2.3,labelY-(i/20)]],{strokeColor:run[1]})
      *       board.create('text',[2.5,labelY-(i/20),`&lambda;=${run[0]}`])
      *
-     *       let x = Array(50000).fill(0).map(() => Geometry.Statistics.randomExponential(run[0]))
-     *       let res = Geometry.Statistics.histogram(x, { bins: 40, density: true, cumulative: false, range: false });
+     *       let x = Array(50000).fill(0).map(() => Statistics.randomExponential(run[0]))
+     *       let res = Statistics.histogram(x, { bins: 40, density: true, cumulative: false, range: false });
      *       board.create('curve', [res[1], res[0]], { strokeColor: run[1], strokeWidth:2});
      *   })
      *
@@ -753,15 +759,15 @@ JXG.JSXMath.Statistics = {
      *       board.create('segment',[[1.8,labelY-(i/20)],[2.3,labelY-(i/20)]],{strokeColor:run[1]})
      *       board.create('text',[2.5,labelY-(i/20),`&lambda;=${run[0]}`])
      *
-     *       let x = Array(50000).fill(0).map(() => Geometry.Statistics.randomExponential(run[0]))
-     *       let res = Geometry.Statistics.histogram(x, { bins: 40, density: true, cumulative: false, range: false });
+     *       let x = Array(50000).fill(0).map(() => Statistics.randomExponential(run[0]))
+     *       let res = Statistics.histogram(x, { bins: 40, density: true, cumulative: false, range: false });
      *       board.create('curve', [res[1], res[0]], { strokeColor: run[1], strokeWidth:2});
      *   })
      * }
      * </script><pre>
 
     */
-    randomExponential: function (lbda) {
+    static randomExponential(lbda) {
         var u;
 
         // Knuth, TAOCP 2, p 128
@@ -775,7 +781,7 @@ JXG.JSXMath.Statistics = {
         } while (u === 0);
 
         return -Math.log(u) / lbda;
-    },
+    }
 
     /**
      * Generate value of a random variable with gamma distribution of order alpha.
@@ -786,7 +792,7 @@ JXG.JSXMath.Statistics = {
      * @param {Number} [b=1] scale, <i> &gt; 0</i>
      * @param {Number} [t=0] threshold
      * @returns Number
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      * @example
      *  let board = JXG.JSXGraph.initBoard('jxgbox',
      *       { boundingbox: [-1.7, .5, 20, -.03], axis: true});
@@ -804,11 +810,11 @@ JXG.JSXMath.Statistics = {
      *   let labelY = .4
      *   runs.forEach((run,i) => {
      *       board.create('segment',[[7,labelY-(i/50)],[9,labelY-(i/50)]],{strokeColor:run[2]})
-     *       board.create('text',[10,labelY-(i/50),`k=${run[0]}, &theta;=${run[1]}`])
+     *       board.create('text',[10,labelY-(i/50),`k=${run[0]} &theta;=${run[1]}`])
      *
      *       // density
-     *       let x = Array(50000).fill(0).map(() => Geometry.Statistics.randomGamma(run[0],run[1]))
-     *       let res = Geometry.Statistics.histogram(x, { bins: 50, density: true, cumulative: false, range: [0, 20] });
+     *       let x = Array(50000).fill(0).map(() => Statistics.randomGamma(run[0],run[1]))
+     *       let res = Statistics.histogram(x, { bins: 50, density: true, cumulative: false, range: [0, 20] });
      *       board.create('curve', [res[1], res[0]], { strokeColor: run[2]});
      *
      *   })
@@ -834,17 +840,17 @@ JXG.JSXMath.Statistics = {
      *   let labelY = .4
      *   runs.forEach((run,i) => {
      *       board.create('segment',[[7,labelY-(i/50)],[9,labelY-(i/50)]],{strokeColor:run[2]})
-     *       board.create('text',[10,labelY-(i/50),`k=${run[0]}, &theta;=${run[1]}`])
+     *       board.create('text',[10,labelY-(i/50),`k=${run[0]} &theta;=${run[1]}`])
      *
-     *       let x = Array(50000).fill(0).map(() => Geometry.Statistics.randomGamma(run[0],run[1]))
-     *       let res = Geometry.Statistics.histogram(x, { bins: 50, density: true, cumulative: false, range: [0, 20] });
+     *       let x = Array(50000).fill(0).map(() => Statistics.randomGamma(run[0],run[1]))
+     *       let res = Statistics.histogram(x, { bins: 50, density: true, cumulative: false, range: [0, 20] });
      *       board.create('curve', [res[1], res[0]], { strokeColor: run[2]});
      *   })
      * }
      * </script><pre>
      *
      */
-    randomGamma: function (a, b, t) {
+    static randomGamma(a, b?, t?) {
         var u, v, x, y,
             p, q;
 
@@ -894,7 +900,7 @@ JXG.JSXMath.Statistics = {
         } while (x <= 0.0 || v > (1 + y * y) * Math.exp((a - 1) * Math.log(x / (a - 1)) - Math.sqrt(2 * a - 1) * y));
 
         return b * x + t;
-    },
+    }
 
     /**
      * Generate value of a random variable with beta distribution with shape parameters alpha and beta.
@@ -903,9 +909,9 @@ JXG.JSXMath.Statistics = {
      * @param {Number} alpha <i>&gt; 0</i>
      * @param {Number} beta <i>&gt; 0</i>
      * @returns Number
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    randomBeta: function (a, b) {
+    static randomBeta(a, b) {
         // Knuth, TAOCP 2, p 129
         var x1, x2, x;
 
@@ -917,7 +923,7 @@ JXG.JSXMath.Statistics = {
         x2 = this.randomGamma(b);
         x = x1 / (x1 + x2);
         return x;
-    },
+    }
 
     /**
      * Generate value of a random variable with chi-square distribution with k degrees of freedom.
@@ -925,9 +931,9 @@ JXG.JSXMath.Statistics = {
      *
      * @param {Number} k <i>&gt; 0</i>
      * @returns Number
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    randomChisquare: function (nu) {
+    static randomChisquare(nu) {
         // Knuth, TAOCP 2, p 130
 
         if (nu <= 0) {
@@ -935,7 +941,7 @@ JXG.JSXMath.Statistics = {
         }
 
         return 2 * this.randomGamma(nu * 0.5);
-    },
+    }
 
     /**
      * Generate value of a random variable with F-distribution with d<sub>1</sub> and d<sub>2</sub> degrees of freedom.
@@ -943,9 +949,9 @@ JXG.JSXMath.Statistics = {
      * @param {Number} d1 <i>&gt; 0</i>
      * @param {Number} d2 <i>&gt; 0</i>
      * @returns Number
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    randomF: function (nu1, nu2) {
+    static randomF(nu1, nu2) {
         // Knuth, TAOCP 2, p 130
         var y1, y2;
 
@@ -957,16 +963,16 @@ JXG.JSXMath.Statistics = {
         y2 = this.randomChisquare(nu2);
 
         return (y1 * nu2) / (y2 * nu1);
-    },
+    }
 
     /**
      * Generate value of a random variable with Students-t-distribution with &nu; degrees of freedom.
      * See <a href="https://en.wikipedia.org/wiki/Student%27s_t-distribution">https://en.wikipedia.org/wiki/Student%27s_t-distribution</a>.
      * @param {Number} nu <i>&gt; 0</i>
      * @returns Number
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    randomT: function (nu) {
+    static randomT(nu) {
         // Knuth, TAOCP 2, p 130
         var y1, y2;
 
@@ -978,7 +984,7 @@ JXG.JSXMath.Statistics = {
         y2 = this.randomChisquare(nu);
 
         return y1 / Math.sqrt(y2 / nu);
-    },
+    }
 
     /**
      * Generate values for a random variable in binomial distribution with parameters <i>n</i> and <i>p</i>.
@@ -988,7 +994,7 @@ JXG.JSXMath.Statistics = {
      * @param {Number} n Number of trials (n >= 0)
      * @param {Number} p Probability (0 <= p <= 1)
      * @returns Number Integer value of a random variable in binomial distribution
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      *
      * @example
      * let board = JXG.JSXGraph.initBoard('jxgbox',
@@ -1003,10 +1009,10 @@ JXG.JSXMath.Statistics = {
      * let labelY = .4;
      * runs.forEach((run, i) => {
      *     board.create('segment', [[7, labelY - (i / 50)], [9, labelY - (i / 50)]], { strokeColor: run[2] });
-     *     board.create('text', [10, labelY - (i / 50), `p=${run[0]}, n=${run[1]}`]);
+     *     board.create('text', [10, labelY - (i / 50), `p=${run[0]} n=${run[1]}`]);
      *
-     *     let x = Array(50000).fill(0).map(() => Geometry.Statistics.randomBinomial(run[1], run[0]));
-     *     let res = Geometry.Statistics.histogram(x, {
+     *     let x = Array(50000).fill(0).map(() => Statistics.randomBinomial(run[1], run[0]));
+     *     let res = Statistics.histogram(x, {
      *         bins: 40,
      *         density: true,
      *         cumulative: false,
@@ -1031,17 +1037,17 @@ JXG.JSXMath.Statistics = {
      *   let labelY = .4
      *   runs.forEach((run,i) => {
      *       board.create('segment',[[7,labelY-(i/50)],[9,labelY-(i/50)]],{strokeColor:run[2]})
-     *       board.create('text',[10,labelY-(i/50),`p=${run[0]}, n=${run[1]}`])
+     *       board.create('text',[10,labelY-(i/50),`p=${run[0]} n=${run[1]}`])
      *
-     *       let x = Array(50000).fill(0).map(() => Geometry.Statistics.randomBinomial(run[1],run[0]))
-     *       let res = Geometry.Statistics.histogram(x, { bins: 40, density: true, cumulative: false, range: [0, 40] });
+     *       let x = Array(50000).fill(0).map(() => Statistics.randomBinomial(run[1],run[0]))
+     *       let res = Statistics.histogram(x, { bins: 40, density: true, cumulative: false, range: [0, 40] });
      *       board.create('curve', [res[1], res[0]], { strokeColor: run[2]});
      *   })
      * }
      * </script><pre>
      *
      */
-    randomBinomial: function (n, p) {
+    static randomBinomial(n, p) {
         var x, y, c,
             a, b, N1;
 
@@ -1105,7 +1111,7 @@ JXG.JSXMath.Statistics = {
             }
         }
         return x;
-    },
+    }
 
     /**
      * Generate values for a random variable in geometric distribution with probability <i>p</i>.
@@ -1113,9 +1119,9 @@ JXG.JSXMath.Statistics = {
      *
      * @param {Number} p (0 <= p <= 1)
      * @returns Number
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    randomGeometric: function (p) {
+    static randomGeometric(p) {
         var u;
 
         if (p < 0 || p > 1) {
@@ -1125,7 +1131,7 @@ JXG.JSXMath.Statistics = {
         u = Math.random();
 
         return Math.ceil(Math.log(u) / Math.log(1 - p));
-    },
+    }
 
     /**
      * Generate values for a random variable in Poisson distribution with mean <i>mu</i>.
@@ -1133,9 +1139,9 @@ JXG.JSXMath.Statistics = {
      *
      * @param {Number} mu (0 < mu)
      * @returns Number
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    randomPoisson: function (mu) {
+    static randomPoisson(mu) {
         var e = Math.exp(-mu),
             N,
             m = 0,
@@ -1164,7 +1170,7 @@ JXG.JSXMath.Statistics = {
             }
         }
         return N;
-    },
+    }
 
     /**
      * Generate values for a random variable in Pareto distribution with
@@ -1175,16 +1181,16 @@ JXG.JSXMath.Statistics = {
      * @param {Number} gamma shape (0 < gamma)
      * @param {Number} k scale (0 < k < x)
      * @returns Number
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    randomPareto: function (gamma, k) {
+    static randomPareto(gamma, k) {
         var u = Math.random();
 
         if (gamma <= 0 || k <= 0) {
             return NaN;
         }
         return k * Math.pow(1 - u, -1 / gamma);
-    },
+    }
 
     /**
      * Generate values for a random variable in hypergeometric distribution.
@@ -1197,9 +1203,9 @@ JXG.JSXMath.Statistics = {
      * @param {Number} bad ways to make a bad selection
      * @param {Number} samples number of items sampled
      * @returns
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      */
-    randomHypergeometric: function (good, bad, k) {
+    static randomHypergeometric(good, bad, k) {
         var i, u,
             x = 0,
             // kk,
@@ -1244,7 +1250,7 @@ JXG.JSXMath.Statistics = {
         } else {
             return k - x;
         }
-    },
+    }
 
     /**
      * Compute the histogram of a dataset.
@@ -1268,7 +1274,7 @@ JXG.JSXMath.Statistics = {
      * @param {Object} opt Optional parameters
      * @returns Array [bin, counts] Array bins contains start values of bins, array counts contains
      * the number of entries of x which are contained in each bin.
-     * @memberof Geometry.Statistics
+     * @memberof Statistics
      *
      * @example
      *  let board = JXG.JSXGraph.initBoard('jxgbox',
@@ -1289,15 +1295,15 @@ JXG.JSXMath.Statistics = {
      *   let labelY = .4
      *   runs.forEach((run,i) => {
      *       board.create('segment',[[7,labelY-(i/50)],[9,labelY-(i/50)]],{strokeColor:run[2]})
-     *       board.create('text',[10,labelY-(i/50),`k=${run[0]}, &theta;=${run[1]}`])
+     *       board.create('text',[10,labelY-(i/50),`k=${run[0]} &theta;=${run[1]}`])
      *
      *       // density
-     *       let x = Array(50000).fill(0).map(() => Geometry.Statistics.randomGamma(run[0],run[1]))
-     *       let res = Geometry.Statistics.histogram(x, { bins: 50, density: true, cumulative: false, range: [0, 20] });
+     *       let x = Array(50000).fill(0).map(() => Statistics.randomGamma(run[0],run[1]))
+     *       let res = Statistics.histogram(x, { bins: 50, density: true, cumulative: false, range: [0, 20] });
      *       board.create('curve', [res[1], res[0]], { strokeColor: run[2], strokeWidth:2});
      *
      *       // cumulative density
-     *       res = Geometry.Statistics.histogram(x, { bins: 50, density: true, cumulative: true, range: [0, 20] });
+     *       res = Statistics.histogram(x, { bins: 50, density: true, cumulative: true, range: [0, 20] });
      *       res[0].unshift(0)  // add zero to front so cumulative starts at zero
      *       res[1].unshift(0)
      *       board2.create('curve', [res[1], res[0]], { strokeColor: run[2], strokeWidth:2 });
@@ -1327,14 +1333,14 @@ JXG.JSXMath.Statistics = {
      *   let labelY = .4
      *   runs.forEach((run,i) => {
      *       board.create('segment',[[7,labelY-(i/50)],[9,labelY-(i/50)]],{strokeColor:run[2]})
-     *       board.create('text',[10,labelY-(i/50),`k=${run[0]}, &theta;=${run[1]}`])
+     *       board.create('text',[10,labelY-(i/50),`k=${run[0]} &theta;=${run[1]}`])
      *
-     *       let x = Array(50000).fill(0).map(() => Geometry.Statistics.randomGamma(run[0],run[1]))
-     *       let res = Geometry.Statistics.histogram(x, { bins: 50, density: true, cumulative: false, range: [0, 20] });
+     *       let x = Array(50000).fill(0).map(() => Statistics.randomGamma(run[0],run[1]))
+     *       let res = Statistics.histogram(x, { bins: 50, density: true, cumulative: false, range: [0, 20] });
      *       board.create('curve', [res[1], res[0]], { strokeColor: run[2], strokeWidth:2});
      *
      *       // cumulative density
-     *       res = Geometry.Statistics.histogram(x, { bins: 50, density: true, cumulative: true, range: [0, 20] });
+     *       res = Statistics.histogram(x, { bins: 50, density: true, cumulative: true, range: [0, 20] });
      *       res[0].unshift(0)  // add zero to front so cumulative starts at zero
      *       res[1].unshift(0)
      *       board2.create('curve', [res[1], res[0]], { strokeColor: run[2], strokeWidth:2 });
@@ -1343,7 +1349,7 @@ JXG.JSXMath.Statistics = {
      * </script><pre>
      *
      */
-    histogram: function (x, opt) {
+    static histogram(x, opt) {
         var i, le, k,
             mi, ma, num_bins, delta,
             range,
@@ -1392,7 +1398,7 @@ JXG.JSXMath.Statistics = {
 
         // Normalize if density===true
         if (opt.density) {
-            s = Geometry.Statistics.sum(counts) + no_bin; // Normalize including long tail
+            s = Statistics.sum(counts) + no_bin; // Normalize including long tail
             for (i = 0; i < num_bins; i++) {
                 counts[i] /= (s * delta);
                 // counts[i] /= s;
@@ -1414,4 +1420,3 @@ JXG.JSXMath.Statistics = {
     }
 };
 
-export default JXG.JSXMath.Statistics;

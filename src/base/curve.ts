@@ -3097,9 +3097,9 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
  * var data = [57, 57, 57, 58, 63, 66, 66, 67, 67, 68, 69, 70, 70, 70, 70, 72, 73, 75, 75, 76, 76, 78, 79, 81];
  * var Q = [];
  *
- * Q[0] = Geometry.Statistics.min(data);
- * Q = Q.concat(Geometry.Statistics.percentile(data, [25, 50, 75]));
- * Q[4] = Geometry.Statistics.max(data);
+ * Q[0] = Statistics.min(data);
+ * Q = Q.concat(Statistics.percentile(data, [25, 50, 75]));
+ * Q[4] = Statistics.max(data);
  *
  * var b = board.create('boxplot', [Q, 0, 3]);
  *
@@ -3111,9 +3111,9 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
  *     var data = [57, 57, 57, 58, 63, 66, 66, 67, 67, 68, 69, 70, 70, 70, 70, 72, 73, 75, 75, 76, 76, 78, 79, 81];
  *     var Q = [];
  *
- *     Q[0] = Geometry.Statistics.min(data);
- *     Q = Q.concat(Geometry.Statistics.percentile(data, [25, 50, 75]));
- *     Q[4] = Geometry.Statistics.max(data);
+ *     Q[0] = Statistics.min(data);
+ *     Q = Q.concat(Statistics.percentile(data, [25, 50, 75]));
+ *     Q[4] = Statistics.max(data);
  *
  *     var b = board.create('boxplot', [Q, 0, 3]);
  *

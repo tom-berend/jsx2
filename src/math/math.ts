@@ -34,7 +34,7 @@
 
 /**
  * @fileoverview In this file the namespace JXG.Math is defined, which is the base namespace
- * for namespaces like Geometry.Numerics, Geometry.Plot, Geometry.Statistics, Geometry.Clip etc.
+ * for namespaces like Geometry.Numerics, Geometry.Plot, Statistics, Geometry.Clip etc.
  */
 import { JXG } from "../jxg.js";
 import { Type } from "../utils/type.js";

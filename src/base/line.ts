@@ -51,7 +51,7 @@ import { JXG } from "../jxg.js";
 import {JSXMath} from "../math/math.js";
 import {Geometry} from "../math/geometry.js";
 import Numerics from "../math/numerics.js";
-import Statistics from "../math/statistics.js";
+import {Statistics} from "../math/statistics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 import GeometryElement from "./element.js";

@@ -33,13 +33,13 @@
 /*jslint nomen: true, plusplus: true*/
 
 import { JXG } from "../jxg.js";
-import {Geometry} from "../math/geometry.js";
-import {JSXMath} from "../math/math.js";
-import Statistics from "../math/statistics.js";
-import {Coords} from "../base/coords.js";
+import { Geometry } from "../math/geometry.js";
+import { JSXMath } from "../math/math.js";
+import { Statistics } from "../math/statistics.js";
+import { Coords } from "../base/coords.js";
 
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
-import {Type} from "../utils/type.js";
+import { Type } from "../utils/type.js";
 
 /**
  * @class A circular sector is a subarea of the area enclosed by a circle. It is enclosed by two radii and an arc.
@@ -361,9 +361,9 @@ JXG.createSector = function (board, parents, attributes) {
             var r,
                 l1, l2,
                 eps = 1.0e-14,
-                A:number|any[] = [0, 0, 0],
-                B:number|any[] = [0, 0, 0],
-                C:number|any[] = [0, 0, 0],
+                A: number | any[] = [0, 0, 0],
+                B: number | any[] = [0, 0, 0],
+                C: number | any[] = [0, 0, 0],
                 ar;
 
             l1 = this.line1;

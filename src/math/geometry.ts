@@ -43,7 +43,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
 import { JSXMath } from "./math.js";
-import Stat from "./statistics.js";
+import { Statistics } from "./statistics.js";
 import Numerics from "./numerics.js";
 import { Type } from "../utils/type.js";
 import Expect from "../utils/expect.js";
@@ -4273,7 +4273,7 @@ export class Geometry {
             },
             // Normal
             function () {
-                return Stat.subtract(el2.center.coords, el1.center.coords);
+                return Statistics.subtract(el2.center.coords, el1.center.coords);
             },
             // Radius
             function () {

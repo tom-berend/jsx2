@@ -33,7 +33,7 @@ import {JXG} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
 import {JSXMath} from "../math/math.js";
-import Stat from "../math/statistics.js";
+import {Statistics} from "../math/statistics.js";
 import {Geometry} from "../math/geometry.js";
 
 /**
@@ -354,7 +354,7 @@ JXG.extend(
                 pp = [1].concat(p),
                 c = this.center.coords,
                 d = Geometry.distance(c, pp, 4),
-                v = Stat.subtract(pp, c);
+                v = Statistics.subtract(pp, c);
 
             if (d === 0) {
                 // p is at the center, take an arbitrary point on sphere
