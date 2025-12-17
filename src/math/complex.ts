@@ -40,6 +40,20 @@
 
 import {JXG} from "../jxg.js";
 import {Type} from "../utils/type.js";
+import { JSXMath } from "./math.js";
+
+///// DUMMY DUMMY DUMMY ////
+export class Complex{
+    constructor(x:any,y?:any){
+        throw new Error('complex needs complete cleanup, and so does everyone who uses it')
+    }
+}
+
+
+
+
+
+
 
 /**
  * Creates a new complex number. See also {@link JXG.C}.
@@ -342,6 +356,6 @@ JXG.C.copy = function(z) {
     return new JXG.Complex(z);
 };
 
-JXG.Complex.C = JXG.C;
+// JXG.Complex.C = JXG.C;
 
-export default JXG.Complex;
+// export default JXG.Complex;

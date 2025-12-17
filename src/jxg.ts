@@ -386,6 +386,7 @@ export class JXG {
     static createText3D
     static createView3D
     static DoubleBits
+    static C
 
 
 

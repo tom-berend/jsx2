@@ -43,7 +43,7 @@ import { Geometry } from "./geometry.js"
 import { Type } from "../utils/type.js";
 import { Env } from "../utils/env.js";
 import { JSXMath } from "./math.js";
-import  Complex  from "./complex.js";
+import { Complex } from "./complex.js"
 
 // Predefined butcher tableaus for the common Runge-Kutta method (fourth order), Heun method (second order), and Euler method (first order).
 var predefinedButcher = {

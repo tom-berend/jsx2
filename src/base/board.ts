@@ -48,7 +48,6 @@ import { Coords } from './coords.js';
 import Options from '../options.js';
 import { Numerics } from '../math/numerics.js'
 import { Geometry } from '../math/geometry.js';
-import Complex from '../math/complex.js';
 // import {Statistics} from '../math/statistics.js';
 // import {JessieCode} from '../parser/jessiecode.js';
 import Color from '../utils/color.js';
