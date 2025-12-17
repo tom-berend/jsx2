@@ -64,6 +64,7 @@ export class Events {
     /** initially this.trigger() */
     public triggerEventHandlers: Function = this.trigger
 
+
     constructor() {  /* nothing yet */ }
 
     /**

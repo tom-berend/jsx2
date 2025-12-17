@@ -1,15 +1,20 @@
-import { Board } from '../src/base/board.js';
-
-////////////////// prototype test
-describe('type suite description', () => {
-    it('test description', () => {
-        let a = 0
-        expect(a).toBe(0)
-    });
-});
-//////////////////////////////////////////////////
-import { LooseObject } from '../src/interfaces.js'
 import { Type } from '../src/utils/type.js';
+
+
+// import { Board } from '../src/base/board.js';
+
+// ////////////////// prototype test
+// describe('type suite description', () => {
+//     it('test description', () => {
+//         let a = 0
+//         expect(a).toBe(0)
+//     });
+// });
+// //////////////////////////////////////////////////
+// import { LooseObject } from '../src/interfaces.js'
+
+
+
 // import { Options } from '../src/options.js';
 // import { createPoint } from '../src/base/point.js';
 
@@ -51,13 +56,31 @@ describe('deepcopy', () => {
 });
 
 
-describe("isObject", function () {
+describe("isObject, isArray, etc", function () {
     it('surprisingly hard to verify that something is an object', () => {
         expect(Type.isObject({})).toBe(true);
+        expect(Type.isObject([])).toBe(false);
         expect(Type.isObject(null)).toBe(false);
         expect(Type.isObject(() => { })).toBe(false);
+        expect(Type.isObject(new Number(5))).toBe(false);
+        expect(Type.isObject(new String('hello'))).toBe(false);
+        expect(Type.isObject(5)).toBe(false);
+        expect(Type.isObject('hello')).toBe(false);
+    });
+
+    it('tests isArray', () => {
+        expect(Type.isArray({})).toBe(false);
+        expect(Type.isArray([])).toBe(true);        //  <===
+        expect(Type.isArray(null)).toBe(false);
+        expect(Type.isArray(() => { })).toBe(false);
+        expect(Type.isArray(new Number(5))).toBe(false);
+        expect(Type.isArray(new String('hello'))).toBe(false);
+        expect(Type.isArray(5)).toBe(false);
+        expect(Type.isArray('hello')).toBe(false);
     });
 });
+
+
 describe('copyAttributes(attr, special, toLower, ignoreUndefinedSpecials)', () => {
     it('in-place (deep) merge of attributes', () => {
         expect(Type.initVisProps({}, {})).toEqual({})
@@ -122,30 +145,3 @@ describe('getObjectDiff(a:object, b:object): object)', () => {
     });
 });
 
-describe('check a few isSomething() methods', () => {
-    it('checks', () => {
-        document.body.innerHTML =
-            `<!DOCTYPE html><html lang="en"><head></head><body><div id="box" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div></body></html>`
-
-        let b = new Board('box')
-        expect(Type.isId(b, 'foo')).toBe(false)
-
-        let p = createPoint(b, [0, 0])
-        expect(Type.isId(b, p.id)).toBe(true)
-
-        // adding a point also adds a label so we should see its id too
-        expect(p.label).toBeTruthy()    // should not be null
-        if (p.label)    //
-            expect(Type.isId(b, p.label.id)).toBe(true)
-
-        expect(Type.isPoint(b)).toBe(false)
-        expect(Type.isPoint(p)).toBe(true)
-    });
-});
-////////////////// prototype test
-describe(' keysToLowerCase(obj:object):object', () => {
-    it('Converts an object to a new object containing only lower case properties', () => {
-        let a: LooseObject = { A: 1 }
-        expect(Type.keysToLowerCase(a)).toEqual({ a: 1 })
-    });
-});

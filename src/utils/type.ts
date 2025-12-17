@@ -96,10 +96,10 @@ export class Type {
     /**
      * Checks if the value of a given variable is of type string.
      * @param v A variable of any type.
-     * @returns {Boolean} True, if v is of type string.
+     * @returns {Boolean} True, if v is of type string or String.
      */
     static isString(v) {
-        return typeof v === 'string';
+        return typeof v === 'string' || Object.prototype.toString.call(v) === '[object String]';
     }
 
     /**
@@ -161,7 +161,11 @@ export class Type {
      * @param v
      */
     static isObject(v) {
-        return typeof v === "object" && !this.isArray(v);
+        return typeof v === "object" &&
+            !this.isArray(v) && v !== null &&
+            Object.prototype.toString.call(v) !== '[object String]' &&
+            Object.prototype.toString.call(v) !== '[object Number]';
+        ;
     }
 
     /**
@@ -1993,5 +1997,52 @@ export class Type {
         return a;
     }
 
+    /**
+     * Simple DIFF for two objects, helpful for debugging
+     * @param a object
+     * @param b object
+     * @returns
+     */
+    static getObjectDiff(a: object, b: object): object {
+        const changes = {};
+
+        // Check current object's properties
+        for (const [key, value] of Object.entries(b)) {
+            if (!(key in a)) {
+                changes[key] = {
+                    expect: undefined,
+                    found: value
+                };
+                continue;
+            }
+
+            const originalValue = a[key];
+            const currentValue = value;
+
+            // Handle different types of comparisons
+            if (
+                originalValue !== currentValue &&
+                String(originalValue) !== String(currentValue) &&
+                JSON.stringify(originalValue) !== JSON.stringify(currentValue)
+            ) {
+                changes[key] = {
+                    expect: originalValue,
+                    found: currentValue
+                };
+            }
+        }
+
+        // Check for removed properties
+        for (const key of Object.keys(a)) {
+            if (!(key in b)) {
+                changes[key] = {
+                    expect: a[key],
+                    found: undefined
+                };
+            }
+        }
+
+        return changes;
+    }
 
 }

@@ -44,7 +44,7 @@ import { Color } from "../utils/color.js";
 import { Base64 } from "../utils/base64.js";
 import { Numerics } from "../math/numerics.js";
 // import { LayerOptions } from "../optionInterfaces.js";
-import GeometryElement from "../base/element.js";
+// import GeometryElement from "../base/element.js";
 import { Board } from "../base/board.js";
 import { Env } from "../utils/env.js"
 
