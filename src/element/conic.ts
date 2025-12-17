@@ -38,12 +38,12 @@
 
 import { JXG } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
-import {Coords} from "../base/coords.js";
+import { Coords } from "../base/coords.js";
 
-import {JSXMath} from "../math/math.js";
-import Numerics from "../math/numerics.js";
-import {Geometry} from "../math/geometry.js";
-import {Type} from "../utils/type.js";
+import { JSXMath } from "../math/math.js";
+import { Numerics } from "../math/numerics.js";
+import { Geometry } from "../math/geometry.js";
+import { Type } from "../utils/type.js";
 
 /**
  * @class An ellipse is a special conic section given by two points (the foci) and a third point on the ellipse or

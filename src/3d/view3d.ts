@@ -39,15 +39,15 @@
 
 /*global JXG:true, define: true*/
 
-import {JXG} from "../jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
-import {Coords} from "../base/coords.js";
+import { JXG } from "../jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
+import { Coords } from "../base/coords.js";
 
-import {Type} from "../utils/type.js";
-import {JSXMath} from "../math/math.js";
-import {Geometry} from "../math/geometry.js";
-import Numerics from "../math/numerics.js";
-import {Env} from "../utils/env.js";
+import { Type } from "../utils/type.js";
+import { JSXMath } from "../math/math.js";
+import { Geometry } from "../math/geometry.js";
+import { Numerics } from "../math/numerics.js";
+import { Env } from "../utils/env.js";
 import GeometryElement from "../base/element.js";
 import Composition from "../base/composition.js";
 
@@ -744,7 +744,7 @@ JXG.extend(
             ],
             mat2D, objectToClip, size,
             dx, dy;
-            // objectsList;
+        // objectsList;
 
         if (
             !Type.exists(this.el_slide) ||
@@ -864,7 +864,7 @@ JXG.extend(
         return a.zIndex - b.zIndex;
     },
 
-    updateZIndices: function() {
+    updateZIndices: function () {
         var id, el;
         for (id in this.objects) {
             if (this.objects.hasOwnProperty(id)) {
@@ -873,7 +873,7 @@ JXG.extend(
                 // The other elements (point3d, face3d) do this in their update method.
                 if ((el.type === OBJECT_TYPE.LINE3D ||
                     el.type === OBJECT_TYPE.POLYGON3D
-                    ) &&
+                ) &&
                     Type.exists(el.element2D) &&
                     el.element2D.evalVisProp('visible')
                 ) {
@@ -883,7 +883,7 @@ JXG.extend(
         }
     },
 
-    updateShaders: function() {
+    updateShaders: function () {
         var id, el, v;
         for (id in this.objects) {
             if (this.objects.hasOwnProperty(id)) {
@@ -918,7 +918,7 @@ JXG.extend(
                     // el.type === OBJECT_TYPE.PLANE3D ||
                     el.type === OBJECT_TYPE.POINT3D ||
                     el.type === OBJECT_TYPE.POLYGON3D
-                    ) &&
+                ) &&
                     Type.exists(el.element2D) &&
                     el.element2D.evalVisProp('visible')
                 ) {
@@ -1472,7 +1472,7 @@ JXG.extend(
     // TODO:
     // - handle non-closed polyhedra
     // - handle intersections in vertex, edge, plane
-    intersectionPlanePolyhedron: function(plane, phdr) {
+    intersectionPlanePolyhedron: function (plane, phdr) {
         var i, j, seg,
             p, first, pos, pos_akt,
             eps = 1e-12,

@@ -38,10 +38,12 @@
  * algorithms for solving linear equations etc.
  */
 
-import { JXG } from "../jxg.js";
+
+import { Geometry } from "./geometry.js"
 import { Type } from "../utils/type.js";
 import { Env } from "../utils/env.js";
 import { JSXMath } from "./math.js";
+import  Complex  from "./complex.js";
 
 // Predefined butcher tableaus for the common Runge-Kutta method (fourth order), Heun method (second order), and Euler method (first order).
 var predefinedButcher = {
@@ -79,10 +81,8 @@ var predefinedButcher = {
  * @exports JXG.JSXMath.Numerics as Geometry.Numerics
  * @namespace
  */
-if (JXG.JSXMath == undefined)
-    JXG.JSXMath = {}
+export class Numerics {
 
-JXG.JSXMath.Numerics = {
     //JXG.extend(JXG.JSXMath.Numerics, /** @lends Geometry.Numerics */ {
     /**
      * Solves a system of linear equations given by A and b using the Gauss-Jordan-elimination.
@@ -93,7 +93,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} A vector that solves the linear equation system.
      * @memberof Geometry.Numerics
      */
-    Gauss: function (A, b) {
+    static Gauss(A, b) {
         var i,
             j,
             k,
@@ -154,7 +154,7 @@ JXG.JSXMath.Numerics = {
         this.backwardSolve(Acopy, x, true);
 
         return x;
-    },
+    }
 
     /**
      * Solves a system of linear equations given by the right triangular matrix R and vector b.
@@ -164,7 +164,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} An array representing a vector that solves the system of linear equations.
      * @memberof Geometry.Numerics
      */
-    backwardSolve: function (R, b, canModify) {
+    static backwardSolve(R, b, canModify) {
         var x, m, n, i, j;
 
         if (canModify) {
@@ -186,7 +186,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return x;
-    },
+    }
 
     /**
      *  Gauss-Bareiss algorithm to compute the
@@ -203,7 +203,7 @@ JXG.JSXMath.Numerics = {
      * @private
      * @memberof Geometry.Numerics
      */
-    gaussBareiss: function (mat) {
+    static gaussBareiss(mat) {
         var k, c, s,
             i, j, p,
             n, M, t,
@@ -267,7 +267,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return s * M[n - 1][n - 1];
-    },
+    }
 
     /**
      * Computes the determinant of a square nxn matrix with the
@@ -277,7 +277,7 @@ JXG.JSXMath.Numerics = {
      *                   The empty matrix returns 0.
      * @memberof Geometry.Numerics
      */
-    det: function (mat) {
+    static det(mat) {
         var n = mat.length;
 
         if (n === 2 && mat[0].length === 2) {
@@ -285,7 +285,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return this.gaussBareiss(mat);
-    },
+    }
 
     /**
      * Compute the Eigenvalues and Eigenvectors of a symmetric 3x3 matrix with the Jacobi method
@@ -294,7 +294,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} [A,V] the matrices A and V. The diagonal of A contains the Eigenvalues, V contains the Eigenvectors.
      * @memberof Geometry.Numerics
      */
-    Jacobi: function (Ain) {
+    static Jacobi(Ain) {
         var i,
             j,
             k,
@@ -389,7 +389,7 @@ JXG.JSXMath.Numerics = {
         } while (Math.abs(ssum) / sum > eps && nloops < 2000);
 
         return [A, V];
-    },
+    }
 
     /**
      * Calculates the integral of function f over interval using Newton-Cotes-algorithm.
@@ -418,7 +418,7 @@ JXG.JSXMath.Numerics = {
      *                                   {number_of_nodes: 16, integration_type: 'trapez'});
      * @memberof Geometry.Numerics
      */
-    NewtonCotes: function (interval, f, config) {
+    static NewtonCotes(interval, f, config?) {
         var evaluation_point,
             i,
             number_of_intervals,
@@ -506,7 +506,7 @@ JXG.JSXMath.Numerics = {
                 integral_value *= (2.0 * step_size) / 45.0;
         }
         return integral_value;
-    },
+    }
 
     /**
      * Calculates the integral of function f over interval using Romberg iteration.
@@ -532,7 +532,7 @@ JXG.JSXMath.Numerics = {
      *                                   {max_iterations: 16, eps: 0.0001});
      * @memberof Geometry.Numerics
      */
-    Romberg: function (interval, f, config) {
+    static Romberg(interval, f, config) {
         var a,
             b,
             h,
@@ -580,7 +580,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return integral;
-    },
+    }
 
     /**
      * Calculates the integral of function f over interval using Gauss-Legendre quadrature.
@@ -606,7 +606,7 @@ JXG.JSXMath.Numerics = {
      *                                   {n: 16});
      * @memberof Geometry.Numerics
      */
-    GaussLegendre: function (interval, f, config) {
+    static GaussLegendre(interval, f, config) {
         var a,
             b,
             i,
@@ -812,7 +812,7 @@ JXG.JSXMath.Numerics = {
         xm = 0.5 * (b - a);
         xp = 0.5 * (b + a);
 
-        if (n & (1 === 1)) {
+        if (Math.abs(n % 2) == 1) {
             // n odd
             result = w[0] * f(xp);
             for (i = 1; i < m; ++i) {
@@ -827,14 +827,14 @@ JXG.JSXMath.Numerics = {
         }
 
         return xm * result;
-    },
+    }
 
     /**
      * Scale error in Gauss Kronrod quadrature.
      * Internal method used in {@link Geometry.Numerics._gaussKronrod}.
      * @private
      */
-    _rescale_error: function (err, result_abs, result_asc) {
+    static _rescale_error(err, result_abs, result_asc) {
         var scale,
             min_err,
             DBL_MIN = 2.2250738585072014e-308,
@@ -859,12 +859,12 @@ JXG.JSXMath.Numerics = {
         }
 
         return err;
-    },
+    }
 
     /**
      * Generic Gauss-Kronrod quadrature algorithm.
-     * Internal method used in {@link Geometry.Numerics.GaussKronrod15},
-     * {@link Geometry.Numerics.GaussKronrod21},
+     * Internal method used in {@link Geometry.Numerics.GaussKronrod15 }
+     * {@link Geometry.Numerics.GaussKronrod21 }
      * {@link Geometry.Numerics.GaussKronrod31}.
      * Taken from QUADPACK.
      *
@@ -881,7 +881,7 @@ JXG.JSXMath.Numerics = {
      *
      * @private
      */
-    _gaussKronrod: function (interval, f, n, xgk, wg, wgk, resultObj) {
+    static _gaussKronrod(interval, f, n, xgk, wg, wgk, resultObj) {
         var a = interval[0],
             b = interval[1],
             up,
@@ -952,7 +952,7 @@ JXG.JSXMath.Numerics = {
         resultObj.resasc = result_asc;
 
         return result;
-    },
+    }
 
     /**
      * 15-point Gauss-Kronrod quadrature algorithm, see the library QUADPACK
@@ -965,7 +965,7 @@ JXG.JSXMath.Numerics = {
      *
      * @memberof Geometry.Numerics
      */
-    GaussKronrod15: function (interval, f, resultObj) {
+    static GaussKronrod15(interval, f, resultObj) {
         /* Gauss quadrature weights and kronrod quadrature abscissae and
                 weights as evaluated with 80 decimal digit arithmetic by
                 L. W. Fullerton, Bell Labs, Nov. 1981. */
@@ -997,7 +997,7 @@ JXG.JSXMath.Numerics = {
                 ];
 
         return this._gaussKronrod(interval, f, 8, xgk, wg, wgk, resultObj);
-    },
+    }
 
     /**
      * 21 point Gauss-Kronrod quadrature algorithm, see the library QUADPACK
@@ -1010,7 +1010,7 @@ JXG.JSXMath.Numerics = {
      *
      * @memberof Geometry.Numerics
      */
-    GaussKronrod21: function (interval, f, resultObj) {
+    static GaussKronrod21(interval, f, resultObj) {
         /* Gauss quadrature weights and kronrod quadrature abscissae and
                 weights as evaluated with 80 decimal digit arithmetic by
                 L. W. Fullerton, Bell Labs, Nov. 1981. */
@@ -1045,7 +1045,7 @@ JXG.JSXMath.Numerics = {
                 ];
 
         return this._gaussKronrod(interval, f, 11, xgk, wg, wgk, resultObj);
-    },
+    }
 
     /**
      * 31 point Gauss-Kronrod quadrature algorithm, see the library QUADPACK
@@ -1058,7 +1058,7 @@ JXG.JSXMath.Numerics = {
      *
      * @memberof Geometry.Numerics
      */
-    GaussKronrod31: function (interval, f, resultObj) {
+    static GaussKronrod31(interval, f, resultObj) {
         /* Gauss quadrature weights and kronrod quadrature abscissae and
                 weights as evaluated with 80 decimal digit arithmetic by
                 L. W. Fullerton, Bell Labs, Nov. 1981. */
@@ -1099,7 +1099,7 @@ JXG.JSXMath.Numerics = {
                 ];
 
         return this._gaussKronrod(interval, f, 16, xgk, wg, wgk, resultObj);
-    },
+    }
 
     /**
      * Generate workspace object for {@link Geometry.Numerics.Qag}.
@@ -1110,7 +1110,7 @@ JXG.JSXMath.Numerics = {
      * @private
      * @memberof Geometry.Numerics
      */
-    _workspace: function (interval, n) {
+    static _workspace(interval, n) {
         return {
             limit: n,
             size: 0,
@@ -1123,7 +1123,7 @@ JXG.JSXMath.Numerics = {
             order: [0],
             level: [0],
 
-            qpsrt: function () {
+            qpsrt() {
                 var last = this.size - 1,
                     limit = this.limit,
                     errmax,
@@ -1192,13 +1192,13 @@ JXG.JSXMath.Numerics = {
                 this.nrmax = i_nrmax;
             },
 
-            set_initial_result: function (result, error) {
+            set_initial_result(result, error) {
                 this.size = 1;
                 this.rlist[0] = result;
                 this.elist[0] = error;
             },
 
-            update: function (a1, b1, area1, error1, a2, b2, area2, error2) {
+            update(a1, b1, area1, error1, a2, b2, area2, error2) {
                 var i_max = this.i,
                     i_new = this.size,
                     new_level = this.level[this.i] + 1;
@@ -1238,7 +1238,7 @@ JXG.JSXMath.Numerics = {
                 this.qpsrt();
             },
 
-            retrieve: function () {
+            retrieve() {
                 var i = this.i;
                 return {
                     a: this.alist[i],
@@ -1248,7 +1248,7 @@ JXG.JSXMath.Numerics = {
                 };
             },
 
-            sum_results: function () {
+            sum_results() {
                 var nn = this.size,
                     k,
                     result_sum = 0.0;
@@ -1260,7 +1260,7 @@ JXG.JSXMath.Numerics = {
                 return result_sum;
             },
 
-            subinterval_too_small: function (a1, a2, b2) {
+            subinterval_too_small(a1, a2, b2) {
                 var e = 2.2204460492503131e-16,
                     u = 2.2250738585072014e-308,
                     tmp = (1 + 100 * e) * (Math.abs(a2) + 1000 * u);
@@ -1268,12 +1268,12 @@ JXG.JSXMath.Numerics = {
                 return Math.abs(a1) <= tmp && Math.abs(b2) <= tmp;
             }
         };
-    },
+    }
 
     /**
      * Quadrature algorithm qag from QUADPACK.
-     * Internal method used in {@link Geometry.Numerics.GaussKronrod15},
-     * {@link Geometry.Numerics.GaussKronrod21},
+     * Internal method used in {@link Geometry.Numerics.GaussKronrod15 }
+     * {@link Geometry.Numerics.GaussKronrod21 }
      * {@link Geometry.Numerics.GaussKronrod31}.
      *
      * @param {Array} interval The integration interval, e.g. [0, 3].
@@ -1303,7 +1303,7 @@ JXG.JSXMath.Numerics = {
      *                                   {q: Geometry.Numerics.GaussKronrod31});
      * @memberof Geometry.Numerics
      */
-    Qag: function (interval, f, config) {
+    static Qag(interval, f, config) {
         var DBL_EPS = 2.2204460492503131e-16,
             ws = this._workspace(interval, 1000),
             limit = config && Type.isNumber(config.limit) ? config.limit : 15,
@@ -1345,16 +1345,16 @@ JXG.JSXMath.Numerics = {
             delta;
 
         if (limit > ws.limit) {
-            JXG.warn("iteration limit exceeds available workspace");
+            Env.warn("iteration limit exceeds available workspace");
         }
         if (epsabs <= 0 && (epsrel < 50 * JSXMath.eps || epsrel < 0.5e-28)) {
-            JXG.warn("tolerance cannot be acheived with given epsabs and epsrel");
+            Env.warn("tolerance cannot be acheived with given epsabs and epsrel");
         }
 
         result0 = q.apply(this, [interval, f, resultObj]);
-        abserr0 = resultObj.abserr;
-        resabs0 = resultObj.resabs;
-        resasc0 = resultObj.resasc;
+        abserr0 = resultObj['abserr'];
+        resabs0 = resultObj['resabs'];
+        resasc0 = resultObj['resasc'];
 
         ws.set_initial_result(result0, abserr0);
         tolerance = Math.max(epsabs, epsrel * Math.abs(result0));
@@ -1364,7 +1364,7 @@ JXG.JSXMath.Numerics = {
             result = result0;
             // abserr = abserr0;
 
-            JXG.warn("cannot reach tolerance because of roundoff error on first attempt");
+            Env.warn("cannot reach tolerance because of roundoff error on first attempt");
             return -Infinity;
         }
 
@@ -1379,7 +1379,7 @@ JXG.JSXMath.Numerics = {
             result = result0;
             // abserr = abserr0;
 
-            JXG.warn("a maximum of one iteration was insufficient");
+            Env.warn("a maximum of one iteration was insufficient");
             return -Infinity;
         }
 
@@ -1408,14 +1408,14 @@ JXG.JSXMath.Numerics = {
             b2 = b_i;
 
             area1 = q.apply(this, [[a1, b1], f, resultObj]);
-            error1 = resultObj.abserr;
+            error1 = resultObj['abserr'];
             // resabs1 = resultObj.resabs;
-            resasc1 = resultObj.resasc;
+            resasc1 = resultObj['resasc'];
 
             area2 = q.apply(this, [[a2, b2], f, resultObj]);
-            error2 = resultObj.abserr;
+            error2 = resultObj['abserr'];
             // resabs2 = resultObj.resabs;
-            resasc2 = resultObj.resasc;
+            resasc2 = resultObj['resasc'];
 
             area12 = area1 + area2;
             error12 = error1 + error2;
@@ -1486,7 +1486,7 @@ JXG.JSXMath.Numerics = {
 */
 
         return result;
-    },
+    }
 
     /**
      * Integral of function f over interval.
@@ -1498,7 +1498,7 @@ JXG.JSXMath.Numerics = {
      * @see Geometry.Numerics.Qag
      * @memberof Geometry.Numerics
      */
-    I: function (interval, f) {
+    static I(interval, f) {
         // return this.NewtonCotes(interval, f, {number_of_nodes: 16, integration_type: 'milne'});
         // return this.Romberg(interval, f, {max_iterations: 20, eps: 0.0000001});
         return this.Qag(interval, f, {
@@ -1507,7 +1507,7 @@ JXG.JSXMath.Numerics = {
             epsrel: 0.0000001,
             epsabs: 0.0000001
         });
-    },
+    }
 
     /**
      * Newton's method to find roots of a funtion in one variable.
@@ -1518,7 +1518,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Number} A root of the function f.
      * @memberof Geometry.Numerics
      */
-    Newton: function (f, x, context) {
+    static Newton(f, x, context) {
         var df,
             i = 0,
             h = JSXMath.eps,
@@ -1546,7 +1546,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return x;
-    },
+    }
 
     /**
      * Abstract method to find roots of univariate functions, which - for the time being -
@@ -1567,10 +1567,10 @@ JXG.JSXMath.Numerics = {
      * @see Geometry.Numerics.Newton
      * @memberof Geometry.Numerics
      */
-    root: function (f, x, context) {
+    static root(f, x, context?) {
         //return this.fzero(f, x, context);
         return this.chandrupatla(f, x, context);
-    },
+    }
 
     /**
      * Compute an intersection of the curves c1 and c2
@@ -1611,7 +1611,7 @@ JXG.JSXMath.Numerics = {
      * @returns {JXG.Coords} intersection point
      * @memberof Geometry.Numerics
      */
-    generalizedNewton: function (c1, c2, t1ini, t2ini) {
+    static generalizedNewton(c1, c2, t1ini, t2ini) {
         var t1, t2,
             a, b, c, d, e, f,
             disc,
@@ -1658,7 +1658,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return [c2.X(t2), c2.Y(t2)];
-    },
+    }
 
     /**
      * Apply damped Newton-Raphson algorithm to determine the intersection
@@ -1676,7 +1676,7 @@ JXG.JSXMath.Numerics = {
      * @param {Number} eps Stop if function value is smaller than eps
      * @returns {Array} [t1, t2, F2], where t1 and t2 are the parameters of the intersection for both curves, F2 is ||c1[t1]-c2[t2]||**2.
      */
-    generalizedDampedNewtonCurves: function (c1, c2, t1ini, t2ini, gamma, eps) {
+    static generalizedDampedNewtonCurves(c1, c2, t1ini, t2ini, gamma, eps) {
         var t1, t2,
             a, b, c, d, e, f,
             disc,
@@ -1729,7 +1729,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return [t1, t2, F2];
-    },
+    }
 
     /**
      * Apply the damped Newton-Raphson algorithm to determine to find a root of a
@@ -1747,7 +1747,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} [t, F2] array of length, containing t, the approximation of the root (array of length n),
      * and the square norm of F(t).
      */
-    generalizedDampedNewton: function (F, D, n, t_ini, gamma, eps, max_steps) {
+    static generalizedDampedNewton(F, D, n, t_ini, gamma, eps, max_steps) {
         var i,
             t = [],
             a, b, c, d, e, f,
@@ -1810,7 +1810,7 @@ JXG.JSXMath.Numerics = {
 
             return [t, F2];
         }
-    },
+    }
 
     /**
      * Returns the Lagrange polynomials for curves with equidistant nodes, see
@@ -1856,7 +1856,7 @@ JXG.JSXMath.Numerics = {
      * </script><pre>
      *
      */
-    Neville: function (p) {
+    static Neville(p) {
         var w = [],
             /** @ignore */
             makeFct = function (fun) {
@@ -1864,7 +1864,7 @@ JXG.JSXMath.Numerics = {
                     var i,
                         d,
                         s,
-                        bin = Mat.binomial,
+                        bin = JSXMath.binomial,
                         len = p.length,
                         len1 = len - 1,
                         num = 0.0,
@@ -1903,7 +1903,7 @@ JXG.JSXMath.Numerics = {
                 return p.length - 1;
             }
         ];
-    },
+    }
 
     /**
      * Calculates second derivatives at the given knots.
@@ -1913,7 +1913,7 @@ JXG.JSXMath.Numerics = {
      * @see Geometry.Numerics.splineEval
      * @memberof Geometry.Numerics
      */
-    splineDef: function (x, y) {
+    static splineDef(x, y) {
         var pair,
             i,
             l,
@@ -1976,7 +1976,7 @@ JXG.JSXMath.Numerics = {
         F[n - 1] = 0;
 
         return F;
-    },
+    }
 
     /**
      * Evaluate points on spline.
@@ -1988,7 +1988,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Number|Array} A single value or an array, depending on what is given as x0.
      * @memberof Geometry.Numerics
      */
-    splineEval: function (x0, x, y, F) {
+    static splineEval(x0, x, y, F) {
         var i,
             j,
             a,
@@ -2043,7 +2043,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return y0[0];
-    },
+    }
 
     /**
      * Generate a string containing the function term of a polynomial.
@@ -2054,7 +2054,7 @@ JXG.JSXMath.Numerics = {
      * @returns {String} A string containing the function term of the polynomial.
      * @memberof Geometry.Numerics
      */
-    generatePolynomialTerm: function (coeffs, deg, varname, prec) {
+    static generatePolynomialTerm(coeffs, deg, varname, prec) {
         var i,
             t = [];
 
@@ -2069,7 +2069,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return t.join("");
-    },
+    }
 
     /**
      * Computes the polynomial through a given set of coordinates in Lagrange form.
@@ -2140,7 +2140,7 @@ JXG.JSXMath.Numerics = {
      * </script><pre>
      *
      */
-    lagrangePolynomial: function (p) {
+    static lagrangePolynomial(p) {
         var w = [],
             that = this,
             /** @ignore */
@@ -2227,7 +2227,7 @@ JXG.JSXMath.Numerics = {
          * </script><pre>
          *
          */
-        fct.getTerm = function (digits, param, dot) {
+        fct['getTerm'] = function (digits, param, dot) {
             return that.lagrangePolynomialTerm(p, digits, param, dot)();
         };
 
@@ -2270,12 +2270,12 @@ JXG.JSXMath.Numerics = {
          * </script><pre>
          *
          */
-        fct.getCoefficients = function () {
+        fct['getCoefficients'] = function () {
             return that.lagrangePolynomialCoefficients(p)();
         };
 
         return fct;
-    },
+    }
 
     /**
      * Determine the Lagrange polynomial through an array of points and
@@ -2322,7 +2322,7 @@ JXG.JSXMath.Numerics = {
      * </script><pre>
      *
      */
-    lagrangePolynomialTerm: function (points, digits, param, dot) {
+    static lagrangePolynomialTerm(points, digits, param, dot) {
         var that = this;
 
         return function () {
@@ -2345,8 +2345,8 @@ JXG.JSXMath.Numerics = {
                 if (Math.abs(c) < JSXMath.eps) {
                     continue;
                 }
-                if (JXG.exists(digits)) {
-                    c = Env._round10(c, -digits);
+                if (Type.exists(digits)) {
+                    c = Type._round10(c, -digits);
                 }
                 if (isLeading) {
                     t += c > 0 ? c : "-" + -c;
@@ -2363,7 +2363,7 @@ JXG.JSXMath.Numerics = {
             }
             return t; // board.jc.manipulate('f = map(x) -> ' + t + ';');
         };
-    },
+    }
 
     /**
      * Determine the Lagrange polynomial through an array of points and
@@ -2408,7 +2408,7 @@ JXG.JSXMath.Numerics = {
      * </script><pre>
      *
      */
-    lagrangePolynomialCoefficients: function (points) {
+    static lagrangePolynomialCoefficients(points) {
         return function () {
             var len = points.length,
                 zeroes = [],
@@ -2431,7 +2431,7 @@ JXG.JSXMath.Numerics = {
                         zeroes.push(points[j].X());
                     }
                 }
-                coeffs = [1].concat(Mat.Vieta(zeroes));
+                coeffs = [1].concat(JSXMath.Vieta(zeroes));
                 for (j = 0; j < coeffs.length; j++) {
                     coeffs_sum[j] += (j % 2 === 1 ? -1 : 1) * coeffs[j] * c;
                 }
@@ -2439,7 +2439,7 @@ JXG.JSXMath.Numerics = {
 
             return coeffs_sum;
         };
-    },
+    }
 
     /**
      * Determine the coefficients of a cardinal spline polynom, See
@@ -2451,9 +2451,9 @@ JXG.JSXMath.Numerics = {
      * @return {Array}    coefficents array c for the polynomial t maps to
      * c[0] + c[1]*t + c[2]*t*t + c[3]*t*t*t
      */
-    _initCubicPoly: function (x1, x2, t1, t2) {
+    static _initCubicPoly(x1, x2, t1, t2) {
         return [x1, t1, -3 * x1 + 3 * x2 - 2 * t1 - t2, 2 * x1 - 2 * x2 + t1 + t2];
-    },
+    }
 
     /**
      * Computes the cubic cardinal spline curve through a given set of points. The curve
@@ -2473,7 +2473,7 @@ JXG.JSXMath.Numerics = {
      * minus three.
      * @memberof Geometry.Numerics
      */
-    CardinalSpline: function (points, tau_param, type) {
+    static CardinalSpline(points, tau_param, type) {
         var p,
             coeffs = [],
             makeFct,
@@ -2517,37 +2517,37 @@ JXG.JSXMath.Numerics = {
 
                     // New point list p: [first, points ..., last]
                     first = {
-                        X: function () {
+                        X() {
                             return 2 * points[0].X() - points[1].X();
                         },
-                        Y: function () {
+                        Y() {
                             return 2 * points[0].Y() - points[1].Y();
                         },
-                        Dist: function (p) {
+                        Dist(p) {
                             var dx = this.X() - p.X(),
                                 dy = this.Y() - p.Y();
                             return Math.hypot(dx, dy);
-                        }
+                        },
                     };
 
                     last = {
-                        X: function () {
+                        X() {
                             return (
                                 2 * points[points.length - 1].X() -
                                 points[points.length - 2].X()
                             );
                         },
-                        Y: function () {
+                        Y() {
                             return (
                                 2 * points[points.length - 1].Y() -
                                 points[points.length - 2].Y()
                             );
                         },
-                        Dist: function (p) {
+                        Dist(p) {
                             var dx = this.X() - p.X(),
                                 dy = this.Y() - p.Y();
                             return Math.hypot(dx, dy);
-                        }
+                        },
                     };
 
                     p = [first].concat(points, [last]);
@@ -2642,7 +2642,7 @@ JXG.JSXMath.Numerics = {
                 return points.length - 1;
             }
         ];
-    },
+    }
 
     /**
      * Computes the cubic Catmull-Rom spline curve through a given set of points. The curve
@@ -2656,9 +2656,9 @@ JXG.JSXMath.Numerics = {
      * returning the length of the points array minus three.
      * @memberof Geometry.Numerics
      */
-    CatmullRomSpline: function (points, type) {
+    static CatmullRomSpline(points, type) {
         return this.CardinalSpline(points, 0.5, type);
-    },
+    }
 
     /**
      * Computes the regression polynomial of a given degree through a given set of coordinates.
@@ -2674,7 +2674,7 @@ JXG.JSXMath.Numerics = {
      * The function returned will throw an exception, if the data set is malformed.
      * @memberof Geometry.Numerics
      */
-    regressionPolynomial: function (degree, dataX, dataY) {
+    static regressionPolynomial(degree, dataX, dataY) {
         var coeffs, deg, dX, dY, inputType, fct,
             term = "";
 
@@ -2789,8 +2789,8 @@ JXG.JSXMath.Numerics = {
                 MT = JSXMath.transpose(M);
                 B = JSXMath.matMatMult(MT, M);
                 c = JSXMath.matVecMult(MT, y);
-                coeffs = JXG.JSXMath.Numerics.Gauss(B, c);
-                term = JXG.JSXMath.Numerics.generatePolynomialTerm(coeffs, d, "x", 3);
+                coeffs = Numerics.Gauss(B, c);
+                term = Numerics.generatePolynomialTerm(coeffs, d, "x", 3);
             }
 
             // Horner's scheme to evaluate polynomial
@@ -2808,7 +2808,7 @@ JXG.JSXMath.Numerics = {
         };
 
         return fct;
-    },
+    }
 
     /**
      * Computes the cubic Bezier curve through a given set of points.
@@ -2820,7 +2820,7 @@ JXG.JSXMath.Numerics = {
      * no parameters and returning one third of the length of the points.
      * @memberof Geometry.Numerics
      */
-    bezier: function (points) {
+    static bezier(points) {
         var len,
             flen,
             /** @ignore */
@@ -2864,7 +2864,7 @@ JXG.JSXMath.Numerics = {
                 return Math.floor(points.length / 3);
             }
         ];
-    },
+    }
 
     /**
      * Computes the B-spline curve of order k (order = degree+1) through a given set of points.
@@ -2875,7 +2875,7 @@ JXG.JSXMath.Numerics = {
      * returning the length of the points array minus one.
      * @memberof Geometry.Numerics
      */
-    bspline: function (points, order) {
+    static bspline(points, order) {
         var knots,
             _knotVector = function (n, k) {
                 var j,
@@ -2988,7 +2988,7 @@ JXG.JSXMath.Numerics = {
                 return points.length - 1;
             }
         ];
-    },
+    }
 
     /**
      * Numerical (symmetric) approximation of derivative. suspendUpdate is piped through,
@@ -3000,7 +3000,7 @@ JXG.JSXMath.Numerics = {
      * @returns {function} Derivative function of a given function f.
      * @memberof Geometry.Numerics
      */
-    D: function (f, obj) {
+    static D(f, obj?): Function {
         if (!Type.exists(obj)) {
             return function (x, suspendedUpdate) {
                 var h = 0.00001,
@@ -3030,7 +3030,7 @@ JXG.JSXMath.Numerics = {
                 h2
             );
         };
-    },
+    }
 
     /**
      * Evaluate the function term for {@link Geometry.Numerics.riemann}.
@@ -3044,7 +3044,7 @@ JXG.JSXMath.Numerics = {
      * @private
      * @memberof Geometry.Numerics
      */
-    _riemannValue: function (x, f, type, delta) {
+    static _riemannValue(x, f, type, delta) {
         var y, y1, x1, delta1;
 
         if (delta < 0) {
@@ -3106,7 +3106,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return y;
-    },
+    }
 
     /**
      * Helper function to create curve which displays Riemann sums.
@@ -3130,7 +3130,7 @@ JXG.JSXMath.Numerics = {
      * rectangles.
      * @memberof Geometry.Numerics
      */
-    riemann: function (gf, n, type, start, end) {
+    static riemann(gf, n, type, start, end) {
         var i, delta,
             k, a, b, c, f0, f1, f2, xx, h,
             steps = 30, // Fixed step width for Simpson's rule
@@ -3246,13 +3246,13 @@ JXG.JSXMath.Numerics = {
         }
 
         return [xarr, yarr, sum];
-    },
+    }
 
     /**
      * Approximate the integral by Riemann sums.
      * Compute the area described by the riemann sum rectangles.
      *
-     * If there is an element of type {@link Riemannsum}, then it is more efficient
+     * If there is an element of type {@link Riemannsum } then it is more efficient
      * to use the method JXG.Curve.Value() of this element instead.
      *
      * @param {Function_Array} f Function or array of two functions.
@@ -3267,10 +3267,10 @@ JXG.JSXMath.Numerics = {
      * @returns {Number} The sum of the areas of the rectangles.
      * @memberof Geometry.Numerics
      */
-    riemannsum: function (f, n, type, start, end) {
-        JXG.deprecated("Numerics.riemannsum()", "Numerics.riemann()[2]");
+    static riemannsum(f, n, type, start, end) {
+        Env.deprecated("Numerics.riemannsum()", "Numerics.riemann()[2]");
         return this.riemann(f, n, type, start, end)[2];
-    },
+    }
 
     /**
      * Solve initial value problems numerically using <i>explicit</i> Runge-Kutta methods.
@@ -3335,7 +3335,7 @@ JXG.JSXMath.Numerics = {
      * </script><pre>
      * @memberof Geometry.Numerics
      */
-    rungeKutta: function (butcher, x0, I, N, f) {
+    static rungeKutta(butcher, x0, I, N, f) {
         var e,
             i, j, k, l, s,
             x = [],
@@ -3401,7 +3401,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return result;
-    },
+    }
 
     /**
      * Maximum number of iterations in {@link Geometry.Numerics.fzero} and
@@ -3410,7 +3410,7 @@ JXG.JSXMath.Numerics = {
      * @default 80
      * @memberof Geometry.Numerics
      */
-    maxIterationsRoot: 80,
+    static maxIterationsRoot = 80
 
     /**
      * Maximum number of iterations in {@link Geometry.Numerics.fminbr}
@@ -3418,7 +3418,7 @@ JXG.JSXMath.Numerics = {
      * @default 500
      * @memberof Geometry.Numerics
      */
-    maxIterationsMinimize: 500,
+    static maxIterationsMinimize = 500
 
     /**
      * Given a number x_0, this function tries to find a second number x_1 such that
@@ -3436,7 +3436,7 @@ JXG.JSXMath.Numerics = {
      *
      * @memberof Geometry.Numerics
      */
-    findBracket: function (f, x0, context) {
+    static findBracket(f, x0, context) {
         var a, aa, fa, blist, b, fb, u, fu, i, len;
 
         if (Type.isArray(x0)) {
@@ -3492,7 +3492,7 @@ JXG.JSXMath.Numerics = {
             fb = fu;
         }
         return [a, fa, b, fb];
-    },
+    }
 
     /**
      *
@@ -3522,7 +3522,7 @@ JXG.JSXMath.Numerics = {
      * @see Geometry.Numerics.fminbr
      * @memberof Geometry.Numerics
      */
-    fzero: function (f, x0, context) {
+    static fzero(f, x0, context) {
         var a, b, c,
             fa, fb, fc,
             res, x00,
@@ -3667,7 +3667,7 @@ JXG.JSXMath.Numerics = {
         } // End while
 
         return b;
-    },
+    }
 
     /**
      * Find zero of an univariate function f.
@@ -3696,7 +3696,7 @@ JXG.JSXMath.Numerics = {
      * @see Geometry.Numerics.fminbr
      * @memberof Geometry.Numerics
      */
-    chandrupatla: function (f, x0, context) {
+    static chandrupatla(f, x0, context) {
         var a, b, fa, fb,
             res,
             niter = 0,
@@ -3803,14 +3803,14 @@ JXG.JSXMath.Numerics = {
         // console.log(niter);
 
         return xm;
-    },
+    }
 
     /**
      * Find a small enclosing interval of the domain of a function by
      * tightening the input interval x0.
      * <p>
-     * This is a helper function which is used in {@link Geometry.Numerics.fminbr},
-     * {@link Geometry.Numerics.fzero}, and  {@link JXG.Curve.getLabelPosition}
+     * This is a helper function which is used in {@link Geometry.Numerics.fminbr }
+     * {@link Geometry.Numerics.fzero } and  {@link JXG.Curve.getLabelPosition}
      * to avoid search in an interval where the function is mostly undefined.
      *
      * @param {function} f
@@ -3832,7 +3832,7 @@ JXG.JSXMath.Numerics = {
      *
      * // Output: [ 0.00020428174562965915, 5 ]
      */
-    findDomain: function (f, x0, context, outer) {
+    static findDomain(f, x0, context, outer?) {
         var a, b, c, fc,
             x,
             gr = 1 - 1 / 1.61803398875,
@@ -3902,7 +3902,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return x;
-    },
+    }
 
     /**
      *
@@ -3918,7 +3918,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Number} the approximation of the minimum value position
      * @memberof Geometry.Numerics
      **/
-    fminbr: function (f, x0, context) {
+    static fminbr(f, x0, context?) {
         var a, b, x, v, w,
             fx, fv, fw,
             x00,
@@ -4051,7 +4051,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return x;
-    },
+    }
 
     /**
      * GLOMIN seeks a global minimum of a function F(X) in an interval [A,B]
@@ -4125,7 +4125,7 @@ JXG.JSXMath.Numerics = {
      * @param {Array} x0 Array of length 2 determining the interval [A, B] for which the global minimum is to be found
      * @returns {Array} [x, y] x is the position of the global minimum and y = f(x).
      */
-    glomin: function (f, x0) {
+    static glomin(f, x0) {
         var a0, a2, a3, d0, d1, d2, h,
             k, m2,
             p, q, qs,
@@ -4299,7 +4299,7 @@ JXG.JSXMath.Numerics = {
         }
 
         return [x, y];
-    },
+    }
 
     /**
      * Determine all roots of a polynomial with real or complex coefficients by using the
@@ -4357,7 +4357,7 @@ JXG.JSXMath.Numerics = {
      * 8 8.000002743888055 + -1.8367099231598242e-40i
      *
      */
-    polzeros: function (coeffs, deg, tol, max_it, initial_values) {
+    static polzeros(coeffs, deg, tol, max_it, initial_values) {
         var i, le, off, it,
             debug = false,
             cc = [],
@@ -4373,22 +4373,22 @@ JXG.JSXMath.Numerics = {
              * @param {Boolean} [derivative=false] If true the derivative will be evaluated.
              * @ignore
              */
-            hornerComplex = function (a, z, derivative) {
+            hornerComplex = function (a, z, derivative = false) {
                 var i, s,
                     n = a.length - 1;
 
                 derivative = derivative || false;
                 if (derivative) {
                     // s = n * a_n
-                    s = JXG.C.mult(n, a[n]);
+                    // s = JXG .C.mult(n, a[n]);    // tbtb complex values should be of type Complex
                     for (i = n - 1; i > 0; i--) {
                         // s = s * z + i * a_i
                         s.mult(z);
-                        s.add(JXG.C.mult(a[i], i));
+                        // s.add(JXG.C.mult(a[i], i));      // tbtb complex values should be of type Complex
                     }
                 } else {
                     // s = a_n
-                    s = JXG.C.copy(a[n]);
+                    // s = JXG.C.copy(a[n]);      // tbtb complex values should be of type Complex
                     for (i = n - 1; i >= 0; i--) {
                         // s = s * z + a_i
                         s.mult(z);
@@ -4407,22 +4407,22 @@ JXG.JSXMath.Numerics = {
              * @param {Boolean} [derivative=false] If true the derivative will be evaluated.
              * @ignore
              */
-            hornerRec = function (a, x, derivative) {
+            hornerRec = function (a, x, derivative = false) {
                 var i, s,
                     n = a.length - 1;
 
                 derivative = derivative || false;
                 if (derivative) {
                     // s = n * a_0
-                    s = JXG.C.mult(n, a[0]);
+                    // s = JXG.C.mult(n, a[0]);       // tbtb complex values should be of type Complex
                     for (i = n - 1; i > 0; i--) {
                         // s = s * x + i * a_{n-i}
                         s.mult(x);
-                        s.add(JXG.C.mult(a[n - i], i));
+                        // s.add(JXG.C.mult(a[n - i], i));       // tbtb complex values should be of type Complex
                     }
                 } else {
                     // s = a_0
-                    s = JXG.C.copy(a[0]);
+                    // s = JXG.C.copy(a[0]);                  // tbtb complex values should be of type Complex
                     for (i = n - 1; i >= 0; i--) {
                         // s = s * x + a_{n-i}
                         s.mult(x);
@@ -4475,8 +4475,9 @@ JXG.JSXMath.Numerics = {
                 // b is the arithmetic mean of the roots.
                 // With is Vieta's formula <https://en.wikipedia.org/wiki/Vieta%27s_formulas>
                 //   b = -a_{n-1} / (n * a_n)
-                b = JXG.C.mult(-1, a[n - 1]);
-                b.div(JXG.C.mult(n, a[n]));
+
+                // b = JXG.C.mult(-1, a[n - 1]);       // tbtb complex values should be of type Complex
+                // b.div(JXG.C.mult(n, a[n]));
 
                 // r is the geometric mean of the deviations |b - root_i|.
                 // Using
@@ -4485,13 +4486,14 @@ JXG.JSXMath.Numerics = {
                 //   |p(b)| = |a_n| prod(|b - root_i|)
                 // we arrive at:
                 //   r = |p(b)/a_n|^(1/n)
-                z = JXG.C.div(hornerComplex(a, b), a[n]);
-                r = Math.pow(JXG.C.abs(z), 1 / n);
+
+                // z = JXG.C.div(hornerComplex(a, b), a[n]);
+                // r = Math.pow(JXG.C.abs(z), 1 / n);       // tbtb complex values should be of type Complex
                 if (r === 0) { r = 1; }
 
                 for (i = 0; i < n; i++) {
-                    a = new JXG.Complex(r * Math.cos(alpha1 * i + alpha0), r * Math.sin(alpha1 * i + alpha0));
-                    init[i] = JXG.C.add(b, a);
+                    a = new Complex(r * Math.cos(alpha1 * i + alpha0), r * Math.sin(alpha1 * i + alpha0));
+                    // init[i] = JXG.C.add(b, a);       // tbtb complex values should be of type Complex
                 }
 
                 return init;
@@ -4523,7 +4525,7 @@ JXG.JSXMath.Numerics = {
                     done.push(false);
                 }
                 for (i = 0; i < cc.length; i++) {
-                    cr.push(JXG.C.abs(cc[i]) * (4 * i + 1));
+                    // cr.push(JXG.C.abs(cc[i]) * (4 * i + 1));      // tbtb complex values should be of type Complex
                 }
                 for (k = 0; k < max_it && done_sum < n; k++) {
                     for (i = 0; i < n; i++) {
@@ -4531,51 +4533,52 @@ JXG.JSXMath.Numerics = {
                             continue;
                         }
                         num = hornerComplex(cc, z[i]);
-                        x = JXG.C.abs(z[i]);
+                        // x = JXG.C.abs(z[i]);        // tbtb complex values should be of type Complex
 
                         // Stopping criterion by D.A. Bini
                         // "Numerical computation of polynomial zeros
                         // by means of Aberths's method", Numerical Algorithms (1996).
                         //
-                        if (JXG.C.abs(num) < mu * horner(cr, x)) {
+
+                        //if (JXG.C.abs(num) < mu * horner(cr, x)) {     // tbtb complex values should be of type Complex
+                        if (true)
                             done[i] = true;
-                            done_sum++;
-                            if (done_sum === n) {
-                                break;
-                            }
+                        done_sum++;
+                        if (done_sum === n) {
+                            break;
+                        }
+                        continue;
+                    }
+
+                    // num = P(z_i) / P'(z_i)
+                    if (x > 1) {
+                        // gamma = JXG.C.div(1, z[i]);      // tbtb complex values should be of type Complex
+                        pp = hornerRec(cc, gamma, true);
+                        pp.div(hornerRec(cc, gamma));
+                        pp.mult(gamma);
+                        // num = JXG.C.sub(n, pp);         // tbtb complex values should be of type Complex
+                        // num = JXG.C.div(z[i], num);
+                    } else {
+                        num.div(hornerComplex(cc, z[i], true));
+                    }
+
+                    // denom = sum_{i\neq j} 1 / (z_i  - z_j)
+                    denom = new Complex(0);
+                    for (j = 0; j < n; j++) {
+                        if (j === i) {
                             continue;
                         }
-
-                        // num = P(z_i) / P'(z_i)
-                        if (x > 1) {
-                            gamma = JXG.C.div(1, z[i]);
-                            pp = hornerRec(cc, gamma, true);
-                            pp.div(hornerRec(cc, gamma));
-                            pp.mult(gamma);
-                            num = JXG.C.sub(n, pp);
-                            num = JXG.C.div(z[i], num);
-                        } else {
-                            num.div(hornerComplex(cc, z[i], true));
-                        }
-
-                        // denom = sum_{i\neq j} 1 / (z_i  - z_j)
-                        denom = new JXG.Complex(0);
-                        for (j = 0; j < n; j++) {
-                            if (j === i) {
-                                continue;
-                            }
-                            s = JXG.C.sub(z[i], z[j]);
-                            s = JXG.C.div(1, s);
-                            denom.add(s);
-                        }
-
-                        // num = num / 1 - num * sum_{i\neq j} 1 / (z_i - z_j)
-                        denom.mult(num);
-                        denom = JXG.C.sub(1, denom);
-                        num.div(denom);
-                        // z_i = z_i - num
-                        z[i].sub(num);
+                        // s = JXG.C.sub(z[i], z[j]);       // tbtb complex values should be of type Complex
+                        // s = JXG.C.div(1, s);
+                        denom.add(s);
                     }
+
+                    // num = num / 1 - num * sum_{i\neq j} 1 / (z_i - z_j)
+                    denom.mult(num);
+                    // denom = JXG.C.sub(1, denom);      // tbtb complex values should be of type Complex
+                    num.div(denom);
+                    // z_i = z_i - num
+                    z[i].sub(num);
                 }
 
                 return k;
@@ -4586,13 +4589,13 @@ JXG.JSXMath.Numerics = {
         max_it = max_it || 30;
 
         le = coeffs.length;
-        if (JXG.isNumber(deg) && deg >= 0 && deg < le - 1) {
+        if (Type.isNumber(deg) && deg >= 0 && deg < le - 1) {
             le = deg + 1;
         }
 
         // Convert coefficient array to complex numbers
         for (i = 0; i < le; i++) {
-            cc.push(new JXG.Complex(coeffs[i]));
+            cc.push(new Complex(coeffs[i]));
         }
 
         // Search for (multiple) roots at x=0
@@ -4605,7 +4608,7 @@ JXG.JSXMath.Numerics = {
 
         // Deflate root x=0, store roots at x=0 in obvious
         for (i = 0; i < off; i++) {
-            obvious.push(new JXG.Complex(0));
+            obvious.push(new Complex(0));
         }
         cc = cc.slice(off);
         le = cc.length;
@@ -4627,7 +4630,7 @@ JXG.JSXMath.Numerics = {
         // are not zero.
         if (initial_values) {
             for (i = 0; i < le - 1; i++) {
-                roots.push(new JXG.Complex(initial_values[i]));
+                roots.push(new Complex(initial_values[i]));
             }
         } else {
             roots = initial_guess(cc);
@@ -4641,7 +4644,8 @@ JXG.JSXMath.Numerics = {
             console.log("Iterations:", it);
             console.log('Roots:');
             for (i = 0; i < roots.length; i++) {
-                console.log(i, roots[i].toString(), JXG.C.abs(hornerComplex(cc, roots[i])));
+                // tbtb complex values should be of type Complex
+                // console.log(i, roots[i].toString(), JXG.C.abs(hornerComplex(cc, roots[i])));
             }
         }
 
@@ -4657,7 +4661,7 @@ JXG.JSXMath.Numerics = {
         });
 
         return roots;
-    },
+    }
 
     /**
      * Implements the Ramer-Douglas-Peucker algorithm.
@@ -4669,7 +4673,7 @@ JXG.JSXMath.Numerics = {
      * @returns {Array} An array containing points which represent an apparently identical curve as the points of pts do, but contains fewer points.
      * @memberof Geometry.Numerics
      */
-    RamerDouglasPeucker: function (pts, eps) {
+    static RamerDouglasPeucker(pts, eps) {
         var allPts = [],
             newPts = [],
             i, k, len,
@@ -4823,17 +4827,18 @@ JXG.JSXMath.Numerics = {
         }
 
         return allPts;
-    },
+    }
 
     /**
      * Old name for the implementation of the Ramer-Douglas-Peucker algorithm.
      * @deprecated Use {@link Geometry.Numerics.RamerDouglasPeucker}
      * @memberof Geometry.Numerics
      */
-    RamerDouglasPeuker: function (pts, eps) {
-        JXG.deprecated("Numerics.RamerDouglasPeuker()", "Numerics.RamerDouglasPeucker()");
+
+    static RamerDouglasPeuker(pts, eps) {
+        throw new Error(`deprecated Numerics.RamerDouglasPeuker()`);
         return this.RamerDouglasPeucker(pts, eps);
-    },
+    }
 
     /**
      * Implements the Visvalingam-Whyatt algorithm.
@@ -4912,7 +4917,7 @@ JXG.JSXMath.Numerics = {
      * </script><pre>
      *
      */
-    Visvalingam: function (pts, numPoints) {
+    static Visvalingam(pts, numPoints) {
         var i,
             len,
             vol,
@@ -4946,7 +4951,7 @@ JXG.JSXMath.Numerics = {
         lft = 0;
         for (i = 1; i < len - 1; i++) {
             vol = Math.abs(
-                Geometry.Numerics.det([
+                Numerics.det([
                     pts[i - 1].usrCoords,
                     pts[i].usrCoords,
                     pts[i + 1].usrCoords
@@ -5001,7 +5006,7 @@ JXG.JSXMath.Numerics = {
             lft2 = linkedList[lft].lft;
             if (lft2 !== null) {
                 vol = Math.abs(
-                    Geometry.Numerics.det([
+                    Numerics.det([
                         pts[lft2].usrCoords,
                         pts[lft].usrCoords,
                         pts[rt].usrCoords
@@ -5013,7 +5018,7 @@ JXG.JSXMath.Numerics = {
             rt2 = linkedList[rt].rt;
             if (rt2 !== null) {
                 vol = Math.abs(
-                    Geometry.Numerics.det([
+                    Numerics.det([
                         pts[lft].usrCoords,
                         pts[rt].usrCoords,
                         pts[rt2].usrCoords
@@ -5036,4 +5041,3 @@ JXG.JSXMath.Numerics = {
     }
 };
 
-export default JXG.JSXMath.Numerics;

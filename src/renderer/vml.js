@@ -32,13 +32,13 @@
 /*global JXG: true, define: true, AMprocessNode: true, MathJax: true, document: true */
 /*jslint nomen: true, plusplus: true, newcap:true*/
 
-import {JXG} from "../jxg.js";
-import {AbstractRenderer} from "./abstract.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import {Type} from "../utils/type.js";
+import { JXG } from "../jxg.js";
+import { AbstractRenderer } from "./abstract.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
+import { Type } from "../utils/type.js";
 import Color from "../utils/color.js";
-import {JSXMath} from "../math/math.js";
-import Numerics from "../math/numerics.js";
+import { JSXMath } from "../math/math.js";
+import { Numerics } from "../math/numerics.js";
 
 /**
  * Uses VML to implement the rendering methods defined in {@link JXG.AbstractRenderer}.
@@ -158,14 +158,14 @@ JXG.extend(
                 if (Type.isNumber(x[0]) && Type.isNumber(x[1])) {
                     tickArr.push(
                         " m " +
-                            Math.round(r * x[0]) +
-                            ", " +
-                            Math.round(r * y[0]) +
-                            " l " +
-                            Math.round(r * x[1]) +
-                            ", " +
-                            Math.round(r * y[1]) +
-                            " "
+                        Math.round(r * x[0]) +
+                        ", " +
+                        Math.round(r * y[0]) +
+                        " l " +
+                        Math.round(r * x[1]) +
+                        ", " +
+                        Math.round(r * y[1]) +
+                        " "
                     );
                 }
             }
@@ -911,30 +911,30 @@ JXG.extend(
                                     nextSymb,
                                     mround(
                                         r *
-                                            (lx +
-                                                (scr[1] - lx) * 0.333 +
-                                                f * (k * Math.random() - j))
+                                        (lx +
+                                            (scr[1] - lx) * 0.333 +
+                                            f * (k * Math.random() - j))
                                     ),
                                     " ",
                                     mround(
                                         r *
-                                            (ly +
-                                                (scr[2] - ly) * 0.333 +
-                                                f * (k * Math.random() - j))
+                                        (ly +
+                                            (scr[2] - ly) * 0.333 +
+                                            f * (k * Math.random() - j))
                                     ),
                                     " ",
                                     mround(
                                         r *
-                                            (lx +
-                                                (scr[1] - lx) * 0.666 +
-                                                f * (k * Math.random() - j))
+                                        (lx +
+                                            (scr[1] - lx) * 0.666 +
+                                            f * (k * Math.random() - j))
                                     ),
                                     " ",
                                     mround(
                                         r *
-                                            (ly +
-                                                (scr[2] - ly) * 0.666 +
-                                                f * (k * Math.random() - j))
+                                        (ly +
+                                            (scr[2] - ly) * 0.666 +
+                                            f * (k * Math.random() - j))
                                     ),
                                     " ",
                                     mround(r * scr[1]),
@@ -1107,9 +1107,9 @@ JXG.extend(
                     nodeFill,
                     "focusposition",
                     el.evalVisProp('gradientpositionx') * 100 +
-                        "%," +
-                        el.evalVisProp('gradientpositiony') * 100 +
-                        "%"
+                    "%," +
+                    el.evalVisProp('gradientpositiony') * 100 +
+                    "%"
                 );
                 this._setAttr(nodeFill, "focussize", "0,0");
             } else {

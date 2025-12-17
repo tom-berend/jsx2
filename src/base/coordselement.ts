@@ -36,13 +36,13 @@
  */
 
 import { JXG } from "../jxg.js";
-import {JSXMath} from "../math/math.js";
-import {Geometry} from "../math/geometry.js";
-import Numerics from "../math/numerics.js";
-import {Statistics} from "../math/statistics.js";
-import {Coords} from "../base/coords.js";
+import { JSXMath } from "../math/math.js";
+import { Geometry } from "../math/geometry.js";
+import { Numerics } from "../math/numerics.js";
+import { Statistics } from "../math/statistics.js";
+import { Coords } from "../base/coords.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
-import {Type} from "../utils/type.js";
+import { Type } from "../utils/type.js";
 
 /**
  * An element containing coords is a basic geometric element.

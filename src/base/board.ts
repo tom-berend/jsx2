@@ -46,8 +46,8 @@ import { JXG } from '../jxg.js';
 import { BOARD_MODE, BOARD_QUALITY, OBJECT_CLASS, OBJECT_TYPE, COORDS_BY, Version } from './constants.js';
 import { Coords } from './coords.js';
 import Options from '../options.js';
-import Numerics from '../math/numerics.js'
-import {Geometry} from '../math/geometry.js';
+import { Numerics } from '../math/numerics.js'
+import { Geometry } from '../math/geometry.js';
 import Complex from '../math/complex.js';
 // import {Statistics} from '../math/statistics.js';
 // import {JessieCode} from '../parser/jessiecode.js';
@@ -61,7 +61,7 @@ import { SVGRenderer } from '../renderer/svg.js';
 import { JSXMath } from '../math/math.js';
 import createText from '../base/text.js'
 import createPoint from '../base/point.js'
-import {Statistics} from '../math/statistics.js';
+import { Statistics } from '../math/statistics.js';
 import { AbstractRenderer } from '../renderer/abstract.js';
 import { Dim } from '../interfaces.js'
 // import { Infobox } from './infobox.js';
@@ -391,7 +391,7 @@ export class Board extends Events {
      * @type Array
      * @see JXG.Board#moveObject
      */
-    drag_position:number|any[] = [0, 0];
+    drag_position: number | any[] = [0, 0];
 
     /**
      * References to the object that is dragged with the mouse on the board.

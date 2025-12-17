@@ -30,17 +30,17 @@
 /*global JXG: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG} from "../jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import {Coords} from "../base/coords.js";
+import { JXG } from "../jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
+import { Coords } from "../base/coords.js";
 
-import {JSXMath} from "./math.js";
+import { JSXMath } from "./math.js";
 import Extrapolate from "./extrapolate.js";
-import Numerics from "./numerics.js";
-import {Statistics} from "./statistics.js";
-import {Geometry} from "./geometry.js";
+import { Numerics } from "./numerics.js";
+import { Statistics } from "./statistics.js";
+import { Geometry } from "./geometry.js";
 import IntervalArithmetic from "./ia.js";
-import {Type} from "../utils/type.js";
+import { Type } from "../utils/type.js";
 
 /**
  * Functions for plotting of curves.
@@ -418,8 +418,8 @@ JXG.JSXMath.Plot = {
             max_it = 30,
             is_undef = false,
             t_nan, t_real;// t_real2;
-            // dx, dy,
-            // vx, vy, vx2, vy2;
+        // dx, dy,
+        // vx, vy, vx2, vy2;
         // asymptote;
 
         if (depth <= 1) {
@@ -2506,7 +2506,7 @@ JXG.JSXMath.Plot = {
                             }
                         }
                         // bad++;
-                    // } else {
+                        // } else {
                         // good++;
                     }
                 }

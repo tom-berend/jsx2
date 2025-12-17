@@ -39,10 +39,10 @@ import { JXG } from "../jxg.js";
 import Options from "../options.js";
 import { AbstractRenderer } from "./abstract.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
-import {Type} from "../utils/type.js";
+import { Type } from "../utils/type.js";
 import Color from "../utils/color.js";
 import Base64 from "../utils/base64.js";
-import Numerics from "../math/numerics.js";
+import { Numerics } from "../math/numerics.js";
 // import { LayerOptions } from "../optionInterfaces.js";
 import GeometryElement from "../base/element.js";
 import { Board } from "../base/board.js";
@@ -132,7 +132,7 @@ export class SVGRenderer extends AbstractRenderer {
 
         //this.svgRoot.setAttributeNS(null, 'shape-rendering', 'crispEdge'); //'optimizeQuality'); //geometricPrecision');
 
-        this.jsxAppendChild(this.container,this.svgRoot) // this.container.appendChild(this.svgRoot);
+        this.jsxAppendChild(this.container, this.svgRoot) // this.container.appendChild(this.svgRoot);
 
 
         /**
@@ -141,7 +141,7 @@ export class SVGRenderer extends AbstractRenderer {
          * @see https://www.w3.org/TR/SVG2/struct.html#DefsElement
          */
         this.defs = this.container.ownerDocument.createElementNS(this.svgNamespace, "defs");
-        this.jsxAppendChild(this.svgRoot,this.defs) // this.svgRoot.appendChild(this.defs);
+        this.jsxAppendChild(this.svgRoot, this.defs) // this.svgRoot.appendChild(this.defs);
 
 
         /* Default shadow filter */
@@ -695,7 +695,7 @@ export class SVGRenderer extends AbstractRenderer {
         node.setAttributeNS(null, 'aria-hidden', 'true');
 
         t = this.container.ownerDocument.createTextNode(str);
-        this.jsxAppendChild(node,t)  // node.appendChild(t);
+        this.jsxAppendChild(node, t)  // node.appendChild(t);
         this.appendChildPrim(node, 0);
     }
 
@@ -1014,7 +1014,7 @@ export class SVGRenderer extends AbstractRenderer {
         } else if (level >= Options['layer'].numlayers) {
             level = Options['layer'].numlayers - 1;
         }
-        this.jsxAppendChild(this.layers[level],node) // this.layers[level].appendChild(node);
+        this.jsxAppendChild(this.layers[level], node) // this.layers[level].appendChild(node);
         return node;
     }
 
@@ -2839,7 +2839,7 @@ export class SVGRenderer extends AbstractRenderer {
     }
 
     /** proxy for appendChild, enables debugging and mocks */
-    jsxAppendChild(parent:Node, child:Node){
+    jsxAppendChild(parent: Node, child: Node) {
         // console.warn('appendChild',parent,child)
         parent.appendChild(child)
     }

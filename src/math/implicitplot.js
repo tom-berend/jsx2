@@ -29,10 +29,10 @@
 "use strict";
 
 import { JXG } from "../jxg.js";
-import {Type} from "../utils/type.js";
-import {JSXMath} from "./math.js";
-import {Geometry} from "./geometry.js";
-import Numerics from "./numerics.js";
+import { Type } from "../utils/type.js";
+import { JSXMath } from "./math.js";
+import { Geometry } from "./geometry.js";
+import { Numerics } from "./numerics.js";
 import Quadtree from "./bqdt.js";
 
 /**
@@ -417,7 +417,7 @@ JXG.extend(
                     }
                 }
                 m = t + delta * 0.01;
-                if (e - m > delta  && level > 0) {
+                if (e - m > delta && level > 0) {
                     ret = this.searchLine(
                         fmi, fma, fix, [m, e], dir,
                         num_components, dataX, dataY, level - 1);

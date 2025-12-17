@@ -40,13 +40,13 @@
  */
 
 import { JXG } from "../jxg.js";
-import {JSXMath} from "../math/math.js";
-import {Geometry} from "../math/geometry.js";
-import Numerics from "../math/numerics.js";
+import { JSXMath } from "../math/math.js";
+import { Geometry } from "../math/geometry.js";
+import { Numerics } from "../math/numerics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "./element.js";
-import {Coords} from "../base/coords.js";
-import {Type} from "../utils/type.js";
+import { Coords } from "../base/coords.js";
+import { Type } from "../utils/type.js";
 
 /**
  * Creates ticks for an axis.
@@ -290,7 +290,7 @@ JXG.extend(
 
         /**
          * Sets x and y coordinate of the tick.
-         * @param {number} method The type of coordinates used here. Possible values are {@link COORDS_BY.USER} and {@link JXG.COORDS_BY_SCREEN}.
+         * @param {number} method The type of coordinates used here. Possible values are {@link JXG.COORDS_BY_USER} and {@link JXG.COORDS_BY_SCREEN}.
          * @param {Array} coords coordinates in screen/user units
          * @param {Array} oldcoords previous coordinates in screen/user units
          * @returns {JXG.Ticks} this element

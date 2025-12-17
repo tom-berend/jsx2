@@ -39,6 +39,9 @@ import {JSXMath} from "./math.js";
  * @exports JXG.JSXMath.Extrapolate as Geometry.Extrapolate
  * @namespace
  */
+if(JXG.JSXMath == undefined)
+    JXG.JSXMath = {}
+
 JXG.JSXMath.Extrapolate = {
     upper: 15,
     infty: 1e4,

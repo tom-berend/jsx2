@@ -48,14 +48,14 @@ const dbugColor = `color:white;background-color:black`;
  */
 
 import { JXG } from "../jxg.js";
-import {JSXMath} from "../math/math.js";
-import {Geometry} from "../math/geometry.js";
-import Numerics from "../math/numerics.js";
-import {Statistics} from "../math/statistics.js";
+import { JSXMath } from "../math/math.js";
+import { Geometry } from "../math/geometry.js";
+import { Numerics } from "../math/numerics.js";
+import { Statistics } from "../math/statistics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 import GeometryElement from "./element.js";
-import {Type} from "../utils/type.js";
+import { Type } from "../utils/type.js";
 
 /**
  * The Line class is a basic class for all kind of line objects, e.g. line, arrow, and axis. It is usually defined by two points and can
@@ -666,7 +666,7 @@ JXG.extend(
                 ev_sf = this.evalVisProp('straightfirst'),
                 ev_sl = this.evalVisProp('straightlast');
 
-            console.warn('%c line getLabelAnchor','color:red;')
+            console.warn('%c line getLabelAnchor', 'color:red;')
 
             if (ev_sf || ev_sl) {
                 Geometry.calcStraight(this, c1, c2, 0);
@@ -1234,7 +1234,7 @@ JXG.createLine = function (board, parents, attributes) {
         constrained = false,
         isDraggable;
 
-   if(dbug()) console.warn(`%c line createLine(board,${JSON.stringify(parents)})`,dbugColor,attributes)
+    if (dbug()) console.warn(`%c line createLine(board,${JSON.stringify(parents)})`, dbugColor, attributes)
 
     if (parents.length === 2) {
         // The line is defined by two points or coordinates of two points.
@@ -1321,7 +1321,7 @@ JXG.createLine = function (board, parents, attributes) {
             if (Type.isNumber(parents[i])) {
                 // createFunction will just wrap a function around our constant number
                 // that does nothing else but to return that number.
-                c[i] = Type.createFunction(parents[i],board);
+                c[i] = Type.createFunction(parents[i], board);
             } else if (Type.isFunction(parents[i])) {
                 c[i] = parents[i];
                 isDraggable = false;

@@ -32,15 +32,15 @@
 /*global JXG: true, define: true, document: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG} from "../jxg.js";
-import Numerics from "../math/numerics.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
-import {Coords} from "../base/coords.js";
+import { JXG } from "../jxg.js";
+import { Numerics } from "../math/numerics.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
+import { Coords } from "../base/coords.js";
 import GeometryElement from "./element.js";
 import DataSource from "../parser/datasource.js";
 import Color from "../utils/color.js";
-import {Type} from "../utils/type.js";
-import {Env} from "../utils/env.js";
+import { Type } from "../utils/type.js";
+import { Env } from "../utils/env.js";
 // import {Statistics} from "../math/statistics.js";
 // import Curve from "./curve.js";
 // import Point from "./point.js";
@@ -653,10 +653,10 @@ JXG.extend(
                 if (numofparams !== parents[i].length) {
                     throw new Error(
                         "JSXGraph radar chart: use data length equal to number of params (" +
-                            parents[i].length +
-                            " != " +
-                            numofparams +
-                            ")"
+                        parents[i].length +
+                        " != " +
+                        numofparams +
+                        ")"
                     );
                 }
             }
@@ -1354,7 +1354,7 @@ JXG.Legend = function (board, coords, attributes) {
     this.myAtts.straightlast = false;
     this.myAtts.withlabel = true;
     this.myAtts.fixed = true;
-    this.myAtts.frozen = attr.frozen || false ;
+    this.myAtts.frozen = attr.frozen || false;
     this.style = attr.legendstyle || attr.style;
 
     if (this.style === 'vertical') {
@@ -1410,7 +1410,7 @@ JXG.Legend.prototype.drawVerticalLegend = function (board, attributes) {
             this.myAtts
         );
 
-        if (this.myAtts.frozen){
+        if (this.myAtts.frozen) {
             this.lines[i].setAttribute({ point1: { frozen: true }, point2: { frozen: true } });
         }
 
