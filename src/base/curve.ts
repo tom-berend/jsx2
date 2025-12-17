@@ -3266,7 +3266,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  *   f = (x, y) => 1 / 16 * x ** 2 + y ** 2 - 1;
  *   c = board.create('implicitcurve', [f], {
  *       strokeWidth: 3,
- *       strokeColor: JXG.palette.red,
+ *       strokeColor: Color.palette.red,
  *       strokeOpacity: 0.8
  *   });
  *
@@ -3279,7 +3279,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  *             f = (x, y) => 1 / 16 * x ** 2 + y ** 2 - 1;
  *             c = board.create('implicitcurve', [f], {
  *                 strokeWidth: 3,
- *                 strokeColor: JXG.palette.red,
+ *                 strokeColor: Color.palette.red,
  *                 strokeOpacity: 0.8
  *             });
  *
@@ -3295,7 +3295,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  *  f = (x, y) => x ** 2 - 2 * x * y - 2 * x + (a.Value() + 1) * y ** 2 + (4 * a.Value() + 2) * y + 4 * a.Value() - 3;
  *  c = board.create('implicitcurve', [f], {
  *      strokeWidth: 3,
- *      strokeColor: JXG.palette.red,
+ *      strokeColor: Color.palette.red,
  *      strokeOpacity: 0.8,
  *      resolution_outer: 20,
  *      resolution_inner: 20
@@ -3313,7 +3313,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  *             f = (x, y) => x ** 2 - 2 * x * y - 2 * x + (a.Value() + 1) * y ** 2 + (4 * a.Value() + 2) * y + 4 * a.Value() - 3;
  *             c = board.create('implicitcurve', [f], {
  *                 strokeWidth: 3,
- *                 strokeColor: JXG.palette.red,
+ *                 strokeColor: Color.palette.red,
  *                 strokeOpacity: 0.8,
  *                 resolution_outer: 20,
  *                 resolution_inner: 20
@@ -3326,7 +3326,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  * @example
  *  var c = board.create('implicitcurve', ['abs(x * y) - 3'], {
  *      strokeWidth: 3,
- *      strokeColor: JXG.palette.red,
+ *      strokeColor: Color.palette.red,
  *      strokeOpacity: 0.8
  *  });
  *
@@ -3337,7 +3337,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var c = board.create('implicitcurve', ['abs(x * y) - 3'], {
  *                 strokeWidth: 3,
- *                 strokeColor: JXG.palette.red,
+ *                 strokeColor: Color.palette.red,
  *                 strokeOpacity: 0.8
  *             });
  *
@@ -3354,7 +3354,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
            [0.25, 3], [0.5, 4] // Domain
  *     ], {
  *         strokeWidth: 2,
- *         strokeColor: JXG.palette.red,
+ *         strokeColor: Color.palette.red,
  *         strokeOpacity: (1 + i) / niveauline.length,
  *         needsRegularUpdate: false
  *     });
@@ -3373,7 +3373,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  *                 [0.25, 3], [0.5, 4]
  *             ], {
  *                 strokeWidth: 2,
- *                 strokeColor: JXG.palette.red,
+ *                 strokeColor: Color.palette.red,
  *                 strokeOpacity: (1 + i) / niveauline.length,
  *                 needsRegularUpdate: false
  *             });

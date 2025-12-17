@@ -50,7 +50,7 @@ import { Numerics } from '../math/numerics.js'
 import { Geometry } from '../math/geometry.js';
 // import {Statistics} from '../math/statistics.js';
 // import {JessieCode} from '../parser/jessiecode.js';
-import Color from '../utils/color.js';
+import { Color } from '../utils/color.js';
 import { Type } from '../utils/type.js';
 import { Events } from '../utils/event.js';
 import { Env } from '../utils/env.js';

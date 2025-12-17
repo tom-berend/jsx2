@@ -100,7 +100,7 @@ import {Type} from "../utils/type.js";
  *         [-6, () => stepsize.Value(), 6], // Horizontal mesh
  *         [-5, () => stepsize.Value(), 5], // Vertical mesh
  *     ], {
- *         highlightStrokeColor: JXG.palette.blue, // Make highlighting invisible
+ *         highlightStrokeColor: Color.palette.blue, // Make highlighting invisible
  *
  *         scale: () => s.Value(), // Scaling of vectors
  *
@@ -130,7 +130,7 @@ import {Type} from "../utils/type.js";
  *             [-6, () => stepsize.Value(), 6], // Horizontal mesh
  *             [-5, () => stepsize.Value(), 5], // Vertical mesh
  *         ], {
- *             highlightStrokeColor: JXG.palette.blue, // Make highlighting invisible
+ *             highlightStrokeColor: Color.palette.blue, // Make highlighting invisible
  *
  *             scale: () => s.Value(), // Scaling of vectors
  *
@@ -314,7 +314,7 @@ JXG.registerElement("vectorfield", JXG.createVectorField);
  *     {
  *         strokeWidth: 1.5,
  *         highlightStrokeWidth: 0.5,
- *         highlightStrokeColor: JXG.palette.blue,
+ *         highlightStrokeColor: Color.palette.blue,
  *
  *         scale: () => s.Value(),
  *
@@ -342,7 +342,7 @@ JXG.registerElement("vectorfield", JXG.createVectorField);
  *         {
  *             strokeWidth: 1.5,
  *             highlightStrokeWidth: 0.5,
- *             highlightStrokeColor: JXG.palette.blue,
+ *             highlightStrokeColor: Color.palette.blue,
  *
  *             scale: () => s.Value(),
  *

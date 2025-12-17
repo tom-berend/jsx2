@@ -35,13 +35,13 @@ const dbugColor = `color:blue;background-color:#ff0000`;
 /*global JXG: true, define: true, AMprocessNode: true, MathJax: true, document: true */
 /*jslint nomen: true, plusplus: true, newcap:true*/
 
-import { JXG } from "../jxg.js";
+// import { JXG } from "../jxg.js";
 import Options from "../options.js";
 import { AbstractRenderer } from "./abstract.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Type } from "../utils/type.js";
-import Color from "../utils/color.js";
-import Base64 from "../utils/base64.js";
+import { Color } from "../utils/color.js";
+import { Base64 } from "../utils/base64.js";
 import { Numerics } from "../math/numerics.js";
 // import { LayerOptions } from "../optionInterfaces.js";
 import GeometryElement from "../base/element.js";
@@ -1628,7 +1628,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @deprecated
      */
     hide(el) {
-        JXG.deprecated("Board.renderer.hide()", "Board.renderer.display()");
+        Env.deprecated("Board.renderer.hide()", "Board.renderer.display()");
         this.display(el, false);
     }
 
@@ -2134,7 +2134,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @deprecated
      */
     show(el) {
-        JXG.deprecated("Board.renderer.show()", "Board.renderer.display()");
+        Env.deprecated("Board.renderer.show()", "Board.renderer.display()");
         this.display(el, true);
         // var node;
         //

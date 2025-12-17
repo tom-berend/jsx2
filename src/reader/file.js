@@ -35,8 +35,8 @@
 import { JXG } from "../jxg.js";
 import { Env } from "../utils/env.js";
 import {Type} from "../utils/type.js";
-import Encoding from "../utils/encoding.js";
-import Base64 from "../utils/base64.js";
+import{ Encoding }from "../utils/encoding.js";
+import{ Base64 }from "../utils/base64.js";
 
 /**
  * The FileReader object bundles the file input capabilities of JSXGraph.

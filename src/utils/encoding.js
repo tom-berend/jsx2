@@ -1,7 +1,6 @@
 /*global JXG: true, define: true, escape: true, unescape: true*/
 /*jslint nomen: true, plusplus: true, bitwise: true*/
 
-import {JXG} from "../jxg.js";
 
 // constants
 var UTF8_ACCEPT = 0,
@@ -28,20 +27,17 @@ var UTF8_ACCEPT = 0,
         12, 12, 36, 12, 36, 12, 12, 12, 36, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12
     ];
 
-// Util namespace
-JXG.Util = JXG.Util || {};
-
-/**
- * UTF8 encoding routines
- * @namespace
- */
-JXG.Util.UTF8 = {
+    /**
+     * UTF8 encoding routines
+     * @namespace
+    */
+export class Encoding{
     /**
      * Encode a string to utf-8.
      * @param {String} string
      * @returns {String} utf8 encoded string
      */
-    encode: function (string) {
+   static  encode (string) {
         var n,
             c,
             utftext = "",
@@ -71,14 +67,14 @@ JXG.Util.UTF8 = {
         }
 
         return utftext;
-    },
+    }
 
     /**
      * Decode a string from utf-8.
      * @param {String} utftext to decode
      * @returns {String} utf8 decoded string
      */
-    decode: function (utftext) {
+    static decode (utftext) {
         /*
                  The following code is a translation from C99 to JavaScript.
 
@@ -131,7 +127,7 @@ JXG.Util.UTF8 = {
         }
         results.push(String.fromCharCode.apply(null, chars));
         return results.join("");
-    },
+    }
 
     /**
      * Extends the standard charCodeAt() method of the String class to find the ASCII char code of
@@ -140,7 +136,7 @@ JXG.Util.UTF8 = {
      * @param {Number} i position of the character
      * @returns {Number}
      */
-    asciiCharCodeAt: function (str, i) {
+    static asciiCharCodeAt (str, i) {
         var c = str.charCodeAt(i);
 
         if (c > 255) {
@@ -232,6 +228,5 @@ JXG.Util.UTF8 = {
         }
         return c;
     }
-};
+}
 
-export default JXG.Util.UTF8;

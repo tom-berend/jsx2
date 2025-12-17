@@ -88,7 +88,7 @@ import Quadtree from "./bqdt.js";
  *     var f = (x, y) => x**3 - 2 * x * y + y**3;
  *     var c = board.create('curve', [[], []], {
  *             strokeWidth: 3,
- *             strokeColor: JXG.palette.red
+ *             strokeColor: Color.palette.red
  *         });
  *
  *     c.updateDataArray = function () {
@@ -125,7 +125,7 @@ import Quadtree from "./bqdt.js";
  *             var f = (x, y) => x**3 - 2 * x * y + y**3;
  *             var c = board.create('curve', [[], []], {
  *                     strokeWidth: 3,
- *                     strokeColor: JXG.palette.red
+ *                     strokeColor: Color.palette.red
  *                 });
  *
  *             c.updateDataArray = function () {

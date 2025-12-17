@@ -38,7 +38,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 import GeometryElement from "./element.js";
 import DataSource from "../parser/datasource.js";
-import Color from "../utils/color.js";
+import { Color } from "../utils/color.js";
 import { Type } from "../utils/type.js";
 import { Env } from "../utils/env.js";
 // import {Statistics} from "../math/statistics.js";
@@ -1488,7 +1488,7 @@ JXG.Legend.prototype.drawVerticalLegend = function (board, attributes) {
  *     cf.push(board.create("implicitcurve", [
  *       inputFun + "-(" + niveaui.toFixed(2) + ")", [-2, 2], [-2, 2]], {
  *       strokeWidth: 2,
- *       strokeColor: JXG.palette.red,
+ *       strokeColor: Color.palette.red,
  *       strokeOpacity: niveauopac[i],
  *       needsRegularUpdate: false,
  *       name: "niveau"+i,
@@ -1522,7 +1522,7 @@ JXG.Legend.prototype.drawVerticalLegend = function (board, attributes) {
  *         cf.push(board.create("implicitcurve", [
  *           inputFun + "-(" + niveaui.toFixed(2) + ")", [-2, 2], [-2, 2]], {
  *           strokeWidth: 2,
- *           strokeColor: JXG.palette.red,
+ *           strokeColor: Color.palette.red,
  *           strokeOpacity: niveauopac[i],
  *           needsRegularUpdate: false,
  *           name: "niveau"+i,

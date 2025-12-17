@@ -36,7 +36,7 @@ import { JXG } from "../jxg.js";
 import { AbstractRenderer } from "./abstract.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Type } from "../utils/type.js";
-import Color from "../utils/color.js";
+import { Color } from "../utils/color.js";
 import { JSXMath } from "../math/math.js";
 import { Numerics } from "../math/numerics.js";
 

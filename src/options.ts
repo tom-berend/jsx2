@@ -34,9 +34,9 @@
 
 import { JXG } from "./jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "./base/constants.js";
-import {JSXMath} from "./math/math.js";
-import Color from "./utils/color.js";
-import {Type} from "./utils/type.js";
+import { JSXMath } from "./math/math.js";
+import { Color } from "./utils/color.js";
+import { Type } from "./utils/type.js";
 
 /**
  * Options Namespace
@@ -1704,7 +1704,7 @@ JXG.Options = {
          * @see JXG.GeometryElement#highlightFillColor
          * @see JXG.GeometryElement#fillOpacity
          * @see JXG.GeometryElement#highlightFillOpacity
-         * @default JXG.palette.red
+         * @default Color.palette.red
          */
         fillColor: Color.palette.red,
 
@@ -2355,7 +2355,7 @@ JXG.Options = {
          * @see JXG.GeometryElement#strokeWidth
          * @see JXG.GeometryElement#strokeOpacity
          * @see JXG.GeometryElement#highlightStrokeOpacity
-         * @default JXG.palette.blue
+         * @default Color.palette.blue
          */
         strokeColor: Color.palette.blue,
 

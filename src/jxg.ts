@@ -160,24 +160,24 @@ export class JXG {
     static palette;
     static Options;
     static setClassicColors;
-    static rgbParser;
-    static contrast;
-    static rgbo2rgba;
-    static rgba2rgbo
-    static autoHighlight
-    static shadeColor
-    static darkenColor
-    static lightenColor
-    static rgb2hex
-    static LMS2rgb
-    static rgb2LMS
-    static rgb2cb
-    static rgb2bw
-    static rgb2hsv
-    static hsv2rgb
-    static rgb2css
-    static hex2rgb;
-    static isColor;
+    // static rgbParser;
+    // static contrast;
+    // static rgbo2rgba;
+    // static rgba2rgbo
+    // static autoHighlight
+    // static shadeColor
+    // static darkenColor
+    // static lightenColor
+    // static rgb2hex
+    // static LMS2rgb
+    // static rgb2LMS
+    // static rgb2cb
+    // static rgb2bw
+    // static rgb2hsv
+    // static hsv2rgb
+    // static rgb2css
+    // static hex2rgb;
+    // static isColor;
     static concat
     static isNumber
     static SVGRenderer;
