@@ -38,7 +38,7 @@
 
 import { JXG } from "../jxg.js";
 import { Type } from "./type.js";
-import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
 
@@ -47,7 +47,7 @@ import { Coords } from "../base/coords.js";
  * i.e. provides utilities for parameter magic by normalizing multi-type parameters.
  * @namespace
  */
-JXG.Expect = {
+export class Expect {
     /**
      * Apply an expect method on every element of an array.
      *
@@ -57,7 +57,7 @@ JXG.Expect = {
      *
      * @returns {Array}
      */
-    each: function (a, format, copy) {
+    static each(a, format, copy = false) {
         var i,
             len,
             r = [];
@@ -70,7 +70,7 @@ JXG.Expect = {
         }
 
         return r;
-    },
+    }
 
     /**
      * Normalize points and coord objects into a coord object.
@@ -80,7 +80,7 @@ JXG.Expect = {
      *
      * @returns {JXG.Coords}
      */
-    coords: function (c, copy) {
+    static coords(c, copy = false) {
         var coord = c;
 
         if (c && c.elementClass === OBJECT_CLASS.POINT) {
@@ -94,7 +94,7 @@ JXG.Expect = {
         }
 
         return coord;
-    },
+    }
 
     /**
      * Normalize points, coordinate arrays and coord objects into a coordinate array.
@@ -104,7 +104,7 @@ JXG.Expect = {
      *
      * @returns {Array} Homogeneous coordinates
      */
-    coordsArray: function (c, copy) {
+    static coordsArray(c, copy = false) {
         var coord;
 
         if (!Type.isArray(c)) {
@@ -125,4 +125,3 @@ JXG.Expect = {
     }
 };
 
-export default JXG.Expect;
