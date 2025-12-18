@@ -1234,12 +1234,14 @@ JXG2.createLine = function (board, parents, attributes) {
         constrained = false,
         isDraggable;
 
-    if (dbug()) console.warn(`%c line createLine(board,${JSON.stringify(parents).substring(0,100)})`, dbugColor)
+    if (dbug())
+        console.warn(`%c line createLine(board,${JSON.stringify(parents).substring(0,200)})`, dbugColor)
 
     if (parents.length === 2) {
         // The line is defined by two points or coordinates of two points.
         // In the latter case, the points are created.
         attr = Type.copyAttributes(attributes, board.options, "line", 'point1');
+
         if (Array.isArray(parents[0]) && parents[0].length > 1) {
             p1 = board.create("point", parents[0], attr);
         } else if (Type.isString(parents[0]) || Type.isPoint(parents[0])) {

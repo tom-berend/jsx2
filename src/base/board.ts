@@ -884,6 +884,7 @@ export class Board extends Events {
             indices = [],
             name = '';
 
+
         if (object.otype === OBJECT_TYPE.TICKS) {
             return '';
         }

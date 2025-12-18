@@ -19,12 +19,12 @@ export class IndexTests {
         this.newBoard = JSXGraph.initBoard(
             'box', {
             boundingBox: [-10, 10, 10, -10],
-            // axis: true
+            axis: true
         });
         this.oldBoard = (window as any).JXG.JSXGraph.initBoard(
             'box2', {
             boundingBox: [-10, 10, 10, -10],
-            // axis: true
+            axis: true
         });
     }
 
@@ -40,14 +40,14 @@ export class IndexTests {
         let b = this.oldBoard.create('text', [2, 3, "test"], { name: 'foo', strokecolor: 'red' })
     }
     line() {
-        let p1 = this.newBoard.create('point', [-3, -3])
-        let p2 = this.newBoard.create('point', [-4, -3])
-
         let q1 = this.oldBoard.create('point', [-3, -3])
         let q2 = this.oldBoard.create('point', [-4, -3])
 
-        this.newBoard.create('segment', [p1, p2], { strokecolor: 'blue' })
+        let p1 = this.newBoard.create('point', [-3, -3])
+        let p2 = this.newBoard.create('point', [-4, -3])
+
         this.oldBoard.create('segment', [q1, q2], { strokecolor: 'blue' })
+        this.newBoard.create('segment', [p1, p2], { strokecolor: 'blue' })
 
 
 

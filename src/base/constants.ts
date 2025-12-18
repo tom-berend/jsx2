@@ -70,6 +70,7 @@ export enum COORDS_BY {
 
 export enum OBJECT_TYPE {
     // object types
+    UNUSED, // don't want zero
     ARC,
     ARROW,
     AXIS,
@@ -131,6 +132,7 @@ export enum OBJECT_TYPE {
 
 export enum OBJECT_CLASS {
     // object classes
+    UNUSED, // don't want zero
     POINT,
     LINE,
     CIRCLE,

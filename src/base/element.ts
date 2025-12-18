@@ -343,7 +343,7 @@ JXG2.GeometryElement = function (board, attributes, type, oclass) {
          * @constant
          * @type Number
          */
-        this.type = type;
+        this.otype = type;
 
         /**
          * Original type of the element at construction time. Used for removing glider property.
