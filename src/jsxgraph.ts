@@ -58,12 +58,13 @@ import './index.js'
  * @class The JXG.JSXGraph singleton stores all properties required
  * to load, save, create and free a board.
  */
-JXG.JSXGraph = {
-    /**
-     * Stores the renderer that is used to draw the boards.
-     * @type String
-     */
-    rendererType: (function () {
+export class JSXGraph {
+
+    constructor() {
+        /**
+         * Stores the renderer that is used to draw the boards.
+         * @type String
+         */
         Options.board.renderer = 'no';
 
         if (Env.supportsCanvas()) {
@@ -84,8 +85,11 @@ JXG.JSXGraph = {
             Options.infobox.display = 'internal';
         }
 
+    }
+
+    static rendererType() {
         return Options.board.renderer;
-    })(),
+    }
 
     /**
      * Initialize the rendering engine
@@ -99,7 +103,7 @@ JXG.JSXGraph = {
      * @returns {Object}           Reference to the rendering engine object.
      * @private
      */
-    initRenderer: function (box, dim, doc, attrRenderer) {
+    static initRenderer(box, dim, doc, attrRenderer) {
         var boxid, renderer;
 
         // Former version:
@@ -135,7 +139,7 @@ JXG.JSXGraph = {
         }
 
         return renderer;
-    },
+    }
 
     /**
      * Merge the user supplied attributes with the attributes in options.js
@@ -145,7 +149,7 @@ JXG.JSXGraph = {
      *
      * @private
      */
-    _setAttributes: function (attributes, options) {
+    static _setAttributes(attributes, options?) {
         // merge attributes
         var attr = Type.copyAttributes(attributes, options, 'board'),
 
@@ -172,7 +176,7 @@ JXG.JSXGraph = {
             attributes.moveTarget || attributes.movetarget || options.board.moveTarget;
 
         return attr;
-    },
+    }
 
     /**
      * Further initialization of the board. Set some properties from attribute values.
@@ -183,14 +187,14 @@ JXG.JSXGraph = {
      *
      * @private
      */
-    _fillBoard: function (board, attr, dimensions) {
+    static _fillBoard(board, attr, dimensions) {
         board.initInfobox(attr.infobox);
         board.maxboundingbox = attr.maxboundingbox;
         board.resizeContainer(dimensions.width, dimensions.height, true, true);
         board._createSelectionPolygon(attr);
         board.renderer.drawNavigationBar(board, attr.navbar);
         JXG.boards[board.id] = board;
-    },
+    }
 
     /**
      *
@@ -199,7 +203,7 @@ JXG.JSXGraph = {
      *
      * @private
      */
-    _setARIA: function (container, attr) {
+    static _setARIA(container, attr) {
         var doc = attr.document,
             node_jsx;
         // Unused variables, made obsolete in db3e50f4dfa8b86b1ff619b578e243a97b41151c
@@ -223,7 +227,7 @@ JXG.JSXGraph = {
         // doc_glob = node_jsx.ownerDocument; // This is the window.document element, needed below.
         // parent = node_jsx.parentNode;
 
-    },
+    }
 
     /**
      * Remove the two corresponding ARIA divs when freeing a board
@@ -232,7 +236,7 @@ JXG.JSXGraph = {
      *
      * @private
      */
-    _removeARIANodes: function (board) {
+    static _removeARIANodes(board) {
         var node, id, doc;
 
         doc = board.document || document;
@@ -250,7 +254,7 @@ JXG.JSXGraph = {
         if (node && node.parentNode) {
             node.parentNode.removeChild(node);
         }
-    },
+    }
 
     /**
      * Initialize a new board.
@@ -461,7 +465,7 @@ JXG.JSXGraph = {
     //  * @param {Boolean} [attributes.axis=false] If set to true, show the axis. Can also be set to an object that is given to both axes as an attribute object.
     //  * @param {Boolean|Object} [attributes.grid] If set to true, shows the grid. Can also be set to an object that is given to the grid as its attribute object.
     //  * @param {Boolean} [attributes.registerEvents=true] Register mouse / touch events.
-    initBoard: function (box, attributes) {
+    static initBoard(box, attributes) {
         var originX, originY, unitX, unitY, w, h,
             offX = 0, offY = 0,
             renderer, dimensions, bbox,
@@ -586,7 +590,7 @@ JXG.JSXGraph = {
         board.unsuspendUpdate();
 
         return board;
-    },
+    }
 
     /**
      * Load a board from a file containing a construction made with either GEONExT,
@@ -624,7 +628,7 @@ JXG.JSXGraph = {
      *      function (board) { console.log("Done loading"); }
      * );
      */
-    loadBoardFromFile: function (box, file, format, attributes, callback) {
+    static loadBoardFromFile(box, file, format, attributes, callback) {
         var attr, renderer, board, dimensions, encoding;
 
         attributes = attributes || {};
@@ -653,7 +657,7 @@ JXG.JSXGraph = {
         FileReader.parseFileContent(file, board, format, true, encoding, callback);
 
         return board;
-    },
+    }
 
     /**
      * Load a board from a base64 encoded string containing a construction made with either GEONExT,
@@ -671,7 +675,7 @@ JXG.JSXGraph = {
      * @see JXG.IntergeoReader
      * @see JXG.CinderellaReader
      */
-    loadBoardFromString: function (box, string, format, attributes, callback) {
+    static loadBoardFromString(box, string, format, attributes, callback) {
         var attr, renderer, board, dimensions;
 
         attributes = attributes || {};
@@ -699,15 +703,15 @@ JXG.JSXGraph = {
         FileReader.parseString(string, board, format, true, callback);
 
         return board;
-    },
+    }
 
     /**
      * Delete a board and all its contents.
      * @param {JXG.Board|String} board id of or reference to the DOM element in which the board is drawn.
      *
      */
-    freeBoard: function (board) {
-        var el;
+    static freeBoard(board: Board) {
+        let el;
 
         if (typeof board === 'string') {
             board = JXG.boards[board];
@@ -739,168 +743,168 @@ JXG.JSXGraph = {
         // Free the renderer and the algebra object
         delete board.renderer;
 
-        // clear the creator cache
-        board.jc.creator.clearCache();
-        delete board.jc;
+        // tbtb - is this just for jessiecode?
+        // // clear the creator cache
+        // board.jc.creator.clearCache();
+        // delete board.jc;
 
         // Finally remove the board itself from the boards array
         delete JXG.boards[board.id];
-    },
+    }
 
     /**
      * @deprecated Use JXG#registerElement
      * @param element
      * @param creator
      */
-    registerElement: function (element, creator) {
-        JXG.deprecated("JXG.JSXGraph.registerElement()", "JXG.registerElement()");
-        JXG.registerElement(element, creator);
+    static registerElement(element, creator) {
+        Env.deprecated("JXG.JSXGraph.registerElement()", "JXG.registerElement()");
+        // JXG.registerElement(element, creator);
     }
-};
-
-// JessieScript/JessieCode startup:
-// Search for script tags of type text/jessiecode and execute them.
-if (Env.isBrowser && typeof window === 'object' && typeof document === 'object') {
-    Env.addEvent(window, 'load',
-        function () {
-            var type, i, j, div, id,
-                board, txt, width, height, maxWidth, aspectRatio,
-                cssClasses, bbox, axis, grid, code, src, request,
-                postpone = false,
-
-                scripts = document.getElementsByTagName('script'),
-                init = function (code, type, bbox) {
-                    var board = JXG.JSXGraph.initBoard(id, {
-                        boundingbox: bbox,
-                        keepaspectratio: true,
-                        grid: grid,
-                        axis: axis,
-                        showReload: true
-                    });
-
-                    if (type.toLowerCase().indexOf('script') > -1) {
-                        board.construct(code);
-                    } else {
-                        try {
-                            board.jc.parse(code);
-                        } catch (e2) {
-                            JXG.debug(e2);
-                        }
-                    }
-
-                    return board;
-                },
-                makeReload = function (board, code, type, bbox) {
-                    return function () {
-                        var newBoard;
-
-                        JXG.JSXGraph.freeBoard(board);
-                        newBoard = init(code, type, bbox);
-                        newBoard.reload = makeReload(newBoard, code, type, bbox);
-                    };
-                };
-
-            for (i = 0; i < scripts.length; i++) {
-                type = scripts[i].getAttribute("type");
-
-                if (
-                    Type.exists(type) &&
-                    (type.toLowerCase() === "text/jessiescript" ||
-                        type.toLowerCase() === "jessiescript" ||
-                        type.toLowerCase() === "text/jessiecode" ||
-                        type.toLowerCase() === 'jessiecode')
-                ) {
-                    cssClasses = scripts[i].getAttribute("class") || "";
-                    width = scripts[i].getAttribute("width") || "";
-                    height = scripts[i].getAttribute("height") || "";
-                    maxWidth = scripts[i].getAttribute("maxwidth") || "100%";
-                    aspectRatio = scripts[i].getAttribute("aspectratio") || "1/1";
-                    bbox = scripts[i].getAttribute("boundingbox") || "-5, 5, 5, -5";
-                    id = scripts[i].getAttribute("container");
-                    src = scripts[i].getAttribute("src");
-
-                    bbox = bbox.split(",");
-                    if (bbox.length !== 4) {
-                        bbox = [-5, 5, 5, -5];
-                    } else {
-                        for (j = 0; j < bbox.length; j++) {
-                            bbox[j] = parseFloat(bbox[j]);
-                        }
-                    }
-                    axis = Type.str2Bool(scripts[i].getAttribute("axis") || 'false');
-                    grid = Type.str2Bool(scripts[i].getAttribute("grid") || 'false');
-
-                    if (!Type.exists(id)) {
-                        id = "jessiescript_autgen_jxg_" + i;
-                        div = document.createElement('div');
-                        div.setAttribute("id", id);
-
-                        txt = width !== "" ? "width:" + width + ";" : "";
-                        txt += height !== "" ? "height:" + height + ";" : "";
-                        txt += maxWidth !== "" ? "max-width:" + maxWidth + ";" : "";
-                        txt += aspectRatio !== "" ? "aspect-ratio:" + aspectRatio + ";" : "";
-
-                        div.setAttribute("style", txt);
-                        div.setAttribute("class", "jxgbox " + cssClasses);
-                        try {
-                            document.body.insertBefore(div, scripts[i]);
-                        } catch (e) {
-                            throw new Error('JessieCode failed to start')
-                            // // there's probably jquery involved...
-                            // if (Type.exists(jQuery) && typeof jQuery === 'object') {
-                            //     jQuery(div).insertBefore(scripts[i]);
-                            // }
-                        }
-                    } else {
-                        div = document.getElementById(id);
-                    }
-
-                    code = "";
-
-                    if (Type.exists(src)) {
-                        postpone = true;
-                        request = new XMLHttpRequest();
-                        request.open("GET", src);
-                        request.overrideMimeType("text/plain; charset=x-user-defined");
-                        /* jshint ignore:start */
-                        request.addEventListener("load", function () {
-                            if (this.status < 400) {
-                                code = this.responseText + "\n" + code;
-                                board = init(code, type, bbox);
-                                board.reload = makeReload(board, code, type, bbox);
-                            } else {
-                                throw new Error(`\nJSXGraph: failed to load file ${src}: ${this.responseText}`);
-                            }
-                        });
-                        request.addEventListener("error", function (e) {
-                            throw new Error(`\nJSXGraph: failed to load file ${src}: ${e}`);
-                        });
-                        /* jshint ignore:end */
-                        request.send();
-                    } else {
-                        postpone = false;
-                    }
-
-                    if (document.getElementById(id)) {
-                        code = scripts[i].innerHTML;
-                        code = code.replace(/<!\[CDATA\[/g, "").replace(/\]\]>/g, "");
-                        scripts[i].innerHTML = code;
-
-                        if (!postpone) {
-                            // Do no wait for data from "src" attribute
-                            board = init(code, type, bbox);
-                            board.reload = makeReload(board, code, type, bbox);
-                        }
-                    } else {
-                        JXG.debug(
-                            "JSXGraph: Apparently the div injection failed. Can't create a board, sorry."
-                        );
-                    }
-                }
-            }
-        },
-        (window as any)
-    );
 }
 
-export default JXG.JSXGraph;
+// // JessieScript/JessieCode startup:
+// // Search for script tags of type text/jessiecode and execute them.
+// if (Env.isBrowser && typeof window === 'object' && typeof document === 'object') {
+//     Env.addEvent(window, 'load',
+//         function () {
+//             var type, i, j, div, id,
+//                 board, txt, width, height, maxWidth, aspectRatio,
+//                 cssClasses, bbox, axis, grid, code, src, request,
+//                 postpone = false,
+
+//                 scripts = document.getElementsByTagName('script'),
+//                 init = function (code, type, bbox) {
+//                     var board = JXG.JSXGraph.initBoard(id, {
+//                         boundingbox: bbox,
+//                         keepaspectratio: true,
+//                         grid: grid,
+//                         axis: axis,
+//                         showReload: true
+//                     });
+
+//                     if (type.toLowerCase().indexOf('script') > -1) {
+//                         board.construct(code);
+//                     } else {
+//                         try {
+//                             board.jc.parse(code);
+//                         } catch (e2) {
+//                             JXG.debug(e2);
+//                         }
+//                     }
+
+//                     return board;
+//                 },
+//                 makeReload = function (board, code, type, bbox) {
+//                     return function () {
+//                         var newBoard;
+
+//                         JXG.JSXGraph.freeBoard(board);
+//                         newBoard = init(code, type, bbox);
+//                         newBoard.reload = makeReload(newBoard, code, type, bbox);
+//                     };
+//                 };
+
+//             for (i = 0; i < scripts.length; i++) {
+//                 type = scripts[i].getAttribute("type");
+
+//                 if (
+//                     Type.exists(type) &&
+//                     (type.toLowerCase() === "text/jessiescript" ||
+//                         type.toLowerCase() === "jessiescript" ||
+//                         type.toLowerCase() === "text/jessiecode" ||
+//                         type.toLowerCase() === 'jessiecode')
+//                 ) {
+//                     cssClasses = scripts[i].getAttribute("class") || "";
+//                     width = scripts[i].getAttribute("width") || "";
+//                     height = scripts[i].getAttribute("height") || "";
+//                     maxWidth = scripts[i].getAttribute("maxwidth") || "100%";
+//                     aspectRatio = scripts[i].getAttribute("aspectratio") || "1/1";
+//                     bbox = scripts[i].getAttribute("boundingbox") || "-5, 5, 5, -5";
+//                     id = scripts[i].getAttribute("container");
+//                     src = scripts[i].getAttribute("src");
+
+//                     bbox = bbox.split(",");
+//                     if (bbox.length !== 4) {
+//                         bbox = [-5, 5, 5, -5];
+//                     } else {
+//                         for (j = 0; j < bbox.length; j++) {
+//                             bbox[j] = parseFloat(bbox[j]);
+//                         }
+//                     }
+//                     axis = Type.str2Bool(scripts[i].getAttribute("axis") || 'false');
+//                     grid = Type.str2Bool(scripts[i].getAttribute("grid") || 'false');
+
+//                     if (!Type.exists(id)) {
+//                         id = "jessiescript_autgen_jxg_" + i;
+//                         div = document.createElement('div');
+//                         div.setAttribute("id", id);
+
+//                         txt = width !== "" ? "width:" + width + ";" : "";
+//                         txt += height !== "" ? "height:" + height + ";" : "";
+//                         txt += maxWidth !== "" ? "max-width:" + maxWidth + ";" : "";
+//                         txt += aspectRatio !== "" ? "aspect-ratio:" + aspectRatio + ";" : "";
+
+//                         div.setAttribute("style", txt);
+//                         div.setAttribute("class", "jxgbox " + cssClasses);
+//                         try {
+//                             document.body.insertBefore(div, scripts[i]);
+//                         } catch (e) {
+//                             throw new Error('JessieCode failed to start')
+//                             // // there's probably jquery involved...
+//                             // if (Type.exists(jQuery) && typeof jQuery === 'object') {
+//                             //     jQuery(div).insertBefore(scripts[i]);
+//                             // }
+//                         }
+//                     } else {
+//                         div = document.getElementById(id);
+//                     }
+
+//                     code = "";
+
+//                     if (Type.exists(src)) {
+//                         postpone = true;
+//                         request = new XMLHttpRequest();
+//                         request.open("GET", src);
+//                         request.overrideMimeType("text/plain; charset=x-user-defined");
+//                         /* jshint ignore:start */
+//                         request.addEventListener("load", function () {
+//                             if (this.status < 400) {
+//                                 code = this.responseText + "\n" + code;
+//                                 board = init(code, type, bbox);
+//                                 board.reload = makeReload(board, code, type, bbox);
+//                             } else {
+//                                 throw new Error(`\nJSXGraph: failed to load file ${src}: ${this.responseText}`);
+//                             }
+//                         });
+//                         request.addEventListener("error", function (e) {
+//                             throw new Error(`\nJSXGraph: failed to load file ${src}: ${e}`);
+//                         });
+//                         /* jshint ignore:end */
+//                         request.send();
+//                     } else {
+//                         postpone = false;
+//                     }
+
+//                     if (document.getElementById(id)) {
+//                         code = scripts[i].innerHTML;
+//                         code = code.replace(/<!\[CDATA\[/g, "").replace(/\]\]>/g, "");
+//                         scripts[i].innerHTML = code;
+
+//                         if (!postpone) {
+//                             // Do no wait for data from "src" attribute
+//                             board = init(code, type, bbox);
+//                             board.reload = makeReload(board, code, type, bbox);
+//                         }
+//                     } else {
+//                         JXG.debug(
+//                             "JSXGraph: Apparently the div injection failed. Can't create a board, sorry."
+//                         );
+//                     }
+//                 }
+//             }
+//         },
+//         (window as any)
+//     );
+// }
+
