@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -37,7 +37,7 @@
  * style and functional properties that are required to draw an arc on a board.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import {Geometry} from "../math/geometry.js";
 import {JSXMath} from "../math/math.js";
 import {Coords} from "../base/coords.js";
@@ -56,9 +56,9 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
  * @name Arc
  * @augments Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point_JXG.Point_JXG.Point} p1,p2,p3 The result will be an arc of a circle around p1 through p2. The arc is drawn
+ * @param {JXG2.Point_JXG.Point_JXG.Point} p1,p2,p3 The result will be an arc of a circle around p1 through p2. The arc is drawn
  * counter-clockwise from p2 to p3.
  * @example
  * // Create an arc out of three free points
@@ -71,7 +71,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
  * </pre><div class="jxgbox" id="JXG114ef584-4a5e-4686-8392-c97501befb5b" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG114ef584-4a5e-4686-8392-c97501befb5b', {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG114ef584-4a5e-4686-8392-c97501befb5b', {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false}),
  *       p1 = board.create('point', [2.0, 2.0]),
  *       p2 = board.create('point', [1.0, 0.5]),
  *       p3 = board.create('point', [3.5, 1.0]),
@@ -89,7 +89,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
  * </pre><div id="JXG1949da46-6339-11e8-9fb9-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG1949da46-6339-11e8-9fb9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXG1949da46-6339-11e8-9fb9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var t = board.create('transform', [2, 1.5], {type: 'scale'});
  *     var a1 = board.create('arc', [[1, 1], [0, 1], [1, 0]], {strokeColor: 'red'});
@@ -100,7 +100,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
  * </script><pre>
  *
  */
-JXG.createArc = function (board, parents, attributes) {
+JXG2.createArc = function (board, parents, attributes) {
     var el, attr, points;
 
     // attributes.radiusPoint = {visible: false};
@@ -129,7 +129,7 @@ JXG.createArc = function (board, parents, attributes) {
     el.setParents(points);
 
     /**
-     * documented in JXG.GeometryElement
+     * documented in JXG2.GeometryElement
      * @ignore
      */
     el.type = OBJECT_TYPE.ARC;
@@ -138,7 +138,7 @@ JXG.createArc = function (board, parents, attributes) {
      * Center of the arc.
      * @memberOf Arc.prototype
      * @name center
-     * @type JXG.Point
+     * @type JXG2.Point
      */
     el.center = points[0];
 
@@ -146,7 +146,7 @@ JXG.createArc = function (board, parents, attributes) {
      * Point defining the arc's radius.
      * @memberOf Arc.prototype
      * @name radiuspoint
-     * @type JXG.Point
+     * @type JXG2.Point
      */
     el.radiuspoint = points[1];
     el.point2 = el.radiuspoint;
@@ -155,7 +155,7 @@ JXG.createArc = function (board, parents, attributes) {
      * The point defining the arc's angle.
      * @memberOf Arc.prototype
      * @name anglepoint
-     * @type JXG.Point
+     * @type JXG2.Point
      */
     el.anglepoint = points[2];
     el.point3 = el.anglepoint;
@@ -184,7 +184,7 @@ JXG.createArc = function (board, parents, attributes) {
     // This attribute is necessary for circumCircleArcs
     el.useDirection = attr.usedirection; // This makes the attribute immutable
 
-    // documented in JXG.Curve
+    // documented in JXG2.Curve
     /**
      * @class
      * @ignore
@@ -254,7 +254,7 @@ JXG.createArc = function (board, parents, attributes) {
      * @returns {Number}
      */
     el.getRadius = function () {
-        JXG.deprecated("Arc.getRadius()", "Arc.Radius()");
+        JXG2.deprecated("Arc.getRadius()", "Arc.Radius()");
         return this.Radius();
     };
 
@@ -462,7 +462,7 @@ JXG.createArc = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("arc", JXG.createArc);
+JXG2.registerElement("arc", JXG2.createArc);
 
 /**
  * @class A semicircle is a special arc defined by two points. The arc hits both points.
@@ -472,7 +472,7 @@ JXG.registerElement("arc", JXG.createArc);
  * @constructor
  * @type Arc
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point_JXG.Point} p1,p2 The result will be a composition of an arc drawn clockwise from <tt>p1</tt> and
+ * @param {JXG2.Point_JXG.Point} p1,p2 The result will be a composition of an arc drawn clockwise from <tt>p1</tt> and
  * <tt>p2</tt> and the midpoint of <tt>p1</tt> and <tt>p2</tt>.
  * @example
  * // Create an arc out of three free points
@@ -483,7 +483,7 @@ JXG.registerElement("arc", JXG.createArc);
  * </pre><div class="jxgbox" id="JXG5385d349-75d7-4078-b732-9ae808db1b0e" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG5385d349-75d7-4078-b732-9ae808db1b0e', {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG5385d349-75d7-4078-b732-9ae808db1b0e', {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false}),
  *       p1 = board.create('point', [4.5, 2.0]),
  *       p2 = board.create('point', [1.0, 0.5]),
  *
@@ -491,7 +491,7 @@ JXG.registerElement("arc", JXG.createArc);
  * })();
  * </script><pre>
  */
-JXG.createSemicircle = function (board, parents, attributes) {
+JXG2.createSemicircle = function (board, parents, attributes) {
     var el, mp, attr, points;
 
     // we need 2 points
@@ -531,7 +531,7 @@ JXG.createSemicircle = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("semicircle", JXG.createSemicircle);
+JXG2.registerElement("semicircle", JXG2.createSemicircle);
 
 /**
  * @class A partial circum circle through three points.
@@ -541,7 +541,7 @@ JXG.registerElement("semicircle", JXG.createSemicircle);
  * @constructor
  * @type Arc
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point_JXG.Point_JXG.Point} p1,p2,p3 The result will be a composition of an arc of the circumcircle of
+ * @param {JXG2.Point_JXG.Point_JXG.Point} p1,p2,p3 The result will be a composition of an arc of the circumcircle of
  * <tt>p1</tt>, <tt>p2</tt>, and <tt>p3</tt> and the midpoint of the circumcircle of the three points. The arc is drawn
  * counter-clockwise from <tt>p1</tt> over <tt>p2</tt> to <tt>p3</tt>.
  * @example
@@ -554,7 +554,7 @@ JXG.registerElement("semicircle", JXG.createSemicircle);
  * </pre><div class="jxgbox" id="JXG87125fd4-823a-41c1-88ef-d1a1369504e3" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG87125fd4-823a-41c1-88ef-d1a1369504e3', {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG87125fd4-823a-41c1-88ef-d1a1369504e3', {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false}),
  *       p1 = board.create('point', [2.0, 2.0]),
  *       p2 = board.create('point', [1.0, 0.5]),
  *       p3 = board.create('point', [3.5, 1.0]),
@@ -563,7 +563,7 @@ JXG.registerElement("semicircle", JXG.createSemicircle);
  * })();
  * </script><pre>
  */
-JXG.createCircumcircleArc = function (board, parents, attributes) {
+JXG2.createCircumcircleArc = function (board, parents, attributes) {
     var el, mp, attr, points;
 
     // We need three points
@@ -607,7 +607,7 @@ JXG.createCircumcircleArc = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("circumcirclearc", JXG.createCircumcircleArc);
+JXG2.registerElement("circumcirclearc", JXG2.createCircumcircleArc);
 
 /**
  * @class A minor arc given by three points is that part of the circumference of a circle having
@@ -617,9 +617,9 @@ JXG.registerElement("circumcirclearc", JXG.createCircumcircleArc);
  * @name MinorArc
  * @augments Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point_JXG.Point_JXG.Point} p1,p2,p3 . Minor arc is an arc of a circle around p1 having measure less than or equal to
+ * @param {JXG2.Point_JXG.Point_JXG.Point} p1,p2,p3 . Minor arc is an arc of a circle around p1 having measure less than or equal to
  * 180 degrees (pi radians) and starts at p2. The radius is determined by p2, the angle by p3.
  * @example
  * // Create an arc out of three free points
@@ -631,7 +631,7 @@ JXG.registerElement("circumcirclearc", JXG.createCircumcircleArc);
  * </pre><div class="jxgbox" id="JXG64ba7ca2-8728-45f3-96e5-3c7a4414de2f" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG64ba7ca2-8728-45f3-96e5-3c7a4414de2f', {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG64ba7ca2-8728-45f3-96e5-3c7a4414de2f', {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false}),
  *       p1 = board.create('point', [2.0, 2.0]),
  *       p2 = board.create('point', [1.0, 0.5]),
  *       p3 = board.create('point', [3.5, 1.0]),
@@ -641,12 +641,12 @@ JXG.registerElement("circumcirclearc", JXG.createCircumcircleArc);
  * </script><pre>
  */
 
-JXG.createMinorArc = function (board, parents, attributes) {
+JXG2.createMinorArc = function (board, parents, attributes) {
     attributes.selection = 'minor';
-    return JXG.createArc(board, parents, attributes);
+    return JXG2.createArc(board, parents, attributes);
 };
 
-JXG.registerElement("minorarc", JXG.createMinorArc);
+JXG2.registerElement("minorarc", JXG2.createMinorArc);
 
 /**
  * @class A major arc given by three points is that part of the circumference of a circle having
@@ -656,9 +656,9 @@ JXG.registerElement("minorarc", JXG.createMinorArc);
  * @name MajorArc
  * @augments Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point_JXG.Point_JXG.Point} p1,p2,p3 . Major arc is an arc of a circle around p1 having measure greater than or equal to
+ * @param {JXG2.Point_JXG.Point_JXG.Point} p1,p2,p3 . Major arc is an arc of a circle around p1 having measure greater than or equal to
  * 180 degrees (pi radians) and starts at p2. The radius is determined by p2, the angle by p3.
  * @example
  * // Create an arc out of three free points
@@ -670,7 +670,7 @@ JXG.registerElement("minorarc", JXG.createMinorArc);
  * </pre><div class="jxgbox" id="JXG17a10d38-5629-40a4-b150-f41806edee9f" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG17a10d38-5629-40a4-b150-f41806edee9f', {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG17a10d38-5629-40a4-b150-f41806edee9f', {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false}),
  *       p1 = board.create('point', [2.0, 2.0]),
  *       p2 = board.create('point', [1.0, 0.5]),
  *       p3 = board.create('point', [3.5, 1.0]),
@@ -679,9 +679,9 @@ JXG.registerElement("minorarc", JXG.createMinorArc);
  * })();
  * </script><pre>
  */
-JXG.createMajorArc = function (board, parents, attributes) {
+JXG2.createMajorArc = function (board, parents, attributes) {
     attributes.selection = 'major';
-    return JXG.createArc(board, parents, attributes);
+    return JXG2.createArc(board, parents, attributes);
 };
 
-JXG.registerElement("majorarc", JXG.createMajorArc);
+JXG2.registerElement("majorarc", JXG2.createMajorArc);

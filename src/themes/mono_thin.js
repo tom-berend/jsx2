@@ -25,13 +25,13 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 
 // Constants for this theme:
 let size = 0.75,
     color = '#000';
 
-JXG.themes['mono_thin'] = {
+JXG2.themes['mono_thin'] = {
 
         board: {
             showInfobox: false,
@@ -405,4 +405,4 @@ JXG.themes['mono_thin'] = {
     // });
 };
 
-export default JXG;
+export default JXG2;

@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -37,17 +37,17 @@
  * manipulate polynomials.
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {JSXMath} from "./math.js";
 import {Type} from "../utils/type.js";
 
 /**
  * The Geometry.Poly namespace holds algorithms to create and manipulate polynomials.
  * @name Geometry.Poly
- * @exports JXG.JSXMath.Poly as Geometry.Poly
+ * @exports JXG2.JSXMath.Poly as Geometry.Poly
  * @namespace
  */
-JXG.JSXMath.Poly = {};
+JXG2.JSXMath.Poly = {};
 
 /**
  * Define a polynomial ring over R.
@@ -55,7 +55,7 @@ JXG.JSXMath.Poly = {};
  * @name Geometry.Poly.Ring
  * @param {Array} variables List of indeterminates.
  */
-JXG.JSXMath.Poly.Ring = function (variables) {
+JXG2.JSXMath.Poly.Ring = function (variables) {
     /**
      * A list of variables in this polynomial ring.
      * @type Array
@@ -63,8 +63,8 @@ JXG.JSXMath.Poly.Ring = function (variables) {
     this.vars = variables;
 };
 
-JXG.extend(
-    JXG.JSXMath.Poly.Ring.prototype,
+JXG2.extend(
+    JXG2.JSXMath.Poly.Ring.prototype,
     /** @lends Geometry.Poly.Ring.prototype */ {
         // nothing yet.
     }
@@ -78,7 +78,7 @@ JXG.extend(
  * @param {Number} coefficient
  * @param {Array} exponents An array of exponents, corresponding to ring
  */
-JXG.JSXMath.Poly.Monomial = function (ring, coefficient, exponents) {
+JXG2.JSXMath.Poly.Monomial = function (ring, coefficient, exponents) {
     var i;
 
     if (!Type.exists(ring)) {
@@ -115,8 +115,8 @@ JXG.JSXMath.Poly.Monomial = function (ring, coefficient, exponents) {
     this.exponents = Type.deepCopy(exponents);
 };
 
-JXG.extend(
-    JXG.JSXMath.Poly.Monomial.prototype,
+JXG2.extend(
+    JXG2.JSXMath.Poly.Monomial.prototype,
     /** @lends Geometry.Poly.Monomial.prototype */ {
         /**
          * Creates a deep copy of the monomial.
@@ -126,7 +126,7 @@ JXG.extend(
          * @memberof Geometry.Poly.Monomial
          */
         copy: function () {
-            return new JXG.JSXMath.Poly.Monomial(this.ring, this.coefficient, this.exponents);
+            return new JXG2.JSXMath.Poly.Monomial(this.ring, this.coefficient, this.exponents);
         },
 
         /**
@@ -155,7 +155,7 @@ JXG.extend(
  * @param {Geometry.Poly.Ring} ring A polynomial ring.
  * @param {String} str TODO String representation of the polynomial, will be parsed.
  */
-JXG.JSXMath.Poly.Polynomial = function (ring, str) {
+JXG2.JSXMath.Poly.Polynomial = function (ring, str) {
     var parse = function () {},
         mons;
 
@@ -184,8 +184,8 @@ JXG.JSXMath.Poly.Polynomial = function (ring, str) {
     this.monomials = mons;
 };
 
-JXG.extend(
-    JXG.JSXMath.Poly.Polynomial.prototype,
+JXG2.extend(
+    JXG2.JSXMath.Poly.Polynomial.prototype,
     /** @lends Geometry.Poly.Polynomial.prototype */ {
         /**
          * Find a monomial with the given signature, i.e. exponent vector.
@@ -285,7 +285,7 @@ JXG.extend(
         copy: function () {
             var i, p;
 
-            p = new JXG.JSXMath.Poly.Polynomial(this.ring);
+            p = new JXG2.JSXMath.Poly.Polynomial(this.ring);
 
             for (i = 0; i < this.monomials.length; i++) {
                 p.monomials.push(this.monomials[i].copy());
@@ -311,4 +311,4 @@ JXG.extend(
     }
 );
 
-export default JXG.JSXMath.Poly;
+export default JXG2.JSXMath.Poly;

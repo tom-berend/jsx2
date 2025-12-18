@@ -25,7 +25,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, window: true, console: true, self: true, document: true, parser: true*/
+/*global JXG2: true, define: true, window: true, console: true, self: true, document: true, parser: true*/
 /*jslint nomen: true, plusplus: true*/
 /*eslint eqeqeq: "off"*/
 
@@ -33,7 +33,7 @@
  * @fileoverview Here, the computer algebra algorithms are implemented.
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {Type} from "../utils/type.js";
 // import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 // import Text from "../base/text.js";
@@ -45,20 +45,20 @@ import {Type} from "../utils/type.js";
 /**
  * A JessieCode object provides an interface to the parser and stores all variables and objects used within a JessieCode script.
  * The optional argument <tt>code</tt> is interpreted after initializing. To evaluate more code after initializing a JessieCode instance
- * please use {@link JXG.JessieCode#parse}. For code snippets like single expressions use {@link JXG.JessieCode#snippet}.
+ * please use {@link JXG2.JessieCode#parse}. For code snippets like single expressions use {@link JXG2.JessieCode#snippet}.
  * @constructor
  * @param {String} [code] Code to parse.
  * @param {Boolean} [geonext=false] Geonext compatibility mode.
  */
-JXG.CA = function (node, createNode, parser) {
+JXG2.CA = function (node, createNode, parser) {
     this.node = node;
     this.createNode = createNode;
     this.parser = parser;
 };
 
-JXG.extend(
-    JXG.CA.prototype,
-    /** @lends JXG.CA.prototype */ {
+JXG2.extend(
+    JXG2.CA.prototype,
+    /** @lends JXG2.CA.prototype */ {
         findMapNode: function (mapname, node) {
             var i, len, ret;
 
@@ -1652,4 +1652,4 @@ JXG.extend(
     }
 );
 
-export default JXG.CA;
+export default JXG2.CA;

@@ -29,10 +29,10 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, AMprocessNode: true, document: true, Image: true, module: true, require: true */
+/*global JXG2: true, define: true, AMprocessNode: true, document: true, Image: true, module: true, require: true */
 /*jslint nomen: true, plusplus: true, newcap:true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { AbstractRenderer } from "./abstract.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Env } from "../utils/env.js";
@@ -47,17 +47,17 @@ import { Numerics } from "../math/numerics.js";
 // import $__canvas from 'canvas.js'
 
 /**
- * Uses HTML Canvas to implement the rendering methods defined in {@link JXG.AbstractRenderer}.
+ * Uses HTML Canvas to implement the rendering methods defined in {@link JXG2.AbstractRenderer}.
  *
- * @class JXG.CanvasRenderer
- * @augments JXG.AbstractRenderer
+ * @class JXG2.CanvasRenderer
+ * @augments JXG2.AbstractRenderer
  * @param {Node} container Reference to a DOM node containing the board.
  * @param {Object} dim The dimensions of the board
  * @param {Number} dim.width
  * @param {Number} dim.height
- * @see JXG.AbstractRenderer
+ * @see JXG2.AbstractRenderer
  */
-JXG.CanvasRenderer = function (container, dim) {
+JXG2.CanvasRenderer = function (container, dim) {
     this.type = 'canvas';
 
     this.canvasRoot = null;
@@ -84,23 +84,23 @@ JXG.CanvasRenderer = function (container, dim) {
         this.context = this.canvasRoot.getContext('2d');
     } else if (Env.isNode()) {
         try {
-            this.canvasRoot = JXG.createCanvas(500, 500);
+            this.canvasRoot = JXG2.createCanvas(500, 500);
             this.context = this.canvasRoot.getContext('2d');
         } catch (err) {
-            throw new Error('JXG.createCanvas not available.\n' +
+            throw new Error('JXG2.createCanvas not available.\n' +
                 'Install the npm package `canvas`\n' +
                 'and call:\n' +
                 '    import { createCanvas } from "canvas.js"\n' +
-                '    JXG.createCanvas = createCanvas;\n');
+                '    JXG2.createCanvas = createCanvas;\n');
         }
     }
 };
 
-JXG.CanvasRenderer.prototype = new AbstractRenderer();
+JXG2.CanvasRenderer.prototype = new AbstractRenderer();
 
-JXG.extend(
-    JXG.CanvasRenderer.prototype,
-    /** @lends JXG.CanvasRenderer.prototype */ {
+JXG2.extend(
+    JXG2.CanvasRenderer.prototype,
+    /** @lends JXG2.CanvasRenderer.prototype */ {
         /* **************************
          *   private methods only used
          *   in this renderer. Should
@@ -110,7 +110,7 @@ JXG.extend(
         /**
          * Draws a filled polygon.
          * @param {Array} shape A matrix presented by a two dimensional array of numbers.
-         * @see JXG.AbstractRenderer#drawArrows
+         * @see JXG2.AbstractRenderer#drawArrows
          * @private
          */
         _drawPolygon: function (shape, degree, doFill) {
@@ -152,7 +152,7 @@ JXG.extend(
 
         /**
          * Sets the fill color and fills an area.
-         * @param {JXG.GeometryElement} el An arbitrary JSXGraph element, preferably one with an area.
+         * @param {JXG2.GeometryElement} el An arbitrary JSXGraph element, preferably one with an area.
          * @private
          */
         _fill: function (el) {
@@ -207,7 +207,7 @@ JXG.extend(
          * Set the gradient angle for linear color gradients.
          *
          * @private
-         * @param {JXG.GeometryElement} node An arbitrary JSXGraph element, preferably one with an area.
+         * @param {JXG2.GeometryElement} node An arbitrary JSXGraph element, preferably one with an area.
          * @param {Number} radians angle value in radians. 0 is horizontal from left to right, Pi/4 is vertical from top to bottom.
          */
         updateGradientAngle: function (el, radians) {
@@ -293,7 +293,7 @@ JXG.extend(
             return this.context.createRadialGradient(fxs, fys, frs, cxs, cys, rs);
         },
 
-        // documented in JXG.AbstractRenderer
+        // documented in JXG2.AbstractRenderer
         updateGradient: function (el) {
             var col,
                 // op,
@@ -335,7 +335,7 @@ JXG.extend(
          * Sets color and opacity for filling and stroking.
          * type is the attribute from visProp and targetType the context[targetTypeStyle].
          * This is necessary, because the fill style of a text is set by the stroke attributes of the text element.
-         * @param {JXG.GeometryElement} el Any JSXGraph element.
+         * @param {JXG2.GeometryElement} el Any JSXGraph element.
          * @param {String} [type='stroke'] Either <em>fill</em> or <em>stroke</em>.
          * @param {String} [targetType=type] (optional) Either <em>fill</em> or <em>stroke</em>.
          * @returns {Boolean} If the color could be set, <tt>true</tt> is returned.
@@ -406,7 +406,7 @@ JXG.extend(
 
         /**
          * Sets color and opacity for drawing paths and lines and draws the paths and lines.
-         * @param {JXG.GeometryElement} el An JSXGraph element with a stroke.
+         * @param {JXG2.GeometryElement} el An JSXGraph element with a stroke.
          * @private
          */
         _stroke: function (el) {
@@ -625,7 +625,7 @@ JXG.extend(
 
         /**
          * Draws arrows of an element (usually a line) in canvas renderer.
-         * @param {JXG.GeometryElement} el Line to be drawn.
+         * @param {JXG2.GeometryElement} el Line to be drawn.
          * @param {Array} scr1 Screen coordinates of the start position of the line or curve.
          * @param {Array} scr2 Screen coordinates of the end position of the line or curve.
          * @param {String} hl String which carries information if the element is highlighted. Used for getting the correct attribute.
@@ -1134,7 +1134,7 @@ JXG.extend(
 
         /* ********* Text related stuff *********** */
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         displayCopyright: function (str, fontsize) {
             var context = this.context,
                 x = 4 + 1.8 * fontsize,
@@ -1150,7 +1150,7 @@ JXG.extend(
             context.restore();
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         displayLogo: function (str, fontsize, board) {
             var context = this.context,
                 s = 1.5 * fontsize,
@@ -1172,7 +1172,7 @@ JXG.extend(
             context.restore();
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         drawInternalText: function (el) {
             var ev_fs = el.evalVisProp('fontsize'),
                 fontUnit = el.evalVisProp('fontunit'),
@@ -1208,12 +1208,12 @@ JXG.extend(
             return null;
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updateInternalText: function (el) {
             this.drawInternalText(el);
         },
 
-        // documented in JXG.AbstractRenderer
+        // documented in JXG2.AbstractRenderer
         // Only necessary for texts
         setObjectStrokeColor: function (el, color, opacity) {
             var rgba = color,
@@ -1258,7 +1258,7 @@ JXG.extend(
 
         /* ********* Image related stuff *********** */
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         drawImage: function (el) {
             el.rendNode = new Image();
             // Store the file name of the image.
@@ -1270,7 +1270,7 @@ JXG.extend(
             this.updateImage(el);
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updateImage: function (el) {
             var context = this.context,
                 o = el.evalVisProp('fillopacity'),
@@ -1303,7 +1303,7 @@ JXG.extend(
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         transformRect: function (el, t) {
             var m, s, cx, cy, node,
                 len = t.length,
@@ -1336,7 +1336,7 @@ JXG.extend(
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updateImageURL: function (el) {
             var url;
 
@@ -1452,7 +1452,7 @@ JXG.extend(
             this._stroke(el);
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updatePathStringBezierPrim: function (el) {
             var i, j, k,
                 scr, lx, ly, len,
@@ -1563,7 +1563,7 @@ JXG.extend(
 
         /* ********* Set attributes *********** */
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         display: function (el, val) {
             if (el && el.rendNode) {
                 el.visPropOld.visible = val;
@@ -1577,7 +1577,7 @@ JXG.extend(
 
         // documented in AbstractRenderer
         show: function (el) {
-            JXG.deprecated("Board.renderer.show()", "Board.renderer.display()");
+            JXG2.deprecated("Board.renderer.show()", "Board.renderer.display()");
 
             if (Type.exists(el.rendNode)) {
                 el.rendNode.style.visibility = 'inherit';
@@ -1586,7 +1586,7 @@ JXG.extend(
 
         // documented in AbstractRenderer
         hide: function (el) {
-            JXG.deprecated("Board.renderer.hide()", "Board.renderer.display()");
+            JXG2.deprecated("Board.renderer.hide()", "Board.renderer.display()");
 
             if (Type.exists(el.rendNode)) {
                 el.rendNode.style.visibility = 'hidden';
@@ -1657,11 +1657,11 @@ JXG.extend(
             this.context.clearRect(0, 0, this.canvasRoot.width, this.canvasRoot.height);
 
             if (board && (board.attr.showcopyright || board.attr.showlogo)) {
-                this.displayLogo(JXG.licenseLogo, 12, board);
+                this.displayLogo(JXG2.licenseLogo, 12, board);
             }
 
             if (board && board.attr.showcopyright) {
-                this.displayCopyright(JXG.licenseText, 12);
+                this.displayCopyright(JXG2.licenseText, 12);
             }
         },
 
@@ -1695,4 +1695,4 @@ JXG.extend(
     }
 );
 
-export default JXG.CanvasRenderer;
+export default JXG2.CanvasRenderer;

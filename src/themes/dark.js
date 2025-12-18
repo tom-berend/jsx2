@@ -1,4 +1,4 @@
-JXG.Options = JXG.merge(JXG.Options, {
+JXG2.Options = JXG2.merge(JXG2.Options, {
     board: {
         showCopyright: false,
         showNavigation: false,

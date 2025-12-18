@@ -29,10 +29,10 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 import {Statistics} from "../math/statistics.js";
@@ -41,18 +41,18 @@ import {Type} from "../utils/type.js";
 import GeometryElement from "./element.js";
 
 /**
- * Creates a new instance of JXG.Polygon.
+ * Creates a new instance of JXG2.Polygon.
  * @class Polygon stores all style and functional properties that are required
  * to draw and to interactact with a polygon.
  * @constructor
- * @augments JXG.GeometryElement
- * @param {JXG.Board} board Reference to the board the polygon is to be drawn on.
+ * @augments JXG2.GeometryElement
+ * @param {JXG2.Board} board Reference to the board the polygon is to be drawn on.
  * @param {Array} vertices Unique identifiers for the points defining the polygon.
  * Last point must be first point. Otherwise, the first point will be added at the list.
- * @param {Object} attributes An object which contains properties as given in {@link JXG.Options.elements}
- * and {@link JXG.Options.polygon}.
+ * @param {Object} attributes An object which contains properties as given in {@link JXG2.Options.elements}
+ * and {@link JXG2.Options.polygon}.
  */
-JXG.Polygon = function (board, vertices, attributes) {
+JXG2.Polygon = function (board, vertices, attributes) {
     this.constructor(board, attributes, OBJECT_TYPE.POLYGON, OBJECT_CLASS.AREA);
 
     var i, l, len, j, p,
@@ -63,7 +63,7 @@ JXG.Polygon = function (board, vertices, attributes) {
 
     /**
      * References to the points defining the polygon. The last vertex is the same as the first vertex.
-     * Compared to the 3D {@link JXG.Polygon3D#vertices}, it contains one point more, i.e. for a quadrangle
+     * Compared to the 3D {@link JXG2.Polygon3D#vertices}, it contains one point more, i.e. for a quadrangle
      * 'vertices' contains five points, the last one being
      * a copy of the first one. In a 3D quadrangle, 'vertices' will contain four points.
      * @type Array
@@ -167,19 +167,19 @@ JXG.Polygon = function (board, vertices, attributes) {
     });
 };
 
-JXG.Polygon.prototype = new GeometryElement();
+JXG2.Polygon.prototype = new GeometryElement();
 
-JXG.extend(
-    JXG.Polygon.prototype,
-    /** @lends JXG.Polygon.prototype */ {
+JXG2.extend(
+    JXG2.Polygon.prototype,
+    /** @lends JXG2.Polygon.prototype */ {
         /**
          * Wrapper for Geometry.pnpoly.
          *
          * @param {Number} x_in x-coordinate (screen or user coordinates)
          * @param {Number} y_in y-coordinate (screen or user coordinates)
          * @param {Number} coord_type (Optional) the type of coordinates used here.
-         *   Possible values are <b>COORDS_BY.USER</b> and <b>JXG.COORDS_BY_SCREEN</b>.
-         *   Default value is JXG.COORDS_BY_SCREEN
+         *   Possible values are <b>COORDS_BY.USER</b> and <b>JXG2.COORDS_BY_SCREEN</b>.
+         *   Default value is JXG2.COORDS_BY_SCREEN
          *
          * @returns {Boolean} if (x_in, y_in) is inside of the polygon.
          * @see Geometry.Geometry#pnpoly
@@ -195,7 +195,7 @@ JXG.extend(
          * </pre><div id="JXG7f96aec7-4e3d-4ffc-a3f5-d3f967b6691c" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG7f96aec7-4e3d-4ffc-a3f5-d3f967b6691c',
+         *         var board = JXG2.JSXGraph.initBoard('JXG7f96aec7-4e3d-4ffc-a3f5-d3f967b6691c',
          *             {boundingbox: [-2, 5, 5,-2], axis: true, showcopyright: false, shownavigation: false});
          *     var pol = board.create('polygon', [[-1,2], [2,2], [-1,4]]);
          *     var p = board.create('point', [4, 3]);
@@ -332,7 +332,7 @@ JXG.extend(
             return new Coords(COORDS_BY.USER, [(a + x) * 0.5, (b + y) * 0.5], this.board);
         },
 
-        getLabelAnchor: JXG.shortcut(JXG.Polygon.prototype, 'getTextAnchor'),
+        getLabelAnchor: JXG2.shortcut(JXG2.Polygon.prototype, 'getTextAnchor'),
 
         // documented in geometry element
         cloneToBackground: function () {
@@ -357,7 +357,7 @@ JXG.extend(
         hideElement: function (borderless) {
             var i;
 
-            JXG.deprecated("Element.hideElement()", "Element.setDisplayRendNode()");
+            JXG2.deprecated("Element.hideElement()", "Element.setDisplayRendNode()");
 
             this.visPropCalc.visible = false;
             this.board.renderer.display(this, false);
@@ -384,7 +384,7 @@ JXG.extend(
         showElement: function (borderless) {
             var i;
 
-            JXG.deprecated("Element.showElement()", "Element.setDisplayRendNode()");
+            JXG2.deprecated("Element.showElement()", "Element.setDisplayRendNode()");
 
             this.visPropCalc.visible = true;
             this.board.renderer.display(this, true);
@@ -416,7 +416,7 @@ JXG.extend(
          * Perimeter of polygon. For a polygonal chain, this method returns its length.
          *
          * @returns {Number} Perimeter of polygon in user units.
-         * @see JXG.Polygon#L
+         * @see JXG2.Polygon#L
          *
          * @example
          * var p = [[0.0, 2.0], [2.0, 1.0], [4.0, 6.0], [1.0, 3.0]];
@@ -426,7 +426,7 @@ JXG.extend(
          * </pre><div class="jxgbox" id="JXGb10b734d-89fc-4b9d-b4a7-e3f0c1c6bf77" style="width: 400px; height: 400px;"></div>
          * <script type="text/javascript">
          *  (function () {
-         *   var board = JXG.JSXGraph.initBoard('JXGb10b734d-89fc-4b9d-b4a7-e3f0c1c6bf77', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
+         *   var board = JXG2.JSXGraph.initBoard('JXGb10b734d-89fc-4b9d-b4a7-e3f0c1c6bf77', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
          *       p = [[0.0, 2.0], [2.0, 1.0], [4.0, 6.0], [1.0, 4.0]],
          *       cc1 = board.create('polygon', p, {hasInnerPoints: true}),
          *       t = board.create('text', [5, 5, function() { return cc1.Perimeter(); }]);
@@ -450,7 +450,7 @@ JXG.extend(
          * Alias for Perimeter. For polygons, the perimeter is returned. For polygonal chains the length is returned.
          *
          * @returns Number
-         * @see JXG.Polygon#Perimeter
+         * @see JXG2.Polygon#Perimeter
          */
         L: function() {
             return this.Perimeter();
@@ -508,7 +508,7 @@ JXG.extend(
 
         /**
          * This method removes the SVG or VML nodes of the lines and the filled area from the renderer, to remove
-         * the object completely you should use {@link JXG.Board#removeObject}.
+         * the object completely you should use {@link JXG2.Board#removeObject}.
          *
          * @private
          */
@@ -524,7 +524,7 @@ JXG.extend(
 
         /**
          * Finds the index to a given point reference.
-         * @param {JXG.Point} p Reference to an element of type {@link JXG.Point}
+         * @param {JXG2.Point} p Reference to an element of type {@link JXG2.Point}
          * @returns {Number} Index of the point or -1.
          */
         findPoint: function (p) {
@@ -550,8 +550,8 @@ JXG.extend(
          * If new vertices are supplied by coordinates, the default attributes of polygon
          * vertices are taken as their attributes. Therefore, the visual attributes of
          * new vertices and borders may have to be adapted afterwards.
-         * @param {JXG.Point} p Arbitrary number of points or coordinate arrays
-         * @returns {JXG.Polygon} Reference to the polygon
+         * @param {JXG2.Point} p Arbitrary number of points or coordinate arrays
+         * @returns {JXG2.Polygon} Reference to the polygon
          * @example
          * var pg = board.create('polygon', [[1,2], [3,4], [-3,1]], {hasInnerPoints: true});
          * var newPoint = board.create('point', [-1, -1]);
@@ -561,7 +561,7 @@ JXG.extend(
          * </pre><div id="JXG70eb0fd2-d20f-4ba9-9ab6-0eac92aabfa5" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG70eb0fd2-d20f-4ba9-9ab6-0eac92aabfa5',
+         *         var board = JXG2.JSXGraph.initBoard('JXG70eb0fd2-d20f-4ba9-9ab6-0eac92aabfa5',
          *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
          *     var pg = board.create('polygon', [[1,2], [3,4], [-3,1]], {hasInnerPoints: true});
          *     var newPoint = board.create('point', [-1, -1]);
@@ -595,8 +595,8 @@ JXG.extend(
          *
          * @param {Number} idx The position after which the new vertices are inserted.
          * Setting idx to -1 inserts the new points at the front, i.e. at position 0.
-         * @param {JXG.Point} p Arbitrary number of points or coordinate arrays to insert.
-         * @returns {JXG.Polygon} Reference to the polygon object
+         * @param {JXG2.Point} p Arbitrary number of points or coordinate arrays to insert.
+         * @returns {JXG2.Polygon} Reference to the polygon object
          *
          * @example
          * var pg = board.create('polygon', [[1,2], [3,4], [-3,1]], {hasInnerPoints: true});
@@ -606,7 +606,7 @@ JXG.extend(
          * </pre><div id="JXG17b84b2a-a851-4e3f-824f-7f6a60f166ca" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG17b84b2a-a851-4e3f-824f-7f6a60f166ca',
+         *         var board = JXG2.JSXGraph.initBoard('JXG17b84b2a-a851-4e3f-824f-7f6a60f166ca',
          *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
          *     var pg = board.create('polygon', [[1,2], [3,4], [-3,1]], {hasInnerPoints: true});
          *     var newPoint = board.create('point', [-1, -1]);
@@ -693,8 +693,8 @@ JXG.extend(
 
         /**
          * Removes given set of vertices from the polygon
-         * @param {JXG.Point} p Arbitrary number of vertices as {@link JXG.Point} elements or index numbers
-         * @returns {JXG.Polygon} Reference to the polygon
+         * @param {JXG2.Point} p Arbitrary number of vertices as {@link JXG2.Point} elements or index numbers
+         * @returns {JXG2.Polygon} Reference to the polygon
          */
         removePoints: function (p) {
             var i, j, idx,
@@ -894,10 +894,10 @@ JXG.extend(
 
         /**
          * Moves the polygon by the difference of two coordinates.
-         * @param {Number} method The type of coordinates used here. Possible values are {@link COORDS_BY.USER} and {@link JXG.COORDS_BY_SCREEN}.
+         * @param {Number} method The type of coordinates used here. Possible values are {@link COORDS_BY.USER} and {@link JXG2.COORDS_BY_SCREEN}.
          * @param {Array} coords coordinates in screen/user units
          * @param {Array} oldcoords previous coordinates in screen/user units
-         * @returns {JXG.Polygon} this element
+         * @returns {JXG2.Polygon} this element
          */
         setPositionDirectly: function (method, coords, oldcoords) {
             var dc,
@@ -925,11 +925,11 @@ JXG.extend(
          * Algorithm by Sutherland and Hodgman to compute the intersection of two convex polygons.
          * The polygon itself is the clipping polygon, it expects as parameter a polygon to be clipped.
          * See <a href="https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm">wikipedia entry</a>.
-         * Called by {@link JXG.Polygon#intersect}.
+         * Called by {@link JXG2.Polygon#intersect}.
          *
          * @private
          *
-         * @param {JXG.Polygon} polygon Polygon which will be clipped.
+         * @param {JXG2.Polygon} polygon Polygon which will be clipped.
          *
          * @returns {Array} of (normalized homogeneous user) coordinates (i.e. [z, x, y], where z==1 in most cases,
          *   representing the vertices of the intersection polygon.
@@ -1008,12 +1008,12 @@ JXG.extend(
          * Generic method for the intersection of this polygon with another polygon.
          * The parent object is the clipping polygon, it expects as parameter a polygon to be clipped.
          * Both polygons have to be convex.
-         * Calls the algorithm by Sutherland, Hodgman, {@link JXG.Polygon#sutherlandHodgman}.
+         * Calls the algorithm by Sutherland, Hodgman, {@link JXG2.Polygon#sutherlandHodgman}.
          * <p>
          * An alternative is to use the methods from {@link Geometry.Clip}, where the algorithm by Greiner and Hormann
          * is used.
          *
-         * @param {JXG.Polygon} polygon Polygon which will be clipped.
+         * @param {JXG2.Polygon} polygon Polygon which will be clipped.
          *
          * @returns {Array} of (normalized homogeneous user) coordinates (i.e. [z, x, y], where z==1 in most cases,
          *   representing the vertices of the intersection polygon.
@@ -1034,7 +1034,7 @@ JXG.extend(
          * </pre><div class="jxgbox" id="JXGd1fe5ea9-309f-494a-af07-ee3d033acb7c" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *   (function() {
-         *       var board = JXG.JSXGraph.initBoard('JXGd1fe5ea9-309f-494a-af07-ee3d033acb7c', {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
+         *       var board = JXG2.JSXGraph.initBoard('JXGd1fe5ea9-309f-494a-af07-ee3d033acb7c', {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
          *       // Intersect two polygons pol1 and pol2
          *       var pol1 = board.create('polygon', [[-2, 3], [-4, -3], [2, 0], [4, 4]], {
          *                name:'pol1', withLabel: true,
@@ -1078,7 +1078,7 @@ JXG.extend(
          * </pre><div class="jxgbox" id="JXGf870d516-ca1a-4140-8fe3-5d64fb42e5f2" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *   (function() {
-         *       var board = JXG.JSXGraph.initBoard('JXGf870d516-ca1a-4140-8fe3-5d64fb42e5f2', {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
+         *       var board = JXG2.JSXGraph.initBoard('JXGf870d516-ca1a-4140-8fe3-5d64fb42e5f2', {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
          *       // Intersect two polygons pol1 and pol2
          *       var pol1 = board.create('polygon', [[-2, 3], [-4, -3], [2, 0], [4, 4]], {
          *                name:'pol1', withLabel: true,
@@ -1127,8 +1127,8 @@ JXG.extend(
  * @pseudo
  * @constructor
  * @name Polygon
- * @type JXG.Polygon
- * @augments JXG.Polygon
+ * @type JXG2.Polygon
+ * @augments JXG2.Polygon
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
  * @param {Array} vertices The polygon's vertices. If the first and the last vertex don't match the first one will be
  * added to the array by the creator. Here, two points match if they have the same 'id' attribute.
@@ -1146,7 +1146,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXG682069e9-9e2c-4f63-9b73-e26f8a2b2bb1" style="width: 400px; height: 400px;"></div>
  * <script type="text/javascript">
  *  (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG682069e9-9e2c-4f63-9b73-e26f8a2b2bb1', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG682069e9-9e2c-4f63-9b73-e26f8a2b2bb1', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
  *       p1 = board.create('point', [0.0, 2.0]),
  *       p2 = board.create('point', [2.0, 1.0]),
  *       p3 = board.create('point', [4.0, 6.0]),
@@ -1162,7 +1162,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXG9f9a5946-112a-4768-99ca-f30792bcdefb" style="width: 400px; height: 400px;"></div>
  * <script type="text/javascript">
  *  (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG9f9a5946-112a-4768-99ca-f30792bcdefb', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG9f9a5946-112a-4768-99ca-f30792bcdefb', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
  *       p = [[0.0, 2.0], [2.0, 1.0], [4.0, 6.0], [1.0, 4.0]],
  *       cc1 = board.create('polygon', p, {hasInnerPoints: true});
  *  })();
@@ -1179,7 +1179,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXGceb09915-b783-44db-adff-7877ae3534c8" style="width: 400px; height: 400px;"></div>
  * <script type="text/javascript">
  *  (function () {
- *   var board = JXG.JSXGraph.initBoard('JXGceb09915-b783-44db-adff-7877ae3534c8', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXGceb09915-b783-44db-adff-7877ae3534c8', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
  *       f1 = function() { return [0.0, 2.0]; },
  *       f2 = function() { return [2.0, 1.0]; },
  *       f3 = function() { return [4.0, 6.0]; },
@@ -1200,7 +1200,7 @@ JXG.extend(
  * </pre><div id="JXG6530a69c-6339-11e8-9fb9-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG6530a69c-6339-11e8-9fb9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXG6530a69c-6339-11e8-9fb9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var t = board.create('transform', [2, 1.5], {type: 'scale'});
  *     var a = board.create('point', [-3,-2], {name: 'a'});
@@ -1214,7 +1214,7 @@ JXG.extend(
  * </script><pre>
  *
  */
-JXG.createPolygon = function (board, parents, attributes) {
+JXG2.createPolygon = function (board, parents, attributes) {
     var el, i, le, obj,
         points = [],
         attr,
@@ -1252,7 +1252,7 @@ JXG.createPolygon = function (board, parents, attributes) {
     }
 
     attr = Type.copyAttributes(attributes, board.options, 'polygon');
-    el = new JXG.Polygon(board, points, attr);
+    el = new JXG2.Polygon(board, points, attr);
     el.isDraggable = true;
 
     // Put the points to their position
@@ -1278,7 +1278,7 @@ JXG.createPolygon = function (board, parents, attributes) {
  * @type Polygon
  * @augments Polygon
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point_JXG.Point_Number} p1,p2,n The constructed regular polygon has n vertices and the base line defined by p1 and p2.
+ * @param {JXG2.Point_JXG.Point_Number} p1,p2,n The constructed regular polygon has n vertices and the base line defined by p1 and p2.
  * @example
  * var p1 = board.create('point', [0.0, 2.0]);
  * var p2 = board.create('point', [2.0, 1.0]);
@@ -1287,7 +1287,7 @@ JXG.createPolygon = function (board, parents, attributes) {
  * </pre><div class="jxgbox" id="JXG682069e9-9e2c-4f63-9b73-e26f8a2b2bb1" style="width: 400px; height: 400px;"></div>
  * <script type="text/javascript">
  *  (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG682069e9-9e2c-4f63-9b73-e26f8a2b2bb1', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG682069e9-9e2c-4f63-9b73-e26f8a2b2bb1', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
  *       p1 = board.create('point', [0.0, 2.0]),
  *       p2 = board.create('point', [2.0, 1.0]),
  *       cc1 = board.create('regularpolygon', [p1, p2, 5]);
@@ -1302,7 +1302,7 @@ JXG.createPolygon = function (board, parents, attributes) {
  * </pre><div class="jxgbox" id="JXG096a78b3-bd50-4bac-b958-3be5e7df17ed" style="width: 400px; height: 400px;"></div>
  * <script type="text/javascript">
  * (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG096a78b3-bd50-4bac-b958-3be5e7df17ed', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG096a78b3-bd50-4bac-b958-3be5e7df17ed', {boundingbox: [-1, 9, 9, -1], axis: false, showcopyright: false, shownavigation: false}),
  *       p1 = board.create('point', [0.0, 2.0]),
  *       p2 = board.create('point', [4.0, 4.0]),
  *       p3 = board.create('point', [2.0,0.0]),
@@ -1320,7 +1320,7 @@ JXG.createPolygon = function (board, parents, attributes) {
  * </pre><div id="JXG58fc3078-d8d1-11e7-93b3-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG58fc3078-d8d1-11e7-93b3-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXG58fc3078-d8d1-11e7-93b3-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var li = board.create('line', [1,1,1], {strokeColor: '#aaaaaa'});
  *             var reflect = board.create('transform', [li], {type: 'reflect'});
@@ -1332,7 +1332,7 @@ JXG.createPolygon = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG.createRegularPolygon = function (board, parents, attributes) {
+JXG2.createRegularPolygon = function (board, parents, attributes) {
     var el, i, n,
         p = [],
         rot, len,
@@ -1412,7 +1412,7 @@ JXG.createRegularPolygon = function (board, parents, attributes) {
  * @constructor
  * @name PolygonalChain
  * @type Polygon
- * @augments JXG.Polygon
+ * @augments JXG2.Polygon
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
  * @param {Array} vertices The polygon's vertices.
  *
@@ -1436,7 +1436,7 @@ JXG.createRegularPolygon = function (board, parents, attributes) {
  * </pre><div id="JXG878f93d8-3e49-46cf-aca2-d3bb7d60c5ae" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG878f93d8-3e49-46cf-aca2-d3bb7d60c5ae',
+ *         var board = JXG2.JSXGraph.initBoard('JXG878f93d8-3e49-46cf-aca2-d3bb7d60c5ae',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *         var attr = {
  *                 snapToGrid: true
@@ -1456,7 +1456,7 @@ JXG.createRegularPolygon = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG.createPolygonalChain = function (board, parents, attributes) {
+JXG2.createPolygonalChain = function (board, parents, attributes) {
     var attr, el;
 
     attr = Type.copyAttributes(attributes, board.options, 'polygonalchain');
@@ -1480,7 +1480,7 @@ JXG.createPolygonalChain = function (board, parents, attributes) {
  * @type Polygon
  * @augments Polygon
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point,Array_JXG.Point,Array_JXG.Point,Array} p1,p2,p3 The parallelogram is a polygon through
+ * @param {JXG2.Point,Array_JXG.Point,Array_JXG.Point,Array} p1,p2,p3 The parallelogram is a polygon through
  * the points [p1, p2, pp, p3], where pp is a parallelpoint, available as sub-object parallelogram.parallelPoint.
  *
  * @example
@@ -1498,7 +1498,7 @@ JXG.createPolygonalChain = function (board, parents, attributes) {
  * </pre><div id="JXG05ff162f-7cee-4fd2-bd90-3d9ee5b489cc" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG05ff162f-7cee-4fd2-bd90-3d9ee5b489cc',
+ *         var board = JXG2.JSXGraph.initBoard('JXG05ff162f-7cee-4fd2-bd90-3d9ee5b489cc',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [-3, -4]);
  *     var p2 = board.create('point', [3, -1]);
@@ -1517,7 +1517,7 @@ JXG.createPolygonalChain = function (board, parents, attributes) {
  *
  *
  */
-JXG.createParallelogram = function (board, parents, attributes) {
+JXG2.createParallelogram = function (board, parents, attributes) {
     var el, pp,
         points = [],
         attr,
@@ -1541,7 +1541,7 @@ JXG.createParallelogram = function (board, parents, attributes) {
      * Parallel point which makes the quadrilateral a parallelogram. Can also be accessed with
      * parallelogram.vertices[2].
      * @name Parallelogram#parallelPoint
-     * @type {JXG.Point}
+     * @type {JXG2.Point}
      */
     el.parallelPoint = pp;
 
@@ -1552,14 +1552,14 @@ JXG.createParallelogram = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("polygon", JXG.createPolygon);
-JXG.registerElement("regularpolygon", JXG.createRegularPolygon);
-JXG.registerElement("polygonalchain", JXG.createPolygonalChain);
-JXG.registerElement("parallelogram", JXG.createParallelogram);
+JXG2.registerElement("polygon", JXG2.createPolygon);
+JXG2.registerElement("regularpolygon", JXG2.createRegularPolygon);
+JXG2.registerElement("polygonalchain", JXG2.createPolygonalChain);
+JXG2.registerElement("parallelogram", JXG2.createParallelogram);
 
-export default JXG.Polygon;
+export default JXG2.Polygon;
 // export default {
-//     Polygon: JXG.Polygon,
-//     createPolygon: JXG.createPolygon,
-//     createRegularPolygon: JXG.createRegularPolygon
+//     Polygon: JXG2.Polygon,
+//     createPolygon: JXG2.createPolygon,
+//     createRegularPolygon: JXG2.createRegularPolygon
 // };

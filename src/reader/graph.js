@@ -29,20 +29,20 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true*/
+/*global JXG2: true*/
 /*jslint nomen: true, plusplus: true*/
 
 (function () {
     "use strict";
 
-    JXG.GraphReader = function (board, str) {
+    JXG2.GraphReader = function (board, str) {
         this.board = board;
         this.data = str;
     };
 
-    JXG.extend(
-        JXG.GraphReader.prototype,
-        /** @lends JXG.GraphReader.prototype */ {
+    JXG2.extend(
+        JXG2.GraphReader.prototype,
+        /** @lends JXG2.GraphReader.prototype */ {
             parseData: function (directed) {
                 var splitted,
                     n, i, j,
@@ -174,7 +174,7 @@
                     adjMatrix = graph.adjMatrix;
 
                 for (i = 0; i < n; i++) {
-                    if (!JXG.exists(nodes[i].coords[0])) {
+                    if (!JXG2.exists(nodes[i].coords[0])) {
                         x =
                             (Math.random() * this.board.canvasWidth) /
                                 (this.board.unitX * 1.1) -
@@ -183,7 +183,7 @@
                         x = nodes[i].coords[0];
                     }
 
-                    if (!JXG.exists(nodes[i].coords[1])) {
+                    if (!JXG2.exists(nodes[i].coords[1])) {
                         y =
                             (Math.random() * this.board.canvasHeight) /
                                 (this.board.unitY * 1.1) -
@@ -263,5 +263,5 @@
         }
     );
 
-    JXG.registerReader(JXG.GraphReader, ["txt", "graph", "digraph"]);
+    JXG2.registerReader(JXG2.GraphReader, ["txt", "graph", "digraph"]);
 })();

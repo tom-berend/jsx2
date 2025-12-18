@@ -25,14 +25,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview In this file the Comb element is defined.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import {Type} from "../utils/type.js";
 
 /**
@@ -40,14 +40,14 @@ import {Type} from "../utils/type.js";
  * The comb element is defined by two points.
  * @pseudo
  * @name Comb
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  * @throws {Error} If the element cannot be constructed with the given parent
  *  objects an exception is thrown.
  * Parameter options:
- * @param {JXG.Point,array,function_JXG.Point,array,function} point1,point2 Parent elements
- * can be two elements either of type {@link JXG.Point} or array of
+ * @param {JXG2.Point,array,function_JXG.Point,array,function} point1,point2 Parent elements
+ * can be two elements either of type {@link JXG2.Point} or array of
  * numbers describing the coordinates of a point. In the latter case the point
  * will be constructed automatically as a fixed invisible point.
  * It is possible to provide a function returning an array or a point,
@@ -59,7 +59,7 @@ import {Type} from "../utils/type.js";
  * </pre><div class="jxgbox" id="JXG951ccb6a-52bc-4dc2-80e9-43db064f0f1b" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG951ccb6a-52bc-4dc2-80e9-43db064f0f1b', {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG951ccb6a-52bc-4dc2-80e9-43db064f0f1b', {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright: false, shownavigation: false}),
  *     c = board.create('comb', [[1, 0], [3, 0]]);
  * })();
  * </script><pre>
@@ -72,7 +72,7 @@ import {Type} from "../utils/type.js";
  * </pre><div id="JXG04186fd2-6340-11e8-9fb9-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG04186fd2-6340-11e8-9fb9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXG04186fd2-6340-11e8-9fb9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('glider', [-3, 0, board.defaultAxes.x]);
  *     var p2 = board.create('glider', [-1, 0, board.defaultAxes.x]);
@@ -99,7 +99,7 @@ import {Type} from "../utils/type.js";
  * </pre><div id="JXG6eb1bcd1-407e-4f13-8f0c-45ef39a0cfb3" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG6eb1bcd1-407e-4f13-8f0c-45ef39a0cfb3',
+ *         var board = JXG2.JSXGraph.initBoard('JXG6eb1bcd1-407e-4f13-8f0c-45ef39a0cfb3',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var s = board.create('slider', [[1,3], [4,3], [0.1, 0.3, 0.8]]);
  *     var p1 = board.create('glider', [-3, 0, board.defaultAxes.x]);
@@ -119,7 +119,7 @@ import {Type} from "../utils/type.js";
  * </script><pre>
  *
  */
-JXG.createComb = function (board, parents, attributes) {
+JXG2.createComb = function (board, parents, attributes) {
     var p1, p2, c, attr, parent_types;
     //ds, angle, width, p;
 
@@ -138,7 +138,7 @@ JXG.createComb = function (board, parents, attributes) {
             parents[0]().length >= 2
         ) {
             attr = Type.copyAttributes(attributes, board.options, "comb", 'point1');
-            p1 = JXG.createPoint(board, parents[0](), attr);
+            p1 = JXG2.createPoint(board, parents[0](), attr);
         } else {
             throw new Error(
                 "JSXGraph: Can't create comb with parent types '" +
@@ -164,7 +164,7 @@ JXG.createComb = function (board, parents, attributes) {
             parents[1]().length >= 2
         ) {
             attr = Type.copyAttributes(attributes, board.options, "comb", 'point2');
-            p2 = JXG.createPoint(board, parents[1](), attr);
+            p2 = JXG2.createPoint(board, parents[1](), attr);
         } else {
             throw new Error(
                 "JSXGraph: Can't create comb with parent types '" +
@@ -247,8 +247,8 @@ JXG.createComb = function (board, parents, attributes) {
     return c;
 };
 
-JXG.registerElement("comb", JXG.createComb);
+JXG2.registerElement("comb", JXG2.createComb);
 
 // export default {
-//     createComb: JXG.createComb
+//     createComb: JXG2.createComb
 // };

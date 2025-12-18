@@ -26,19 +26,19 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
 import {JSXMath} from "../math/math.js";
 
 /**
  * 3D faces
- * @class Creates a new 3D face object. Do not use this constructor to create a 3D curve. Use {@link JXG.View3D#create} with type {@link Face3D} instead.
+ * @class Creates a new 3D face object. Do not use this constructor to create a 3D curve. Use {@link JXG2.View3D#create} with type {@link Face3D} instead.
  *
- * @augments JXG.GeometryElement3D
- * @augments JXG.GeometryElement
+ * @augments JXG2.GeometryElement3D
+ * @augments JXG2.GeometryElement
  * @param {View3D} view
  * @param {Function} F
  * @param {Function} X
@@ -46,9 +46,9 @@ import {JSXMath} from "../math/math.js";
  * @param {Function} Z
  * @param {Array} range
  * @param {Object} attributes
- * @see JXG.Board#generateName
+ * @see JXG2.Board#generateName
  */
-JXG.Face3D = function (view, polyhedron, faceNumber, attributes) {
+JXG2.Face3D = function (view, polyhedron, faceNumber, attributes) {
     this.constructor(view.board, attributes, OBJECT_TYPE.FACE3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'face3d');
 
@@ -105,12 +105,12 @@ JXG.Face3D = function (view, polyhedron, faceNumber, attributes) {
         // TODO
     });
 };
-JXG.Face3D.prototype = new JXG.GeometryElement();
-Type.copyPrototypeMethods(JXG.Face3D, JXG.GeometryElement3D, 'constructor3D');
+JXG2.Face3D.prototype = new JXG2.GeometryElement();
+Type.copyPrototypeMethods(JXG2.Face3D, JXG2.GeometryElement3D, 'constructor3D');
 
-JXG.extend(
-    JXG.Face3D.prototype,
-    /** @lends JXG.Face3D.prototype */ {
+JXG2.extend(
+    JXG2.Face3D.prototype,
+    /** @lends JXG2.Face3D.prototype */ {
 
         /**
          * Update the coordinates of all vertices of the polyhedron
@@ -352,7 +352,7 @@ JXG.extend(
  * @type Object
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
   */
-JXG.createFace3D = function (board, parents, attributes) {
+JXG2.createFace3D = function (board, parents, attributes) {
     var view = parents[0],
         polyhedron = parents[1],
         faceNumber = parents[2],
@@ -360,7 +360,7 @@ JXG.createFace3D = function (board, parents, attributes) {
 
     // TODO Throw new Error
     attr = Type.copyAttributes(attributes, board.options, 'face3d');
-    el = new JXG.Face3D(view, polyhedron, faceNumber, attr);
+    el = new JXG2.Face3D(view, polyhedron, faceNumber, attr);
 
     attr = el.setAttr2D(attr);
     el.element2D = view.create("curve", [[], []], attr);
@@ -387,5 +387,5 @@ JXG.createFace3D = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("face3d", JXG.createFace3D);
+JXG2.registerElement("face3d", JXG2.createFace3D);
 

@@ -29,14 +29,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, window: true*/
+/*global JXG2: true, define: true, window: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview In this file the Text element is defined.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import {Env} from "../utils/env.js";
 import {Type} from "../utils/type.js";
 import { OBJECT_TYPE } from "../base/constants.js";
@@ -74,7 +74,7 @@ var priv = {
  * @name Input
  * @augments Text
  * @constructor
- * @type JXG.Text
+ * @type JXG2.Text
  *
  * @param {number,function_number,function_String_String,function} x,y,value,label Parent elements for input elements.
  *   <p>
@@ -91,11 +91,11 @@ var priv = {
  *  var f = board.jc.snippet(input.Value(), true, 'x', false);
  *  var graph = board.create('functiongraph',[f,
  *          function() {
- *            var c = new JXG.Coords(JXG.COORDS_BY_SCREEN,[0,0],board);
+ *            var c = new JXG2.Coords(JXG2.COORDS_BY_SCREEN,[0,0],board);
  *            return c.usrCoords[1];
  *          },
  *          function() {
- *            var c = new JXG.Coords(JXG.COORDS_BY_SCREEN,[board.canvasWidth,0],board);
+ *            var c = new JXG2.Coords(JXG2.COORDS_BY_SCREEN,[board.canvasWidth,0],board);
  *            return c.usrCoords[1];
  *          }
  *        ]);
@@ -109,16 +109,16 @@ var priv = {
  *  }
  * </pre><div class="jxgbox" id="JXGc70f55f1-21ba-4719-a37d-a93ae2943faa" style="width: 500px; height: 300px;"></div>
  * <script type="text/javascript">
- *   var t1_board = JXG.JSXGraph.initBoard('JXGc70f55f1-21ba-4719-a37d-a93ae2943faa', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
+ *   var t1_board = JXG2.JSXGraph.initBoard('JXGc70f55f1-21ba-4719-a37d-a93ae2943faa', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
  *   var input = t1_board.create('input', [1, 4, 'sin(x)*x', 'f(x)='], {cssStyle: 'width: 100px'});
  *   var f = t1_board.jc.snippet(input.Value(), true, 'x', false);
  *   var graph = t1_board.create('functiongraph',[f,
  *          function() {
- *            var c = new JXG.Coords(JXG.COORDS_BY_SCREEN,[0,0],t1_board);
+ *            var c = new JXG2.Coords(JXG2.COORDS_BY_SCREEN,[0,0],t1_board);
  *            return c.usrCoords[1];
  *          },
  *          function() {
- *            var c = new JXG.Coords(JXG.COORDS_BY_SCREEN,[t1_board.canvasWidth,0],t1_board);
+ *            var c = new JXG2.Coords(JXG2.COORDS_BY_SCREEN,[t1_board.canvasWidth,0],t1_board);
  *            return c.usrCoords[1];
  *          }
  *        ]);
@@ -147,7 +147,7 @@ var priv = {
  * </pre><div id="JXG81c84fa7-3f36-4874-9e0f-d4b9e93e755b" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG81c84fa7-3f36-4874-9e0f-d4b9e93e755b',
+ *         var board = JXG2.JSXGraph.initBoard('JXG81c84fa7-3f36-4874-9e0f-d4b9e93e755b',
  *             {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright: false, shownavigation: false});
  *     var A = board.create('point', [3, -2]);
  *     var i = board.create('input', [-4, -4, "1", "x "]);
@@ -176,7 +176,7 @@ var priv = {
  * </pre><div id="JXG51c4d78b-a7ad-4c34-a983-b3ddae6192d7" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG51c4d78b-a7ad-4c34-a983-b3ddae6192d7',
+ *         var board = JXG2.JSXGraph.initBoard('JXG51c4d78b-a7ad-4c34-a983-b3ddae6192d7',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var A = board.create('point', [3, -2]);
  *     var i = board.create('input', [-4, -4, "1", "x "]);
@@ -198,7 +198,7 @@ var priv = {
  * </pre><div id="JXG51c4d78b-a7ad-4c34-a983-b3ddae6192d7-1" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG51c4d78b-a7ad-4c34-a983-b3ddae6192d7-1',
+ *         var board = JXG2.JSXGraph.initBoard('JXG51c4d78b-a7ad-4c34-a983-b3ddae6192d7-1',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *  let s = board.create('slider', [[-3, 3], [2, 3], [50, 100, 300]]);
  *  let inp = board.create('input', [-6, 1, 'Math.sin(x)*x', 'f(x)='],{cssStyle:()=>'width:'+s.Value()+'px'});
@@ -249,7 +249,7 @@ var priv = {
  * <div id="JXGa3642ebd-a7dc-41ac-beb2-0c9e705ab8b4" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGa3642ebd-a7dc-41ac-beb2-0c9e705ab8b4',
+ *         var board = JXG2.JSXGraph.initBoard('JXGa3642ebd-a7dc-41ac-beb2-0c9e705ab8b4',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *         var inp = board.create('input', [-6, 1, 'x', 'y'], {CssClass: 'JXGtext_inp', HighlightCssClass: 'JXGtext_inp'});
  *
@@ -257,7 +257,7 @@ var priv = {
  * </script><pre>
  *
  */
-JXG.createInput = function (board, parents, attributes) {
+JXG2.createInput = function (board, parents, attributes) {
     var t,
         par,
         attr = Type.copyAttributes(attributes, board.options, 'input');
@@ -309,7 +309,7 @@ JXG.createInput = function (board, parents, attributes) {
     */
     t.update = function () {
         if (this.needsUpdate) {
-            JXG.Text.prototype.update.call(this);
+            JXG2.Text.prototype.update.call(this);
             this._value = this.rendNodeInput.value;
         }
         return this;
@@ -333,7 +333,7 @@ JXG.createInput = function (board, parents, attributes) {
      * @function
      *
      * @param {String} val
-     * @returns {JXG.GeometryElement} Reference to the element.
+     * @returns {JXG2.GeometryElement} Reference to the element.
      *
      * @example
      *         var i1 = board.create('input', [-3, 4, 'sin(x)', 'f(x)='], {cssStyle: 'width:4em', maxlength: 2});
@@ -349,7 +349,7 @@ JXG.createInput = function (board, parents, attributes) {
      * </pre><div id="JXG11cac8ff-2354-47e7-9da4-eb298e53de05" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG11cac8ff-2354-47e7-9da4-eb298e53de05',
+     *         var board = JXG2.JSXGraph.initBoard('JXG11cac8ff-2354-47e7-9da4-eb298e53de05',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *             var i1 = board.create('input', [-3, 4, 'sin(x)', 'f(x)='], {cssStyle: 'width:4em', maxlength: 2});
      *             var c1 = board.create('checkbox', [-3, 2, 'label 1'], {});
@@ -417,8 +417,8 @@ JXG.createInput = function (board, parents, attributes) {
     return t;
 };
 
-JXG.registerElement("input", JXG.createInput);
+JXG2.registerElement("input", JXG2.createInput);
 
 // export default {
-//     createInput: JXG.createInput
+//     createInput: JXG2.createInput
 // };

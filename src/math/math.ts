@@ -29,14 +29,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, Float32Array: true */
+/*global JXG2: true, define: true, Float32Array: true */
 /*jslint nomen: true, plusplus: true, bitwise: true*/
 
 /**
- * @fileoverview In this file the namespace JXG.Math is defined, which is the base namespace
+ * @fileoverview In this file the namespace JXG2.Math is defined, which is the base namespace
  * for namespaces like Geometry.Numerics, Geometry.Plot, Statistics, Geometry.Clip etc.
  */
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { Type } from "../utils/type.js";
 
 var undef,
@@ -48,7 +48,7 @@ var undef,
      * http://blog.thejit.org/2008/09/05/memoization-in-javascript/
      *
      * This method is hidden, because it is only used in Geometry. If someone wants
-     * to use it in JSXGraph outside of JXG.Math, it should be moved to jsxgraph.js
+     * to use it in JSXGraph outside of JXG2.Math, it should be moved to jsxgraph.js
      */
     memoizer = function (f) {
         var cache, join;
@@ -477,7 +477,7 @@ export class JSXMath {
 
             // Singular matrix
             if (ma <= eps) {
-                JXG.warn('Geometry.inverse: singular matrix');
+                JXG2.warn('Geometry.inverse: singular matrix');
                 return [];
             }
 
@@ -1060,16 +1060,16 @@ export class JSXMath {
             return n;
         }
 
-        if (JXG.exists(max)) {
+        if (JXG2.exists(max)) {
             n = Math.min(n, max);
         }
-        if (JXG.exists(min)) {
+        if (JXG2.exists(min)) {
             n = Math.max(n, min);
         }
 
         minOr0 = min || 0;
 
-        if (JXG.exists(step)) {
+        if (JXG2.exists(step)) {
             tmp = (n - minOr0) / step;
             if (Number.isInteger(tmp)) {
                 return n;
@@ -1079,10 +1079,10 @@ export class JSXMath {
             n = minOr0 + tmp * step;
         }
 
-        if (JXG.exists(max)) {
+        if (JXG2.exists(max)) {
             n = Math.min(n, max);
         }
-        if (JXG.exists(min)) {
+        if (JXG2.exists(min)) {
             n = Math.max(n, min);
         }
 
@@ -1097,7 +1097,7 @@ export class JSXMath {
      * @returns {Number}
      */
     static erf(x) {
-        return JXG.JSXMath.ProbFuncs.erf(x);
+        return JXG2.JSXMath.ProbFuncs.erf(x);
     }
 
     /**
@@ -1109,7 +1109,7 @@ export class JSXMath {
      * @returns {Number}
      */
     static erfc(x) {
-        return JXG.JSXMath.ProbFuncs.erfc(x);
+        return JXG2.JSXMath.ProbFuncs.erfc(x);
     }
 
     /**
@@ -1121,7 +1121,7 @@ export class JSXMath {
      * @returns {Number}
      */
     static erfi(x) {
-        return JXG.JSXMath.ProbFuncs.erfi(x);
+        return JXG2.JSXMath.ProbFuncs.erfi(x);
     }
 
     /**
@@ -1132,7 +1132,7 @@ export class JSXMath {
      * @returns {Number}
      */
     static ndtr(x) {
-        return JXG.JSXMath.ProbFuncs.ndtr(x);
+        return JXG2.JSXMath.ProbFuncs.ndtr(x);
     }
 
     /**
@@ -1144,7 +1144,7 @@ export class JSXMath {
      * @returns {Number}
      */
     static ndtri(x) {
-        return JXG.JSXMath.ProbFuncs.ndtri(x);
+        return JXG2.JSXMath.ProbFuncs.ndtri(x);
     }
 
     /**
@@ -1339,7 +1339,7 @@ export class JSXMath {
      * @param {Number} x Number which is to be converted
      * @param {Number} [order=0.001] Small number determining the approximation precision.
      * @returns {Array} [sign, leading, nominator, denominator] where sign is 1 or -1.
-     * @see JXG.toFraction
+     * @see JXG2.toFraction
      *
      * @example
      * Geometry.decToFraction(0.33333333);

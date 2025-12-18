@@ -26,9 +26,9 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import {JSXMath} from "../math/math.js";
 import {Geometry} from "../math/geometry.js";
@@ -37,18 +37,18 @@ import {Type} from "../utils/type.js";
 
 /**
  * A 3D text is a basic geometric element.
- * @class Creates a new 3D point object. Do not use this constructor to create a 3D point. Use {@link JXG.View3D#create} with
+ * @class Creates a new 3D point object. Do not use this constructor to create a 3D point. Use {@link JXG2.View3D#create} with
  * type {@link Point3D} instead.
- * @augments JXG.GeometryElement3D
- * @augments JXG.GeometryElement
- * @param {JXG.View3D} view The 3D view the point is drawn on.
+ * @augments JXG2.GeometryElement3D
+ * @augments JXG2.GeometryElement
+ * @param {JXG2.View3D} view The 3D view the point is drawn on.
  * @param {Function|Array} F Array of numbers, array of functions or function returning an array with defines the user coordinates of the point.
- * @param {JXG.GeometryElement3D} slide Object the 3D point should be bound to. If null, the point is a free point.
- * @param {Object} attributes An object containing visual properties like in {@link JXG.Options#point3d} and
- * {@link JXG.Options#elements}, and optional a name and an id.
- * @see JXG.Board#generateName
+ * @param {JXG2.GeometryElement3D} slide Object the 3D point should be bound to. If null, the point is a free point.
+ * @param {Object} attributes An object containing visual properties like in {@link JXG2.Options#point3d} and
+ * {@link JXG2.Options#elements}, and optional a name and an id.
+ * @see JXG2.Board#generateName
  */
-JXG.Text3D = function (view, F, text, slide, attributes) {
+JXG2.Text3D = function (view, F, text, slide, attributes) {
     this.constructor(view.board, attributes, OBJECT_TYPE.TEXT3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'text3d');
 
@@ -85,7 +85,7 @@ JXG.Text3D = function (view, F, text, slide, attributes) {
      *   p.slide;
      *
      * @name Point3D#slide
-     * @type JXG.GeometryElement3D
+     * @type JXG2.GeometryElement3D
      * @default null
      * @private
      *
@@ -151,12 +151,12 @@ JXG.Text3D = function (view, F, text, slide, attributes) {
         // TODO
     });
 };
-JXG.Text3D.prototype = new JXG.GeometryElement();
-Type.copyPrototypeMethods(JXG.Text3D, JXG.GeometryElement3D, 'constructor3D');
+JXG2.Text3D.prototype = new JXG2.GeometryElement();
+Type.copyPrototypeMethods(JXG2.Text3D, JXG2.GeometryElement3D, 'constructor3D');
 
-JXG.extend(
-    JXG.Text3D.prototype,
-    /** @lends JXG.Text3D.prototype */ {
+JXG2.extend(
+    JXG2.Text3D.prototype,
+    /** @lends JXG2.Text3D.prototype */ {
         /**
          * Update the homogeneous coords array.
          *
@@ -365,7 +365,7 @@ JXG.extend(
  * At the time being, text display is independent from the camera view.
  *
  * @name Text3D
- * @augments JXG.Text3D
+ * @augments JXG2.Text3D
  * @augments Text
  * @constructor
  * @throws {Exception} If the element cannot be constructed with the given parent
@@ -392,7 +392,7 @@ JXG.extend(
  * </pre><div id="JXGb61d7c50-617a-4bed-9a45-13c949f90e94" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGb61d7c50-617a-4bed-9a45-13c949f90e94',
+ *         var board = JXG2.JSXGraph.initBoard('JXGb61d7c50-617a-4bed-9a45-13c949f90e94',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, pan: {enabled: false}, showcopyright: false, shownavigation: false});
  *         var bound = [-4, 6];
  *         var view = board.create('view3d',
@@ -411,7 +411,7 @@ JXG.extend(
  * </script><pre>
  *
  */
-JXG.createText3D = function (board, parents, attributes) {
+JXG2.createText3D = function (board, parents, attributes) {
     var view = parents[0],
         attr, F, slide,
         text,
@@ -446,7 +446,7 @@ JXG.createText3D = function (board, parents, attributes) {
     }
 
     attr = Type.copyAttributes(attributes, board.options, 'text3d');
-    el = new JXG.Text3D(view, F, text, slide, attr);
+    el = new JXG2.Text3D(view, F, text, slide, attr);
     el.initCoords();
 
     c2d = view.project3DTo2D(el.coords);
@@ -470,4 +470,4 @@ JXG.createText3D = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("text3d", JXG.createText3D);
+JXG2.registerElement("text3d", JXG2.createText3D);

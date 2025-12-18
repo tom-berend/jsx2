@@ -29,10 +29,10 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, document: true*/
+/*global JXG2: true, define: true, document: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { Numerics } from "../math/numerics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
@@ -55,15 +55,15 @@ import { Env } from "../utils/env.js";
  *
  * The Chart class is a basic class for the chart object.
  * @class Creates a new basic chart object. Do not use this constructor to create a chart.
- * Use {@link JXG.Board#create} with type {@link Chart} instead.
+ * Use {@link JXG2.Board#create} with type {@link Chart} instead.
  * @constructor
- * @augments JXG.GeometryElement
- * @param {String|JXG.Board} board The board the new chart is drawn on.
+ * @augments JXG2.GeometryElement
+ * @param {String|JXG2.Board} board The board the new chart is drawn on.
  * @param {Array} parent data arrays for the chart
  * @param {Object} attributes Javascript object containing attributes like name, id and colors.
  *
  */
-JXG.Chart = function (board, parents, attributes) {
+JXG2.Chart = function (board, parents, attributes) {
     this.constructor(board, attributes);
 
     var x, y, i, c, style, len;
@@ -142,19 +142,19 @@ JXG.Chart = function (board, parents, attributes) {
     return this.elements;
 };
 
-JXG.Chart.prototype = new GeometryElement();
+JXG2.Chart.prototype = new GeometryElement();
 
-JXG.extend(
-    JXG.Chart.prototype,
-    /** @lends JXG.Chart.prototype */ {
+JXG2.extend(
+    JXG2.Chart.prototype,
+    /** @lends JXG2.Chart.prototype */ {
         /**
          * Create line chart defined by two data arrays.
          *
-         * @param  {String|JXG.Board} board      The board the chart is drawn on
+         * @param  {String|JXG2.Board} board      The board the chart is drawn on
          * @param  {Array} x          Array of x-coordinates
          * @param  {Array} y          Array of y-coordinates
          * @param  {Object} attributes  Javascript object containing attributes like colors
-         * @returns {JXG.Curve}       JSXGraph curve
+         * @returns {JXG2.Curve}       JSXGraph curve
          */
         drawLine: function (board, x, y, attributes) {
             // we don't want the line chart to be filled
@@ -168,11 +168,11 @@ JXG.extend(
          * Create line chart that consists of a natural spline curve
          * defined by two data arrays.
          *
-         * @param  {String|JXG.Board} board      The board the chart is drawn on
+         * @param  {String|JXG2.Board} board      The board the chart is drawn on
          * @param  {Array} x          Array of x-coordinates
          * @param  {Array} y          Array of y-coordinates
          * @param  {Object} attributes Javascript object containing attributes like colors
-         * @returns {JXG.Curve}       JSXGraph (natural) spline curve
+         * @returns {JXG2.Curve}       JSXGraph (natural) spline curve
          */
         drawSpline: function (board, x, y, attributes) {
             // we don't want the spline chart to be filled
@@ -187,11 +187,11 @@ JXG.extend(
          * defined by two data arrays. The degree of the polynomial is supplied
          * through the attribute "degree" in attributes.
          *
-         * @param  {String|JXG.Board} board      The board the chart is drawn on
+         * @param  {String|JXG2.Board} board      The board the chart is drawn on
          * @param  {Array} x          Array of x-coordinates
          * @param  {Array} y          Array of y-coordinates
          * @param  {Object} attributes Javascript object containing attributes like colors
-         * @returns {JXG.Curve}    JSXGraph function graph object
+         * @returns {JXG2.Curve}    JSXGraph function graph object
          */
         drawFit: function (board, x, y, attributes) {
             var deg = attributes.degree;
@@ -219,11 +219,11 @@ JXG.extend(
          * <li> labels: array of labels
          * </ul>
          *
-         * @param  {String|JXG.Board} board      The board the chart is drawn on
+         * @param  {String|JXG2.Board} board      The board the chart is drawn on
          * @param  {Array} x          Array of x-coordinates
          * @param  {Array} y          Array of y-coordinates
          * @param  {Object} attributes Javascript object containing attributes like colors
-         * @returns {Array}    Array of JXG polygons defining the bars
+         * @returns {Array}    Array of JXG2 polygons defining the bars
          */
         drawBar: function (board, x, y, attributes) {
             var i, text, w,
@@ -336,7 +336,7 @@ JXG.extend(
          * <li> infoboxArray (Array): Texts for the infobox
          * </ul>
          *
-         * @param  {String|JXG.Board} board      The board the chart is drawn on
+         * @param  {String|JXG2.Board} board      The board the chart is drawn on
          * @param  {Array} x          Array of x-coordinates
          * @param  {Array} y          Array of y-coordinates
          * @param  {Object} attributes Javascript object containing attributes like colors
@@ -372,7 +372,7 @@ JXG.extend(
          * <li> highlightOnSector (Boolean)
          * </ul>
          *
-         * @param  {String|JXG.Board} board      The board the chart is drawn on
+         * @param  {String|JXG2.Board} board      The board the chart is drawn on
          * @param  {Array} y          Array of x-coordinates
          * @param  {Object} attributes Javascript object containing attributes like colors
          * @returns {Object}  with keys: "{sectors, points, midpoint}"
@@ -542,7 +542,7 @@ JXG.extend(
          * <li> circleStrokeWidth
          * </ul>
          *
-         * @param  {String|JXG.Board} board      The board the chart is drawn on
+         * @param  {String|JXG2.Board} board      The board the chart is drawn on
          * @param  {Array} parents    Array of coordinates, e.g. [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]]
          * @param  {Object} attributes Javascript object containing attributes like colors
          * @returns {Object} with keys "{circles, lines, points, midpoint, polygons}"
@@ -864,7 +864,7 @@ JXG.extend(
                 case "none":
                     break;
                 default:
-                    JXG.debug("Unknown legend position");
+                    JXG2.debug("Unknown legend position");
             }
 
             circles = [];
@@ -943,7 +943,7 @@ JXG.extend(
          * Default is an empty method, can be overwritten
          * by the user.
          *
-         * @returns {JXG.Chart} Reference to this chart object.
+         * @returns {JXG2.Chart} Reference to this chart object.
          */
         updateDataArray: function () {
             return this;
@@ -955,9 +955,9 @@ JXG.extend(
  * @class Various types of charts for data visualization.
  * @pseudo
  * @name Chart
- * @augments JXG.Chart
+ * @augments JXG2.Chart
  * @constructor
- * @type JXG.Chart
+ * @type JXG2.Chart
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
  * @param {Array} x Array of x-coordinates (default case, see below for alternatives)
  * @param {Array} y Array of y-coordinates (default case, see below for alternatives)
@@ -975,16 +975,16 @@ JXG.extend(
  * separated list of strings of the possible chart types
  * 'bar', 'fit', 'line',  'pie', 'point', 'radar', 'spline'.
  *
- * @see JXG.Chart#drawBar
- * @see JXG.Chart#drawFit
- * @see JXG.Chart#drawLine
- * @see JXG.Chart#drawPie
- * @see JXG.Chart#drawPoints
- * @see JXG.Chart#drawRadar
- * @see JXG.Chart#drawSpline
+ * @see JXG2.Chart#drawBar
+ * @see JXG2.Chart#drawFit
+ * @see JXG2.Chart#drawLine
+ * @see JXG2.Chart#drawPie
+ * @see JXG2.Chart#drawPoints
+ * @see JXG2.Chart#drawRadar
+ * @see JXG2.Chart#drawSpline
  *
  * @example
- *   board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox:[-0.5,8,9,-2],axis:true});
+ *   board = JXG2.JSXGraph.initBoard('jxgbox', {boundingbox:[-0.5,8,9,-2],axis:true});
  *
  *   var f = [4, 2, -1, 3, 6, 7, 2];
  *   var chart = board.create('chart', f,
@@ -999,7 +999,7 @@ JXG.extend(
  * </pre><div id="JXG1528c395-9fa4-4210-ada6-7fc5652ed920" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG1528c395-9fa4-4210-ada6-7fc5652ed920',
+ *         var board = JXG2.JSXGraph.initBoard('JXG1528c395-9fa4-4210-ada6-7fc5652ed920',
  *             {boundingbox: [-0.5,8,9,-2], axis: true, showcopyright: false, shownavigation: false});
  *                 var f = [4,2,-1,3,6,7,2];
  *                 var chart = board.create('chart', f,
@@ -1016,7 +1016,7 @@ JXG.extend(
  * </script><pre>
  *
  * @example
- *   board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-1, 9, 13, -3], axis:true});
+ *   board = JXG2.JSXGraph.initBoard('jxgbox', {boundingbox: [-1, 9, 13, -3], axis:true});
  *
  *   var s = board.create('slider', [[4,7],[8,7],[1,1,1.5]], {name:'S', strokeColor:'black', fillColor:'white'});
  *   var f = [function(){return (s.Value()*4.5).toFixed(2);},
@@ -1047,7 +1047,7 @@ JXG.extend(
  * </pre><div id="JXG22deb158-48c6-41c3-8157-b88b4b968a55" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG22deb158-48c6-41c3-8157-b88b4b968a55',
+ *         var board = JXG2.JSXGraph.initBoard('JXG22deb158-48c6-41c3-8157-b88b4b968a55',
  *             {boundingbox: [-1, 9, 13, -3], axis: true, showcopyright: false, shownavigation: false});
  *                 var s = board.create('slider', [[4,7],[8,7],[1,1,1.5]], {name:'S', strokeColor:'black', fillColor:'white'});
  *                 var f = [function(){return (s.Value()*4.5).toFixed(2);},
@@ -1094,7 +1094,7 @@ JXG.extend(
  * </pre><div id="JXG1180b7dd-b048-436a-a5ad-87ffa82d5aff" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG1180b7dd-b048-436a-a5ad-87ffa82d5aff',
+ *         var board = JXG2.JSXGraph.initBoard('JXG1180b7dd-b048-436a-a5ad-87ffa82d5aff',
  *             {boundingbox: [0, 8, 12, -4], axis: true, showcopyright: false, shownavigation: false});
  *             var dataArr = [4, 1.2, 3, 7, 5, 4, 1.54, function () { return 2; }];
  *             var a = board.create('chart', dataArr, {
@@ -1112,7 +1112,7 @@ JXG.extend(
  * </script><pre>
  *
  * @example
- *             board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-12, 12, 20, -12], axis: false});
+ *             board = JXG2.JSXGraph.initBoard('jxgbox', {boundingbox: [-12, 12, 20, -12], axis: false});
  *             board.suspendUpdate();
  *             // See labelArray and paramArray
  *             var dataArr = [[23, 14, 15.0], [60, 8, 25.0], [0, 11.0, 25.0], [10, 15, 20.0]];
@@ -1146,7 +1146,7 @@ JXG.extend(
  * </pre><div id="JXG985fbbe6-0488-4073-b73b-cb3ebaea488a" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG985fbbe6-0488-4073-b73b-cb3ebaea488a',
+ *         var board = JXG2.JSXGraph.initBoard('JXG985fbbe6-0488-4073-b73b-cb3ebaea488a',
  *             {boundingbox: [-12, 12, 20, -12], axis: false, showcopyright: false, shownavigation: false});
  *                 board.suspendUpdate();
  *                 // See labelArray and paramArray
@@ -1190,7 +1190,7 @@ JXG.extend(
  * <li><a href="https://jsxgraph.org/wiki/index.php/Dynamic_bar_chart">JSXgraph wiki: Dynamic bar chart</a>
  * </ul>
  */
-JXG.createChart = function (board, parents, attributes) {
+JXG2.createChart = function (board, parents, attributes) {
     var data,
         row,
         i,
@@ -1302,9 +1302,9 @@ JXG.createChart = function (board, parents, attributes) {
                 }
 
                 if (attr.chartstyle && attr.chartstyle.indexOf('bar') !== -1) {
-                    charts.push(new JXG.Chart(board, [x, showRows[i]], attr));
+                    charts.push(new JXG2.Chart(board, [x, showRows[i]], attr));
                 } else {
-                    charts.push(new JXG.Chart(board, [showRows[i]], attr));
+                    charts.push(new JXG2.Chart(board, [showRows[i]], attr));
                 }
             }
 
@@ -1314,27 +1314,27 @@ JXG.createChart = function (board, parents, attributes) {
     }
 
     attr = Type.copyAttributes(attributes, board.options, 'chart');
-    return new JXG.Chart(board, parents, attr);
+    return new JXG2.Chart(board, parents, attr);
 };
 
-JXG.registerElement("chart", JXG.createChart);
+JXG2.registerElement("chart", JXG2.createChart);
 
 /**
  * Legend for chart
  *
  * The Legend class is a basic class for legends.
  * @class Creates a new Legend object. Do not use this constructor to create a legend.
- * Use {@link JXG.Board#create} with type {@link Legend} instead.
+ * Use {@link JXG2.Board#create} with type {@link Legend} instead.
  * <p>
  * The legend object consists of segements with labels. These lines can be
  * accessed with the property "lines" of the element.
  * @constructor
- * @augments JXG.GeometryElement
- * @param {String|JXG.Board} board The board the new legend is drawn on.
+ * @augments JXG2.GeometryElement
+ * @param {String|JXG2.Board} board The board the new legend is drawn on.
  * @param {Array} coords Coordinates of the left top point of the legend.
  * @param  {Object} attributes Attributes of the legend
  */
-JXG.Legend = function (board, coords, attributes) {
+JXG2.Legend = function (board, coords, attributes) {
     var attr;
 
     /* Call the constructor of GeometryElement */
@@ -1367,16 +1367,16 @@ JXG.Legend = function (board, coords, attributes) {
 
 };
 
-JXG.Legend.prototype = new GeometryElement();
+JXG2.Legend.prototype = new GeometryElement();
 
 /**
  * Draw a vertical legend.
  *
  * @private
- * @param  {String|JXG.Board} board      The board the legend is drawn on
+ * @param  {String|JXG2.Board} board      The board the legend is drawn on
  * @param  {Object} attributes Attributes of the legend
  */
-JXG.Legend.prototype.drawVerticalLegend = function (board, attributes) {
+JXG2.Legend.prototype.drawVerticalLegend = function (board, attributes) {
     var i,
         line_length = attributes.linelength || 1,
         offy = (attributes.rowheight || 20) / this.board.unitY,
@@ -1443,15 +1443,15 @@ JXG.Legend.prototype.drawVerticalLegend = function (board, attributes) {
  *
  * @pseudo
  * @name Legend
- * @augments JXG.Legend
+ * @augments JXG2.Legend
  * @constructor
- * @type JXG.Legend
+ * @type JXG2.Legend
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
  * @param {Number} x Horizontal coordinate of the left top point of the legend
  * @param {Number} y Vertical coordinate of the left top point of the legend
  *
  * @example
- * var board = JXG.JSXGraph.initBoard('jxgbox', {axis:true,boundingbox:[-4,48.3,12.0,-2.3]});
+ * var board = JXG2.JSXGraph.initBoard('jxgbox', {axis:true,boundingbox:[-4,48.3,12.0,-2.3]});
  * var x       = [-3,-2,-1,0,1,2,3,4,5,6,7,8];
  * var dataArr = [4,7,7,27,33,37,46,22,11,4,1,0];
  *
@@ -1462,7 +1462,7 @@ JXG.Legend.prototype.drawVerticalLegend = function (board, attributes) {
  * </pre><div id="JXGeeb588d9-a4fd-41bf-93f4-cd6f7a016682" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGeeb588d9-a4fd-41bf-93f4-cd6f7a016682',
+ *         var board = JXG2.JSXGraph.initBoard('JXGeeb588d9-a4fd-41bf-93f4-cd6f7a016682',
  *             {boundingbox: [-4,48.3,12.0,-2.3], axis: true, showcopyright: false, shownavigation: false});
  *     var x       = [-3,-2,-1,0,1,2,3,4,5,6,7,8];
  *     var dataArr = [4,7,7,27,33,37,46,22,11,4,1,0];
@@ -1508,7 +1508,7 @@ JXG.Legend.prototype.drawVerticalLegend = function (board, attributes) {
  * </pre><div id="JXG079fce93-07b9-426f-a267-ab9c1253e435" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG079fce93-07b9-426f-a267-ab9c1253e435',
+ *         var board = JXG2.JSXGraph.initBoard('JXG079fce93-07b9-426f-a267-ab9c1253e435',
  *             {boundingbox: [-2, 2, 2, -2], axis: true, showcopyright: false, shownavigation: false});
  *       var board, inputFun, cf = [], cf2 = [], niveaunum,
  *         niveauline = [], niveauopac = [],legend;
@@ -1545,7 +1545,7 @@ JXG.Legend.prototype.drawVerticalLegend = function (board, attributes) {
  *
  *
  */
-JXG.createLegend = function (board, parents, attributes) {
+JXG2.createLegend = function (board, parents, attributes) {
     //parents are coords of left top point of the legend
     var start_from = [0, 0];
 
@@ -1555,14 +1555,14 @@ JXG.createLegend = function (board, parents, attributes) {
         throw new Error("JSXGraph: Legend element needs two numbers as parameters");
     }
 
-    return new JXG.Legend(board, start_from, attributes);
+    return new JXG2.Legend(board, start_from, attributes);
 };
 
-JXG.registerElement("legend", JXG.createLegend);
+JXG2.registerElement("legend", JXG2.createLegend);
 
 export default {
-    Chart: JXG.Chart,
-    Legend: JXG.Legend
-    // createChart: JXG.createChart,
-    // createLegend: JXG.createLegend
+    Chart: JXG2.Chart,
+    Legend: JXG2.Legend
+    // createChart: JXG2.createChart,
+    // createLegend: JXG2.createLegend
 };

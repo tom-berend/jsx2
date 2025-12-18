@@ -27,10 +27,10 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
@@ -45,10 +45,10 @@ import { Type } from "../utils/type.js";
 /**
  * Functions for plotting of curves.
  * @name Geometry.Plot
- * @exports JXG.JSXMath.Plot as Geometry.Plot
+ * @exports JXG2.JSXMath.Plot as Geometry.Plot
  * @namespace
  */
-JXG.JSXMath.Plot = {
+JXG2.JSXMath.Plot = {
     /**
      * Check if at least one point on the curve is finite and real.
      **/
@@ -72,12 +72,12 @@ JXG.JSXMath.Plot = {
     // Plot algorithm v0
     //----------------------------------------------------------------------
     /**
-     * Updates the data points of a parametric curve. This version is used if {@link JXG.Curve#doadvancedplot} is <tt>false</tt>.
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * Updates the data points of a parametric curve. This version is used if {@link JXG2.Curve#doadvancedplot} is <tt>false</tt>.
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Number} mi Left bound of curve
      * @param {Number} ma Right bound of curve
      * @param {Number} len Number of data points
-     * @returns {JXG.Curve} Reference to the curve object.
+     * @returns {JXG2.Curve} Reference to the curve object.
      */
     updateParametricCurveNaive: function (curve, mi, ma, len) {
         var i,
@@ -112,7 +112,7 @@ JXG.JSXMath.Plot = {
      * @param {Number} y0
      * @param {Number} x1
      * @param {Number} y1
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @returns {Boolean} <tt>true</tt> if the given segment is outside the visible area.
      */
     isSegmentOutside: function (x0, y0, x1, y1, board) {
@@ -149,14 +149,14 @@ JXG.JSXMath.Plot = {
     },
 
     /**
-     * Updates the data points of a parametric curve. This version is used if {@link JXG.Curve#doadvancedplot} is <tt>true</tt>.
-     * Since 0.99 this algorithm is deprecated. It still can be used if {@link JXG.Curve#doadvancedplotold} is <tt>true</tt>.
+     * Updates the data points of a parametric curve. This version is used if {@link JXG2.Curve#doadvancedplot} is <tt>true</tt>.
+     * Since 0.99 this algorithm is deprecated. It still can be used if {@link JXG2.Curve#doadvancedplotold} is <tt>true</tt>.
      *
      * @deprecated
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Number} mi Left bound of curve
      * @param {Number} ma Right bound of curve
-     * @returns {JXG.Curve} Reference to the curve object.
+     * @returns {JXG2.Curve} Reference to the curve object.
      */
     updateParametricCurveOld: function (curve, mi, ma) {
         var i, t, d, x, y,
@@ -198,7 +198,7 @@ JXG.JSXMath.Plot = {
                 return Math.hypot(x0, y0);
             };
 
-        JXG.deprecated("Curve.updateParametricCurveOld()");
+        JXG2.deprecated("Curve.updateParametricCurveOld()");
 
         if (curve.board.updateQuality === curve.board.BOARD_QUALITY_LOW) {
             MAX_DEPTH = 15;
@@ -328,10 +328,10 @@ JXG.JSXMath.Plot = {
     /**
      * Add a point to the curve plot. If the new point is too close to the previously inserted point,
      * it is skipped.
-     * Used in {@link JXG.Curve._plotRecursive}.
+     * Used in {@link JXG2.Curve._plotRecursive}.
      *
      * @private
-     * @param {JXG.Coords} pnt Coords to add to the list of points
+     * @param {JXG2.Coords} pnt Coords to add to the list of points
      */
     _insertPoint_v2: function (curve, pnt, t) {
         var lastReal = !isNaN(this._lastCrds[1] + this._lastCrds[2]), // The last point was real
@@ -401,7 +401,7 @@ JXG.JSXMath.Plot = {
      *
      * c is between a and b
      * @private
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Array} a Screen coordinates of the left interval bound
      * @param {Array} b Screen coordinates of the right interval bound
      * @param {Array} c Screen coordinates of the bisection point at (ta + tb) / 2
@@ -409,7 +409,7 @@ JXG.JSXMath.Plot = {
      * @param {Number} tb Parameter which evaluates to b, i.e. [1, X(tb), Y(tb)] = b in screen coordinates
      * @param {Number} tc (ta + tb) / 2 = tc. Parameter which evaluates to b, i.e. [1, X(tc), Y(tc)] = c in screen coordinates
      * @param {Number} depth Actual recursion depth. The recursion stops if depth is equal to 0.
-     * @returns {JXG.Boolean} true if the point is inserted and the recursion should stop, false otherwise.
+     * @returns {JXG2.Boolean} true if the point is inserted and the recursion should stop, false otherwise.
      */
     _borderCase: function (curve, a, b, c, ta, tb, tc, depth) {
         var t, pnt, p,
@@ -533,10 +533,10 @@ JXG.JSXMath.Plot = {
 
     /**
      * Recursive interval bisection algorithm for curve plotting.
-     * Used in {@link JXG.Curve.updateParametricCurve}.
+     * Used in {@link JXG2.Curve.updateParametricCurve}.
      * @private
      * @deprecated
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Array} a Screen coordinates of the left interval bound
      * @param {Number} ta Parameter which evaluates to a, i.e. [1, X(ta), Y(ta)] = a in screen coordinates
      * @param {Array} b Screen coordinates of the right interval bound
@@ -544,7 +544,7 @@ JXG.JSXMath.Plot = {
      * @param {Number} depth Actual recursion depth. The recursion stops if depth is equal to 0.
      * @param {Number} delta If the distance of the bisection point at (ta + tb) / 2 from the point (a + b) / 2 is less then delta,
      *                 the segment [a,b] is regarded as straight line.
-     * @returns {JXG.Curve} Reference to the curve object.
+     * @returns {JXG2.Curve} Reference to the curve object.
      */
     _plotRecursive_v2: function (curve, a, ta, b, tb, depth, delta) {
         var tc,
@@ -629,12 +629,12 @@ JXG.JSXMath.Plot = {
     },
 
     /**
-     * Updates the data points of a parametric curve. This version is used if {@link JXG.Curve#plotVersion} is <tt>3</tt>.
+     * Updates the data points of a parametric curve. This version is used if {@link JXG2.Curve#plotVersion} is <tt>3</tt>.
      *
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Number} mi Left bound of curve
      * @param {Number} ma Right bound of curve
-     * @returns {JXG.Curve} Reference to the curve object.
+     * @returns {JXG2.Curve} Reference to the curve object.
      */
     updateParametricCurve_v2: function (curve, mi, ma) {
         var ta, tb,
@@ -730,7 +730,7 @@ JXG.JSXMath.Plot = {
     //----------------------------------------------------------------------
     /**
      *
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {*} pnt
      * @param {*} t
      * @param {*} depth
@@ -792,11 +792,11 @@ JXG.JSXMath.Plot = {
     /**
      * Add a point to the curve plot. If the new point is too close to the previously inserted point,
      * it is skipped.
-     * Used in {@link JXG.Curve._plotRecursive}.
+     * Used in {@link JXG2.Curve._plotRecursive}.
      *
      * @private
-     * @param {JXG.Curve} curve JSXGraph curve element
-     * @param {JXG.Coords} pnt Coords to add to the list of points
+     * @param {JXG2.Curve} curve JSXGraph curve element
+     * @param {JXG2.Coords} pnt Coords to add to the list of points
      */
     _insertPoint: function (curve, pnt, t, depth, limes) {
         var last_is_real = !isNaN(this._lastScrCrds[1] + this._lastScrCrds[2]), // The last point was real
@@ -884,7 +884,7 @@ JXG.JSXMath.Plot = {
      * Only if all values are undefined, we declare the function to be undefined in this interval.
      *
      * @private
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Array} a Screen coordinates of the left interval bound
      * @param {Number} ta Parameter which evaluates to a, i.e. [1, X(ta), Y(ta)] = a in screen coordinates
      * @param {Array} b Screen coordinates of the right interval bound
@@ -921,7 +921,7 @@ JXG.JSXMath.Plot = {
      * @param  {Array}  ta Curve parameter of a  (unused).
      * @param  {Array}  b  Screen coordinates of the end point of the segment
      * @param  {Array}  tb Curve parameter of b (unused).
-     * @param  {JXG.Board} board
+     * @param  {JXG2.Board} board
      * @returns {Boolean}   True if the segment is too far away from the canvas, false otherwise.
      */
     _isOutside: function (a, ta, b, tb, board) {
@@ -941,7 +941,7 @@ JXG.JSXMath.Plot = {
      * Decide if a point of a curve is too far from the canvas that we do not need to draw it.
      * @private
      * @param {Array}  a  Screen coordinates of the point
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @returns {Boolean}  True if the point is too far away from the canvas, false otherwise.
      */
     _isOutsidePoint: function (a, board) {
@@ -957,13 +957,13 @@ JXG.JSXMath.Plot = {
      * which is in the visible area of the board (plus some outside margin).
      * <p>
      * This method is necessary to restrict the recursive plotting algorithm
-     * {@link JXG.Curve._plotRecursive} to the visible area and not waste
+     * {@link JXG2.Curve._plotRecursive} to the visible area and not waste
      * recursion to areas far outside of the visible area.
      * <p>
      * This method can also be used to find the last visible point
      * by reversing the input parameters.
      *
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param  {Array}  ta Curve parameter of a.
      * @param  {Array}  b  Screen coordinates of the end point of the segment (unused)
      * @param  {Array}  tb Curve parameter of b
@@ -1082,7 +1082,7 @@ JXG.JSXMath.Plot = {
      *
      * c is inbetween a and b
      *
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Array} a Screen coordinates of the left interval bound
      * @param {Array} b Screen coordinates of the right interval bound
      * @param {Array} c Screen coordinates of the bisection point at (ta + tb) / 2
@@ -1090,7 +1090,7 @@ JXG.JSXMath.Plot = {
      * @param {Number} tb Parameter which evaluates to b, i.e. [1, X(tb), Y(tb)] = b in screen coordinates
      * @param {Number} tc (ta + tb) / 2 = tc. Parameter which evaluates to b, i.e. [1, X(tc), Y(tc)] = c in screen coordinates
      * @param {Number} depth Actual recursion depth. The recursion stops if depth is equal to 0.
-     * @returns {JXG.Boolean} true if the point is inserted and the recursion should stop, false otherwise.
+     * @returns {JXG2.Boolean} true if the point is inserted and the recursion should stop, false otherwise.
      *
      * @private
      */
@@ -1149,7 +1149,7 @@ JXG.JSXMath.Plot = {
 
     /**
      *
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Number} ta
      * @param {Number} tb
      */
@@ -1169,7 +1169,7 @@ JXG.JSXMath.Plot = {
 
     /**
      *
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Number} ta
      * @param {Number} tb
      */
@@ -1186,7 +1186,7 @@ JXG.JSXMath.Plot = {
 
     /**
      *
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Number} t
      * @private
      */
@@ -1235,7 +1235,7 @@ JXG.JSXMath.Plot = {
 
     /**
      *
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Array} a
      * @param {Number} tc
      * @param {Array} c
@@ -1260,9 +1260,9 @@ JXG.JSXMath.Plot = {
 
     /**
      * Recursive interval bisection algorithm for curve plotting.
-     * Used in {@link JXG.Curve.updateParametricCurve}.
+     * Used in {@link JXG2.Curve.updateParametricCurve}.
      * @private
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Array} a Screen coordinates of the left interval bound
      * @param {Number} ta Parameter which evaluates to a, i.e. [1, X(ta), Y(ta)] = a in screen coordinates
      * @param {Array} b Screen coordinates of the right interval bound
@@ -1270,7 +1270,7 @@ JXG.JSXMath.Plot = {
      * @param {Number} depth Actual recursion depth. The recursion stops if depth is equal to 0.
      * @param {Number} delta If the distance of the bisection point at (ta + tb) / 2 from the point (a + b) / 2 is less then delta,
      *                 the segment [a,b] is regarded as straight line.
-     * @returns {JXG.Curve} Reference to the curve object.
+     * @returns {JXG2.Curve} Reference to the curve object.
      */
     _plotNonRecursive: function (curve, a, ta, b, tb, d) {
         var tc,
@@ -1379,12 +1379,12 @@ JXG.JSXMath.Plot = {
     },
 
     /**
-     * Updates the data points of a parametric curve. This version is used if {@link JXG.Curve#plotVersion} is <tt>3</tt>.
+     * Updates the data points of a parametric curve. This version is used if {@link JXG2.Curve#plotVersion} is <tt>3</tt>.
      * This is an experimental plot version, <b>not recommended</b> to be used.
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Number} mi Left bound of curve
      * @param {Number} ma Right bound of curve
-     * @returns {JXG.Curve} Reference to the curve object.
+     * @returns {JXG2.Curve} Reference to the curve object.
      */
     updateParametricCurve_v3: function (curve, mi, ma) {
         var ta,
@@ -2050,7 +2050,7 @@ JXG.JSXMath.Plot = {
         // x_int = curve.X(t_int, true);
         y_int = curve.Y(t_int, true);
         curve.board.mathLib = Math;
-        curve.board.mathLibJXG = JXG.Math;
+        curve.board.mathLibJXG = JXG2.Math;
 
         //console.log(x_int, y_int);
         return y_int;
@@ -2535,11 +2535,11 @@ JXG.JSXMath.Plot = {
     },
 
     /**
-     * Updates the data points of a parametric curve, plotVersion 4. This version is used if {@link JXG.Curve#plotVersion} is <tt>4</tt>.
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * Updates the data points of a parametric curve, plotVersion 4. This version is used if {@link JXG2.Curve#plotVersion} is <tt>4</tt>.
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Number} mi Left bound of curve
      * @param {Number} ma Right bound of curve
-     * @returns {JXG.Curve} Reference to the curve object.
+     * @returns {JXG2.Curve} Reference to the curve object.
      */
     updateParametricCurve_v4: function (curve, mi, ma) {
         var ta, tb, w2, bbox;
@@ -2571,19 +2571,19 @@ JXG.JSXMath.Plot = {
     //----------------------------------------------------------------------
 
     /**
-     * Updates the data points of a parametric curve, alias for {@link JXG.Curve#updateParametricCurve_v2}.
+     * Updates the data points of a parametric curve, alias for {@link JXG2.Curve#updateParametricCurve_v2}.
      * This is needed for backwards compatibility, if this method has been
      * used directly in an application.
-     * @param {JXG.Curve} curve JSXGraph curve element
+     * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {Number} mi Left bound of curve
      * @param {Number} ma Right bound of curve
-     * @returns {JXG.Curve} Reference to the curve object.
+     * @returns {JXG2.Curve} Reference to the curve object.
      *
-     * @see JXG.Curve#updateParametricCurve_v2
+     * @see JXG2.Curve#updateParametricCurve_v2
      */
     updateParametricCurve: function (curve, mi, ma) {
         return this.updateParametricCurve_v2(curve, mi, ma);
     }
 };
 
-export default JXG.JSXMath.Plot;
+export default JXG2.JSXMath.Plot;

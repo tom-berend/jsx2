@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -58,8 +58,8 @@ Mat.Symbolic = {
     /**
      * Generates symbolic coordinates for the part of a construction including all the elements from that
      * a specific element depends of. These coordinates will be stored in GeometryElement.symbolic.
-     * @param {JXG.Board} board The board that's element get some symbolic coordinates.
-     * @param {JXG.GeometryElement} element All ancestor of this element get symbolic coordinates.
+     * @param {JXG2.Board} board The board that's element get some symbolic coordinates.
+     * @param {JXG2.GeometryElement} element All ancestor of this element get symbolic coordinates.
      * @param {String} variable Name for the coordinates, e.g. x or u.
      * @param {String} append Method for how to append the number of the coordinates. Possible values are
      *                        'underscore' (e.g. x_2), 'none' (e.g. x2), 'brace' (e.g. x[2]).
@@ -125,7 +125,7 @@ Mat.Symbolic = {
 
     /**
      * Clears all .symbolic.x and .symbolic.y members on every point of a given board.
-     * @param {JXG.Board} board The board that's points get cleared their symbolic coordinates.
+     * @param {JXG2.Board} board The board that's points get cleared their symbolic coordinates.
      * @memberof Geometry.Symbolic
      */
     clearSymbolicCoordinates: function (board) {
@@ -151,8 +151,8 @@ Mat.Symbolic = {
     /**
      * Generates polynomials for a part of the construction including all the points from that
      * a specific element depends of.
-     * @param {JXG.Board} board The board that's points polynomials will be generated.
-     * @param {JXG.GeometryElement} element All points in the set of ancestors of this element are used to generate the set of polynomials.
+     * @param {JXG2.Board} board The board that's points polynomials will be generated.
+     * @param {JXG2.GeometryElement} element All points in the set of ancestors of this element are used to generate the set of polynomials.
      * @param {Boolean} generateCoords
      * @returns {Array} An array of polynomials as strings.
      * @memberof Geometry.Symbolic
@@ -203,8 +203,8 @@ Mat.Symbolic = {
 
     /**
      * Calculate geometric locus of a point given on a board. Invokes python script on server.
-     * @param {JXG.Board} board The board on which the point lies.
-     * @param {JXG.Point} point The point that will be traced.
+     * @param {JXG2.Board} board The board on which the point lies.
+     * @param {JXG2.Point} point The point that will be traced.
      * @returns {Array} An array of points.
      * @memberof Geometry.Symbolic
      */
@@ -241,7 +241,7 @@ Mat.Symbolic = {
         }
 
         if (Server.modules.geoloci === undef) {
-            throw new Error("JSXGraph: Unable to load JXG.Server module 'geoloci.py'.");
+            throw new Error("JSXGraph: Unable to load JXG2.Server module 'geoloci.py'.");
         }
 
         xs = xsye.usrCoords[1];

@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -38,7 +38,7 @@
  * a board.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { JSXMath } from "../math/math.js";
 import { COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
@@ -52,7 +52,7 @@ import Point from "../base/point.js";
  * @name Slider
  * @augments Glider
  * @constructor
- * @type JXG.Point
+ * @type JXG2.Point
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
  * @param {Array_Array_Array} start,end,range The first two arrays give the start and the end where the slider is drawn
  * on the board. The third array gives the start and the end of the range the slider operates as the first resp. the
@@ -64,7 +64,7 @@ import Point from "../base/point.js";
  * </pre><div class="jxgbox" id="JXGcfb51cde-2603-4f18-9cc4-1afb452b374d" style="width: 200px; height: 200px;"></div>
  * <script type="text/javascript">
  *   (function () {
- *     var board = JXG.JSXGraph.initBoard('JXGcfb51cde-2603-4f18-9cc4-1afb452b374d', {boundingbox: [-1, 5, 5, -1], axis: true, showcopyright: false, shownavigation: false});
+ *     var board = JXG2.JSXGraph.initBoard('JXGcfb51cde-2603-4f18-9cc4-1afb452b374d', {boundingbox: [-1, 5, 5, -1], axis: true, showcopyright: false, shownavigation: false});
  *     var s = board.create('slider', [[1, 2], [3, 2], [1, 5, 10]]);
  *   })();
  * </script><pre>
@@ -78,7 +78,7 @@ import Point from "../base/point.js";
  * </pre><div class="jxgbox" id="JXGe17128e6-a25d-462a-9074-49460b0d66f4" style="width: 200px; height: 200px;"></div>
  * <script type="text/javascript">
  *   (function () {
- *     var board = JXG.JSXGraph.initBoard('JXGe17128e6-a25d-462a-9074-49460b0d66f4', {boundingbox: [-1, 5, 5, -1], axis: true, showcopyright: false, shownavigation: false});
+ *     var board = JXG2.JSXGraph.initBoard('JXGe17128e6-a25d-462a-9074-49460b0d66f4', {boundingbox: [-1, 5, 5, -1], axis: true, showcopyright: false, shownavigation: false});
  *     var s = board.create('slider', [[1, 3], [3, 1], [1, 3, 5]], {
  *       snapWidth: 1,
  *       minTicksDistance: 60,
@@ -99,7 +99,7 @@ import Point from "../base/point.js";
  * </pre><div id="JXGbfc67817-2827-44a1-bc22-40bf312e76f8" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGbfc67817-2827-44a1-bc22-40bf312e76f8',
+ *         var board = JXG2.JSXGraph.initBoard('JXGbfc67817-2827-44a1-bc22-40bf312e76f8',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *         var s1 = board.create('slider', [[-3,1], [2,1],[-10,1,10]], {
  *             visible: true,
@@ -123,7 +123,7 @@ import Point from "../base/point.js";
  * </pre><div id="JXGc0477c8a-b1a7-4111-992e-4ceb366fbccc" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGc0477c8a-b1a7-4111-992e-4ceb366fbccc',
+ *         var board = JXG2.JSXGraph.initBoard('JXGc0477c8a-b1a7-4111-992e-4ceb366fbccc',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *         var s1 = board.create('slider', [[-3,1], [2,1],[-10,1,10]], {
  *             snapWidth: 2,
@@ -151,7 +151,7 @@ import Point from "../base/point.js";
  * </pre><div id="JXGd96c9e2c-2c25-4131-b6cf-9dbb80819401" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGd96c9e2c-2c25-4131-b6cf-9dbb80819401',
+ *         var board = JXG2.JSXGraph.initBoard('JXGd96c9e2c-2c25-4131-b6cf-9dbb80819401',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var sl = board.create('slider', [[-3, 1], [1, 1], [-10, 1, 10]], {
  *
@@ -179,7 +179,7 @@ import Point from "../base/point.js";
  * </pre><div id="JXG23afea4f-2e91-4006-a505-2895033cf1fc" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG23afea4f-2e91-4006-a505-2895033cf1fc',
+ *         var board = JXG2.JSXGraph.initBoard('JXG23afea4f-2e91-4006-a505-2895033cf1fc',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var sli = board.create('slider', [[-4, 4], [-1.5, 4], [-10, 1, 10]], {
  *         name:'a',
@@ -204,7 +204,7 @@ import Point from "../base/point.js";
  * <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script"></script>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG76e78c5f-3598-4d44-b43f-1d78fd15302c',
+ *         var board = JXG2.JSXGraph.initBoard('JXG76e78c5f-3598-4d44-b43f-1d78fd15302c',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     // Use MathJax for slider label (don't forget to load MathJax)
  *     var s = board.create('slider', [[-3,2], [2,2],[-10,1,10]], {
@@ -221,7 +221,7 @@ import Point from "../base/point.js";
  *
  *
  */
-JXG.createSlider = function (board, parents, attributes) {
+JXG2.createSlider = function (board, parents, attributes) {
     var pos0, pos1,
         smin, start, smax, diff,
         p1, p2, p3, l1, l2,
@@ -428,7 +428,7 @@ JXG.createSlider = function (board, parents, attributes) {
          * The text element to the right of the slider, indicating its current value.
          * @memberOf Slider.prototype
          * @name label
-         * @type JXG.Text
+         * @type JXG2.Text
          */
         p3.label = t;
 
@@ -441,7 +441,7 @@ JXG.createSlider = function (board, parents, attributes) {
      * Start point of the base line.
      * @memberOf Slider.prototype
      * @name point1
-     * @type JXG.Point
+     * @type JXG2.Point
      */
     p3.point1 = p1;
 
@@ -449,7 +449,7 @@ JXG.createSlider = function (board, parents, attributes) {
      * End point of the base line.
      * @memberOf Slider.prototype
      * @name point2
-     * @type JXG.Point
+     * @type JXG2.Point
      */
     p3.point2 = p2;
 
@@ -457,7 +457,7 @@ JXG.createSlider = function (board, parents, attributes) {
      * The baseline the glider is bound to.
      * @memberOf Slider.prototype
      * @name baseline
-     * @type JXG.Line
+     * @type JXG2.Line
      */
     p3.baseline = l1;
 
@@ -465,7 +465,7 @@ JXG.createSlider = function (board, parents, attributes) {
      * A line on top of the baseline, indicating the slider's progress.
      * @memberOf Slider.prototype
      * @name highline
-     * @type JXG.Line
+     * @type JXG2.Line
      */
     p3.highline = l2;
 
@@ -515,7 +515,7 @@ JXG.createSlider = function (board, parents, attributes) {
          * Ticks give a rough indication about the slider's current value.
          * @memberOf Slider.prototype
          * @name ticks
-         * @type JXG.Ticks
+         * @type JXG2.Ticks
          */
         p3.ticks = ti;
     }
@@ -597,8 +597,8 @@ JXG.createSlider = function (board, parents, attributes) {
     return p3;
 };
 
-JXG.registerElement("slider", JXG.createSlider);
+JXG2.registerElement("slider", JXG2.createSlider);
 
 // export default {
-//     createSlider: JXG.createSlider
+//     createSlider: JXG2.createSlider
 // };

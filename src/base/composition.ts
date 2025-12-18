@@ -29,100 +29,100 @@
  and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import {Type} from "../utils/type.js";
 
 /**
- * A composition is a simple container that manages none or more {@link JXG.GeometryElement}s.
+ * A composition is a simple container that manages none or more {@link JXG2.GeometryElement}s.
  * @param {Object} elements A list of elements with a descriptive name for the element as the key and a reference
  * to the element as the value of every list entry. The name is used to access the element later on.
  * @example
  * var p1 = board.create('point', [1, 2]),
  *     p2 = board.create('point', [2, 3]),
- *     c = new JXG.Composition({
+ *     c = new JXG2.Composition({
  *         start: p1,
  *         end: p2
  *     });
  *
  * // moves p1 to [3, 3]
  * c.start.moveTo([3, 3]);
- * @class JXG.Composition
+ * @class JXG2.Composition
  */
-JXG.Composition = function (elements) {
+JXG2.Composition = function (elements) {
     var e,
         that = this,
         genericMethods = [
             /**
              * Invokes setAttribute for every stored element with a setAttribute method and hands over the given arguments.
-             * See {@link JXG.GeometryElement#setAttribute} for further description, valid parameters and return values.
+             * See {@link JXG2.GeometryElement#setAttribute} for further description, valid parameters and return values.
              * @name setAttribute
-             * @memberOf JXG.Composition.prototype
+             * @memberOf JXG2.Composition.prototype
              * @function
              */
             "setAttribute",
 
             /**
              * Invokes setParents for every stored element with a setParents method and hands over the given arguments.
-             * See {@link JXG.GeometryElement#setParents} for further description, valid parameters and return values.
+             * See {@link JXG2.GeometryElement#setParents} for further description, valid parameters and return values.
              * @name setParents
-             * @memberOf JXG.Composition.prototype
+             * @memberOf JXG2.Composition.prototype
              * @function
              */
             "setParents",
 
             /**
              * Invokes prepareUpdate for every stored element with a prepareUpdate method and hands over the given arguments.
-             * See {@link JXG.GeometryElement#prepareUpdate} for further description, valid parameters and return values.
+             * See {@link JXG2.GeometryElement#prepareUpdate} for further description, valid parameters and return values.
              * @name prepareUpdate
-             * @memberOf JXG.Composition.prototype
+             * @memberOf JXG2.Composition.prototype
              * @function
              */
             "prepareUpdate",
 
             /**
              * Invokes updateRenderer for every stored element with a updateRenderer method and hands over the given arguments.
-             * See {@link JXG.GeometryElement#updateRenderer} for further description, valid parameters and return values.
+             * See {@link JXG2.GeometryElement#updateRenderer} for further description, valid parameters and return values.
              * @name updateRenderer
-             * @memberOf JXG.Composition.prototype
+             * @memberOf JXG2.Composition.prototype
              * @function
              */
             "updateRenderer",
 
             /**
              * Invokes update for every stored element with a update method and hands over the given arguments.
-             * See {@link JXG.GeometryElement#update} for further description, valid parameters and return values.
+             * See {@link JXG2.GeometryElement#update} for further description, valid parameters and return values.
              * @name update
-             * @memberOf JXG.Composition.prototype
+             * @memberOf JXG2.Composition.prototype
              * @function
              */
             "update",
 
             /**
              * Invokes fullUpdate for every stored element with a fullUpdate method and hands over the given arguments.
-             * See {@link JXG.GeometryElement#fullUpdate} for further description, valid parameters and return values.
+             * See {@link JXG2.GeometryElement#fullUpdate} for further description, valid parameters and return values.
              * @name fullUpdate
-             * @memberOf JXG.Composition.prototype
+             * @memberOf JXG2.Composition.prototype
              * @function
              */
             "fullUpdate",
 
             /**
              * Invokes highlight for every stored element with a highlight method and hands over the given arguments.
-             * See {@link JXG.GeometryElement#highlight} for further description, valid parameters and return values.
+             * See {@link JXG2.GeometryElement#highlight} for further description, valid parameters and return values.
              * @name highlight
-             * @memberOf JXG.Composition.prototype
+             * @memberOf JXG2.Composition.prototype
              * @function
              */
             "highlight",
 
             /**
              * Invokes noHighlight for every stored element with a noHighlight method and hands over the given arguments.
-             * See {@link JXG.GeometryElement#noHighlight} for further description, valid parameters and return values.
+             * See {@link JXG2.GeometryElement#noHighlight} for further description, valid parameters and return values.
              * @name noHighlight
-             * @memberOf JXG.Composition.prototype
+             * @memberOf JXG2.Composition.prototype
              * @function
              */
             "noHighlight"
@@ -174,16 +174,16 @@ JXG.Composition = function (elements) {
     this.subs = {};
 };
 
-JXG.extend(
-    JXG.Composition.prototype,
-    /** @lends JXG.Composition.prototype */ {
+JXG2.extend(
+    JXG2.Composition.prototype,
+    /** @lends JXG2.Composition.prototype */ {
         /**
          * Adds an element to the composition container.
          * @param {String} what Descriptive name for the element, e.g. <em>startpoint</em> or <em>area</em>. This is used to
          * access the element later on. There are some reserved names: <em>elements, add, remove, update, prepareUpdate,
          * updateRenderer, highlight, noHighlight</em>, and all names that would form invalid object property names in
          * JavaScript.
-         * @param {JXG.GeometryElement|JXG.Composition} element A reference to the element that is to be added. This can be
+         * @param {JXG2.GeometryElement|JXG2.Composition} element A reference to the element that is to be added. This can be
          * another composition, too.
          * @returns {Boolean} True, if the element was added successfully. Reasons why adding the element failed include
          * using a reserved name and providing an invalid element.
@@ -244,12 +244,12 @@ JXG.extend(
         },
 
         select: function (filter) {
-            // for now, hijack JXG.Board's select() method
-            if (Type.exists(JXG.Board)) {
-                return JXG.Board.prototype.select.call(this, filter);
+            // for now, hijack JXG2.Board's select() method
+            if (Type.exists(JXG2.Board)) {
+                return JXG2.Board.prototype.select.call(this, filter);
             }
 
-            return new JXG.Composition();
+            return new JXG2.Composition();
         },
 
         getParents: function () {
@@ -275,4 +275,4 @@ JXG.extend(
     }
 );
 
-export default JXG.Composition;
+export default JXG2.Composition;

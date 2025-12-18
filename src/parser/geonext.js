@@ -29,10 +29,10 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
 
@@ -40,7 +40,7 @@ import {Type} from "../utils/type.js";
  * Parser helper routines. The methods in here are for parsing expressions in Geonext Syntax.
  * @namespace
  */
-JXG.GeonextParser = {
+JXG2.GeonextParser = {
     /**
      * Converts expression of the form <i>leftop^rightop</i> into <i>Math.pow(leftop,rightop)</i>.
      * @param {String} te Expression of the form <i>leftop^rightop</i>
@@ -236,7 +236,7 @@ JXG.GeonextParser = {
     /**
      * Replace an element's name in terms by an element's id.
      * @param {String} term Term containing names of elements.
-     * @param {JXG.Board} board Reference to the board the elements are on.
+     * @param {JXG2.Board} board Reference to the board the elements are on.
      * @param {Boolean} [jc=false] If true, all id's will be surrounded by <tt>$('</tt> and <tt>')</tt>.
      * @returns {String} The same string with names replaced by ids.
      **/
@@ -399,7 +399,7 @@ JXG.GeonextParser = {
     /**
      * Converts the given algebraic expression in GEONE<sub>x</sub>T syntax into an equivalent expression in JavaScript syntax.
      * @param {String} term Expression in GEONExT syntax
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @returns {String} Given expression translated to JavaScript.
      */
     geonext2JS: function (term, board) {
@@ -447,7 +447,7 @@ JXG.GeonextParser = {
                 "ceil"
             ];
 
-        // Hacks, to enable not well formed XML, @see JXG.GeonextReader#replaceLessThan
+        // Hacks, to enable not well formed XML, @see JXG2.GeonextReader#replaceLessThan
         term = term.replace(/&lt;/g, "<");
         term = term.replace(/&gt;/g, ">");
         term = term.replace(/&amp;/g, "&");
@@ -477,9 +477,9 @@ JXG.GeonextParser = {
     /**
      * Finds dependencies in a given term and resolves them by adding the
      * dependent object to the found objects child elements.
-     * @param {JXG.GeometryElement} me Object depending on objects in given term.
+     * @param {JXG2.GeometryElement} me Object depending on objects in given term.
      * @param {String} term String containing dependencies for the given object.
-     * @param {JXG.Board} [board=me.board] Reference to a board
+     * @param {JXG2.Board} [board=me.board] Reference to a board
      */
     findDependencies: function (me, term, board) {
         var elements, el, expr, elmask;
@@ -530,7 +530,7 @@ JXG.GeonextParser = {
     /**
      * Converts the given algebraic expression in GEONE<sub>x</sub>T syntax into an equivalent expression in JessieCode syntax.
      * @param {String} term Expression in GEONExT syntax
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @returns {String} Given expression translated to JavaScript.
      */
     gxt2jc: function (term, board) {
@@ -538,7 +538,7 @@ JXG.GeonextParser = {
             // from = ["Sqrt"],
             // to = ["sqrt"];
 
-        // Hacks, to enable not well formed XML, @see JXG.GeonextReader#replaceLessThan
+        // Hacks, to enable not well formed XML, @see JXG2.GeonextReader#replaceLessThan
         term = term.replace(/&lt;/g, "<");
         term = term.replace(/&gt;/g, ">");
         term = term.replace(/&amp;/g, "&");
@@ -552,4 +552,4 @@ JXG.GeonextParser = {
     }
 };
 
-export default JXG.GeonextParser;
+export default JXG2.GeonextParser;

@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 /*eslint no-loss-of-precision: off */
 
@@ -78,12 +78,12 @@ var predefinedButcher = {
 /**
  * The Geometry.Numerics namespace holds numerical algorithms, constants, and variables.
  * @name Geometry.Numerics
- * @exports JXG.JSXMath.Numerics as Geometry.Numerics
+ * @exports JXG2.JSXMath.Numerics as Geometry.Numerics
  * @namespace
  */
 export class Numerics {
 
-    //JXG.extend(JXG.JSXMath.Numerics, /** @lends Geometry.Numerics */ {
+    //JXG2.extend(JXG2.JSXMath.Numerics, /** @lends Geometry.Numerics */ {
     /**
      * Solves a system of linear equations given by A and b using the Gauss-Jordan-elimination.
      * The algorithm runs in-place. I.e. the entries of A and b are changed.
@@ -143,7 +143,7 @@ export class Numerics {
                 }
             }
 
-            // The absolute values of all coefficients below the j-th row in the j-th column are smaller than JXG.JSXMath.eps.
+            // The absolute values of all coefficients below the j-th row in the j-th column are smaller than JXG2.JSXMath.eps.
             if (Math.abs(Acopy[j][j]) < eps) {
                 throw new Error(
                     "Geometry.Numerics.Gauss(): The given matrix seems to be singular."
@@ -1604,11 +1604,11 @@ export class Numerics {
      * Then, (t1new, t2new) := (t1,t2) - J^(-1)*(e,f).
      * <p>
      *
-     * @param {JXG.Curve} c1 Curve, Line or Circle
-     * @param {JXG.Curve} c2 Curve, Line or Circle
+     * @param {JXG2.Curve} c1 Curve, Line or Circle
+     * @param {JXG2.Curve} c2 Curve, Line or Circle
      * @param {Number} t1ini start value for t1
      * @param {Number} t2ini start value for t2
-     * @returns {JXG.Coords} intersection point
+     * @returns {JXG2.Coords} intersection point
      * @memberof Geometry.Numerics
      */
     static generalizedNewton(c1, c2, t1ini, t2ini) {
@@ -1668,8 +1668,8 @@ export class Numerics {
      * We use a very high accuracy: JSXMath.eps**3
      *
      * @deprecated
-     * @param {JXG.Curve} c1 Curve, Line or Circle
-     * @param {JXG.Curve} c2 Curve, Line or Circle
+     * @param {JXG2.Curve} c1 Curve, Line or Circle
+     * @param {JXG2.Curve} c2 Curve, Line or Circle
      * @param {Number} t1ini Start value for curve c1
      * @param {Number} t2ini Start value for curve c2
      * @param {Number} gamma Damping factor, should be in the open interval (0, 1)
@@ -1817,7 +1817,7 @@ export class Numerics {
      * Jean-Paul Berrut, Lloyd N. Trefethen: Barycentric Lagrange Interpolation,
      * SIAM Review, Vol 46, No 3, (2004) 501-517.
      * The graph of the parametric curve [x(t),y(t)] runs through the given points.
-     * @param {Array} p Array of JXG.Points
+     * @param {Array} p Array of JXG2.Points
      * @returns {Array} An array consisting of two functions x(t), y(t) which define a parametric curve
      * f(t) = (x(t), y(t)), a number x1 (which equals 0) and a function x2 defining the curve's domain.
      * That means the curve is defined between x1 and x2(). x2 returns the (length of array p minus one).
@@ -1838,7 +1838,7 @@ export class Numerics {
      * </pre><div id="JXG88a8b3a8-6561-44f5-a678-76bca13fd484" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG88a8b3a8-6561-44f5-a678-76bca13fd484',
+     *         var board = JXG2.JSXGraph.initBoard('JXG88a8b3a8-6561-44f5-a678-76bca13fd484',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *     var p = [];
      *
@@ -2079,7 +2079,7 @@ export class Numerics {
      * <p>
      * It possesses the method getTerm() which returns the string containing the function term of the polynomial and
      * the method getCoefficients() which returns an array containing the coefficients of the polynomial.
-     * @param {Array} p Array of JXG.Points
+     * @param {Array} p Array of JXG2.Points
      * @returns {function} A function of one parameter which returns the value of the polynomial, whose graph runs through the given points.
      * @memberof Geometry.Numerics
      *
@@ -2095,7 +2095,7 @@ export class Numerics {
      * </pre><div id="JXGc058aa6b-74d4-41e1-af94-df06169a2d89" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXGc058aa6b-74d4-41e1-af94-df06169a2d89',
+     *         var board = JXG2.JSXGraph.initBoard('JXGc058aa6b-74d4-41e1-af94-df06169a2d89',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *     var p = [];
      *     p[0] = board.create('point', [-1,2], {size:4});
@@ -2123,7 +2123,7 @@ export class Numerics {
      * </pre><div id="JXG73fdaf12-e257-4374-b488-ae063e4eecbb" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG73fdaf12-e257-4374-b488-ae063e4eecbb',
+     *         var board = JXG2.JSXGraph.initBoard('JXG73fdaf12-e257-4374-b488-ae063e4eecbb',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *     var points = [];
      *     points[0] = board.create('point', [-1,2], {size:4});
@@ -2211,7 +2211,7 @@ export class Numerics {
          * </pre><div id="JXG73fdaf12-e257-4374-b488-ae063e4eeccf" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG73fdaf12-e257-4374-b488-ae063e4eeccf',
+         *         var board = JXG2.JSXGraph.initBoard('JXG73fdaf12-e257-4374-b488-ae063e4eeccf',
          *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
          *     var points = [];
          *     points[0] = board.create('point', [-1,2], {size:4});
@@ -2254,7 +2254,7 @@ export class Numerics {
          * </pre><div id="JXG52a883a5-2e0c-4caf-8f84-8650c173c365" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG52a883a5-2e0c-4caf-8f84-8650c173c365',
+         *         var board = JXG2.JSXGraph.initBoard('JXG52a883a5-2e0c-4caf-8f84-8650c173c365',
          *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
          *     var points = [];
          *     points[0] = board.create('point', [-1,2], {size:4});
@@ -2281,7 +2281,7 @@ export class Numerics {
      * Determine the Lagrange polynomial through an array of points and
      * return the term of the polynomial as string.
      *
-     * @param {Array} points Array of JXG.Points
+     * @param {Array} points Array of JXG2.Points
      * @param {Number} digits Number of decimal digits of the coefficients
      * @param {String} param Name of the parameter. Default: 'x'.
      * @param {String} dot Multiplication symbol. Default: ' * '.
@@ -2304,7 +2304,7 @@ export class Numerics {
      * </pre><div id="JXGd45e9e96-7526-486d-aa43-e1178d5f2baa" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXGd45e9e96-7526-486d-aa43-e1178d5f2baa',
+     *         var board = JXG2.JSXGraph.initBoard('JXGd45e9e96-7526-486d-aa43-e1178d5f2baa',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *     var points = [];
      *     points[0] = board.create('point', [-1,2], {size:4});
@@ -2370,7 +2370,7 @@ export class Numerics {
      * return the coefficients of the polynomial as array.
      * The leading coefficient is at position 0.
      *
-     * @param {Array} points Array of JXG.Points
+     * @param {Array} points Array of JXG2.Points
      * @returns {Function} returning the coefficients of the Lagrange polynomial through
      *    the supplied points.
      * @memberof Geometry.Numerics
@@ -2390,7 +2390,7 @@ export class Numerics {
      * </pre><div id="JXG1778f0d1-a420-473f-99e8-1755ef4be97e" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG1778f0d1-a420-473f-99e8-1755ef4be97e',
+     *         var board = JXG2.JSXGraph.initBoard('JXG1778f0d1-a420-473f-99e8-1755ef4be97e',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *     var points = [];
      *     points[0] = board.create('point', [-1,2], {size:4});
@@ -2462,7 +2462,7 @@ export class Numerics {
      *
      * The implementation (especially the centripetal parametrization) is from
      * https://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections .
-     * @param {Array} points Array consisting of JXG.Points.
+     * @param {Array} points Array consisting of JXG2.Points.
      * @param {Number|Function} tau The tension parameter, either a constant number or a function returning a number. This number is between 0 and 1.
      * tau=1/2 give Catmull-Rom splines.
      * @param {String} type (Optional) parameter which allows to choose between "uniform" (default) and
@@ -2648,7 +2648,7 @@ export class Numerics {
      * Computes the cubic Catmull-Rom spline curve through a given set of points. The curve
      * is uniformly parametrized. The curve is the cardinal spline curve for tau=0.5.
      * Two artificial control points at the beginning and the end are added.
-     * @param {Array} points Array consisting of JXG.Points.
+     * @param {Array} points Array consisting of JXG2.Points.
      * @param {String} type (Optional) parameter which allows to choose between "uniform" (default) and
      * "centripetal" parameterization. Thus the two possible values are "uniform" or "centripetal".
      * @returns {Array} An Array consisting of four components: Two functions each of one parameter t
@@ -2666,7 +2666,7 @@ export class Numerics {
      * @param {Number|function|Slider} degree number, function or slider.
      * Either
      * @param {Array} dataX Array containing either the x-coordinates of the data set or both coordinates in
-     * an array of {@link JXG.Point}s or {@link JXG.Coords}.
+     * an array of {@link JXG2.Point}s or {@link JXG2.Coords}.
      * In the latter case, the <tt>dataY</tt> parameter will be ignored.
      * @param {Array} dataY Array containing the y-coordinates of the data set,
      * @returns {function} A function of one parameter which returns the value of the regression polynomial of the given degree.
@@ -2812,7 +2812,7 @@ export class Numerics {
 
     /**
      * Computes the cubic Bezier curve through a given set of points.
-     * @param {Array} points Array consisting of 3*k+1 {@link JXG.Points}.
+     * @param {Array} points Array consisting of 3*k+1 {@link JXG2.Points}.
      * The points at position k with k mod 3 = 0 are the data points,
      * points at position k with k mod 3 = 1 or 2 are the control points.
      * @returns {Array} An array consisting of two functions of one parameter t which return the
@@ -2868,7 +2868,7 @@ export class Numerics {
 
     /**
      * Computes the B-spline curve of order k (order = degree+1) through a given set of points.
-     * @param {Array} points Array consisting of JXG.Points.
+     * @param {Array} points Array consisting of JXG2.Points.
      * @param {Number} order Order of the B-spline curve.
      * @returns {Array} An Array consisting of four components: Two functions each of one parameter t
      * which return the x resp. y coordinates of the B-spline curve in t, a zero value, and a function simply
@@ -2992,8 +2992,8 @@ export class Numerics {
 
     /**
      * Numerical (symmetric) approximation of derivative. suspendUpdate is piped through,
-     * see {@link JXG.Curve#updateCurve}
-     * and {@link JXG.Curve#hasPoint}.
+     * see {@link JXG2.Curve#updateCurve}
+     * and {@link JXG2.Curve#hasPoint}.
      * @param {function} f Function in one variable to be differentiated.
      * @param {object} [obj] Optional object that is treated as "this" in the function body. This is useful, if the function is a
      * method of an object and contains a reference to its parent object via "this".
@@ -3126,7 +3126,7 @@ export class Numerics {
      * @param {Number} start Left border of the approximation interval
      * @param {Number} end Right border of the approximation interval
      * @returns {Array} An array of two arrays containing the x and y coordinates for the rectangles showing the Riemann sum. This
-     * array may be used as parent array of a {@link JXG.Curve}. The third parameteris the riemann sum, i.e. the sum of the volumes of all
+     * array may be used as parent array of a {@link JXG2.Curve}. The third parameteris the riemann sum, i.e. the sum of the volumes of all
      * rectangles.
      * @memberof Geometry.Numerics
      */
@@ -3253,7 +3253,7 @@ export class Numerics {
      * Compute the area described by the riemann sum rectangles.
      *
      * If there is an element of type {@link Riemannsum } then it is more efficient
-     * to use the method JXG.Curve.Value() of this element instead.
+     * to use the method JXG2.Curve.Value() of this element instead.
      *
      * @param {Function_Array} f Function or array of two functions.
      * If f is a function the integral of this function is approximated by the Riemann sum.
@@ -3317,7 +3317,7 @@ export class Numerics {
      * var g = board.create('curve', [dataX, dataY], {strokeWidth:'2px'});
      * </pre><div class="jxgbox" id="JXGd2432d04-4ef7-4159-a90b-a2eb8d38c4f6" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
-     * var board = JXG.JSXGraph.initBoard('JXGd2432d04-4ef7-4159-a90b-a2eb8d38c4f6', {boundingbox: [-1, 5, 5, -1], axis: true, showcopyright: false, shownavigation: false});
+     * var board = JXG2.JSXGraph.initBoard('JXGd2432d04-4ef7-4159-a90b-a2eb8d38c4f6', {boundingbox: [-1, 5, 5, -1], axis: true, showcopyright: false, shownavigation: false});
      * var f = function(t, x) {
      *     // we have to copy the value.
      *     // return x; would just return the reference.
@@ -3810,7 +3810,7 @@ export class Numerics {
      * tightening the input interval x0.
      * <p>
      * This is a helper function which is used in {@link Geometry.Numerics.fminbr }
-     * {@link Geometry.Numerics.fzero } and  {@link JXG.Curve.getLabelPosition}
+     * {@link Geometry.Numerics.fzero } and  {@link JXG2.Curve.getLabelPosition}
      * to avoid search in an interval where the function is mostly undefined.
      *
      * @param {function} f
@@ -4117,9 +4117,9 @@ export class Numerics {
      * <ul>
      *  <li> M = 10000000.0
      *  <li> C = A or B, depending if f(A) <= f(B)
-     *  <li> T = JXG.JSXMath.eps
-     *  <li> E = JXG.JSXMath.eps * JXG.JSXMath.eps
-     *  <li> MACHEP = JXG.JSXMath.eps * JXG.JSXMath.eps * JXG.JSXMath.eps
+     *  <li> T = JXG2.JSXMath.eps
+     *  <li> E = JXG2.JSXMath.eps * JXG2.JSXMath.eps
+     *  <li> MACHEP = JXG2.JSXMath.eps * JXG2.JSXMath.eps * JXG2.JSXMath.eps
      * </ul>
      * @param {function} f Function, whose global minimum is to be found
      * @param {Array} x0 Array of length 2 determining the interval [A, B] for which the global minimum is to be found
@@ -4307,21 +4307,21 @@ export class Numerics {
      * the iteration method with cubic convergence is used that is usually attributed to Ehrlich-Aberth.
      * <p>
      * The returned roots are sorted with respect to their real values.
-     * <p> This method makes use of the JSXGraph classes {@link JXG.Complex} and {@link JXG.C} to handle
+     * <p> This method makes use of the JSXGraph classes {@link JXG2.Complex} and {@link JXG2.C} to handle
      * complex numbers.
      *
      * @param {Array} a Array of coefficients of the polynomial a[0] + a[1]*x+ a[2]*x**2...
-     * The coefficients are of type Number or JXG.Complex.
+     * The coefficients are of type Number or JXG2.Complex.
      * @param {Number} [deg] Optional degree of the polynomial. Otherwise all entries are taken, with
      * leading zeros removed.
      * @param {Number} [tol=Number.EPSILON] Approximation tolerance
      * @param {Number} [max_it=30] Maximum number of iterations
      * @param {Array} [initial_values=null] Array of initial values for the roots. If not given,
      * starting values are determined by the method of Ozawa.
-     * @returns {Array} Array of complex numbers (of JXG.Complex) approximating the roots of the polynomial.
+     * @returns {Array} Array of complex numbers (of JXG2.Complex) approximating the roots of the polynomial.
      * @memberof Geometry.Numerics
-     * @see JXG.Complex
-     * @see JXG.C
+     * @see JXG2.Complex
+     * @see JXG2.C
      *
      * @example
      * // Polynomial p(z) = -1 + 1z^2
@@ -4369,7 +4369,7 @@ export class Numerics {
              * i.e. coefficients and variable are complex.
              * @function
              * @param {Array} a Array of complex coefficients of the polynomial a[0] + a[1]*x+ a[2]*x**2...
-             * @param {JXG.Complex} z Value for which the polynomial will be evaluated.
+             * @param {JXG2.Complex} z Value for which the polynomial will be evaluated.
              * @param {Boolean} [derivative=false] If true the derivative will be evaluated.
              * @ignore
              */
@@ -4380,15 +4380,15 @@ export class Numerics {
                 derivative = derivative || false;
                 if (derivative) {
                     // s = n * a_n
-                    // s = JXG .C.mult(n, a[n]);    // tbtb complex values should be of type Complex
+                    // s = JXG2 .C.mult(n, a[n]);    // tbtb complex values should be of type Complex
                     for (i = n - 1; i > 0; i--) {
                         // s = s * z + i * a_i
                         s.mult(z);
-                        // s.add(JXG.C.mult(a[i], i));      // tbtb complex values should be of type Complex
+                        // s.add(JXG2.C.mult(a[i], i));      // tbtb complex values should be of type Complex
                     }
                 } else {
                     // s = a_n
-                    // s = JXG.C.copy(a[n]);      // tbtb complex values should be of type Complex
+                    // s = JXG2.C.copy(a[n]);      // tbtb complex values should be of type Complex
                     for (i = n - 1; i >= 0; i--) {
                         // s = s * z + a_i
                         s.mult(z);
@@ -4403,7 +4403,7 @@ export class Numerics {
              * i.e. coefficients and variable are complex.
              * @function
              * @param {Array} a Array of complex coefficients of the polynomial a[0] + a[1]*x+ a[2]*x**2...
-             * @param {JXG.Complex} z Value for which the reciprocal polynomial will be evaluated.
+             * @param {JXG2.Complex} z Value for which the reciprocal polynomial will be evaluated.
              * @param {Boolean} [derivative=false] If true the derivative will be evaluated.
              * @ignore
              */
@@ -4414,15 +4414,15 @@ export class Numerics {
                 derivative = derivative || false;
                 if (derivative) {
                     // s = n * a_0
-                    // s = JXG.C.mult(n, a[0]);       // tbtb complex values should be of type Complex
+                    // s = JXG2.C.mult(n, a[0]);       // tbtb complex values should be of type Complex
                     for (i = n - 1; i > 0; i--) {
                         // s = s * x + i * a_{n-i}
                         s.mult(x);
-                        // s.add(JXG.C.mult(a[n - i], i));       // tbtb complex values should be of type Complex
+                        // s.add(JXG2.C.mult(a[n - i], i));       // tbtb complex values should be of type Complex
                     }
                 } else {
                     // s = a_0
-                    // s = JXG.C.copy(a[0]);                  // tbtb complex values should be of type Complex
+                    // s = JXG2.C.copy(a[0]);                  // tbtb complex values should be of type Complex
                     for (i = n - 1; i >= 0; i--) {
                         // s = s * x + a_{n-i}
                         s.mult(x);
@@ -4476,8 +4476,8 @@ export class Numerics {
                 // With is Vieta's formula <https://en.wikipedia.org/wiki/Vieta%27s_formulas>
                 //   b = -a_{n-1} / (n * a_n)
 
-                // b = JXG.C.mult(-1, a[n - 1]);       // tbtb complex values should be of type Complex
-                // b.div(JXG.C.mult(n, a[n]));
+                // b = JXG2.C.mult(-1, a[n - 1]);       // tbtb complex values should be of type Complex
+                // b.div(JXG2.C.mult(n, a[n]));
 
                 // r is the geometric mean of the deviations |b - root_i|.
                 // Using
@@ -4487,13 +4487,13 @@ export class Numerics {
                 // we arrive at:
                 //   r = |p(b)/a_n|^(1/n)
 
-                // z = JXG.C.div(hornerComplex(a, b), a[n]);
-                // r = Math.pow(JXG.C.abs(z), 1 / n);       // tbtb complex values should be of type Complex
+                // z = JXG2.C.div(hornerComplex(a, b), a[n]);
+                // r = Math.pow(JXG2.C.abs(z), 1 / n);       // tbtb complex values should be of type Complex
                 if (r === 0) { r = 1; }
 
                 for (i = 0; i < n; i++) {
                     a = new Complex(r * Math.cos(alpha1 * i + alpha0), r * Math.sin(alpha1 * i + alpha0));
-                    // init[i] = JXG.C.add(b, a);       // tbtb complex values should be of type Complex
+                    // init[i] = JXG2.C.add(b, a);       // tbtb complex values should be of type Complex
                 }
 
                 return init;
@@ -4525,7 +4525,7 @@ export class Numerics {
                     done.push(false);
                 }
                 for (i = 0; i < cc.length; i++) {
-                    // cr.push(JXG.C.abs(cc[i]) * (4 * i + 1));      // tbtb complex values should be of type Complex
+                    // cr.push(JXG2.C.abs(cc[i]) * (4 * i + 1));      // tbtb complex values should be of type Complex
                 }
                 for (k = 0; k < max_it && done_sum < n; k++) {
                     for (i = 0; i < n; i++) {
@@ -4533,14 +4533,14 @@ export class Numerics {
                             continue;
                         }
                         num = hornerComplex(cc, z[i]);
-                        // x = JXG.C.abs(z[i]);        // tbtb complex values should be of type Complex
+                        // x = JXG2.C.abs(z[i]);        // tbtb complex values should be of type Complex
 
                         // Stopping criterion by D.A. Bini
                         // "Numerical computation of polynomial zeros
                         // by means of Aberths's method", Numerical Algorithms (1996).
                         //
 
-                        //if (JXG.C.abs(num) < mu * horner(cr, x)) {     // tbtb complex values should be of type Complex
+                        //if (JXG2.C.abs(num) < mu * horner(cr, x)) {     // tbtb complex values should be of type Complex
                         if (true)
                             done[i] = true;
                         done_sum++;
@@ -4552,12 +4552,12 @@ export class Numerics {
 
                     // num = P(z_i) / P'(z_i)
                     if (x > 1) {
-                        // gamma = JXG.C.div(1, z[i]);      // tbtb complex values should be of type Complex
+                        // gamma = JXG2.C.div(1, z[i]);      // tbtb complex values should be of type Complex
                         pp = hornerRec(cc, gamma, true);
                         pp.div(hornerRec(cc, gamma));
                         pp.mult(gamma);
-                        // num = JXG.C.sub(n, pp);         // tbtb complex values should be of type Complex
-                        // num = JXG.C.div(z[i], num);
+                        // num = JXG2.C.sub(n, pp);         // tbtb complex values should be of type Complex
+                        // num = JXG2.C.div(z[i], num);
                     } else {
                         num.div(hornerComplex(cc, z[i], true));
                     }
@@ -4568,14 +4568,14 @@ export class Numerics {
                         if (j === i) {
                             continue;
                         }
-                        // s = JXG.C.sub(z[i], z[j]);       // tbtb complex values should be of type Complex
-                        // s = JXG.C.div(1, s);
+                        // s = JXG2.C.sub(z[i], z[j]);       // tbtb complex values should be of type Complex
+                        // s = JXG2.C.div(1, s);
                         denom.add(s);
                     }
 
                     // num = num / 1 - num * sum_{i\neq j} 1 / (z_i - z_j)
                     denom.mult(num);
-                    // denom = JXG.C.sub(1, denom);      // tbtb complex values should be of type Complex
+                    // denom = JXG2.C.sub(1, denom);      // tbtb complex values should be of type Complex
                     num.div(denom);
                     // z_i = z_i - num
                     z[i].sub(num);
@@ -4645,7 +4645,7 @@ export class Numerics {
             console.log('Roots:');
             for (i = 0; i < roots.length; i++) {
                 // tbtb complex values should be of type Complex
-                // console.log(i, roots[i].toString(), JXG.C.abs(hornerComplex(cc, roots[i])));
+                // console.log(i, roots[i].toString(), JXG2.C.abs(hornerComplex(cc, roots[i])));
             }
         }
 
@@ -4668,7 +4668,7 @@ export class Numerics {
      * It discards points which are not necessary from the polygonal line defined by the point array
      * pts. The computation is done in screen coordinates.
      * Average runtime is O(nlog(n)), worst case runtime is O(n^2), where n is the number of points.
-     * @param {Array} pts Array of {@link JXG.Coords}
+     * @param {Array} pts Array of {@link JXG2.Coords}
      * @param {Number} eps If the absolute value of a given number <tt>x</tt> is smaller than <tt>eps</tt> it is considered to be equal <tt>0</tt>.
      * @returns {Array} An array containing points which represent an apparently identical curve as the points of pts do, but contains fewer points.
      * @memberof Geometry.Numerics
@@ -4683,7 +4683,7 @@ export class Numerics {
              * findSplit() is a subroutine of {@link Geometry.Numerics.RamerDouglasPeucker}.
              * It searches for the point between index i and j which
              * has the largest distance from the line between the points i and j.
-             * @param {Array} pts Array of {@link JXG.Coords}
+             * @param {Array} pts Array of {@link JXG2.Coords}
              * @param {Number} i Index of a point in pts
              * @param {Number} j Index of a point in pts
              * @ignore
@@ -4764,11 +4764,11 @@ export class Numerics {
              * included in our new point set otherwise it is discarded.
              * If it is taken, we recursively apply the subroutine to the point set before
              * and after the chosen point.
-             * @param {Array} pts Array of {@link JXG.Coords}
+             * @param {Array} pts Array of {@link JXG2.Coords}
              * @param {Number} i Index of an element of pts
              * @param {Number} j Index of an element of pts
              * @param {Number} eps If the absolute value of a given number <tt>x</tt> is smaller than <tt>eps</tt> it is considered to be equal <tt>0</tt>.
-             * @param {Array} newPts Array of {@link JXG.Coords}
+             * @param {Array} newPts Array of {@link JXG2.Coords}
              * @ignore
              * @private
              */
@@ -4846,8 +4846,8 @@ export class Numerics {
      * "Line generalisation by repeated elimination of the smallest area", C.I.S.R.G Discussion paper 10, July 1992
      *
      * The algorithm discards points which are not necessary from the polygonal line defined by the point array
-     * pts (consisting of type JXG.Coords).
-     * @param {Array} pts Array of {@link JXG.Coords}
+     * pts (consisting of type JXG2.Coords).
+     * @param {Array} pts Array of {@link JXG2.Coords}
      * @param {Number} numPoints Number of remaining intermediate points. The first and the last point of the original points will
      *    be taken in any case.
      * @returns {Array} An array containing points which approximates the curve defined by pts.
@@ -4883,7 +4883,7 @@ export class Numerics {
      * </pre><div id="JXGce0cc55c-b592-11e6-8270-104a7d3be7eb" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXGce0cc55c-b592-11e6-8270-104a7d3be7eb',
+     *         var board = JXG2.JSXGraph.initBoard('JXGce0cc55c-b592-11e6-8270-104a7d3be7eb',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *
      *         var i, p = [];

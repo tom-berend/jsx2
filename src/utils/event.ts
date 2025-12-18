@@ -33,14 +33,14 @@ import { LooseObject } from "../interfaces.js";
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview In this file the EventEmitter interface is defined.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { Type } from "./type.js";
 
 type argVals = string | number | Boolean  // arguments for event handlers
@@ -165,7 +165,7 @@ export class Events {
      * capabilities from this method should document it by adding
      * the <tt>on, off, triggerEventHandlers</tt> via the
      * borrows tag as methods to their documentation:
-     * <pre>@borrows JXG.EventEmitter#on as this.on</pre>
+     * <pre>@borrows JXG2.EventEmitter#on as this.on</pre>
      * @param {Object} o
      */
     eventify(o: LooseObject) {  // tbb Board | GeometryEvent

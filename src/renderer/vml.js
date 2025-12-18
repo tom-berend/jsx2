@@ -29,10 +29,10 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, AMprocessNode: true, MathJax: true, document: true */
+/*global JXG2: true, define: true, AMprocessNode: true, MathJax: true, document: true */
 /*jslint nomen: true, plusplus: true, newcap:true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { AbstractRenderer } from "./abstract.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Type } from "../utils/type.js";
@@ -41,17 +41,17 @@ import { JSXMath } from "../math/math.js";
 import { Numerics } from "../math/numerics.js";
 
 /**
- * Uses VML to implement the rendering methods defined in {@link JXG.AbstractRenderer}.
+ * Uses VML to implement the rendering methods defined in {@link JXG2.AbstractRenderer}.
  * VML was used in very old Internet Explorer versions upto IE 8.
  *
  *
- * @class JXG.VMLRenderer
- * @augments JXG.AbstractRenderer
+ * @class JXG2.VMLRenderer
+ * @augments JXG2.AbstractRenderer
  * @param {Node} container Reference to a DOM node containing the board.
- * @see JXG.AbstractRenderer
+ * @see JXG2.AbstractRenderer
  * @deprecated
  */
-JXG.VMLRenderer = function (container) {
+JXG2.VMLRenderer = function (container) {
     this.type = 'vml';
 
     this.container = container;
@@ -68,10 +68,10 @@ JXG.VMLRenderer = function (container) {
     // Add VML includes and namespace
     // Original: IE <=7
     //container.ownerDocument.createStyleSheet().addRule("v\\:*", "behavior: url(#default#VML);");
-    if (!Type.exists(JXG.vmlStylesheet)) {
+    if (!Type.exists(JXG2.vmlStylesheet)) {
         container.ownerDocument.namespaces.add("jxgvml", "urn:schemas-microsoft-com:vml");
-        JXG.vmlStylesheet = this.container.ownerDocument.createStyleSheet();
-        JXG.vmlStylesheet.addRule(".jxgvml", "behavior:url(#default#VML)");
+        JXG2.vmlStylesheet = this.container.ownerDocument.createStyleSheet();
+        JXG2.vmlStylesheet.addRule(".jxgvml", "behavior:url(#default#VML)");
     }
 
     try {
@@ -104,11 +104,11 @@ JXG.VMLRenderer = function (container) {
     ];
 };
 
-JXG.VMLRenderer.prototype = new AbstractRenderer();
+JXG2.VMLRenderer.prototype = new AbstractRenderer();
 
-JXG.extend(
-    JXG.VMLRenderer.prototype,
-    /** @lends JXG.VMLRenderer.prototype */ {
+JXG2.extend(
+    JXG2.VMLRenderer.prototype,
+    /** @lends JXG2.VMLRenderer.prototype */ {
         /**
          * Sets attribute <tt>key</tt> of node <tt>node</tt> to <tt>value</tt>.
          * @param {Node} node A DOM node.
@@ -124,7 +124,7 @@ JXG.extend(
                     node.setAttribute(key, val, iFlag);
                 }
             } catch (e) {
-                JXG.debug("_setAttr:" /*node.id*/ + " " + key + " " + val + "<br>\n");
+                JXG2.debug("_setAttr:" /*node.id*/ + " " + key + " " + val + "<br>\n");
             }
         },
 
@@ -199,7 +199,7 @@ JXG.extend(
          *    Text related stuff
          * **************************/
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         displayCopyright: function (str, fontsize) {
             var node, t;
 
@@ -357,7 +357,7 @@ JXG.extend(
          *    Image related stuff
          * **************************/
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         drawImage: function (el) {
             // IE 8: Bilder ueber data URIs werden bis 32kB unterstuetzt.
             var node;
@@ -380,7 +380,7 @@ JXG.extend(
             this.updateImage(el);
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         transformRect: function (el, t) {
             var m,
                 maxX,
@@ -447,7 +447,7 @@ JXG.extend(
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updateImageURL: function (el) {
             var url = el.eval(el.url);
 
@@ -458,7 +458,7 @@ JXG.extend(
          * Render primitive objects
          * **************************/
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         appendChildPrim: function (node, level) {
             // For trace nodes
             if (!Type.exists(level)) {
@@ -471,7 +471,7 @@ JXG.extend(
             return node;
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         appendNodesToElement: function (el, type) {
             if (type === "shape" || type === "path" || type === 'polygon') {
                 el.rendNodePath = this.getElementById(el.id + "_path");
@@ -482,7 +482,7 @@ JXG.extend(
             el.rendNode = this.getElementById(el.id);
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         createPrim: function (type, id) {
             var node,
                 pathNode,
@@ -527,14 +527,14 @@ JXG.extend(
             return node;
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         remove: function (node) {
             if (Type.exists(node)) {
                 node.removeNode(true);
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         makeArrows: function (el) {
             var nodeStroke,
                 ev_fa = el.evalVisProp('firstarrow'),
@@ -570,7 +570,7 @@ JXG.extend(
             el.visPropOld.lastarrow = ev_la;
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updateEllipsePrim: function (node, x, y, rx, ry) {
             node.style.left = Math.floor(x - rx) + 'px';
             node.style.top = Math.floor(y - ry) + 'px';
@@ -578,7 +578,7 @@ JXG.extend(
             node.style.height = Math.floor(Math.abs(ry) * 2) + 'px';
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updateLinePrim: function (node, p1x, p1y, p2x, p2y, board) {
             var s,
                 r = this.resolution;
@@ -598,7 +598,7 @@ JXG.extend(
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updatePathPrim: function (node, pointString, board) {
             var x = board.canvasWidth,
                 y = board.canvasHeight;
@@ -615,7 +615,7 @@ JXG.extend(
             this._setAttr(node, "path", pointString.join(""));
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updatePathStringPoint: function (el, size, type) {
             var s = [],
                 mround = Math.round,
@@ -771,7 +771,7 @@ JXG.extend(
             return s;
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updatePathStringPrim: function (el) {
             var i,
                 scr,
@@ -853,7 +853,7 @@ JXG.extend(
             return pStr;
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updatePathStringBezierPrim: function (el) {
             var i,
                 j,
@@ -953,7 +953,7 @@ JXG.extend(
             return pStr;
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updatePolygonPrim: function (node, el) {
             var i,
                 len = el.vertices.length,
@@ -993,7 +993,7 @@ JXG.extend(
             this.updatePathPrim(node, pStr, el.board);
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         updateRectPrim: function (node, x, y, w, h) {
             node.style.left = Math.floor(x) + 'px';
             node.style.top = Math.floor(y) + 'px';
@@ -1011,7 +1011,7 @@ JXG.extend(
          *  Set Attributes
          * **************************/
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         setPropertyPrim: function (node, key, val) {
             var keyVml = "",
                 v;
@@ -1034,7 +1034,7 @@ JXG.extend(
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         display: function (el, val) {
             if (el && el.rendNode) {
                 el.visPropOld.visible = val;
@@ -1046,25 +1046,25 @@ JXG.extend(
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         show: function (el) {
-            JXG.deprecated("Board.renderer.show()", "Board.renderer.display()");
+            JXG2.deprecated("Board.renderer.show()", "Board.renderer.display()");
 
             if (el && el.rendNode) {
                 el.rendNode.style.visibility = 'inherit';
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         hide: function (el) {
-            JXG.deprecated("Board.renderer.hide()", "Board.renderer.display()");
+            JXG2.deprecated("Board.renderer.hide()", "Board.renderer.display()");
 
             if (el && el.rendNode) {
                 el.rendNode.style.visibility = 'hidden';
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         setDashStyle: function (el, visProp) {
             var node;
             if (visProp.dash >= 0) {
@@ -1073,7 +1073,7 @@ JXG.extend(
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         setGradient: function (el) {
             var nodeFill = el.rendNodeFill,
                 ev_g = el.evalVisProp('gradient');
@@ -1117,7 +1117,7 @@ JXG.extend(
             }
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         setObjectFillColor: function (el, color, opacity) {
             var rgba = color,
                 c,
@@ -1174,7 +1174,7 @@ JXG.extend(
             el.visPropOld.fillopacity = o;
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         setObjectStrokeColor: function (el, color, opacity) {
             var rgba = color,
                 c,
@@ -1238,7 +1238,7 @@ JXG.extend(
             el.visPropOld.strokeopacity = o;
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         setObjectStrokeWidth: function (el, width) {
             var w = Type.evaluate(width),
                 node;
@@ -1260,7 +1260,7 @@ JXG.extend(
             el.visPropOld.strokewidth = w;
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         setShadow: function (el) {
             var nodeShadow = el.rendNodeShadow,
                 ev_s = el.evalVisProp('shadow');
@@ -1285,16 +1285,16 @@ JXG.extend(
          * renderer control
          * **************************/
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         suspendRedraw: function () {
             this.container.style.display = 'none';
         },
 
-        // Already documented in JXG.AbstractRenderer
+        // Already documented in JXG2.AbstractRenderer
         unsuspendRedraw: function () {
             this.container.style.display = "";
         }
     }
 );
 
-export default JXG.VMLRenderer;
+export default JXG2.VMLRenderer;

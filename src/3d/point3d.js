@@ -26,9 +26,9 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
 import {JSXMath} from "../math/math.js";
@@ -36,18 +36,18 @@ import {Geometry} from "../math/geometry.js";
 
 /**
  * A 3D point is the basic geometric element.
- * @class Creates a new 3D point object. Do not use this constructor to create a 3D point. Use {@link JXG.View3D#create} with
+ * @class Creates a new 3D point object. Do not use this constructor to create a 3D point. Use {@link JXG2.View3D#create} with
  * type {@link Point3D} instead.
- * @augments JXG.GeometryElement3D
- * @augments JXG.GeometryElement
- * @param {JXG.View3D} view The 3D view the point is drawn on.
+ * @augments JXG2.GeometryElement3D
+ * @augments JXG2.GeometryElement
+ * @param {JXG2.View3D} view The 3D view the point is drawn on.
  * @param {Function|Array} F Array of numbers, array of functions or function returning an array with defines the user coordinates of the point.
- * @param {JXG.GeometryElement3D} slide Object the 3D point should be bound to. If null, the point is a free point.
- * @param {Object} attributes An object containing visual properties like in {@link JXG.Options#point3d} and
- * {@link JXG.Options#elements}, and optional a name and an id.
- * @see JXG.Board#generateName
+ * @param {JXG2.GeometryElement3D} slide Object the 3D point should be bound to. If null, the point is a free point.
+ * @param {Object} attributes An object containing visual properties like in {@link JXG2.Options#point3d} and
+ * {@link JXG2.Options#elements}, and optional a name and an id.
+ * @see JXG2.Board#generateName
  */
-JXG.Point3D = function (view, F, slide, attributes) {
+JXG2.Point3D = function (view, F, slide, attributes) {
     this.constructor(view.board, attributes, OBJECT_TYPE.POINT3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'point3d');
 
@@ -91,7 +91,7 @@ JXG.Point3D = function (view, F, slide, attributes) {
      *   p.slide;
      *
      * @name Point3D#slide
-     * @type JXG.GeometryElement3D
+     * @type JXG2.GeometryElement3D
      * @default null
      * @private
      *
@@ -126,12 +126,12 @@ JXG.Point3D = function (view, F, slide, attributes) {
     });
 };
 
-JXG.Point3D.prototype = new JXG.GeometryElement();
-Type.copyPrototypeMethods(JXG.Point3D, JXG.GeometryElement3D, 'constructor3D');
+JXG2.Point3D.prototype = new JXG2.GeometryElement();
+Type.copyPrototypeMethods(JXG2.Point3D, JXG2.GeometryElement3D, 'constructor3D');
 
-JXG.extend(
-    JXG.Point3D.prototype,
-    /** @lends JXG.Point3D.prototype */ {
+JXG2.extend(
+    JXG2.Point3D.prototype,
+    /** @lends JXG2.Point3D.prototype */ {
 
         /**
          * Get x-coordinate of a 3D point.
@@ -194,7 +194,7 @@ JXG.extend(
         },
 
         /**
-         * Update the array {@link JXG.Point3D#coords} containing the homogeneous coords.
+         * Update the array {@link JXG2.Point3D#coords} containing the homogeneous coords.
          *
          * @name updateCoords
          * @memberOf Point3D
@@ -325,10 +325,10 @@ JXG.extend(
 
         // /**
         //  * Add transformations to this element.
-        //  * @param {JXG.GeometryElement} el
-        //  * @param {JXG.Transformation|Array} transform Either one {@link JXG.Transformation}
-        //  * or an array of {@link JXG.Transformation}s.
-        //  * @returns {JXG.CoordsElement} Reference to itself.
+        //  * @param {JXG2.GeometryElement} el
+        //  * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation}
+        //  * or an array of {@link JXG2.Transformation}s.
+        //  * @returns {JXG2.CoordsElement} Reference to itself.
         //  */
         addTransform: function (el, transform) {
             this.addTransformGeneric(el, transform);
@@ -356,7 +356,7 @@ JXG.extend(
             return this;
         },
 
-        // Already documented in JXG.GeometryElement
+        // Already documented in JXG2.GeometryElement
         update: function (drag) {
             var c3d,         // Homogeneous 3D coordinates
                 foot, res;
@@ -423,7 +423,7 @@ JXG.extend(
             return this;
         },
 
-        // Already documented in JXG.GeometryElement
+        // Already documented in JXG2.GeometryElement
         updateRenderer: function () {
             this.needsUpdate = false;
             return this;
@@ -440,7 +440,7 @@ JXG.extend(
 
         /**
          * Calculate the distance from one point to another. If one of the points is on the plane at infinity, return positive infinity.
-         * @param {JXG.Point3D} pt The point to which the distance is calculated.
+         * @param {JXG2.Point3D} pt The point to which the distance is calculated.
          * @returns {Number} The distance
          */
         distance: function (pt) {
@@ -472,11 +472,11 @@ JXG.extend(
         * @param {String} [options.effect='<>'|'>'|'<'] animation effects like speed fade in and out. possible values are
         * '<>' for speed increase on start and slow down at the end (default), '<' for speed up, '>' for slow down, and '--' for constant speed during
         * the whole animation.
-        * @see JXG.Point3D#moveAlong
-        * @see JXG.Point#moveTo
+        * @see JXG2.Point3D#moveAlong
+        * @see JXG2.Point#moveTo
         * @example
         * // visit a coordinate, then use callback to visit a second coordinate.
-        * const board = JXG.JSXGraph.initBoard('jxgbox')
+        * const board = JXG2.JSXGraph.initBoard('jxgbox')
         * var view = board.create(
         *     'view3d',
         *     [[-6, -3], [8, 8],
@@ -504,7 +504,7 @@ JXG.extend(
         *  </pre><div id="JXG0f35a50e-e99d-11e8-a1ca-cba3b0c2aad4" class="jxgbox" style="width: 300px; height: 300px;"></div>
         * <script type="text/javascript">
         * {
-        * const board = JXG.JSXGraph.initBoard('JXG0f35a50e-e99d-11e8-a1ca-cba3b0c2aad4')
+        * const board = JXG2.JSXGraph.initBoard('JXG0f35a50e-e99d-11e8-a1ca-cba3b0c2aad4')
         * var view = board.create(
         *     'view3d',
         *     [[-6, -3], [8, 8],
@@ -610,9 +610,9 @@ JXG.extend(
          * Move along a path defined by an array of coordinates
          * @param {number[][]} [traversePath] Array of path coordinates (either cartesian or homogenous).
          * @param {number} [time] Number of milliseconds the animation should last.
-         * @param {Object} [options] 'callback' and 'interpolate'.  see {@link JXG.CoordsElement#moveAlong},
+         * @param {Object} [options] 'callback' and 'interpolate'.  see {@link JXG2.CoordsElement#moveAlong},
          * @example
-         *const board = JXG.JSXGraph.initBoard('jxgbox')
+         *const board = JXG2.JSXGraph.initBoard('jxgbox')
          *var view = board.create(
          *    'view3d',
          *    [[-6, -3], [8, 8],
@@ -627,7 +627,7 @@ JXG.extend(
          * </pre><div id="JXGa45032e5-a517-4f1d-868a-abc698d344cf" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         * const board = JXG.JSXGraph.initBoard("JXGa45032e5-a517-4f1d-868a-abc698d344cf")
+         * const board = JXG2.JSXGraph.initBoard("JXGa45032e5-a517-4f1d-868a-abc698d344cf")
          * var view = board.create(
          *     'view3d',
          *     [[-6, -3], [8, 8],
@@ -696,7 +696,7 @@ JXG.extend(
  *
  * @pseudo
  * @name Point3D
- * @augments JXG.Point3D
+ * @augments JXG2.Point3D
  * @constructor
  * @throws {Exception} If the element cannot be constructed with the given parent
  * objects an exception is thrown.
@@ -722,7 +722,7 @@ JXG.extend(
  * </pre><div id="JXGb9ee8f9f-3d2b-4f73-8221-4f82c09933f1" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGb9ee8f9f-3d2b-4f73-8221-4f82c09933f1',
+ *         var board = JXG2.JSXGraph.initBoard('JXGb9ee8f9f-3d2b-4f73-8221-4f82c09933f1',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, pan: {enabled: false}, showcopyright: false, shownavigation: false});
  *         var bound = [-5, 5];
  *         var view = board.create('view3d',
@@ -767,7 +767,7 @@ JXG.extend(
  * </pre><div id="JXG672fe3c7-e6fd-48e0-9a24-22f51f2dfa71" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG672fe3c7-e6fd-48e0-9a24-22f51f2dfa71',
+ *         var board = JXG2.JSXGraph.initBoard('JXG672fe3c7-e6fd-48e0-9a24-22f51f2dfa71',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
  *         var view = board.create(
  *             'view3d',
@@ -800,7 +800,7 @@ JXG.extend(
  * </script><pre>
  *
  */
-JXG.createPoint3D = function (board, parents, attributes) {
+JXG2.createPoint3D = function (board, parents, attributes) {
     //   parents[0]: view
     // followed by
     //   parents[1]: function or array
@@ -852,7 +852,7 @@ JXG.createPoint3D = function (board, parents, attributes) {
     }
 
     attr = Type.copyAttributes(attributes, board.options, 'point3d');
-    el = new JXG.Point3D(view, F, slide, attr);
+    el = new JXG2.Point3D(view, F, slide, attr);
     el.initCoords();
     if (base !== null && transform !== null) {
         el.addTransform(base, transform);
@@ -881,5 +881,5 @@ JXG.createPoint3D = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("point3d", JXG.createPoint3D);
+JXG2.registerElement("point3d", JXG2.createPoint3D);
 

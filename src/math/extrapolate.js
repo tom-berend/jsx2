@@ -27,22 +27,22 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG} from "../jxg.js"
+import {JXG2} from "../jxg.js"
 import {JSXMath} from "./math.js";
 
 /**
  * Functions for extrapolation of sequences. Used for finding limits of sequences which is used for curve plotting.
  * @name Geometry.Extrapolate
- * @exports JXG.JSXMath.Extrapolate as Geometry.Extrapolate
+ * @exports JXG2.JSXMath.Extrapolate as Geometry.Extrapolate
  * @namespace
  */
-if(JXG.JSXMath == undefined)
-    JXG.JSXMath = {}
+if(JXG2.JSXMath == undefined)
+    JXG2.JSXMath = {}
 
-JXG.JSXMath.Extrapolate = {
+JXG2.JSXMath.Extrapolate = {
     upper: 15,
     infty: 1e4,
 
@@ -389,7 +389,7 @@ JXG.JSXMath.Extrapolate = {
      * </pre><div id="JXG5e8c6a7e-eeae-43fb-a669-26b5c9e40cab" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG5e8c6a7e-eeae-43fb-a669-26b5c9e40cab',
+     *         var board = JXG2.JSXGraph.initBoard('JXG5e8c6a7e-eeae-43fb-a669-26b5c9e40cab',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *     var f1 = (x) => Math.log(x),
      *         f2 = (x) => Math.tan(x - Math.PI * 0.5),
@@ -434,4 +434,4 @@ JXG.JSXMath.Extrapolate = {
     }
 };
 
-export default JXG.JSXMath.Extrapolate;
+export default JXG2.JSXMath.Extrapolate;

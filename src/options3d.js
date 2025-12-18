@@ -1,11 +1,11 @@
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
-import { JXG } from "./jxg.js";
+import { JXG2 } from "./jxg.js";
 import Options from "./options.js";
 import { Color } from "./utils/color.js";
 
 
-JXG.extend(Options, {
+JXG2.extend(Options, {
     // infobox: {
     //     // strokeColor: 'black',
     //     // useKatex: false,
@@ -530,7 +530,7 @@ JXG.extend(Options, {
          * </pre><div id="JXGbf32b040-affb-4e03-a05b-abfe953f614d" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXGbf32b040-affb-4e03-a05b-abfe953f614d',
+         *         var board = JXG2.JSXGraph.initBoard('JXGbf32b040-affb-4e03-a05b-abfe953f614d',
          *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false,
          *                pan: {enabled: false}, zoom: {enabled: false}});
          *             var view = board.create(
@@ -1018,7 +1018,7 @@ JXG.extend(Options, {
          * </pre><div id="JXG80d81b13-c604-4841-bdf6-62996440088a" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG80d81b13-c604-4841-bdf6-62996440088a',
+         *         var board = JXG2.JSXGraph.initBoard('JXG80d81b13-c604-4841-bdf6-62996440088a',
          *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
          *             var bound = [-5, 5];
          *             var view = board.create('view3d',
@@ -1044,7 +1044,7 @@ JXG.extend(Options, {
          * </pre><div id="JXGdb7b7c99-631c-41d0-99bf-c0a8d0138218" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXGdb7b7c99-631c-41d0-99bf-c0a8d0138218',
+         *         var board = JXG2.JSXGraph.initBoard('JXGdb7b7c99-631c-41d0-99bf-c0a8d0138218',
          *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
          *             var bound = [-5, 5];
          *             var view = board.create('view3d',
@@ -1146,7 +1146,7 @@ JXG.extend(Options, {
          * </pre><div id="JXG4c381f21-f043-4419-941d-75f384c026d0" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG4c381f21-f043-4419-941d-75f384c026d0',
+         *         var board = JXG2.JSXGraph.initBoard('JXG4c381f21-f043-4419-941d-75f384c026d0',
          *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
          *         var bound = [-4, 6];
          *         var view = board.create('view3d',
@@ -1261,7 +1261,7 @@ JXG.extend(Options, {
          * </pre><div id="JXG8926f733-c42e-466b-853c-74feb795e879" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG8926f733-c42e-466b-853c-74feb795e879',
+         *         var board = JXG2.JSXGraph.initBoard('JXG8926f733-c42e-466b-853c-74feb795e879',
          *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
          *         var bound = [-4, 6];
          *         var view = board.create('view3d',
@@ -1376,7 +1376,7 @@ JXG.extend(Options, {
          * </pre><div id="JXGb67811ea-c1e3-4d1e-b13c-3537b3436f6c" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXGb67811ea-c1e3-4d1e-b13c-3537b3436f6c',
+         *         var board = JXG2.JSXGraph.initBoard('JXGb67811ea-c1e3-4d1e-b13c-3537b3436f6c',
          *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
          *         var bound = [-4, 6];
          *         var view = board.create('view3d',
@@ -1517,4 +1517,4 @@ JXG.extend(Options, {
     }
 });
 
-export default JXG.Options;
+export default JXG2.Options;

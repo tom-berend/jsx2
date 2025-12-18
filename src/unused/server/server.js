@@ -29,27 +29,27 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, escape:true, window:true, ActiveXObject:true, XMLHttpRequest:true*/
+/*global JXG2: true, define: true, escape:true, window:true, ActiveXObject:true, XMLHttpRequest:true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
- * @fileoverview The JXG.Server is a wrapper for a smoother integration of server side calculations. on the
+ * @fileoverview The JXG2.Server is a wrapper for a smoother integration of server side calculations. on the
  * server side a python plugin system is used.
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import Zip from "../utils/zip.js";
 import Base64 from "../utils/base64.js";
 import {Type} from "../utils/type.js";
 
 /**
  * @namespace
- * JXG.Server namespace holding functions to load JXG server modules.
+ * JXG2.Server namespace holding functions to load JXG2 server modules.
  */
-JXG.Server = {
+JXG2.Server = {
     /**
      * This is where all of a module's handlers are accessed from. If you're loading a module named JXGModule which
-     * provides a handler called ImaHandler, then this handler can be called by invoking JXG.Server.modules.JXGModule.ImaHandler().
+     * provides a handler called ImaHandler, then this handler can be called by invoking JXG2.Server.modules.JXGModule.ImaHandler().
      * @namespace
      */
     modules: {},
@@ -65,11 +65,11 @@ JXG.Server = {
      * @param {object} data An object holding a field of type string named message handling the error described in the message string.
      */
     handleError: function (data) {
-        JXG.debug("error occured, server says: " + data.message);
+        JXG2.debug("error occured, server says: " + data.message);
     },
 
     /**
-     * The main method of JXG.Server. Actually makes the calls to the server and parses the feedback.
+     * The main method of JXG2.Server. Actually makes the calls to the server and parses the feedback.
      * @param {String} action Can be 'load' or 'exec'.
      * @param {function} callback Function pointer or anonymous function which takes as it's only argument an
      * object containing the data from the server. The fields of this object depend on the reply of the server
@@ -103,7 +103,7 @@ JXG.Server = {
             this.runningCalls[id].module = data.module;
         }
 
-        fileurl = JXG.serverBase + 'JXGServer.py'
+        fileurl = JXG2.serverBase + 'JXGServer.py'
         passdata =
             "action=" +
             escape(action) +
@@ -159,16 +159,16 @@ JXG.Server = {
                     }
                     // insert subnamespace named after module.
                     inject =
-                        "if(typeof JXG.Server.modules." +
+                        "if(typeof JXG2.Server.modules." +
                         this.runningCalls[id].module +
                         ' == undefined)' +
-                        "JXG.Server.modules." +
+                        "JXG2.Server.modules." +
                         this.runningCalls[id].module +
                         " = {};";
 
                     // insert callback method which fetches and uses the server's data for calculation in JavaScript
                     inject +=
-                        "JXG.Server.modules." +
+                        "JXG2.Server.modules." +
                         this.runningCalls[id].module +
                         "." +
                         tmp.name +
@@ -176,16 +176,16 @@ JXG.Server = {
                         tmp.callback +
                         ";";
 
-                    // insert handler as JXG.Server.modules.<module name>.<handler name>
+                    // insert handler as JXG2.Server.modules.<module name>.<handler name>
                     inject +=
-                        "JXG.Server.modules." +
+                        "JXG2.Server.modules." +
                         this.runningCalls[id].module +
                         "." +
                         tmp.name +
                         " = function (" +
                         tmp.parameters.join(",") +
                         ", __JXGSERVER_CB__, __JXGSERVER_SYNC) {" +
-                        'if(typeof __JXGSERVER_CB__ == undefined) __JXGSERVER_CB__ = JXG.Server.modules.' +
+                        'if(typeof __JXGSERVER_CB__ == undefined) __JXGSERVER_CB__ = JXG2.Server.modules.' +
                         this.runningCalls[id].module +
                         "." +
                         tmp.name +
@@ -197,7 +197,7 @@ JXG.Server = {
                         '", "handler": "' +
                         tmp.name +
                         '" };' +
-                        'JXG.Server.callServer("exec", __JXGSERVER_CB__, __JXGSERVER_PAR__, __JXGSERVER_SYNC);' +
+                        'JXG2.Server.callServer("exec", __JXGSERVER_CB__, __JXGSERVER_PAR__, __JXGSERVER_SYNC);' +
                         "};";
                     new Function(inject)();
                 }
@@ -209,8 +209,8 @@ JXG.Server = {
             }
         };
 
-        // bind cbp callback method to JXG.Server to get access to JXG.Server fields from within cpb
-        this.cb = JXG.bind(this.cbp, this);
+        // bind cbp callback method to JXG2.Server to get access to JXG2.Server fields from within cpb
+        this.cb = JXG2.bind(this.cbp, this);
 
         // We are using our own XMLHttpRequest object in here because of a/sync and POST
         if (window.XMLHttpRequest) {
@@ -256,7 +256,7 @@ JXG.Server = {
     loadModule_cb: function (data) {
         var i;
         for (i = 0; i < data.length; i++) {
-            JXG.debug(data[i].name + ": " + data[i].value);
+            JXG2.debug(data[i].name + ": " + data[i].value);
         }
     },
 
@@ -266,15 +266,15 @@ JXG.Server = {
      * lower and upper case letters without the file ending .py.
      */
     loadModule: function (module) {
-        return JXG.Server.callServer(
+        return JXG2.Server.callServer(
             "load",
-            JXG.Server.loadModule_cb,
+            JXG2.Server.loadModule_cb,
             { module: module },
             true
         );
     }
 };
 
-JXG.Server.load = JXG.Server.loadModule;
+JXG2.Server.load = JXG2.Server.loadModule;
 
-export default JXG.Server;
+export default JXG2.Server;

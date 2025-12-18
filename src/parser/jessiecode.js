@@ -25,7 +25,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, window: true, console: true, self: true, document: true, parser: true*/
+/*global JXG2: true, define: true, window: true, console: true, self: true, document: true, parser: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -36,7 +36,7 @@
  * JSXGraph to display interactive math graphics.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import Text from "../base/text.js";
 import {JSXMath} from "../math/math.js";
@@ -67,19 +67,19 @@ var priv = {
         'math': JSXMath,
         'math/geometry': Geometry,
         'math/statistics': Statistics,
-        'math/numerics': JXG.JSXMath.Numerics
+        'math/numerics': JXG2.JSXMath.Numerics
     }
 };
 
 /**
  * A JessieCode object provides an interface to the parser and stores all variables and objects used within a JessieCode script.
  * The optional argument <tt>code</tt> is interpreted after initializing. To evaluate more code after initializing a JessieCode instance
- * please use {@link JXG.JessieCode#parse}. For code snippets like single expressions use {@link JXG.JessieCode#snippet}.
+ * please use {@link JXG2.JessieCode#parse}. For code snippets like single expressions use {@link JXG2.JessieCode#snippet}.
  * @constructor
  * @param {String} [code] Code to parse.
  * @param {Boolean} [geonext=false] Geonext compatibility mode.
  */
-JXG.JessieCode = function (code, geonext) {
+JXG2.JessieCode = function (code, geonext) {
     // Control structures
 
     /**
@@ -124,7 +124,7 @@ JXG.JessieCode = function (code, geonext) {
     this.propstack = [{}];
 
     /**
-     * The current scope of the object literal stack {@link JXG.JessieCode#propstack}.
+     * The current scope of the object literal stack {@link JXG2.JessieCode#propstack}.
      * @type Number
      * @private
      */
@@ -139,7 +139,7 @@ JXG.JessieCode = function (code, geonext) {
     this.lhs = [];
 
     /**
-     * lhs flag, used by JXG.JessieCode#replaceNames
+     * lhs flag, used by JXG2.JessieCode#replaceNames
      * @type Boolean
      * @default false
      */
@@ -172,7 +172,7 @@ JXG.JessieCode = function (code, geonext) {
 
     /**
      * The board which currently is used to create and look up elements.
-     * @type JXG.Board
+     * @type JXG2.Board
      */
     this.board = null;
 
@@ -193,13 +193,13 @@ JXG.JessieCode = function (code, geonext) {
     this.line = 1;
     this.col = 1;
 
-    if (JXG.CA) {
+    if (JXG2.CA) {
         // Old simplifier
-        this.CA = new JXG.CA(this.node, this.createNode, this);
+        this.CA = new JXG2.CA(this.node, this.createNode, this);
     }
-    if (JXG.CAS) {
+    if (JXG2.CAS) {
         // New simplifier
-        this.CAS = new JXG.CAS(this.node, this.createNode, this);
+        this.CAS = new JXG2.CAS(this.node, this.createNode, this);
     }
 
     this.code = '';
@@ -209,7 +209,7 @@ JXG.JessieCode = function (code, geonext) {
     }
 };
 
-JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
+JXG2.extend(JXG2.JessieCode.prototype, /** @lends JXG2.JessieCode.prototype */ {
     /**
      * Create a new parse tree node.
      * @param {String} type Type of node, e.g. node_op, node_var, or node_const
@@ -284,9 +284,9 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
     },
 
     /**
-     * Looks up an {@link JXG.GeometryElement} by its id.
+     * Looks up an {@link JXG2.GeometryElement} by its id.
      * @param {String} id
-     * @returns {JXG.GeometryElement}
+     * @returns {JXG2.GeometryElement}
      */
     getElementById: function (id) {
         return this.board.objects[id];
@@ -351,8 +351,8 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
      * Assigns a value to a variable in the current scope.
      * @param {String} vname Variable name
      * @param value Anything
-     * @see JXG.JessieCode#sstack
-     * @see JXG.JessieCode#scope
+     * @see JXG2.JessieCode#sstack
+     * @see JXG2.JessieCode#scope
      */
     letvar: function (vname, value) {
         if (this.builtIn[vname]) {
@@ -407,7 +407,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
      */
     isCreator: function (vname) {
         // check for an element with this name
-        return !!JXG.elements[vname];
+        return !!JXG2.elements[vname];
     },
 
     /**
@@ -436,7 +436,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
      * the <tt>vname</tt> in Math or the element list.
      * @param {Boolean} [isFunctionName=false] Lookup function of type builtIn, Math.*, creator.
      *
-     * @see JXG.JessieCode#resolveType
+     * @see JXG2.JessieCode#resolveType
      */
     getvar: function (vname, local, isFunctionName) {
         var s;
@@ -551,7 +551,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
             }
             if (Type.exists(this.board.mathLibJXG)) {
                 // Handle builtin case: factorial(x) -> Geometry.factorial
-                re = new RegExp('^JXG\.Math\.');
+                re = new RegExp('^JXG2\.Math\.');
                 if (re.exec(r) !== null) {
                     return r.replace(re, '$jc$.board.mathLibJXG.');
                 }
@@ -635,7 +635,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
      * function. Does a simple type inspection.
      * @param {Object} node
      * @returns {function}
-     * @see JXG.JessieCode#resolveType
+     * @see JXG2.JessieCode#resolveType
      */
     defineFunction: function (node) {
         var fun, i, that = this,
@@ -739,7 +739,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * Sets the property <tt>what</tt> of <tt>o</tt> to <tt>value</tt>
-     * @param {JXG.Point|JXG.Text} o
+     * @param {JXG2.Point|JXG2.Text} o
      * @param {String} what
      * @param value
      */
@@ -838,7 +838,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
             for (i = 0; i < ccode.length; i++) {
                 if (geonext) {
-                    ccode[i] = JXG.GeonextParser.geonext2JS(ccode[i], this.board);
+                    ccode[i] = JXG2.GeonextParser.geonext2JS(ccode[i], this.board);
                 }
                 cleaned.push(ccode[i]);
             }
@@ -982,7 +982,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * Traverses through the given subtree and changes all values of nodes with the replaced flag set by
-     * {@link JXG.JessieCode#replaceNames} to the name of the element (if not empty).
+     * {@link JXG2.JessieCode#replaceNames} to the name of the element (if not empty).
      * @param {Object} node
      */
     replaceIDs: function (node) {
@@ -1219,8 +1219,8 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
      * @param {String} vname
      * @param {Object} node
      * @returns 'any' or 'function'
-     * @see JXG.JessieCode#execute
-     * @see JXG.JessieCode#getvar
+     * @see JXG2.JessieCode#execute
+     * @see JXG2.JessieCode#getvar
      *
      * @example
      *  var p = board.create('point', [2, 0], {name: 'X'});
@@ -2017,7 +2017,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * This is used as the global getName() function.
-     * @param {JXG.GeometryElement} obj
+     * @param {JXG2.GeometryElement} obj
      * @param {Boolean} useId
      * @returns {String}
      */
@@ -2038,7 +2038,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * This is used as the global X() function.
-     * @param {JXG.Point|JXG.Text} e
+     * @param {JXG2.Point|JXG2.Text} e
      * @returns {Number}
      */
     X: function (e) {
@@ -2047,7 +2047,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * This is used as the global Y() function.
-     * @param {JXG.Point|JXG.Text} e
+     * @param {JXG2.Point|JXG2.Text} e
      * @returns {Number}
      */
     Y: function (e) {
@@ -2065,7 +2065,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * This is used as the global L() function.
-     * @param {JXG.Line} e
+     * @param {JXG2.Line} e
      * @returns {Number}
      */
     L: function (e) {
@@ -2074,7 +2074,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * This is used as the global area() function.
-     * @param {JXG.Circle|JXG.Polygon} obj
+     * @param {JXG2.Circle|JXG2.Polygon} obj
      * @returns {Number}
      */
     area: function (obj) {
@@ -2087,7 +2087,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * This is used as the global perimeter() function.
-     * @param {JXG.Circle|JXG.Polygon} obj
+     * @param {JXG2.Circle|JXG2.Polygon} obj
      * @returns {Number}
      */
     perimeter: function (obj) {
@@ -2100,8 +2100,8 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * This is used as the global dist() function.
-     * @param {JXG.Point} p1
-     * @param {JXG.Point} p2
+     * @param {JXG2.Point} p1
+     * @param {JXG2.Point} p2
      * @returns {Number}
      */
     dist: function (p1, p2) {
@@ -2114,7 +2114,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * This is used as the global radius() function.
-     * @param {JXG.Circle|Sector} obj
+     * @param {JXG2.Circle|Sector} obj
      * @returns {Number}
      */
     radius: function (obj) {
@@ -2127,7 +2127,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * This is used as the global slope() function.
-     * @param {JXG.Line} obj
+     * @param {JXG2.Line} obj
      * @returns {Number}
      */
     slope: function (obj) {
@@ -2140,8 +2140,8 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * + operator implementation
-     * @param {Number|Array|JXG.Point} a
-     * @param {Number|Array|JXG.Point} b
+     * @param {Number|Array|JXG2.Point} a
+     * @param {Number|Array|JXG2.Point} b
      * @returns {Number|Array}
      */
     add: function (a, b) {
@@ -2172,8 +2172,8 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * - operator implementation
-     * @param {Number|Array|JXG.Point} a
-     * @param {Number|Array|JXG.Point} b
+     * @param {Number|Array|JXG2.Point} a
+     * @param {Number|Array|JXG2.Point} b
      * @returns {Number|Array}
      */
     sub: function (a, b) {
@@ -2202,7 +2202,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * unary - operator implementation
-     * @param {Number|Array|JXG.Point} a
+     * @param {Number|Array|JXG2.Point} a
      * @returns {Number|Array}
      */
     neg: function (a) {
@@ -2397,20 +2397,20 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
     /**
      * Implementation of the delete() builtin function
-     * @param {JXG.GeometryElement} element
+     * @param {JXG2.GeometryElement} element
      */
     del: function (element) {
-        if (typeof element === 'object' && JXG.exists(element.type) && JXG.exists(element.elementClass)) {
+        if (typeof element === 'object' && JXG2.exists(element.type) && JXG2.exists(element.elementClass)) {
             this.board.removeObject(element);
         }
     },
 
     /**
-     * Implementation of the eval() builtin function. Calls JXG.evaluate().
+     * Implementation of the eval() builtin function. Calls JXG2.evaluate().
      * @param {String|Number|Function} v
      */
     eval: function (v) {
-        return JXG.evaluate(v);
+        return JXG2.evaluate(v);
     },
 
     /**
@@ -2423,9 +2423,9 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
 
         if (typeof board === 'string') {
             // search all the boards for the one with the appropriate container div
-            for (b in JXG.boards) {
-                if (JXG.boards.hasOwnProperty(b) && JXG.boards[b].container === board) {
-                    ref = JXG.boards[b];
+            for (b in JXG2.boards) {
+                if (JXG2.boards.hasOwnProperty(b) && JXG2.boards[b].container === board) {
+                    ref = JXG2.boards[b];
                     found = true;
                     break;
                 }
@@ -2610,7 +2610,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
         builtIn.pow.src = 'Geometry.pow';
         builtIn.rad.src = 'Geometry.rad';
         builtIn.ratpow.src = 'Geometry.ratpow';
-        builtIn.trunc.src = 'JXG.trunc';
+        builtIn.trunc.src = 'JXG2.trunc';
         builtIn.sinh.src = 'Geometry.sinh';
         builtIn.slope.src = '$jc$.slope';
         builtIn.Slope.src = '$jc$.slope';
@@ -2632,7 +2632,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
         }
         builtIn.$log.src = '$jc$.log';
 
-        builtIn = JXG.merge(builtIn, that._addedBuiltIn);
+        builtIn = JXG2.merge(builtIn, that._addedBuiltIn);
 
         return builtIn;
     },
@@ -2654,7 +2654,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
         this._addedBuiltIn[name] = func;
         this._addedBuiltIn[name].src = '$jc$.' + name;
 
-        JXG.JessieCode.prototype[name] = func;
+        JXG2.JessieCode.prototype[name] = func;
     },
 
     /**
@@ -2690,7 +2690,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
                     numParams: that.length,
                     origin: origin,
                 };
-            } else if (JXG.isNumber(that)) {
+            } else if (JXG2.isNumber(that)) {
                 return {
                     name: name,
                     type: 'constant',
@@ -2713,16 +2713,16 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
         while (i < jc.length || j < ma.length) {
             if (jc[i] === ma[j]) {
                 p = pack(ma[j], 'Math');
-                if (JXG.exists(p)) merge.push(p);
+                if (JXG2.exists(p)) merge.push(p);
                 i++;
                 j++;
-            } else if (!JXG.exists(ma[j]) || jc[i].toLowerCase().localeCompare(ma[j].toLowerCase()) < 0) {
+            } else if (!JXG2.exists(ma[j]) || jc[i].toLowerCase().localeCompare(ma[j].toLowerCase()) < 0) {
                 p = pack(jc[i], 'jc');
-                if (JXG.exists(p)) merge.push(p);
+                if (JXG2.exists(p)) merge.push(p);
                 i++;
             } else {
                 p = pack(ma[j], 'Math');
-                if (JXG.exists(p)) merge.push(p);
+                if (JXG2.exists(p)) merge.push(p);
                 j++;
             }
         }
@@ -2781,7 +2781,7 @@ JXG.extend(JXG.JessieCode.prototype, /** @lends JXG.JessieCode.prototype */ {
     },
 
     /**
-     * Output a warning message using {@link JXG#debug} and precedes the message with "Warning: ".
+     * Output a warning message using {@link JXG2#debug} and precedes the message with "Warning: ".
      * @param {String} msg
      */
     _warn: function (msg) {
@@ -3746,4 +3746,4 @@ var parser = (function () {
 // Work around an issue with browsers that don't support Object.getPrototypeOf()
 parser.yy.parseError = parser.parseError;
 
-export default JXG.JessieCode;
+export default JXG2.JessieCode;

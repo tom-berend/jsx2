@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 import {JSXMath} from "./math.js";

@@ -27,11 +27,11 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 /*eslint no-loss-of-precision: off */
 
-import {JXG} from "../jxg"
+import {JXG2} from "../jxg"
 import {JSXMath} from "./math.js";
 import {Type} from "../utils/type.js";
 
@@ -48,11 +48,11 @@ import {Type} from "../utils/type.js";
  * @exports Mat.ProbFuncs as Geometry.ProbFuncs
  * @namespace
  */
-if(JXG.JSXMath === undefined)
-    JXG.JSXMath= {}
+if(JXG2.JSXMath === undefined)
+    JXG2.JSXMath= {}
 
 
-JXG.JSXMath.ProbFuncs = {
+JXG2.JSXMath.ProbFuncs = {
     MAXNUM: 1.701411834604692317316873e38, // 2**127
     SQRTH: 7.07106781186547524401e-1, // sqrt(2)/2
     SQRT2: 1.4142135623730950488, // sqrt(2)
@@ -622,4 +622,4 @@ JXG.JSXMath.ProbFuncs = {
     }
 };
 
-export default JXG.JSXMath.ProbFuncs;
+export default JXG2.JSXMath.ProbFuncs;

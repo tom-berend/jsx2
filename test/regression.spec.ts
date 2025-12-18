@@ -22,7 +22,7 @@ describe('type suite description', () => {
 //             boundingBox: [-10, 10, 10, -10],
 //             // axis: true
 //         });
-//         let oldBoard = (window as any).JXG.JSXGraph.initBoard(
+//         let oldBoard = (window as any).JXG2.JSXGraph.initBoard(
 //             'box2', {
 //             boundingBox: [-10, 10, 10, -10],
 //             // axis: true

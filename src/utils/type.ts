@@ -30,7 +30,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, html_sanitize: true*/
+/*global JXG2: true, define: true, html_sanitize: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -42,7 +42,7 @@
 
 import { LooseObject } from '../interfaces.js'
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
 
@@ -65,7 +65,7 @@ export class Type {
 
     /**
      * Checks if the given string is an id within the given board.
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {String} s
      * @returns {Boolean}
      */
@@ -75,7 +75,7 @@ export class Type {
 
     /**
      * Checks if the given string is a name within the given board.
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {String} s
      * @returns {Boolean}
      */
@@ -85,7 +85,7 @@ export class Type {
 
     /**
      * Checks if the given string is a group id within the given board.
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {String} s
      * @returns {Boolean}
      */
@@ -182,7 +182,7 @@ export class Type {
     /**
      * Checks if a given variable is a reference of a JSXGraph Point element.
      * @param v A variable of any type.
-     * @returns {Boolean} True, if v is of type JXG.Point.
+     * @returns {Boolean} True, if v is of type JXG2.Point.
      */
     static isPoint(v) {
         if (v !== null && typeof v === "object" && this.exists(v.elementClass)) {
@@ -195,7 +195,7 @@ export class Type {
     /**
      * Checks if a given variable is a reference of a JSXGraph Point3D element.
      * @param v A variable of any type.
-     * @returns {Boolean} True, if v is of type JXG.Point3D.
+     * @returns {Boolean} True, if v is of type JXG2.Point3D.
      */
     static isPoint3D(v) {
         if (v !== null && typeof v === "object" && this.exists(v.type)) {
@@ -208,9 +208,9 @@ export class Type {
     /**
      * Checks if a given variable is a reference of a JSXGraph Point element or an array of length at least two or
      * a function returning an array of length two or three.
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param v A variable of any type.
-     * @returns {Boolean} True, if v is of type JXG.Point.
+     * @returns {Boolean} True, if v is of type JXG2.Point.
      */
     static isPointType(board, v) {
         var val, p;
@@ -231,9 +231,9 @@ export class Type {
     /**
      * Checks if a given variable is a reference of a JSXGraph Point3D element or an array of length three
      * or a function returning an array of length three.
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param v A variable of any type.
-     * @returns {Boolean} True, if v is of type JXG.Point3D or an array of length at least 3, or a function returning
+     * @returns {Boolean} True, if v is of type JXG2.Point3D or an array of length at least 3, or a function returning
      * such an array.
      */
     static isPointType3D(board, v) {
@@ -256,7 +256,7 @@ export class Type {
      * Checks if a given variable is a reference of a JSXGraph transformation element or an array
      * of JSXGraph transformation elements.
      * @param v A variable of any type.
-     * @returns {Boolean} True, if v is of type JXG.Transformation.
+     * @returns {Boolean} True, if v is of type JXG2.Transformation.
      */
     static isTransformationOrArray(v) {
         if (v !== null) {
@@ -387,7 +387,7 @@ export class Type {
 
     /**
      * Convert a String, a number or a function into a function. This method is used in Transformation.js
-     * @param {JXG.Board} board Reference to a JSXGraph board. It is required to resolve dependencies given
+     * @param {JXG2.Board} board Reference to a JSXGraph board. It is required to resolve dependencies given
      * by a JessieCode string, thus it must be a valid reference only in case one of the param
      * values is of type string.
      * @param {Array} param An array containing strings, numbers, or functions.
@@ -417,7 +417,7 @@ export class Type {
     /**
      * Convert a String, number or function into a function.
      * @param {String|Number|Function} term A variable of type string, function or number.
-     * @param {JXG.Board} board Reference to a JSXGraph board. It is required to resolve dependencies given
+     * @param {JXG2.Board} board Reference to a JSXGraph board. It is required to resolve dependencies given
      * by a JessieCode/GEONE<sub>X</sub>T string, thus it must be a valid reference only in case one of the param
      * values is of type string.
      * @param {String} variableName Only required if function is supplied as JessieCode string or evalGeonext is set to true.
@@ -433,10 +433,10 @@ export class Type {
         // if ((!this.exists(evalGeonext) || evalGeonext) && this.isString(term)) {
         if (this.isString(term)) {
             // Convert GEONExT syntax into  JavaScript syntax
-            //newTerm = JXG.GeonextParser.geonext2JS(term, board);
+            //newTerm = JXG2.GeonextParser.geonext2JS(term, board);
             //return new Function(variableName,'return ' + newTerm + ';');
-            //term = JXG.GeonextParser.replaceNameById(term, board);
-            //term = JXG.GeonextParser.geonext2JS(term, board);
+            //term = JXG2.GeonextParser.replaceNameById(term, board);
+            //term = JXG2.GeonextParser.geonext2JS(term, board);
 
             f = board.jc.snippet(term, true, variableName, false);
         } else if (this.isFunction(term)) {
@@ -465,21 +465,21 @@ export class Type {
      *  function returning coordinate arrays
      *  free points with these coordinates are created.
      *
-     * @param {JXG.Board} board Board object
+     * @param {JXG2.Board} board Board object
      * @param {Array} parents Array containing parent elements for a new object. This array may contain
      *    <ul>
-     *      <li> {@link JXG.Point} objects
-     *      <li> {@link JXG.GeometryElement#name} of {@link JXG.Point} objects
-     *      <li> {@link JXG.GeometryElement#id} of {@link JXG.Point} objects
+     *      <li> {@link JXG2.Point} objects
+     *      <li> {@link JXG2.GeometryElement#name} of {@link JXG2.Point} objects
+     *      <li> {@link JXG2.GeometryElement#id} of {@link JXG2.Point} objects
      *      <li> Coordinates of points given as array of numbers of length two or three, e.g. [2, 3].
      *      <li> Coordinates of points given as array of functions of length two or three. Each function returns one coordinate, e.g.
      *           [function(){ return 2; }, function(){ return 3; }]
      *      <li> Function returning coordinates, e.g. function() { return [2, 3]; }
      *    </ul>
      *  In the last three cases a new point will be created.
-     * @param {String} attrClass Main attribute class of newly created points, see {@link JXG#copyAttributes}
+     * @param {String} attrClass Main attribute class of newly created points, see {@link JXG2#copyAttributes}
      * @param {Array} attrArray List of subtype attributes for the newly created points. The list of subtypes is mapped to the list of new points.
-     * @returns {Array} List of newly created {@link JXG.Point} elements or false if not all returned elements are points.
+     * @returns {Array} List of newly created {@link JXG2.Point} elements or false if not all returned elements are points.
      */
     static providePoints(board, parents, attributes, attrClass?, attrArray?) {
         var i,
@@ -537,21 +537,21 @@ export class Type {
      *  function returning coordinate arrays
      *  free points with these coordinates are created.
      *
-     * @param {JXG.View3D} view View3D object
+     * @param {JXG2.View3D} view View3D object
      * @param {Array} parents Array containing parent elements for a new object. This array may contain
      *    <ul>
-     *      <li> {@link JXG.Point3D} objects
-     *      <li> {@link JXG.GeometryElement#name} of {@link JXG.Point3D} objects
-     *      <li> {@link JXG.GeometryElement#id} of {@link JXG.Point3D} objects
+     *      <li> {@link JXG2.Point3D} objects
+     *      <li> {@link JXG2.GeometryElement#name} of {@link JXG2.Point3D} objects
+     *      <li> {@link JXG2.GeometryElement#id} of {@link JXG2.Point3D} objects
      *      <li> Coordinates of 3D points given as array of numbers of length three, e.g. [2, 3, 1].
      *      <li> Coordinates of 3D points given as array of functions of length three. Each function returns one coordinate, e.g.
      *           [function(){ return 2; }, function(){ return 3; }, function(){ return 1; }]
      *      <li> Function returning coordinates, e.g. function() { return [2, 3, 1]; }
      *    </ul>
      *  In the last three cases a new 3D point will be created.
-     * @param {String} attrClass Main attribute class of newly created 3D points, see {@link JXG#copyAttributes}
+     * @param {String} attrClass Main attribute class of newly created 3D points, see {@link JXG2#copyAttributes}
      * @param {Array} attrArray List of subtype attributes for the newly created 3D points. The list of subtypes is mapped to the list of new 3D points.
-     * @returns {Array} List of newly created {@link JXG.Point3D} elements or false if not all returned elements are 3D points.
+     * @returns {Array} List of newly created {@link JXG2.Point3D} elements or false if not all returned elements are 3D points.
      */
     static providePoints3D(view, parents, attributes, attrClass, attrArray?) {
         var i,
@@ -731,7 +731,7 @@ export class Type {
                 continue;
             }
             for (j = i + 1; j < arr.length; j++) {
-                if (isArray && JXG.cmpArrays(arr[i], arr[j])) {
+                if (isArray && JXG2.cmpArrays(arr[i], arr[j])) {
                     arr[i] = [];
                 } else if (!isArray && arr[i] === arr[j]) {
                     arr[i] = "";
@@ -785,11 +785,11 @@ export class Type {
      * @returns {Boolean}
      */
     static isInArray(arr, val) {
-        return JXG.indexOf(arr, val) > -1;
+        return JXG2.indexOf(arr, val) > -1;
     }
 
     /**
-     * Converts an array of {@link JXG.Coords} objects into a coordinate matrix.
+     * Converts an array of {@link JXG2.Coords} objects into a coordinate matrix.
      * @param {Array} coords
      * @param {Boolean} split
      * @returns {Array}
@@ -872,7 +872,7 @@ export class Type {
      * @returns {Number}
      */
     static trunc(n, p) {
-        p = JXG.def(p, 0);
+        p = JXG2.def(p, 0);
 
         return this.toFixed(n, p);
     }
@@ -913,7 +913,7 @@ export class Type {
     /**
      * Round a number to given number of decimal digits.
      *
-     * Example: JXG._toFixed(3.14159, -2) gives 3.14
+     * Example: JXG2._toFixed(3.14159, -2) gives 3.14
      * @param  {Number} value Number to be rounded
      * @param  {Number} exp   Number of decimal digits given as negative exponent
      * @return {Number}       Rounded number.
@@ -927,7 +927,7 @@ export class Type {
     /**
      * "Floor" a number to given number of decimal digits.
      *
-     * Example: JXG._toFixed(3.14159, -2) gives 3.14
+     * Example: JXG2._toFixed(3.14159, -2) gives 3.14
      * @param  {Number} value Number to be floored
      * @param  {Number} exp   Number of decimal digits given as negative exponent
      * @return {Number}       "Floored" number.
@@ -941,7 +941,7 @@ export class Type {
     /**
      * "Ceil" a number to given number of decimal digits.
      *
-     * Example: JXG._toFixed(3.14159, -2) gives 3.15
+     * Example: JXG2._toFixed(3.14159, -2) gives 3.15
      * @param  {Number} value Number to be ceiled
      * @param  {Number} exp   Number of decimal digits given as negative exponent
      * @return {Number}       "Ceiled" number.
@@ -958,7 +958,7 @@ export class Type {
      * returns "0.00" for toFixed(-0.000001, 2) instead of "-0.00" which
      * is returned by JavaScript's toFixed()
      *
-     * @memberOf JXG
+     * @memberOf JXG2
      * @param  {Number} num    Number tp be rounded
      * @param  {Number} digits Decimal digits
      * @return {String}        Rounded number is returned as string
@@ -969,7 +969,7 @@ export class Type {
 
     /**
      * Truncate a number <tt>val</tt> automatically.
-     * @memberOf JXG
+     * @memberOf JXG2
      * @param val
      * @returns {Number}
      */
@@ -1130,18 +1130,18 @@ export class Type {
     }
 
     /**
-     * Recursively merges obj2 into obj1 in-place. Contrary to {@link JXG#deepCopy} this won't create a new object
+     * Recursively merges obj2 into obj1 in-place. Contrary to {@link JXG2#deepCopy} this won't create a new object
      * but instead will overwrite obj1.
      * <p>
-     * In contrast to method JXG.mergeAttr, merge recurses into any kind of object, e.g. DOM object and JSXGraph objects.
+     * In contrast to method JXG2.mergeAttr, merge recurses into any kind of object, e.g. DOM object and JSXGraph objects.
      * So, please be careful.
      * @param {Object} obj1
      * @param {Object} obj2
      * @returns {Object}
-     * @see JXG.mergeAttr
+     * @see JXG2.mergeAttr
      *
      * @example
-     * JXG.Options = JXG.merge(JXG.Options, {
+     * JXG2.Options = JXG2.merge(JXG2.Options, {
      *     board: {
      *         showNavigation: false,
      *         showInfobox: true
@@ -1160,9 +1160,9 @@ export class Type {
      * </pre><div id="JXGc5bf0f2a-bd5a-4612-97c2-09f17b1bbc6b" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXGc5bf0f2a-bd5a-4612-97c2-09f17b1bbc6b',
+     *         var board = JXG2.JSXGraph.initBoard('JXGc5bf0f2a-bd5a-4612-97c2-09f17b1bbc6b',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
-     *     JXG.Options = JXG.merge(JXG.Options, {
+     *     JXG2.Options = JXG2.merge(JXG2.Options, {
      *         board: {
      *             showNavigation: false,
      *             showInfobox: true
@@ -1230,7 +1230,7 @@ export class Type {
      * are merged into one object. The properties of the second object have priority.
      * @param {Object} obj This object will be copied.
      * @param {Object} obj2 This object will merged into the newly created object
-     * @param {Boolean} [toLower=false] If true the keys are convert to lower case. This is needed for visProp, see JXG#copyAttributes
+     * @param {Boolean} [toLower=false] If true the keys are convert to lower case. This is needed for visProp, see JXG2#copyAttributes
      * @returns {Object} copy of obj or merge of obj and obj2.
      */
     static deepCopy(obj, obj2 = {}, toLower = false) {
@@ -1302,7 +1302,7 @@ export class Type {
     /**
      * In-place (deep) merging of attributes. Allows attributes like `{shadow: {enabled: true...}}`
      * <p>
-     * In contrast to method JXG.merge, mergeAttr does not recurse into DOM objects and JSXGraph objects. Instead
+     * In contrast to method JXG2.merge, mergeAttr does not recurse into DOM objects and JSXGraph objects. Instead
      * handles (pointers) to these objects are used.
      *
      * @param {Object} attr Object with attributes - usually containing default options - that will be changed in-place.
@@ -1310,7 +1310,7 @@ export class Type {
      * @param {Boolean} [toLower=true] If true the keys are converted to lower case.
      * @param {Boolean} [ignoreUndefinedSpecials=false] If true the values in special that are undefined are not used.
      *
-     * @see JXG.merge
+     * @see JXG2.merge
      *
      */
     static mergeAttr(attr, special, toLower = true, ignoreUndefinedSpecials = false) {
@@ -1368,7 +1368,7 @@ export class Type {
      * @param {Object} obj
      * @returns Object
      * @example
-     * var attr = JXG.keysToLowerCase({radiusPoint: {visible: false}});
+     * var attr = JXG2.keysToLowerCase({radiusPoint: {visible: false}});
      *
      * // return {radiuspoint: {visible: false}}
      */
@@ -1525,9 +1525,9 @@ export class Type {
 
     /**
      * Create a stripped down version of a JSXGraph element for cloning to the background.
-     * Used in {JXG.GeometryElement#cloneToBackground} for creating traces.
+     * Used in {JXG2.GeometryElement#cloneToBackground} for creating traces.
      *
-     * @param {JXG.GeometryElement} el Element to be cloned
+     * @param {JXG2.GeometryElement} el Element to be cloned
      * @returns Object Cloned element
      * @private
      */
@@ -1586,7 +1586,7 @@ export class Type {
     static toJSON(obj, noquote) {
         var list, prop, i, s, val;
 
-        noquote = JXG.def(noquote, false);
+        noquote = JXG2.def(noquote, false);
 
         // check for native JSON support:
         if (JSON !== undefined && JSON.stringify && !noquote) {
@@ -1606,7 +1606,7 @@ export class Type {
 
                     if (this.isArray(obj)) {
                         for (i = 0; i < obj.length; i++) {
-                            list.push(JXG.toJSON(obj[i], noquote));
+                            list.push(JXG2.toJSON(obj[i], noquote));
                         }
 
                         return "[" + list.join(",") + "]";
@@ -1615,7 +1615,7 @@ export class Type {
                     for (prop in obj) {
                         if (obj.hasOwnProperty(prop)) {
                             try {
-                                val = JXG.toJSON(obj[prop], noquote);
+                                val = JXG2.toJSON(obj[prop], noquote);
                             } catch (e2) {
                                 val = "";
                             }
@@ -1643,7 +1643,7 @@ export class Type {
 
     /**
      * Resets visPropOld.
-     * @param {JXG.GeometryElement} el
+     * @param {JXG2.GeometryElement} el
      * @returns {GeometryElement}
      */
     static clearVisPropOld(el) {
@@ -1934,12 +1934,12 @@ export class Type {
      * @deprecated
      *
      * @example
-     * console.log( JXG.stack2jsxgraph("%e**x") );
+     * console.log( JXG2.stack2jsxgraph("%e**x") );
      * // Output:
      * //    "EULER**x"
      *
      * @example
-     * console.log( JXG.stack2jsxgraph("[%pi*(x**2 - 1), %phi*(x - 1), %gamma*(x+1)]") );
+     * console.log( JXG2.stack2jsxgraph("[%pi*(x**2 - 1), %phi*(x - 1), %gamma*(x+1)]") );
      * // Output:
      * //    [ "PI*(x**2 - 1)", "1.618033988749895*(x - 1)", "0.5772156649015329*(x+1)" ]
      *

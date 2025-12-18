@@ -29,17 +29,17 @@
  and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, DOMParser: true, ActiveXObject: true*/
+/*global JXG2: true, define: true, DOMParser: true, ActiveXObject: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {Type} from "./type.js";
 
 /**
  * Holds browser independent xml parsing routines. Won't work in environments other than browsers.
  * @namespace
  */
-JXG.XML = {
+JXG2.XML = {
     /**
      * Cleans out unneccessary whitespaces in a chunk of xml.
      * @param {Object} el
@@ -93,4 +93,4 @@ JXG.XML = {
     }
 };
 
-export default JXG.XML;
+export default JXG2.XML;

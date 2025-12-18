@@ -29,14 +29,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview This file contains code for transformations of geometrical objects.
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {JSXMath} from "../math/math.js";
 import {Type} from "../utils/type.js";
@@ -44,10 +44,10 @@ import {Type} from "../utils/type.js";
 /**
  * A transformation consists of a 3x3 matrix, i.e. it is a projective transformation.
  * @class Creates a new transformation object. Do not use this constructor to create a transformation.
- * Use {@link JXG.Board#create} with
+ * Use {@link JXG2.Board#create} with
  * type {@link Transformation} instead.
  * @constructor
- * @param {JXG.Board} board The board the transformation is part of.
+ * @param {JXG2.Board} board The board the transformation is part of.
  * @param {String} type Can be
  * <ul><li> 'translate'
  * <li> 'scale'
@@ -99,7 +99,7 @@ import {Type} from "../utils/type.js";
  * </pre>
  *
  */
-JXG.Transformation = function (board, type, params, is3D) {
+JXG2.Transformation = function (board, type, params, is3D) {
     this.elementClass = OBJECT_CLASS.OTHER;
     this.type = OBJECT_TYPE.TRANSFORMATION;
 
@@ -138,14 +138,14 @@ JXG.Transformation = function (board, type, params, is3D) {
     };
 };
 
-JXG.Transformation.prototype = {};
+JXG2.Transformation.prototype = {};
 
-JXG.extend(
-    JXG.Transformation.prototype,
-    /** @lends JXG.Transformation.prototype */ {
+JXG2.extend(
+    JXG2.Transformation.prototype,
+    /** @lends JXG2.Transformation.prototype */ {
         /**
          * Updates the numerical data for the transformation, i.e. the entry of the subobject matrix.
-         * @returns {JXG.Transform} returns pointer to itself
+         * @returns {JXG2.Transform} returns pointer to itself
          */
         update: function () {
             return this;
@@ -153,7 +153,7 @@ JXG.extend(
 
         /**
          * Set the transformation matrix for different types of standard transforms.
-         * @param {JXG.Board} board
+         * @param {JXG2.Board} board
          * @param {String} type   Transformation type, possible values are
          *                        'translate', 'scale', 'reflect', 'rotate',
          *                        'shear', 'generic'.
@@ -404,7 +404,7 @@ JXG.extend(
 
         /**
          * Set the 3D transformation matrix for different types of standard transforms.
-         * @param {JXG.Board} board
+         * @param {JXG2.Board} board
          * @param {String} type   Transformation type, possible values are
          *                        'translate', 'scale', 'rotate',
          *                        'rotateX', 'rotateY', 'rotateZ',
@@ -592,7 +592,7 @@ JXG.extend(
          * Restricted to 2D transformations.
          *
          * @private
-         * @param {JXG.GeometryElement} p element which is transformed
+         * @param {JXG2.GeometryElement} p element which is transformed
          * @param {String} 'self' Apply the transformation to the initialCoords instead of the coords if this is set.
          * @returns {Array}
          */
@@ -615,7 +615,7 @@ JXG.extend(
          * Applies a transformation once to a point element, that are: {@link Point}, {@link Text}, {@link Image}, {@link Point3D} or to an array of such elements.
          * If it is a free 2D point, then it can be dragged around later
          * and will overwrite the transformed coordinates.
-         * @param {JXG.Point|Array} p
+         * @param {JXG2.Point|Array} p
          */
         applyOnce: function (p) {
             var c, len, i;
@@ -644,9 +644,9 @@ JXG.extend(
          * The transformation is simply appended to the existing list of transformations of the object.
          * It is not fused (melt) with an existing transformation.
          *
-         * @param  {Array|JXG.Object} el JXG.Object or array of JXG.Object to
+         * @param  {Array|JXG2.Object} el JXG2.Object or array of JXG2.Object to
          *                            which the transformation is bound to.
-         * @see JXG.Transformation.meltTo
+         * @see JXG2.Transformation.meltTo
          */
         bindTo: function (el) {
             var i, len;
@@ -673,10 +673,10 @@ JXG.extend(
          * If the transformation will be the first transformation ot the element, it will be cloned
          * to prevent side effects.
          *
-         * @param  {Array|JXG.Object} el JXG.Object or array of JXG.Objects to
+         * @param  {Array|JXG2.Object} el JXG2.Object or array of JXG2.Objects to
          *                            which the transformation is bound to.
          *
-         * @see JXG.Transformation#bindTo
+         * @see JXG2.Transformation#bindTo
          */
         meltTo: function (el) {
             var i, elt, t;
@@ -708,13 +708,13 @@ JXG.extend(
          * <p>
          * If the transformation matrix is not static, null will be returned.
          *
-         * @returns {JXG.Transformation}
+         * @returns {JXG2.Transformation}
          */
         clone: function() {
             var t = null;
 
             if (this.isNumericMatrix) {
-                t = new JXG.Transformation(this.board, 'none', []);
+                t = new JXG2.Transformation(this.board, 'none', []);
                 t.matrix = this.matrix.slice();
             }
 
@@ -727,7 +727,7 @@ JXG.extend(
          * @param term
          */
         setProperty: function (term) {
-            JXG.deprecated("Transformation.setProperty()", "Transformation.setAttribute()");
+            JXG2.deprecated("Transformation.setProperty()", "Transformation.setAttribute()");
         },
 
         /**
@@ -743,8 +743,8 @@ JXG.extend(
          *
          * Multiplies the transformation with a transformation t from the left.
          * i.e. (this) = (t) join (this)
-         * @param  {JXG.Transform} t Transformation which is the left multiplicand
-         * @returns {JXG.Transform} the transformation object.
+         * @param  {JXG2.Transform} t Transformation which is the left multiplicand
+         * @returns {JXG2.Transform} the transformation object.
          */
         melt: function (t) {
             var res = [];
@@ -794,11 +794,11 @@ JXG.extend(
  * Transformations acting on texts and images are considered to be affine, i.e. b and c are ignored.
  *
  * @name Transformation
- * @augments JXG.Transformation
+ * @augments JXG2.Transformation
  * @constructor
- * @type JXG.Transformation
+ * @type JXG2.Transformation
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {number|function|JXG.GeometryElement} parameters The parameters depend on the transformation type, supplied as attribute 'type'.
+ * @param {number|function|JXG2.GeometryElement} parameters The parameters depend on the transformation type, supplied as attribute 'type'.
  * Possible transformation types are
  * <ul>
  * <li> 'translate'
@@ -865,7 +865,7 @@ JXG.extend(
  * </dl>
  *
  *
- * @see JXG.Transformation#setMatrix
+ * @see JXG2.Transformation#setMatrix
  *
  * @example
  * // The point B is determined by taking twice the vector A from the origin
@@ -877,7 +877,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXG14167b0c-2ad3-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG14167b0c-2ad3-11e5-8dd9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXG14167b0c-2ad3-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p0 = board.create('point', [0, 3], {name: 'A'}),
  *         t = board.create('transform', [function(){ return p0.X(); }, "Y(A)"], {type:'translate'}),
@@ -898,7 +898,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXGa6827a72-2ad3-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGa6827a72-2ad3-11e5-8dd9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXGa6827a72-2ad3-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [1, 1]),
  *         t = board.create('transform', [2, 0.5], {type: 'scale'}),
@@ -923,7 +923,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXG747cf11e-2ad4-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG747cf11e-2ad4-11e5-8dd9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXG747cf11e-2ad4-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p0 = board.create('point', [0, 3], {name: 'A'}),
  *         p1 = board.create('point', [1, 1]),
@@ -948,7 +948,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXGf516d3de-2ad5-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGf516d3de-2ad5-11e5-8dd9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXGf516d3de-2ad5-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [1, 1]),
  *         t1 = board.create('transform', [-2, -1], {type:'translate'}),
@@ -972,7 +972,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXG6f374a04-2ad6-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG6f374a04-2ad6-11e5-8dd9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXG6f374a04-2ad6-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [1, 1]),
  *         p2 = board.create('point', [1, 3]),
@@ -1002,7 +1002,7 @@ JXG.extend(
  * </pre><div id="JXGd2bfd46c-3c0c-45c5-a92b-583fad0eb3ec" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGd2bfd46c-3c0c-45c5-a92b-583fad0eb3ec',
+ *         var board = JXG2.JSXGraph.initBoard('JXGd2bfd46c-3c0c-45c5-a92b-583fad0eb3ec',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var y = board.create('slider', [[-3, 1], [-3, 4], [0, 1, 6]]);
  *             var t1 = board.create('transform', [
@@ -1030,7 +1030,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXGb6cee1c4-2ad6-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGb6cee1c4-2ad6-11e5-8dd9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXGb6cee1c4-2ad6-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8, -8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [1, 1]),
  *         p2 = board.create('point', [-1, -2]),
@@ -1075,7 +1075,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXGc7f9097e-2ad7-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGc7f9097e-2ad7-11e5-8dd9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXGc7f9097e-2ad7-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     // Construct a square of side length 2 with the
  *     // help of transformations
@@ -1146,7 +1146,7 @@ JXG.extend(
  * </pre><div id="JXG50d6d546-3b91-41dd-8c0f-3eaa6cff7e66" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG50d6d546-3b91-41dd-8c0f-3eaa6cff7e66',
+ *         var board = JXG2.JSXGraph.initBoard('JXG50d6d546-3b91-41dd-8c0f-3eaa6cff7e66',
  *             {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright: false, shownavigation: false});
  *     var p0 = board.create('point', [0, 0], {name: 'p_0'});
  *     var p1 = board.create('point', [3, 0], {name: 'p_1'});
@@ -1183,11 +1183,11 @@ JXG.extend(
  * </script><pre>
  *
  */
-JXG.createTransform = function (board, parents, attributes) {
-    return new JXG.Transformation(board, attributes.type, parents);
+JXG2.createTransform = function (board, parents, attributes) {
+    return new JXG2.Transformation(board, attributes.type, parents);
 };
 
-JXG.registerElement('transform', JXG.createTransform);
+JXG2.registerElement('transform', JXG2.createTransform);
 
 /**
  * @class Define projective 3D transformations like translation, rotation, reflection.
@@ -1208,11 +1208,11 @@ JXG.registerElement('transform', JXG.createTransform);
  * <p>
  *
  * @name Transformation3D
- * @augments JXG.Transformation
+ * @augments JXG2.Transformation
  * @constructor
- * @type JXG.Transformation
+ * @type JXG2.Transformation
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {number|function|JXG.GeometryElement3D} parameters The parameters depend on the transformation type, supplied as attribute 'type'.
+ * @param {number|function|JXG2.GeometryElement3D} parameters The parameters depend on the transformation type, supplied as attribute 'type'.
  *  Possible transformation types are
  * <ul>
  * <li> 'translate'
@@ -1284,7 +1284,7 @@ JXG.registerElement('transform', JXG.createTransform);
  * </pre><div id="JXG2409bb0a-90d7-4c1e-ae9f-85e8a776acec" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG2409bb0a-90d7-4c1e-ae9f-85e8a776acec',
+ *         var board = JXG2.JSXGraph.initBoard('JXG2409bb0a-90d7-4c1e-ae9f-85e8a776acec',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var bound = [-5, 5];
  *     var view = board.create('view3d',
@@ -1315,11 +1315,11 @@ JXG.registerElement('transform', JXG.createTransform);
  * </script><pre>
  *
  */
-JXG.createTransform3D = function (board, parents, attributes) {
-    return new JXG.Transformation(board, attributes.type, parents, true);
+JXG2.createTransform3D = function (board, parents, attributes) {
+    return new JXG2.Transformation(board, attributes.type, parents, true);
 };
 
-JXG.registerElement('transform3d', JXG.createTransform3D);
+JXG2.registerElement('transform3d', JXG2.createTransform3D);
 
-export default JXG.Transformation;
+export default JXG2.Transformation;
 

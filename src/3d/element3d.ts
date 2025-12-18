@@ -26,25 +26,25 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {Type} from "../utils/type.js";
 
 /**
  * Constructs a new GeometryElement3D object.
  * @class This is the basic class for 3D geometry elements like Point3D and Line3D.
  * @constructor
- * @augments JXG.GeometryElement
+ * @augments JXG2.GeometryElement
  *
  * @param {string} elType
  */
-JXG.GeometryElement3D = function (view, elType) {
+JXG2.GeometryElement3D = function (view, elType) {
     this.elType = elType;
 
     /**
      * Pointer to the view3D in which the element is constructed
-     * @type JXG.View3D
+     * @type JXG2.View3D
      * @private
      */
     this.view = view;
@@ -56,7 +56,7 @@ JXG.GeometryElement3D = function (view, elType) {
      * in a view. In case, there are several 2D elements, it is an array.
      *
      * @type Array
-     * @description JXG.GeometryElement,Array
+     * @description JXG2.GeometryElement,Array
      * @private
      *
      * @example
@@ -81,7 +81,7 @@ JXG.GeometryElement3D = function (view, elType) {
     }
 };
 
-JXG.extend(JXG.GeometryElement3D.prototype, {
+JXG2.extend(JXG2.GeometryElement3D.prototype, {
 
     setAttr2D: function(attr3D) {
         var attr2D = attr3D;
@@ -107,7 +107,7 @@ JXG.extend(JXG.GeometryElement3D.prototype, {
                 attributes[Type.trim(pair[0])] = Type.trim(pair[1]);
             } else if (!Type.isArray(arg)) {
                 // pairRaw consists of objects of the form {key1:value1,key2:value2,...}
-                JXG.extend(attributes, arg);
+                JXG2.extend(attributes, arg);
             } else {
                 // pairRaw consists of array [key,value]
                 attributes[arg[0]] = arg[1];
@@ -123,11 +123,11 @@ JXG.extend(JXG.GeometryElement3D.prototype, {
                     case "stepsu":
                     case "stepsv":
                         if (Type.exists(this.visProp[key]) &&
-                        (!JXG.Validator[key] ||
-                            (JXG.Validator[key] && JXG.Validator[key](value)) ||
-                            (JXG.Validator[key] &&
+                        (!JXG2.Validator[key] ||
+                            (JXG2.Validator[key] && JXG2.Validator[key](value)) ||
+                            (JXG2.Validator[key] &&
                                 Type.isFunction(value) &&
-                                JXG.Validator[key](value())))
+                                JXG2.Validator[key](value())))
                         ) {
                             value =
                                 value.toLowerCase && value.toLowerCase() === "false"
@@ -189,10 +189,10 @@ JXG.extend(JXG.GeometryElement3D.prototype, {
 
     // /**
     //  * Add transformations to this element.
-    //  * @param {JXG.GeometryElement} el
-    //  * @param {JXG.Transformation|Array} transform Either one {@link JXG.Transformation}
-    //  * or an array of {@link JXG.Transformation}s.
-    //  * @returns {JXG.CoordsElement} Reference to itself.
+    //  * @param {JXG2.GeometryElement} el
+    //  * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation}
+    //  * or an array of {@link JXG2.Transformation}s.
+    //  * @returns {JXG2.CoordsElement} Reference to itself.
     //  */
     addTransformGeneric: function (el, transform) {
         var i,
@@ -213,10 +213,10 @@ JXG.extend(JXG.GeometryElement3D.prototype, {
 
     /**
      * Set position of the 2D element. This is a
-     * callback function, executed in {@link JXG.GeometryElement#setPosition}.
-     * @param {JXG.Transform} t transformation
+     * callback function, executed in {@link JXG2.GeometryElement#setPosition}.
+     * @param {JXG2.Transform} t transformation
      * @private
-     * @see JXG.GeometryElement#setPosition
+     * @see JXG2.GeometryElement#setPosition
      */
     setPosition2D: function(t) {
         /* stub */
@@ -239,4 +239,4 @@ JXG.extend(JXG.GeometryElement3D.prototype, {
 
 });
 
-export default JXG.GeometryElement3D;
+export default JXG2.GeometryElement3D;

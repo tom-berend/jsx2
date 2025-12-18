@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -38,7 +38,7 @@
  * @author A.W.
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {JSXMath} from "../math/math.js";
 import GeometryElement from "./element.js";
@@ -47,11 +47,11 @@ import {Type} from "../utils/type.js";
 /**
  * Constructs a new Turtle object.
  * @class This is the Turtle class.
- * It is derived from {@link JXG.GeometryElement}.
+ * It is derived from {@link JXG2.GeometryElement}.
  * It stores all properties required
  * to move a turtle.
  * @constructor
- * @param {JXG.Board} board The board the new turtle is drawn on.
+ * @param {JXG2.Board} board The board the new turtle is drawn on.
  * @param {Array} parents Start position and start direction of the turtle. Possible values are
  * [x, y, angle]
  * [[x, y], angle]
@@ -63,7 +63,7 @@ import {Type} from "../utils/type.js";
  * @example
  *
  * //creates a figure 8 animation
- * var board = JXG.JSXGraph.initBoard('jxgbox',{boundingbox: [-250, 250, 250, -250]});
+ * var board = JXG2.JSXGraph.initBoard('jxgbox',{boundingbox: [-250, 250, 250, -250]});
  * var t = board.create('turtle',[0, 0], {strokeOpacity:0.5});
  * t.setPenSize(3);
  * t.right(90);
@@ -88,7 +88,7 @@ import {Type} from "../utils/type.js";
  * </pre><div class="jxgbox" id="JXG14167b1c-2ad3-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var brd = JXG.JSXGraph.initBoard('JXG14167b1c-2ad3-11e5-8dd9-901b0e1b8723',
+ *         var brd = JXG2.JSXGraph.initBoard('JXG14167b1c-2ad3-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-250, 250, 250, -250], axis: true, showcopyright: false, shownavigation: false});
  *               var t = brd.create('turtle',[0, 0], {strokeOpacity:0.5});
  *               t.setPenSize(3);
@@ -115,7 +115,7 @@ import {Type} from "../utils/type.js";
  *
  * </script><pre>
  */
-JXG.Turtle = function (board, parents, attributes) {
+JXG2.Turtle = function (board, parents, attributes) {
     var x, y, dir;
 
     this.constructor(board, attributes, OBJECT_TYPE.TURTLE, OBJECT_CLASS.OTHER);
@@ -216,13 +216,13 @@ JXG.Turtle = function (board, parents, attributes) {
     return this;
 };
 
-JXG.Turtle.prototype = new GeometryElement();
+JXG2.Turtle.prototype = new GeometryElement();
 
-JXG.extend(
-    JXG.Turtle.prototype,
-    /** @lends JXG.Turtle.prototype */ {
+JXG2.extend(
+    JXG2.Turtle.prototype,
+    /** @lends JXG2.Turtle.prototype */ {
         /**
-         * Initialize a new turtle or reinitialize a turtle after {@link JXG.Turtle#clearScreen}.
+         * Initialize a new turtle or reinitialize a turtle after {@link JXG2.Turtle#clearScreen}.
          * @private
          */
         init: function (x, y, dir) {
@@ -280,7 +280,7 @@ JXG.extend(
         /**
          * Move the turtle forward.
          * @param {Number} len of forward move in user coordinates
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         forward: function (len) {
             if (len === 0) {
@@ -325,7 +325,7 @@ JXG.extend(
         /**
          * Move the turtle backwards.
          * @param {Number} len of backwards move in user coordinates
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         back: function (len) {
             return this.forward(-len);
@@ -334,7 +334,7 @@ JXG.extend(
         /**
          * Rotate the turtle direction to the right
          * @param {Number} angle of the rotation in degrees
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         right: function (angle) {
             this.dir -= angle;
@@ -356,7 +356,7 @@ JXG.extend(
         /**
          * Rotate the turtle direction to the right.
          * @param {Number} angle of the rotation in degrees
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         left: function (angle) {
             return this.right(-angle);
@@ -364,7 +364,7 @@ JXG.extend(
 
         /**
          * Pen up, stops visible drawing
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         penUp: function () {
             this.isPenDown = false;
@@ -373,7 +373,7 @@ JXG.extend(
 
         /**
          * Pen down, continues visible drawing
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         penDown: function () {
             this.isPenDown = true;
@@ -389,7 +389,7 @@ JXG.extend(
 
         /**
          * Removes the turtle curve from the board. The turtle stays in its position.
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         clean: function () {
             var i, el;
@@ -415,7 +415,7 @@ JXG.extend(
 
         /**
          *  Removes the turtle completely and resets it to its initial position and direction.
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         clearScreen: function () {
             // var i,
@@ -437,7 +437,7 @@ JXG.extend(
          *  Moves the turtle without drawing to a new position
          * @param {Number} x new x- coordinate
          * @param {Number} y new y- coordinate
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         setPos: function (x, y) {
             var t;
@@ -474,7 +474,7 @@ JXG.extend(
          *  Sets the pen size. Equivalent to setAttribute({strokeWidth:size})
          * but affects only the future turtle.
          * @param {Number} size
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         setPenSize: function (size) {
             //this.visProp.strokewidth = size;
@@ -491,7 +491,7 @@ JXG.extend(
          *  Sets the pen color. Equivalent to setAttribute({strokeColor:color})
          * but affects only the future turtle.
          * @param {String} color
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         setPenColor: function (color) {
             this.curve = this.board.create(
@@ -550,7 +550,7 @@ JXG.extend(
          *  Sets the highlight pen color. Equivalent to setAttribute({highlightStrokeColor:color})
          * but affects only the future turtle.
          * @param {String} color
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         setHighlightPenColor: function (color) {
             //this.visProp.highlightstrokecolor = colStr;
@@ -564,10 +564,10 @@ JXG.extend(
         },
 
         /**
-         * Sets properties of the turtle, see also {@link JXG.GeometryElement#setAttribute}.
+         * Sets properties of the turtle, see also {@link JXG2.GeometryElement#setAttribute}.
          * Sets the property for all curves of the turtle in the past and in the future.
          * @param {Object} attributes key:value pairs
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         setAttribute: function (attributes) {
             var i,
@@ -606,7 +606,7 @@ JXG.extend(
 
         /**
          * Sets the visibility of the turtle head to true,
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         showTurtle: function () {
             this.turtleIsHidden = false;
@@ -620,7 +620,7 @@ JXG.extend(
 
         /**
          * Sets the visibility of the turtle head to false,
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         hideTurtle: function () {
             this.turtleIsHidden = true;
@@ -633,7 +633,7 @@ JXG.extend(
 
         /**
          * Moves the turtle to position [0,0].
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         home: function () {
             this.pos = [0, 0];
@@ -644,7 +644,7 @@ JXG.extend(
 
         /**
          *  Pushes the position of the turtle on the stack.
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         pushTurtle: function () {
             this.stack.push([this.pos[0], this.pos[1], this.dir]);
@@ -655,7 +655,7 @@ JXG.extend(
         /**
          *  Gets the last position of the turtle on the stack, sets the turtle to this position and removes this
          * position from the stack.
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         popTurtle: function () {
             var status = this.stack.pop();
@@ -672,7 +672,7 @@ JXG.extend(
          * There are two possibilities:
          * @param {Number|Array} target If a number is given, it is interpreted as the new direction to look to; If an array
          * consisting of two Numbers is given targeted is used as a pair coordinates.
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         lookTo: function (target) {
             var ax, ay, bx, by, beta;
@@ -696,7 +696,7 @@ JXG.extend(
          * Moves the turtle to a given coordinate pair.
          * The direction is not changed.
          * @param {Array} target Coordinates of the point where the turtle looks to.
-         * @returns {JXG.Turtle} pointer to the turtle object
+         * @returns {JXG2.Turtle} pointer to the turtle object
          */
         moveTo: function (target) {
             var dx, dy, t;
@@ -737,67 +737,67 @@ JXG.extend(
         },
 
         /**
-         * Alias for {@link JXG.Turtle#forward}
+         * Alias for {@link JXG2.Turtle#forward}
          */
         fd: function (len) {
             return this.forward(len);
         },
         /**
-         * Alias for {@link JXG.Turtle#back}
+         * Alias for {@link JXG2.Turtle#back}
          */
         bk: function (len) {
             return this.back(len);
         },
         /**
-         * Alias for {@link JXG.Turtle#left}
+         * Alias for {@link JXG2.Turtle#left}
          */
         lt: function (angle) {
             return this.left(angle);
         },
         /**
-         * Alias for {@link JXG.Turtle#right}
+         * Alias for {@link JXG2.Turtle#right}
          */
         rt: function (angle) {
             return this.right(angle);
         },
         /**
-         * Alias for {@link JXG.Turtle#penUp}
+         * Alias for {@link JXG2.Turtle#penUp}
          */
         pu: function () {
             return this.penUp();
         },
         /**
-         * Alias for {@link JXG.Turtle#penDown}
+         * Alias for {@link JXG2.Turtle#penDown}
          */
         pd: function () {
             return this.penDown();
         },
         /**
-         * Alias for {@link JXG.Turtle#hideTurtle}
+         * Alias for {@link JXG2.Turtle#hideTurtle}
          */
         ht: function () {
             return this.hideTurtle();
         },
         /**
-         * Alias for {@link JXG.Turtle#showTurtle}
+         * Alias for {@link JXG2.Turtle#showTurtle}
          */
         st: function () {
             return this.showTurtle();
         },
         /**
-         * Alias for {@link JXG.Turtle#clearScreen}
+         * Alias for {@link JXG2.Turtle#clearScreen}
          */
         cs: function () {
             return this.clearScreen();
         },
         /**
-         * Alias for {@link JXG.Turtle#pushTurtle}
+         * Alias for {@link JXG2.Turtle#pushTurtle}
          */
         push: function () {
             return this.pushTurtle();
         },
         /**
-         * Alias for {@link JXG.Turtle#popTurtle}
+         * Alias for {@link JXG2.Turtle#popTurtle}
          */
         pop: function () {
             return this.popTurtle();
@@ -923,27 +923,27 @@ JXG.extend(
  * @pseudo
  * @description  Creates a new turtle
  * @name Turtle
- * @augments JXG.Turtle
+ * @augments JXG2.Turtle
  * @constructor
- * @type JXG.Turtle
+ * @type JXG2.Turtle
  *
- * @param {JXG.Board} board The board the turtle is put on.
+ * @param {JXG2.Board} board The board the turtle is put on.
  * @param {Array} parents
- * @param {Object} attributes Object containing properties for the element such as stroke-color and visibility. See {@link JXG.GeometryElement#setAttribute}
- * @returns {JXG.Turtle} Reference to the created turtle object.
+ * @param {Object} attributes Object containing properties for the element such as stroke-color and visibility. See {@link JXG2.GeometryElement#setAttribute}
+ * @returns {JXG2.Turtle} Reference to the created turtle object.
  */
-JXG.createTurtle = function (board, parents, attributes) {
+JXG2.createTurtle = function (board, parents, attributes) {
     var attr;
     parents = parents || [];
 
     attr = Type.copyAttributes(attributes, board.options, 'turtle');
-    return new JXG.Turtle(board, parents, attr);
+    return new JXG2.Turtle(board, parents, attr);
 };
 
-JXG.registerElement("turtle", JXG.createTurtle);
+JXG2.registerElement("turtle", JXG2.createTurtle);
 
-export default JXG.Turtle;
+export default JXG2.Turtle;
 // export default {
-//     Turtle: JXG.Turtle,
-//     createTurtle: JXG.createTurtle
+//     Turtle: JXG2.Turtle,
+//     createTurtle: JXG2.createTurtle
 // };

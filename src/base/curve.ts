@@ -29,14 +29,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview In this file the geometry element Curve is defined.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import Clip from "../math/clip.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
@@ -53,23 +53,23 @@ import { Type } from "../utils/type.js";
 
 /**
  * Curves are the common object for function graphs, parametric curves, polar curves, and data plots.
- * @class Creates a new curve object. Do not use this constructor to create a curve. Use {@link JXG.Board#create} with
+ * @class Creates a new curve object. Do not use this constructor to create a curve. Use {@link JXG2.Board#create} with
  * type {@link Curve}, or {@link Functiongraph} instead.
- * @augments JXG.GeometryElement
- * @param {String|JXG.Board} board The board the new curve is drawn on.
+ * @augments JXG2.GeometryElement
+ * @param {String|JXG2.Board} board The board the new curve is drawn on.
  * @param {Array} parents defining terms An array with the function terms or the data points of the curve.
  * @param {Object} attributes Defines the visual appearance of the curve.
- * @see JXG.Board#generateName
- * @see JXG.Board#addCurve
+ * @see JXG2.Board#generateName
+ * @see JXG2.Board#addCurve
  */
-JXG.Curve = function (board, parents, attributes) {
+JXG2.Curve = function (board, parents, attributes) {
     this.constructor(board, attributes, OBJECT_TYPE.CURVE, OBJECT_CLASS.CURVE);
 
     this.points = [];
     /**
      * Number of points on curves. This value changes
      * between numberPointsLow and numberPointsHigh.
-     * It is set in {@link JXG.Curve#updateCurve}.
+     * It is set in {@link JXG2.Curve#updateCurve}.
      */
     this.numberPoints = this.evalVisProp('numberpointshigh');
 
@@ -78,7 +78,7 @@ JXG.Curve = function (board, parents, attributes) {
     /**
      * Array holding the x-coordinates of a data plot.
      * This array can be updated during run time by overwriting
-     * the method {@link JXG.Curve#updateDataArray}.
+     * the method {@link JXG2.Curve#updateDataArray}.
      * @type array
      */
     this.dataX = null;
@@ -86,17 +86,17 @@ JXG.Curve = function (board, parents, attributes) {
     /**
      * Array holding the y-coordinates of a data plot.
      * This array can be updated during run time by overwriting
-     * the method {@link JXG.Curve#updateDataArray}.
+     * the method {@link JXG2.Curve#updateDataArray}.
      * @type array
      */
     this.dataY = null;
 
     /**
      * Array of ticks storing all the ticks on this curve. Do not set this field directly and use
-     * {@link JXG.Curve#addTicks} and {@link JXG.Curve#removeTicks} to add and remove ticks to and
+     * {@link JXG2.Curve#addTicks} and {@link JXG2.Curve#removeTicks} to add and remove ticks to and
      * from the curve.
      * @type Array
-     * @see JXG.Ticks
+     * @see JXG2.Ticks
      */
     this.ticks = [];
 
@@ -149,14 +149,14 @@ JXG.Curve = function (board, parents, attributes) {
     });
 };
 
-JXG.Curve.prototype = new GeometryElement();
+JXG2.Curve.prototype = new GeometryElement();
 
-JXG.extend(
-    JXG.Curve.prototype,
-    /** @lends JXG.Curve.prototype */ {
+JXG2.extend(
+    JXG2.Curve.prototype,
+    /** @lends JXG2.Curve.prototype */ {
         /**
          * Gives the default value of the left bound for the curve.
-         * May be overwritten in {@link JXG.Curve#generateTerm}.
+         * May be overwritten in {@link JXG2.Curve#generateTerm}.
          * @returns {Number} Left bound for the curve.
          */
         minX: function () {
@@ -177,7 +177,7 @@ JXG.extend(
 
         /**
          * Gives the default value of the right bound for the curve.
-         * May be overwritten in {@link JXG.Curve#generateTerm}.
+         * May be overwritten in {@link JXG2.Curve#generateTerm}.
          * @returns {Number} Right bound for the curve.
          */
         maxX: function () {
@@ -198,7 +198,7 @@ JXG.extend(
 
         /**
          * The parametric function which defines the x-coordinate of the curve.
-         * @param {Number} t A number between {@link JXG.Curve#minX} and {@link JXG.Curve#maxX}.
+         * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
          * @param {Boolean} suspendUpdate A boolean flag which is false for the
          * first call of the function during a fresh plot of the curve and true
          * for all subsequent calls of the function. This may be used to speed up the
@@ -211,7 +211,7 @@ JXG.extend(
 
         /**
          * The parametric function which defines the y-coordinate of the curve.
-         * @param {Number} t A number between {@link JXG.Curve#minX} and {@link JXG.Curve#maxX}.
+         * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
          * @param {Boolean} suspendUpdate A boolean flag which is false for the
          * first call of the function during a fresh plot of the curve and true
          * for all subsequent calls of the function. This may be used to speed up the
@@ -224,7 +224,7 @@ JXG.extend(
 
         /**
          * Treat the curve as curve with homogeneous coordinates.
-         * @param {Number} t A number between {@link JXG.Curve#minX} and {@link JXG.Curve#maxX}.
+         * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
          * @returns {Number} Always 1.0
          */
         Z: function (t) {
@@ -234,7 +234,7 @@ JXG.extend(
         /**
          * Return the homogeneous coordinates of the curve at t - including all transformations
          * applied to the curve.
-         * @param {Number} t A number between {@link JXG.Curve#minX} and {@link JXG.Curve#maxX}.
+         * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
          * @returns {Array} [Z(t), X(t), Y(t)] plus transformations
          */
         Ft: function (t) {
@@ -426,8 +426,8 @@ JXG.extend(
 
         /**
          * Generates points of the curve to be plotted.
-         * @returns {JXG.Curve} Reference to the curve object.
-         * @see JXG.Curve#updateCurve
+         * @returns {JXG2.Curve} Reference to the curve object.
+         * @see JXG2.Curve#updateCurve
          */
         update: function () {
             if (this.needsUpdate) {
@@ -442,7 +442,7 @@ JXG.extend(
 
         /**
          * Updates the visual contents of the curve.
-         * @returns {JXG.Curve} Reference to the curve object.
+         * @returns {JXG2.Curve} Reference to the curve object.
          */
         updateRenderer: function () {
             //var wasReal;
@@ -497,14 +497,14 @@ JXG.extend(
 
         /**
          * For dynamic dataplots updateCurve can be used to compute new entries
-         * for the arrays {@link JXG.Curve#dataX} and {@link JXG.Curve#dataY}. It
-         * is used in {@link JXG.Curve#updateCurve}. Default is an empty method, can
+         * for the arrays {@link JXG2.Curve#dataX} and {@link JXG2.Curve#dataY}. It
+         * is used in {@link JXG2.Curve#updateCurve}. Default is an empty method, can
          * be overwritten by the user.
          *
          *
          * @example
          * // This example overwrites the updateDataArray method.
-         * // There, new values for the arrays JXG.Curve.dataX and JXG.Curve.dataY
+         * // There, new values for the arrays JXG2.Curve.dataX and JXG2.Curve.dataY
          * // are computed from the value of the slider N
          *
          * var N = board.create('slider', [[0,1.5],[3,1.5],[1,3,40]], {name:'n',snapWidth:1});
@@ -569,7 +569,7 @@ JXG.extend(
          * </pre><div id="JXG20bc7802-e69e-11e5-b1bf-901b0e1b8723" class="jxgbox" style="width: 600px; height: 400px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG20bc7802-e69e-11e5-b1bf-901b0e1b8723',
+         *         var board = JXG2.JSXGraph.initBoard('JXG20bc7802-e69e-11e5-b1bf-901b0e1b8723',
          *             {boundingbox: [-1.5,2,8,-3], keepaspectratio: true, axis: true, showcopyright: false, shownavigation: false});
          *             var N = board.create('slider', [[0,1.5],[3,1.5],[1,3,40]], {name:'n',snapWidth:1});
          *             var circ = board.create('circle',[[4,-1.5],1],{strokeWidth:1, strokecolor:'black',
@@ -676,7 +676,7 @@ JXG.extend(
          *                         d[0] *= height/dl;
          *                         return mid+d[0]+0.1;
          *                     },
-         *                     function() { return "length=" + JXG.toFixed(B.Dist(A), 2); }
+         *                     function() { return "length=" + JXG2.toFixed(B.Dist(A), 2); }
          *                 ]);
          *
          *
@@ -685,7 +685,7 @@ JXG.extend(
          * </pre><div id="JXGa61a4d66-e69f-11e5-b1bf-901b0e1b8723"  class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *      var board = JXG.JSXGraph.initBoard('JXGa61a4d66-e69f-11e5-b1bf-901b0e1b8723',
+         *      var board = JXG2.JSXGraph.initBoard('JXGa61a4d66-e69f-11e5-b1bf-901b0e1b8723',
          *             {boundingbox: [-4, 4, 4,-4], axis: true, showcopyright: false, shownavigation: false});
          *     var A = board.create('point', [-3,3]);
          *     var B = board.create('point', [3,-2]);
@@ -726,7 +726,7 @@ JXG.extend(
          *                             d[0] *= height/dl;
          *                             return mid+d[0]+0.1;
          *                         },
-         *                         function() { return "length="+JXG.toFixed(B.Dist(A), 2); }
+         *                         function() { return "length="+JXG2.toFixed(B.Dist(A), 2); }
          *                     ]);
          *
          *
@@ -744,8 +744,8 @@ JXG.extend(
 
         /**
          * Computes the curve path
-         * @see JXG.Curve#update
-         * @returns {JXG.Curve} Reference to the curve object.
+         * @see JXG2.Curve#update
+         * @returns {JXG2.Curve} Reference to the curve object.
          */
         updateCurve: function () {
             var i, len, mi, ma,
@@ -889,9 +889,9 @@ JXG.extend(
 
         /**
          * Applies the transformations of the curve to the given point <tt>p</tt>.
-         * Before using it, {@link JXG.Curve#updateTransformMatrix} has to be called.
-         * @param {JXG.Point} p
-         * @returns {JXG.Point} The given point.
+         * Before using it, {@link JXG2.Curve#updateTransformMatrix} has to be called.
+         * @param {JXG2.Point} p
+         * @returns {JXG2.Point} The given point.
          */
         updateTransform: function (p) {
             var c,
@@ -907,8 +907,8 @@ JXG.extend(
 
         /**
          * Add transformations to this curve.
-         * @param {JXG.Transformation|Array} transform Either one {@link JXG.Transformation} or an array of {@link JXG.Transformation}s.
-         * @returns {JXG.Curve} Reference to the curve object.
+         * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation} or an array of {@link JXG2.Transformation}s.
+         * @returns {JXG2.Curve} Reference to the curve object.
          */
         addTransform: function (transform) {
             var i,
@@ -1019,7 +1019,7 @@ JXG.extend(
          * @param {String|Number|Function|Array} yterm Term for the y coordinate. Can also be an array consisting of discrete values.
          * @param {String|Number|Function} [mi] Lower bound on the parameter
          * @param {String|Number|Function} [ma] Upper bound on the parameter
-         * @see JXG.GeonextParser.geonext2JS
+         * @see JXG2.GeonextParser.geonext2JS
          */
         generateTerm: function (varname, xterm, yterm, mi, ma) {
             var fx, fy, mat;
@@ -1138,7 +1138,7 @@ JXG.extend(
          *
          * @param {String} pos
          * @param {Number} distance
-         * @returns {JXG.Coords}
+         * @returns {JXG2.Coords}
          */
         getLabelPosition: function (pos, distance) {
             var x, y, xy,
@@ -1431,7 +1431,7 @@ JXG.extend(
          * Shift the curve by the vector 'where'.
          *
          * @param {Array} where Array containing the x and y coordinate of the target location.
-         * @returns {JXG.Curve} Reference to itself.
+         * @returns {JXG2.Curve} Reference to itself.
          */
         moveTo: function (where) {
             // TODO add animation
@@ -1529,10 +1529,10 @@ JXG.extend(
  * </ul>
  * @pseudo
  * @name Curve
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
  * @type Object
- * @description JXG.Curve
+ * @description JXG2.Curve
 
  * @param {function,number_function,number_function,number_function,number}  x,y,a_,b_ Parent elements for Parametric Curves.
  *                     <p>
@@ -1581,7 +1581,7 @@ JXG.extend(
  * Additionally, a curve can be created by providing a curve and a transformation (or an array of transformations).
  * The result is a curve which is the transformation of the supplied curve.
  *
- * @see JXG.Curve
+ * @see JXG2.Curve
  * @example
  * // Parametric curve
  * // Create a curve of the form (t-sin(t), 1-cos(t), i.e.
@@ -1593,7 +1593,7 @@ JXG.extend(
  *                     );
  * </pre><div class="jxgbox" id="JXGaf9f818b-f3b6-4c4d-8c4c-e4a4078b726d" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
- *   var c1_board = JXG.JSXGraph.initBoard('JXGaf9f818b-f3b6-4c4d-8c4c-e4a4078b726d', {boundingbox: [-1, 5, 7, -1], axis: true, showcopyright: false, shownavigation: false});
+ *   var c1_board = JXG2.JSXGraph.initBoard('JXGaf9f818b-f3b6-4c4d-8c4c-e4a4078b726d', {boundingbox: [-1, 5, 7, -1], axis: true, showcopyright: false, shownavigation: false});
  *   var graph1 = c1_board.create('curve', [function(t){ return t-Math.sin(t);},function(t){ return 1-Math.cos(t);},0, 2*Math.PI]);
  * </script><pre>
  * @example
@@ -1606,7 +1606,7 @@ JXG.extend(
  *   var graph = board.create('curve', [x,y], {dash:2});
  * </pre><div class="jxgbox" id="JXG7dcbb00e-b6ff-481d-b4a8-887f5d8c6a83" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
- *   var c3_board = JXG.JSXGraph.initBoard('JXG7dcbb00e-b6ff-481d-b4a8-887f5d8c6a83', {boundingbox: [-1,10,10,-1], axis: true, showcopyright: false, shownavigation: false});
+ *   var c3_board = JXG2.JSXGraph.initBoard('JXG7dcbb00e-b6ff-481d-b4a8-887f5d8c6a83', {boundingbox: [-1,10,10,-1], axis: true, showcopyright: false, shownavigation: false});
  *   var x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
  *   var y = [9.2, 1.3, 7.2, -1.2, 4.0, 5.3, 0.2, 6.5, 1.1, 0.0];
  *   var graph3 = c3_board.create('curve', [x,y], {dash:2});
@@ -1624,7 +1624,7 @@ JXG.extend(
  *                     );
  * </pre><div class="jxgbox" id="JXGd0bc7a2a-8124-45ca-a6e7-142321a8f8c2" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
- *   var c2_board = JXG.JSXGraph.initBoard('JXGd0bc7a2a-8124-45ca-a6e7-142321a8f8c2', {boundingbox: [-3,3,3,-3], axis: true, showcopyright: false, shownavigation: false});
+ *   var c2_board = JXG2.JSXGraph.initBoard('JXGd0bc7a2a-8124-45ca-a6e7-142321a8f8c2', {boundingbox: [-3,3,3,-3], axis: true, showcopyright: false, shownavigation: false});
  *   var a = c2_board.create('slider',[[0,2],[2,2],[0,1,2]]);
  *   var graph2 = c2_board.create('curve', [function(phi){ return a.Value()*(1-Math.cos(phi));}, [1,0], 0, 2*Math.PI], {curveType: 'polar'});
  * </script><pre>
@@ -1646,7 +1646,7 @@ JXG.extend(
  * <script type="text/javascript">
  * (function(){
  *  var board, col, p, c;
- *  board = JXG.JSXGraph.initBoard('JXG7bcc6280-f6eb-433e-8281-c837c3387849', {boundingbox: [-3,3,3,-3], axis: true, showcopyright: false, shownavigation: false});
+ *  board = JXG2.JSXGraph.initBoard('JXG7bcc6280-f6eb-433e-8281-c837c3387849', {boundingbox: [-3,3,3,-3], axis: true, showcopyright: false, shownavigation: false});
  *  col = 'blue';
  *  p = [];
  *  p.push(board.create('point',[-2, -1 ], {size: 5, strokeColor:col, fillColor:col}));
@@ -1670,7 +1670,7 @@ JXG.extend(
  * </pre><div id="JXG866dc7a2-d448-11e7-93b3-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG866dc7a2-d448-11e7-93b3-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXG866dc7a2-d448-11e7-93b3-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var li = board.create('line', [1,1,1], {strokeColor: '#aaaaaa'});
  *             var reflect = board.create('transform', [li], {type: 'reflect'});
@@ -1681,7 +1681,7 @@ JXG.extend(
  *
  * </script><pre>
  */
-JXG.createCurve = function (board, parents, attributes) {
+JXG2.createCurve = function (board, parents, attributes) {
     var obj,
         cu,
         attr = Type.copyAttributes(attributes, board.options, 'curve');
@@ -1710,7 +1710,7 @@ JXG.createCurve = function (board, parents, attributes) {
         }
         attr = Type.copyAttributes(attr, board.options, 'curve');
 
-        cu = new JXG.Curve(board, ["x", [], []], attr);
+        cu = new JXG2.Curve(board, ["x", [], []], attr);
         /**
          * @class
          * @ignore
@@ -1735,26 +1735,26 @@ JXG.createCurve = function (board, parents, attributes) {
         return cu;
     }
     attr = Type.copyAttributes(attributes, board.options, 'curve');
-    return new JXG.Curve(board, ["x"].concat(parents), attr);
+    return new JXG2.Curve(board, ["x"].concat(parents), attr);
 };
 
-JXG.registerElement("curve", JXG.createCurve);
+JXG2.registerElement("curve", JXG2.createCurve);
 
 /**
  * @class A functiongraph visualizes a map x &rarr; f(x).
  * The graph is displayed for x in the interval [a,b] and is a {@link Curve} element.
  * @pseudo
  * @name Functiongraph
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  * @param {function_number,function_number,function} f,a_,b_ Parent elements are a function term f(x) describing the function graph.
  *         <p>
  *         Further, an optional number or function for the left interval border a,
  *         and an optional number or function for the right interval border b.
  *         <p>
  *         Default values are a=-10 and b=10.
- * @see JXG.Curve
+ * @see JXG2.Curve
  * @example
  * // Create a function graph for f(x) = 0.5*x*x-2*x
  *   var graph = board.create('functiongraph',
@@ -1762,7 +1762,7 @@ JXG.registerElement("curve", JXG.createCurve);
  *                     );
  * </pre><div class="jxgbox" id="JXGefd432b5-23a3-4846-ac5b-b471e668b437" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
- *   var alex1_board = JXG.JSXGraph.initBoard('JXGefd432b5-23a3-4846-ac5b-b471e668b437', {boundingbox: [-3, 7, 5, -3], axis: true, showcopyright: false, shownavigation: false});
+ *   var alex1_board = JXG2.JSXGraph.initBoard('JXGefd432b5-23a3-4846-ac5b-b471e668b437', {boundingbox: [-3, 7, 5, -3], axis: true, showcopyright: false, shownavigation: false});
  *   var graph = alex1_board.create('functiongraph', [function(x){ return 0.5*x*x-2*x;}, -2, 4]);
  * </script><pre>
  * @example
@@ -1775,12 +1775,12 @@ JXG.registerElement("curve", JXG.createCurve);
  *                     );
  * </pre><div class="jxgbox" id="JXG4a203a84-bde5-4371-ad56-44619690bb50" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
- *   var alex2_board = JXG.JSXGraph.initBoard('JXG4a203a84-bde5-4371-ad56-44619690bb50', {boundingbox: [-3, 7, 5, -3], axis: true, showcopyright: false, shownavigation: false});
+ *   var alex2_board = JXG2.JSXGraph.initBoard('JXG4a203a84-bde5-4371-ad56-44619690bb50', {boundingbox: [-3, 7, 5, -3], axis: true, showcopyright: false, shownavigation: false});
  *   var s = alex2_board.create('slider',[[0,4],[3,4],[-2,4,5]]);
  *   var graph = alex2_board.create('functiongraph', [function(x){ return 0.5*x*x-2*x;}, -2, function(){return s.Value();}]);
  * </script><pre>
  */
-JXG.createFunctiongraph = function (board, parents, attributes) {
+JXG2.createFunctiongraph = function (board, parents, attributes) {
     var attr,
         par = ["x", "x"].concat(parents); // variable name and identity function for x-coordinate
     // par = ["x", function(x) { return x; }].concat(parents);
@@ -1788,21 +1788,21 @@ JXG.createFunctiongraph = function (board, parents, attributes) {
     attr = Type.copyAttributes(attributes, board.options, 'functiongraph');
     attr = Type.copyAttributes(attr, board.options, 'curve');
     attr.curvetype = 'functiongraph';
-    return new JXG.Curve(board, par, attr);
+    return new JXG2.Curve(board, par, attr);
 };
 
-JXG.registerElement("functiongraph", JXG.createFunctiongraph);
-JXG.registerElement("plot", JXG.createFunctiongraph);
+JXG2.registerElement("functiongraph", JXG2.createFunctiongraph);
+JXG2.registerElement("plot", JXG2.createFunctiongraph);
 
 /**
  * @class The (natural) cubic spline curves (function graph) interpolating a set of points.
  * Create a dynamic spline interpolated curve given by sample points p_1 to p_n.
  * @pseudo
  * @name Spline
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
- * @param {JXG.Board} board Reference to the board the spline is drawn on.
+ * @type JXG2.Curve
+ * @param {JXG2.Board} board Reference to the board the spline is drawn on.
  * @param {Array} parents Array of points the spline interpolates. This can be
  *   <ul>
  *   <li> an array of JSXGraph points</li>
@@ -1812,8 +1812,8 @@ JXG.registerElement("plot", JXG.createFunctiongraph);
  *   </ul>
  *   All individual entries of coordinates arrays may be numbers or functions returning numbers.
  * @param {Object} attributes Define color, width, ... of the spline
- * @returns {JXG.Curve} Returns reference to an object of type JXG.Curve.
- * @see JXG.Curve
+ * @returns {JXG2.Curve} Returns reference to an object of type JXG2.Curve.
+ * @see JXG2.Curve
  * @example
  *
  * var p = [];
@@ -1826,7 +1826,7 @@ JXG.registerElement("plot", JXG.createFunctiongraph);
  * </pre><div id="JXG6c197afc-e482-11e5-b1bf-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG6c197afc-e482-11e5-b1bf-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXG6c197afc-e482-11e5-b1bf-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *
  *     var p = [];
@@ -1841,7 +1841,7 @@ JXG.registerElement("plot", JXG.createFunctiongraph);
  * </script><pre>
  *
  */
-JXG.createSpline = function (board, parents, attributes) {
+JXG2.createSpline = function (board, parents, attributes) {
     var el, funcs, ret;
 
     funcs = function () {
@@ -1930,7 +1930,7 @@ JXG.createSpline = function (board, parents, attributes) {
     attributes = Type.copyAttributes(attributes, board.options, 'curve');
     attributes.curvetype = 'functiongraph';
     ret = funcs();
-    el = new JXG.Curve(board, ["x", "x", ret[0], ret[1], ret[2]], attributes);
+    el = new JXG2.Curve(board, ["x", "x", ret[0], ret[1], ret[2]], attributes);
     el.setParents(parents);
     el.elType = 'spline';
 
@@ -1941,16 +1941,16 @@ JXG.createSpline = function (board, parents, attributes) {
  * Register the element type spline at JSXGraph
  * @private
  */
-JXG.registerElement("spline", JXG.createSpline);
+JXG2.registerElement("spline", JXG2.createSpline);
 
 /**
  * @class Cardinal spline curve through a given data set.
  * Create a dynamic cardinal spline interpolated curve given by sample points p_1 to p_n.
  * @pseudo
  * @name Cardinalspline
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  * @param {Array} points Points array defining the cardinal spline. This can be
  *   <ul>
  *   <li> an array of JSXGraph points</li>
@@ -1961,9 +1961,9 @@ JXG.registerElement("spline", JXG.createSpline);
  *   All individual entries of coordinates arrays may be numbers or functions returning numbers.
  * @param {function,Number} tau Tension parameter
  * @param {String} [type='uniform'] Type of the cardinal spline, may be 'uniform' (default) or 'centripetal'
- * @see JXG.Curve
+ * @see JXG2.Curve
  * @example
- * //Create a cardinal spline out of an array of JXG points with adjustable tension
+ * //Create a cardinal spline out of an array of JXG2 points with adjustable tension
  *
  * //Create array of points
  * var p = [];
@@ -1980,9 +1980,9 @@ JXG.registerElement("spline", JXG.createSpline);
  * </pre><div id="JXG1537cb69-4d45-43aa-8fc3-c6d4f98b4cdd" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG1537cb69-4d45-43aa-8fc3-c6d4f98b4cdd',
+ *         var board = JXG2.JSXGraph.initBoard('JXG1537cb69-4d45-43aa-8fc3-c6d4f98b4cdd',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
- *     //Create a cardinal spline out of an array of JXG points with adjustable tension
+ *     //Create a cardinal spline out of an array of JXG2 points with adjustable tension
  *
  *     //Create array of points
  *     var p = [];
@@ -2001,7 +2001,7 @@ JXG.registerElement("spline", JXG.createSpline);
  * </script><pre>
  *
  */
-JXG.createCardinalSpline = function (board, parents, attributes) {
+JXG2.createCardinalSpline = function (board, parents, attributes) {
     var el,
         getPointLike,
         points,
@@ -2016,7 +2016,7 @@ JXG.createCardinalSpline = function (board, parents, attributes) {
 
     if (!Type.exists(parents[0]) || !Type.isArray(parents[0])) {
         throw new Error(
-            "JSXGraph: JXG.createCardinalSpline: argument 1 'points' has to be array of points or coordinate pairs" +
+            "JSXGraph: JXG2.createCardinalSpline: argument 1 'points' has to be array of points or coordinate pairs" +
             errStr
         );
     }
@@ -2025,14 +2025,14 @@ JXG.createCardinalSpline = function (board, parents, attributes) {
         (!Type.isNumber(parents[1]) && !Type.isFunction(parents[1]))
     ) {
         throw new Error(
-            "JSXGraph: JXG.createCardinalSpline: argument 2 'tau' has to be number between [0,1] or function'" +
+            "JSXGraph: JXG2.createCardinalSpline: argument 2 'tau' has to be number between [0,1] or function'" +
             errStr
         );
     }
     if (!Type.exists(parents[2]) || !Type.isString(parents[2])) {
         type = 'uniform';
         // throw new Error(
-        //     "JSXGraph: JXG.createCardinalSpline: argument 3 'type' has to be string 'uniform' or 'centripetal'" +
+        //     "JSXGraph: JXG2.createCardinalSpline: argument 3 'type' has to be string 'uniform' or 'centripetal'" +
         //     errStr
         // );
     } else {
@@ -2134,7 +2134,7 @@ JXG.createCardinalSpline = function (board, parents, attributes) {
 
     splineArr = ["x"].concat(Numerics.CardinalSpline(points, tau, type));
 
-    el = new JXG.Curve(board, splineArr, attributes);
+    el = new JXG2.Curve(board, splineArr, attributes);
     le = points.length;
     el.setParents(points);
     for (i = 0; i < le; i++) {
@@ -2157,17 +2157,17 @@ JXG.createCardinalSpline = function (board, parents, attributes) {
  * Register the element type cardinalspline at JSXGraph
  * @private
  */
-JXG.registerElement("cardinalspline", JXG.createCardinalSpline);
+JXG2.registerElement("cardinalspline", JXG2.createCardinalSpline);
 
 /**
  * @class Interpolate data points by the spline curve from Metapost (by Donald Knuth and John Hobby).
  * Create a dynamic metapost spline interpolated curve given by sample points p_1 to p_n.
  * @pseudo
  * @name Metapostspline
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
- * @param {JXG.Board} board Reference to the board the metapost spline is drawn on.
+ * @type JXG2.Curve
+ * @param {JXG2.Board} board Reference to the board the metapost spline is drawn on.
  * @param {Array} parents Array with two entries.
  * <p>
  *   First entry: Array of points the spline interpolates. This can be
@@ -2181,8 +2181,8 @@ JXG.registerElement("cardinalspline", JXG.createCardinalSpline);
  *   <p>
  *   Second entry: JavaScript object containing the control values like tension, direction, curl.
  * @param {Object} attributes Define color, width, ... of the metapost spline
- * @returns {JXG.Curve} Returns reference to an object of type JXG.Curve.
- * @see JXG.Curve
+ * @returns {JXG2.Curve} Returns reference to an object of type JXG2.Curve.
+ * @see JXG2.Curve
  * @example
  *     var po = [],
  *         attr = {
@@ -2216,7 +2216,7 @@ JXG.registerElement("cardinalspline", JXG.createCardinalSpline);
  * </pre><div id="JXGb8c6ffed-7419-41a3-9e55-3754b2327ae9" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGb8c6ffed-7419-41a3-9e55-3754b2327ae9',
+ *         var board = JXG2.JSXGraph.initBoard('JXGb8c6ffed-7419-41a3-9e55-3754b2327ae9',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *         var po = [],
  *             attr = {
@@ -2252,7 +2252,7 @@ JXG.registerElement("cardinalspline", JXG.createCardinalSpline);
  * </script><pre>
  *
  */
-JXG.createMetapostSpline = function (board, parents, attributes) {
+JXG2.createMetapostSpline = function (board, parents, attributes) {
     var el,
         getPointLike,
         points,
@@ -2265,13 +2265,13 @@ JXG.createMetapostSpline = function (board, parents, attributes) {
 
     if (!Type.exists(parents[0]) || !Type.isArray(parents[0])) {
         throw new Error(
-            "JSXGraph: JXG.createMetapostSpline: argument 1 'points' has to be array of points or coordinate pairs" +
+            "JSXGraph: JXG2.createMetapostSpline: argument 1 'points' has to be array of points or coordinate pairs" +
             errStr
         );
     }
     if (!Type.exists(parents[1]) || !Type.isObject(parents[1])) {
         throw new Error(
-            "JSXGraph: JXG.createMetapostSpline: argument 2 'controls' has to be a JavaScript object'" +
+            "JSXGraph: JXG2.createMetapostSpline: argument 2 'controls' has to be a JavaScript object'" +
             errStr
         );
     }
@@ -2362,7 +2362,7 @@ JXG.createMetapostSpline = function (board, parents, attributes) {
 
     controls = parents[1];
 
-    el = new JXG.Curve(board, ["t", [], [], 0, p.length - 1], attributes);
+    el = new JXG2.Curve(board, ["t", [], [], 0, p.length - 1], attributes);
     /**
      * @class
      * @ignore
@@ -2395,7 +2395,7 @@ JXG.createMetapostSpline = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("metapostspline", JXG.createMetapostSpline);
+JXG2.registerElement("metapostspline", JXG2.createMetapostSpline);
 
 /**
  * @class Visualize the Riemann sum which is an approximation of an integral by a finite sum.
@@ -2408,7 +2408,7 @@ JXG.registerElement("metapostspline", JXG.createMetapostSpline);
  *
  * @pseudo
  * @name Riemannsum
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
  * @type Curve
  * @param {function,array_number,function_string,function_function,number_function,number} f,n,type_,a_,b_ Parent elements of Riemannsum are a
@@ -2424,7 +2424,7 @@ JXG.registerElement("metapostspline", JXG.createMetapostSpline);
  *         and an optional number or function for the right interval border b.
  *         <p>
  *         Default values are a=-10 and b=10.
- * @see JXG.Curve
+ * @see JXG2.Curve
  * @example
  * // Create Riemann sums for f(x) = 0.5*x*x-2*x.
  *   var s = board.create('slider',[[0,4],[3,4],[0,4,10]],{snapWidth:1});
@@ -2434,16 +2434,16 @@ JXG.registerElement("metapostspline", JXG.createMetapostSpline);
  *               {fillOpacity:0.4}
  *               );
  *   var g = board.create('functiongraph',[f, -2, 5]);
- *   var t = board.create('text',[-2,-2, function(){ return 'Sum=' + JXG.toFixed(r.Value(), 4); }]);
+ *   var t = board.create('text',[-2,-2, function(){ return 'Sum=' + JXG2.toFixed(r.Value(), 4); }]);
  * </pre><div class="jxgbox" id="JXG940f40cc-2015-420d-9191-c5d83de988cf" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function(){
- *   var board = JXG.JSXGraph.initBoard('JXG940f40cc-2015-420d-9191-c5d83de988cf', {boundingbox: [-3, 7, 5, -3], axis: true, showcopyright: false, shownavigation: false});
+ *   var board = JXG2.JSXGraph.initBoard('JXG940f40cc-2015-420d-9191-c5d83de988cf', {boundingbox: [-3, 7, 5, -3], axis: true, showcopyright: false, shownavigation: false});
  *   var f = function(x) { return 0.5*x*x-2*x; };
  *   var s = board.create('slider',[[0,4],[3,4],[0,4,10]],{snapWidth:1});
  *   var r = board.create('riemannsum', [f, function(){return s.Value();}, 'upper', -2, 5], {fillOpacity:0.4});
  *   var g = board.create('functiongraph', [f, -2, 5]);
- *   var t = board.create('text',[-2,-2, function(){ return 'Sum=' + JXG.toFixed(r.Value(), 4); }]);
+ *   var t = board.create('text',[-2,-2, function(){ return 'Sum=' + JXG2.toFixed(r.Value(), 4); }]);
  * })();
  * </script><pre>
  *
@@ -2458,11 +2458,11 @@ JXG.registerElement("metapostspline", JXG.createMetapostSpline);
  *               );
  *   var f = board.create('functiongraph',[f, -2, 5]);
  *   var g = board.create('functiongraph',[g, -2, 5]);
- *   var t = board.create('text',[-2,-2, function(){ return 'Sum=' + JXG.toFixed(r.Value(), 4); }]);
+ *   var t = board.create('text',[-2,-2, function(){ return 'Sum=' + JXG2.toFixed(r.Value(), 4); }]);
  * </pre><div class="jxgbox" id="JXGf9a7ba38-b50f-4a32-a873-2f3bf9caee79" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function(){
- *   var board = JXG.JSXGraph.initBoard('JXGf9a7ba38-b50f-4a32-a873-2f3bf9caee79', {boundingbox: [-3, 7, 5, -3], axis: true, showcopyright: false, shownavigation: false});
+ *   var board = JXG2.JSXGraph.initBoard('JXGf9a7ba38-b50f-4a32-a873-2f3bf9caee79', {boundingbox: [-3, 7, 5, -3], axis: true, showcopyright: false, shownavigation: false});
  *   var s = board.create('slider',[[0,4],[3,4],[0,4,10]],{snapWidth:1});
  *   var g = function(x) { return 0.5*x*x-2*x; };
  *   var f = function(x) { return -x*(x-4); };
@@ -2472,11 +2472,11 @@ JXG.registerElement("metapostspline", JXG.createMetapostSpline);
  *               );
  *   var f = board.create('functiongraph',[f, -2, 5]);
  *   var g = board.create('functiongraph',[g, -2, 5]);
- *   var t = board.create('text',[-2,-2, function(){ return 'Sum=' + JXG.toFixed(r.Value(), 4); }]);
+ *   var t = board.create('text',[-2,-2, function(){ return 'Sum=' + JXG2.toFixed(r.Value(), 4); }]);
  * })();
  * </script><pre>
  */
-JXG.createRiemannsum = function (board, parents, attributes) {
+JXG2.createRiemannsum = function (board, parents, attributes) {
     var n, type, f, par, c, attr;
 
     attr = Type.copyAttributes(attributes, board.options, 'riemannsum');
@@ -2487,7 +2487,7 @@ JXG.createRiemannsum = function (board, parents, attributes) {
 
     if (!Type.exists(n)) {
         throw new Error(
-            "JSXGraph: JXG.createRiemannsum: argument '2' n has to be number or function." +
+            "JSXGraph: JXG2.createRiemannsum: argument '2' n has to be number or function." +
             "\nPossible parent types: [function,n:number|function,type,start:number|function,end:number|function]"
         );
     }
@@ -2499,7 +2499,7 @@ JXG.createRiemannsum = function (board, parents, attributes) {
     type = Type.createFunction(parents[2], board, "");
     if (!Type.exists(type)) {
         throw new Error(
-            "JSXGraph: JXG.createRiemannsum: argument 3 'type' has to be string or function." +
+            "JSXGraph: JXG2.createRiemannsum: argument 3 'type' has to be string or function." +
             "\nPossible parent types: [function,n:number|function,type,start:number|function,end:number|function]"
         );
     }
@@ -2538,20 +2538,20 @@ JXG.createRiemannsum = function (board, parents, attributes) {
     return c;
 };
 
-JXG.registerElement("riemannsum", JXG.createRiemannsum);
+JXG2.registerElement("riemannsum", JXG2.createRiemannsum);
 
 /**
  * @class A trace curve is simple locus curve showing the orbit of a point that depends on a glider point.
  * @pseudo
  * @name Tracecurve
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
  * @type Object
- * @descript JXG.Curve
+ * @descript JXG2.Curve
  * @param {Point} Parent elements of Tracecurve are a
  *         glider point and a point whose locus is traced.
  * @param {point}
- * @see JXG.Curve
+ * @see JXG2.Curve
  * @example
  * // Create trace curve.
  * var c1 = board.create('circle',[[0, 0], [2, 0]]),
@@ -2563,7 +2563,7 @@ JXG.registerElement("riemannsum", JXG.createRiemannsum);
  *
  * </pre><div class="jxgbox" id="JXG5749fb7d-04fc-44d2-973e-45c1951e29ad" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
- *   var tc1_board = JXG.JSXGraph.initBoard('JXG5749fb7d-04fc-44d2-973e-45c1951e29ad', {boundingbox: [-4, 4, 4, -4], axis: false, showcopyright: false, shownavigation: false});
+ *   var tc1_board = JXG2.JSXGraph.initBoard('JXG5749fb7d-04fc-44d2-973e-45c1951e29ad', {boundingbox: [-4, 4, 4, -4], axis: false, showcopyright: false, shownavigation: false});
  *   var c1 = tc1_board.create('circle',[[0, 0], [2, 0]]),
  *       p1 = tc1_board.create('point',[-3, 1]),
  *       g1 = tc1_board.create('glider',[2, 1, c1]),
@@ -2572,7 +2572,7 @@ JXG.registerElement("riemannsum", JXG.createRiemannsum);
  *       curve = tc1_board.create('tracecurve', [g1, p2]);
  * </script><pre>
  */
-JXG.createTracecurve = function (board, parents, attributes) {
+JXG2.createTracecurve = function (board, parents, attributes) {
     var c, glider, tracepoint, attr;
 
     if (parents.length !== 2) {
@@ -2696,7 +2696,7 @@ JXG.createTracecurve = function (board, parents, attributes) {
     return c;
 };
 
-JXG.registerElement("tracecurve", JXG.createTracecurve);
+JXG2.registerElement("tracecurve", JXG2.createTracecurve);
 
 /**
      * @class A step function is a function graph that is piecewise constant.
@@ -2705,24 +2705,24 @@ JXG.registerElement("tracecurve", JXG.createTracecurve);
      * they can be accessed by curve.xterm and curve.yterm.
      * @pseudo
      * @name Stepfunction
-     * @augments JXG.Curve
+     * @augments JXG2.Curve
      * @constructor
      * @type Curve
-     * @description JXG.Curve
+     * @description JXG2.Curve
      * @param {Array|Function} Parent1 elements of Stepfunction are two arrays containing the coordinates.
      * @param {Array|Function} Parent2
-     * @see JXG.Curve
+     * @see JXG2.Curve
      * @example
      * // Create step function.
      var curve = board.create('stepfunction', [[0,1,2,3,4,5], [1,3,0,2,2,1]]);
 
      * </pre><div class="jxgbox" id="JXG32342ec9-ad17-4339-8a97-ff23dc34f51a" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
-     *   var sf1_board = JXG.JSXGraph.initBoard('JXG32342ec9-ad17-4339-8a97-ff23dc34f51a', {boundingbox: [-1, 5, 6, -2], axis: true, showcopyright: false, shownavigation: false});
+     *   var sf1_board = JXG2.JSXGraph.initBoard('JXG32342ec9-ad17-4339-8a97-ff23dc34f51a', {boundingbox: [-1, 5, 6, -2], axis: true, showcopyright: false, shownavigation: false});
      *   var curve = sf1_board.create('stepfunction', [[0,1,2,3,4,5], [1,3,0,2,2,1]]);
      * </script><pre>
      */
-JXG.createStepfunction = function (board, parents, attributes) {
+JXG2.createStepfunction = function (board, parents, attributes) {
     var c, attr;
     if (parents.length !== 2) {
         throw new Error(
@@ -2766,18 +2766,18 @@ JXG.createStepfunction = function (board, parents, attributes) {
     return c;
 };
 
-JXG.registerElement("stepfunction", JXG.createStepfunction);
+JXG2.registerElement("stepfunction", JXG2.createStepfunction);
 
 /**
  * @class A curve visualizing the function graph of the (numerical) derivative of a given curve.
  *
  * @pseudo
  * @name Derivative
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
- * @param {JXG.Curve} Parent Curve for which the derivative is generated.
- * @see JXG.Curve
+ * @type JXG2.Curve
+ * @param {JXG2.Curve} Parent Curve for which the derivative is generated.
+ * @see JXG2.Curve
  * @example
  * var cu = board.create('cardinalspline', [[[-3,0], [-1,2], [0,1], [2,0], [3,1]], 0.5, 'centripetal'], {createPoints: false});
  * var d = board.create('derivative', [cu], {dash: 2});
@@ -2785,7 +2785,7 @@ JXG.registerElement("stepfunction", JXG.createStepfunction);
  * </pre><div id="JXGb9600738-1656-11e8-8184-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGb9600738-1656-11e8-8184-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXGb9600738-1656-11e8-8184-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var cu = board.create('cardinalspline', [[[-3,0], [-1,2], [0,1], [2,0], [3,1]], 0.5, 'centripetal'], {createPoints: false});
  *     var d = board.create('derivative', [cu], {dash: 2});
@@ -2795,7 +2795,7 @@ JXG.registerElement("stepfunction", JXG.createStepfunction);
  * </script><pre>
  *
  */
-JXG.createDerivative = function (board, parents, attributes) {
+JXG2.createDerivative = function (board, parents, attributes) {
     var c, curve, dx, dy, attr;
 
     if (parents.length !== 1 && parents[0].class !== OBJECT_CLASS.CURVE) {
@@ -2831,7 +2831,7 @@ JXG.createDerivative = function (board, parents, attributes) {
     return c;
 };
 
-JXG.registerElement("derivative", JXG.createDerivative);
+JXG2.registerElement("derivative", JXG2.createDerivative);
 
 /**
  * @class The path forming the intersection of two closed path elements.
@@ -2840,11 +2840,11 @@ JXG.registerElement("derivative", JXG.createDerivative);
  * The resulting element is of type curve.
  * @pseudo
  * @name CurveIntersection
- * @param {JXG.Curve|JXG.Polygon|JXG.Circle} curve1 First element which is intersected
- * @param {JXG.Curve|JXG.Polygon|JXG.Circle} curve2 Second element which is intersected
- * @augments JXG.Curve
+ * @param {JXG2.Curve|JXG2.Polygon|JXG2.Circle} curve1 First element which is intersected
+ * @param {JXG2.Curve|JXG2.Polygon|JXG2.Circle} curve2 Second element which is intersected
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  *
  * @example
  * var f = board.create('functiongraph', ['cos(x)']);
@@ -2855,7 +2855,7 @@ JXG.registerElement("derivative", JXG.createDerivative);
  * </pre><div id="JXGe2948257-8835-4276-9164-8acccb48e8d4" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGe2948257-8835-4276-9164-8acccb48e8d4',
+ *         var board = JXG2.JSXGraph.initBoard('JXGe2948257-8835-4276-9164-8acccb48e8d4',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var f = board.create('functiongraph', ['cos(x)']);
  *     var ineq = board.create('inequality', [f], {inverse: true, fillOpacity: 0.1});
@@ -2867,7 +2867,7 @@ JXG.registerElement("derivative", JXG.createDerivative);
  * </script><pre>
  *
  */
-JXG.createCurveIntersection = function (board, parents, attributes) {
+JXG2.createCurveIntersection = function (board, parents, attributes) {
     var c;
 
     if (parents.length !== 2) {
@@ -2897,11 +2897,11 @@ JXG.createCurveIntersection = function (board, parents, attributes) {
  * The resulting element is of type curve.
  * @pseudo
  * @name CurveUnion
- * @param {JXG.Curve|JXG.Polygon|JXG.Circle} curve1 First element defining the union
- * @param {JXG.Curve|JXG.Polygon|JXG.Circle} curve2 Second element defining the union
- * @augments JXG.Curve
+ * @param {JXG2.Curve|JXG2.Polygon|JXG2.Circle} curve1 First element defining the union
+ * @param {JXG2.Curve|JXG2.Polygon|JXG2.Circle} curve2 Second element defining the union
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  *
  * @example
  * var f = board.create('functiongraph', ['cos(x)']);
@@ -2912,7 +2912,7 @@ JXG.createCurveIntersection = function (board, parents, attributes) {
  * </pre><div id="JXGe2948257-8835-4276-9164-8acccb48e8d4" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGe2948257-8835-4276-9164-8acccb48e8d4',
+ *         var board = JXG2.JSXGraph.initBoard('JXGe2948257-8835-4276-9164-8acccb48e8d4',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var f = board.create('functiongraph', ['cos(x)']);
  *     var ineq = board.create('inequality', [f], {inverse: true, fillOpacity: 0.1});
@@ -2924,7 +2924,7 @@ JXG.createCurveIntersection = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG.createCurveUnion = function (board, parents, attributes) {
+JXG2.createCurveUnion = function (board, parents, attributes) {
     var c;
 
     if (parents.length !== 2) {
@@ -2954,11 +2954,11 @@ JXG.createCurveUnion = function (board, parents, attributes) {
  * The resulting element is of type curve.
  * @pseudo
  * @name CurveDifference
- * @param {JXG.Curve|JXG.Polygon|JXG.Circle} curve1 First element from which the second element is "subtracted"
- * @param {JXG.Curve|JXG.Polygon|JXG.Circle} curve2 Second element which is subtracted from the first element
- * @augments JXG.Curve
+ * @param {JXG2.Curve|JXG2.Polygon|JXG2.Circle} curve1 First element from which the second element is "subtracted"
+ * @param {JXG2.Curve|JXG2.Polygon|JXG2.Circle} curve2 Second element which is subtracted from the first element
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  *
  * @example
  * var f = board.create('functiongraph', ['cos(x)']);
@@ -2969,7 +2969,7 @@ JXG.createCurveUnion = function (board, parents, attributes) {
  * </pre><div id="JXGe2948257-8835-4276-9164-8acccb48e8d4" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGe2948257-8835-4276-9164-8acccb48e8d4',
+ *         var board = JXG2.JSXGraph.initBoard('JXGe2948257-8835-4276-9164-8acccb48e8d4',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var f = board.create('functiongraph', ['cos(x)']);
  *     var ineq = board.create('inequality', [f], {inverse: true, fillOpacity: 0.1});
@@ -2981,7 +2981,7 @@ JXG.createCurveUnion = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG.createCurveDifference = function (board, parents, attributes) {
+JXG2.createCurveDifference = function (board, parents, attributes) {
     var c;
 
     if (parents.length !== 2) {
@@ -3004,22 +3004,22 @@ JXG.createCurveDifference = function (board, parents, attributes) {
     return c;
 };
 
-JXG.registerElement("curvedifference", JXG.createCurveDifference);
-JXG.registerElement("curveintersection", JXG.createCurveIntersection);
-JXG.registerElement("curveunion", JXG.createCurveUnion);
+JXG2.registerElement("curvedifference", JXG2.createCurveDifference);
+JXG2.registerElement("curveintersection", JXG2.createCurveIntersection);
+JXG2.registerElement("curveunion", JXG2.createCurveUnion);
 
 // /**
 //  * @class Concat of two path elements, in general neither is a closed path. The parent elements have to be curves, too.
 //  * The resulting element is of type curve. The curve points are simply concatenated.
 //  * @pseudo
 //  * @name CurveConcat
-//  * @param {JXG.Curve} curve1 First curve element.
-//  * @param {JXG.Curve} curve2 Second curve element.
-//  * @augments JXG.Curve
+//  * @param {JXG2.Curve} curve1 First curve element.
+//  * @param {JXG2.Curve} curve2 Second curve element.
+//  * @augments JXG2.Curve
 //  * @constructor
-//  * @type JXG.Curve
+//  * @type JXG2.Curve
 //  */
-// JXG.createCurveConcat = function (board, parents, attributes) {
+// JXG2.createCurveConcat = function (board, parents, attributes) {
 //     var c;
 
 //     if (parents.length !== 2) {
@@ -3036,7 +3036,7 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
 //      */
 //     c.updateCurve = function () {
 //         this.points = parents[0].points.concat(
-//                 [new JXG.Coords(COORDS_BY.USER, [NaN, NaN], this.board)]
+//                 [new JXG2.Coords(COORDS_BY.USER, [NaN, NaN], this.board)]
 //             ).concat(parents[1].points);
 //         this.numberPoints = this.points.length;
 //         return this;
@@ -3045,7 +3045,7 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
 //     return c;
 // };
 
-// JXG.registerElement("curveconcat", JXG.createCurveConcat);
+// JXG2.registerElement("curveconcat", JXG2.createCurveConcat);
 
 /**
  * @class Vertical or horizontal box plot curve to present numerical data through their quartiles.
@@ -3056,9 +3056,9 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
  * @param {Number|Function} axis Axis position of the box plot
  * @param {Number|Function} width Width of the rectangle part of the box plot. The width of the first and 4th quantile
  * is relative to this width and can be controlled by the attribute "smallWidth".
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  *
  * @example
  * var Q = [ -1, 2, 3, 3.5, 5 ];
@@ -3068,7 +3068,7 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
  * </pre><div id="JXG13eb23a1-a641-41a2-be11-8e03e400a947" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG13eb23a1-a641-41a2-be11-8e03e400a947',
+ *         var board = JXG2.JSXGraph.initBoard('JXG13eb23a1-a641-41a2-be11-8e03e400a947',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var Q = [ -1, 2, 3, 3.5, 5 ];
  *     var b = board.create('boxplot', [Q, 2, 4], {strokeWidth: 3});
@@ -3084,7 +3084,7 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
  * </pre><div id="JXG0deb9cb2-84bc-470d-a6db-8be9a5694813" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG0deb9cb2-84bc-470d-a6db-8be9a5694813',
+ *         var board = JXG2.JSXGraph.initBoard('JXG0deb9cb2-84bc-470d-a6db-8be9a5694813',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var Q = [ -1, 2, 3, 3.5, 5 ];
  *     var b = board.create('boxplot', [Q, 3, 4], {dir: 'horizontal', smallWidth: 0.25, color:'red'});
@@ -3106,7 +3106,7 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
  * </pre><div id="JXGef079e76-ae99-41e4-af29-1d07d83bf85a" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGef079e76-ae99-41e4-af29-1d07d83bf85a',
+ *         var board = JXG2.JSXGraph.initBoard('JXGef079e76-ae99-41e4-af29-1d07d83bf85a',
  *             {boundingbox: [-5,90,5,30], axis: true, showcopyright: false, shownavigation: false});
  *     var data = [57, 57, 57, 58, 63, 66, 66, 67, 67, 68, 69, 70, 70, 70, 70, 72, 73, 75, 75, 76, 76, 78, 79, 81];
  *     var Q = [];
@@ -3131,7 +3131,7 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
  * </pre><div id="JXG3b3225da-52f0-42fe-8396-be9016bf289b" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG3b3225da-52f0-42fe-8396-be9016bf289b',
+ *         var board = JXG2.JSXGraph.initBoard('JXG3b3225da-52f0-42fe-8396-be9016bf289b',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var mi = board.create('glider', [0, -1, board.defaultAxes.y]);
  *     var ma = board.create('glider', [0, 5, board.defaultAxes.y]);
@@ -3144,7 +3144,7 @@ JXG.registerElement("curveunion", JXG.createCurveUnion);
  * </script><pre>
  *
  */
-JXG.createBoxPlot = function (board, parents, attributes) {
+JXG2.createBoxPlot = function (board, parents, attributes) {
     var box, i, len,
         attr = Type.copyAttributes(attributes, board.options, 'boxplot');
 
@@ -3220,7 +3220,7 @@ JXG.createBoxPlot = function (board, parents, attributes) {
     return box;
 };
 
-JXG.registerElement("boxplot", JXG.createBoxPlot);
+JXG2.registerElement("boxplot", JXG2.createBoxPlot);
 
 /**
  * @class An implicit curve is a plane curve defined by an implicit equation
@@ -3257,9 +3257,9 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  * @param {Array|Function} [rangey=boundingbox] Optional array of length 2
  * of the form [y_min, y_max] setting the domain of the y coordinate of the implicit curve.
  * If not supplied, the board's boundingbox (+ the attribute 'margin') is taken.
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  *
  * @example
  *   var f, c;
@@ -3273,7 +3273,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  * </pre><div id="JXGa6e86701-1a82-48d0-b007-3a3d32075076" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGa6e86701-1a82-48d0-b007-3a3d32075076',
+ *         var board = JXG2.JSXGraph.initBoard('JXGa6e86701-1a82-48d0-b007-3a3d32075076',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var f, c;
  *             f = (x, y) => 1 / 16 * x ** 2 + y ** 2 - 1;
@@ -3304,7 +3304,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  * </pre><div id="JXG0b133a54-9509-4a65-9722-9c5145e23b40" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG0b133a54-9509-4a65-9722-9c5145e23b40',
+ *         var board = JXG2.JSXGraph.initBoard('JXG0b133a54-9509-4a65-9722-9c5145e23b40',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var a, c, f;
  *             a = board.create('slider', [[-3, 6], [3, 6], [-3, 1, 3]], {
@@ -3333,7 +3333,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  * </pre><div id="JXG02802981-0abb-446b-86ea-ee588f02ed1a" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG02802981-0abb-446b-86ea-ee588f02ed1a',
+ *         var board = JXG2.JSXGraph.initBoard('JXG02802981-0abb-446b-86ea-ee588f02ed1a',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var c = board.create('implicitcurve', ['abs(x * y) - 3'], {
  *                 strokeWidth: 3,
@@ -3363,7 +3363,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  * </pre><div id="JXGccee9aab-6dd9-4a79-827d-3164f70cc6a1" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGccee9aab-6dd9-4a79-827d-3164f70cc6a1',
+ *         var board = JXG2.JSXGraph.initBoard('JXGccee9aab-6dd9-4a79-827d-3164f70cc6a1',
  *             {boundingbox: [-1, 5, 5,-1], axis: true, showcopyright: false, shownavigation: false});
  *         var niveauline = [];
  *         niveauline = [0.5, 1, 1.5, 2];
@@ -3384,7 +3384,7 @@ JXG.registerElement("boxplot", JXG.createBoxPlot);
  * </script><pre>
  *
  */
-JXG.createImplicitCurve = function (board, parents, attributes) {
+JXG2.createImplicitCurve = function (board, parents, attributes) {
     var c, attr;
 
     if ([1, 3, 5].indexOf(parents.length) < 0) {
@@ -3551,27 +3551,27 @@ JXG.createImplicitCurve = function (board, parents, attributes) {
     return c;
 };
 
-JXG.registerElement("implicitcurve", JXG.createImplicitCurve);
+JXG2.registerElement("implicitcurve", JXG2.createImplicitCurve);
 
 
-export default JXG.Curve;
+export default JXG2.Curve;
 
 // export default {
-//     Curve: JXG.Curve,
-//     createCardinalSpline: JXG.createCardinalSpline,
-//     createCurve: JXG.createCurve,
-//     createCurveDifference: JXG.createCurveDifference,
-//     createCurveIntersection: JXG.createCurveIntersection,
-//     createCurveUnion: JXG.createCurveUnion,
-//     createDerivative: JXG.createDerivative,
-//     createFunctiongraph: JXG.createFunctiongraph,
-//     createMetapostSpline: JXG.createMetapostSpline,
-//     createPlot: JXG.createFunctiongraph,
-//     createSpline: JXG.createSpline,
-//     createRiemannsum: JXG.createRiemannsum,
-//     createStepfunction: JXG.createStepfunction,
-//     createTracecurve: JXG.createTracecurve
+//     Curve: JXG2.Curve,
+//     createCardinalSpline: JXG2.createCardinalSpline,
+//     createCurve: JXG2.createCurve,
+//     createCurveDifference: JXG2.createCurveDifference,
+//     createCurveIntersection: JXG2.createCurveIntersection,
+//     createCurveUnion: JXG2.createCurveUnion,
+//     createDerivative: JXG2.createDerivative,
+//     createFunctiongraph: JXG2.createFunctiongraph,
+//     createMetapostSpline: JXG2.createMetapostSpline,
+//     createPlot: JXG2.createFunctiongraph,
+//     createSpline: JXG2.createSpline,
+//     createRiemannsum: JXG2.createRiemannsum,
+//     createStepfunction: JXG2.createStepfunction,
+//     createTracecurve: JXG2.createTracecurve
 // };
 
-// const Curve = JXG.Curve;
+// const Curve = JXG2.Curve;
 // export { Curve as default, Curve};

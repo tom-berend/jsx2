@@ -75,24 +75,24 @@
  * @author Anders Gustafsson, Cureos AB. Translation to Javascript by Reinhard Oldenburg, Goethe-University
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true, continue: true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import {JSXMath} from "./math.js";
 // import {Type} from "../utils/type.js";
 
 /**
- * The JXG.JSXMath.Nlp namespace holds numerical algorithms for non-linear optimization.
- * @name JXG.JSXMath.Nlp
+ * The JXG2.JSXMath.Nlp namespace holds numerical algorithms for non-linear optimization.
+ * @name JXG2.JSXMath.Nlp
  * @namespace
  *
  */
 
-if(JXG.JSXMath === undefined)
-    JXG.JSXMath= {}
+if(JXG2.JSXMath === undefined)
+    JXG2.JSXMath= {}
 
-JXG.JSXMath.Nlp = {
+JXG2.JSXMath.Nlp = {
     arr: function (n) {
         // Is 0 initialized
         return new Float64Array(n);
@@ -129,7 +129,7 @@ JXG.JSXMath.Nlp = {
     /**
      * Minimizes the objective function F with respect to a set of inequality constraints CON,
      * and returns the optimal variable array. F and CON may be non-linear, and should preferably be smooth.
-     * Calls {@link JXG.JSXMath.Nlp#cobylb}.
+     * Calls {@link JXG2.JSXMath.Nlp#cobylb}.
      *
      * @param calcfc Interface implementation for calculating objective function and constraints.
      * @param n Number of variables.
@@ -1397,4 +1397,4 @@ JXG.JSXMath.Nlp = {
     }
 };
 
-export default JXG.JSXMath.Nlp;
+export default JXG2.JSXMath.Nlp;

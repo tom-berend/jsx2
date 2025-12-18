@@ -26,13 +26,13 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
 /**
  * Create axes and rear and front walls of the
  * view3d bounding box bbox3D.
  */
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {Type} from "../utils/type.js";
 import {JSXMath} from "../math/math.js";
 
@@ -58,7 +58,7 @@ import {JSXMath} from "../math/math.js";
  * The step width of the ticks is determined by the attribute "ticksDistance".
  *
  */
-JXG.createTicks3D = function (board, parents, attributes) {
+JXG2.createTicks3D = function (board, parents, attributes) {
     var view = parents[0],
         point = parents[1],
         dir1 = parents[2],
@@ -209,4 +209,4 @@ JXG.createTicks3D = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("ticks3d", JXG.createTicks3D);
+JXG2.registerElement("ticks3d", JXG2.createTicks3D);

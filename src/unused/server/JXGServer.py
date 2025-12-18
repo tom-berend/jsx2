@@ -7,7 +7,7 @@ import base64
 # CGI variables handling
 import cgi
 
-import JXG
+import JXG2
 import inspect
 
 
@@ -24,7 +24,7 @@ def default_action(req, resp):
     action = req.getvalue('action', 'empty')
     resp.error("action \"" + action + "\" is undefined")
     return resp.dump()
-    
+
 def import_module(plugin, resp):
     try:
         __import__(plugin, None, None, [''])
@@ -86,7 +86,7 @@ actions_map = {                         \
                  'load': load_module,   \
                  'exec': exec_module    \
               }
-ret = actions_map.get(action, default_action)(JXG.Request(action, id, data), JXG.Response(id))
+ret = actions_map.get(action, default_action)(JXG2.Request(action, id, data), JXG2.Response(id))
 
 print_httpheader()
 

@@ -1,4 +1,4 @@
-/*global JXG: true, define: true, escape: true, unescape: true*/
+/*global JXG2: true, define: true, escape: true, unescape: true*/
 /*jslint nomen: true, plusplus: true, bitwise: true*/
 
 

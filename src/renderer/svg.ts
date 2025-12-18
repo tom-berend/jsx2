@@ -32,10 +32,10 @@ const dbugColor = `color:blue;background-color:#ff0000`;
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, AMprocessNode: true, MathJax: true, document: true */
+/*global JXG2: true, define: true, AMprocessNode: true, MathJax: true, document: true */
 /*jslint nomen: true, plusplus: true, newcap:true*/
 
-// import { JXG } from "../jxg.js";
+// import { JXG2 } from "../jxg.js";
 import Options from "../options.js";
 import { AbstractRenderer } from "./abstract.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
@@ -52,14 +52,14 @@ import { Dim, SVGType } from "../interfaces.js"
 
 
 /**
- * Uses SVG to implement the rendering methods defined in {@link JXG.AbstractRenderer}.
- * @class JXG.SVGRenderer
- * @augments JXG.AbstractRenderer
+ * Uses SVG to implement the rendering methods defined in {@link JXG2.AbstractRenderer}.
+ * @class JXG2.SVGRenderer
+ * @augments JXG2.AbstractRenderer
  * @param {Node} container Reference to a DOM node containing the board.
  * @param {Object} dim The dimensions of the board
  * @param {Number} dim.width
  * @param {Number} dim.height
- * @see JXG.AbstractRenderer
+ * @see JXG2.AbstractRenderer
  */
 
 
@@ -285,7 +285,7 @@ export class SVGRenderer extends AbstractRenderer {
      *
      * @params {String} str variable number of strings
      * @returns String
-     * @see JXG.SVGRenderer#toURL
+     * @see JXG2.SVGRenderer#toURL
      * @private
      * @example
      * this.toStr('aaa', '_', 'bbb', 'TriangleEnd')
@@ -305,11 +305,11 @@ export class SVGRenderer extends AbstractRenderer {
     /**
      * Combine arguments to an URL string of the form
      * url(#...)
-     * Masks the container id. Calls {@link JXG.SVGRenderer#toStr}.
+     * Masks the container id. Calls {@link JXG2.SVGRenderer#toStr}.
      *
      * @params {String} str variable number of strings
      * @returns URL string
-     * @see JXG.SVGRenderer#toStr
+     * @see JXG2.SVGRenderer#toStr
      * @private
      * @example
      * this.toURL('aaa', '_', 'bbb', 'TriangleEnd')
@@ -337,7 +337,7 @@ export class SVGRenderer extends AbstractRenderer {
     /**
      * Creates an arrow DOM node. Arrows are displayed in SVG with a <em>marker</em> tag.
      * @private
-     * @param {JXG.GeometryElement} el A JSXGraph element, preferably one that can have an arrow attached.
+     * @param {JXG2.GeometryElement} el A JSXGraph element, preferably one that can have an arrow attached.
      * @param {String} [idAppendix=''] A string that is added to the node's id.
      * @returns {Node} Reference to the node added to the DOM.
      */
@@ -538,7 +538,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Node} node The arrow node.
      * @param {String} color Color value in a HTML compatible format, e.g. <tt>#00ff00</tt> or <tt>green</tt> for green.
      * @param {Number} opacity
-     * @param {JXG.GeometryElement} el The element the arrows are to be attached to
+     * @param {JXG2.GeometryElement} el The element the arrows are to be attached to
      */
     _setArrowColor(node, color, opacity, el, type) {
         if (node) {
@@ -602,14 +602,14 @@ export class SVGRenderer extends AbstractRenderer {
     /* ********* Line related stuff *********** */
 
     /**
-     * Update {@link Ticks} on a {@link JXG.Line}. This method is only a stub and has to be implemented
+     * Update {@link Ticks} on a {@link JXG2.Line}. This method is only a stub and has to be implemented
      * in any descendant renderer class.
-     * @param {JXG.Ticks} el Reference of a ticks object that has to be updated.
+     * @param {JXG2.Ticks} el Reference of a ticks object that has to be updated.
      * @see Line
      * @see Ticks
-     * @see JXG.Line
-     * @see JXG.Ticks
-     * @see JXG.AbstractRenderer#drawTicks
+     * @see JXG2.Line
+     * @see JXG2.Ticks
+     * @see JXG2.AbstractRenderer#drawTicks
      */
     updateTicks(ticks) {
         var i,
@@ -673,7 +673,7 @@ export class SVGRenderer extends AbstractRenderer {
      * Shows a small copyright notice in the top left corner of the board.
      * @param {String} str The copyright notice itself
      * @param {Number} fontsize Size of the font the copyright notice is written in
-     * @see JXG.AbstractRenderer#displayLogo
+     * @see JXG2.AbstractRenderer#displayLogo
      * @see Text#fontSize
      */
     displayCopyright(str: string, fontsize: number) {
@@ -703,7 +703,7 @@ export class SVGRenderer extends AbstractRenderer {
      * Shows a small JSXGraph logo in the top left corner of the board.
      * @param {String} str The data-URL of the logo
      * @param {Number} fontsize Size of the font the copyright notice is written in
-     * @see JXG.AbstractRenderer#displayCopyright
+     * @see JXG2.AbstractRenderer#displayCopyright
      * @see Text#fontSize
      */
     displayLogo(str, fontsize) {
@@ -725,16 +725,16 @@ export class SVGRenderer extends AbstractRenderer {
     }
 
     /**
-     * An internal text is a {@link JXG.Text} element which is drawn using only
+     * An internal text is a {@link JXG2.Text} element which is drawn using only
      * the given renderer but no HTML. This method is only a stub, the drawing
      * is done in the special renderers.
-     * @param {JXG.Text} el Reference to a {@link JXG.Text} object
+     * @param {JXG2.Text} el Reference to a {@link JXG2.Text} object
      * @see Text
-     * @see JXG.Text
-     * @see JXG.AbstractRenderer#updateInternalText
-     * @see JXG.AbstractRenderer#drawText
-     * @see JXG.AbstractRenderer#updateText
-     * @see JXG.AbstractRenderer#updateTextStyle
+     * @see JXG2.Text
+     * @see JXG2.AbstractRenderer#updateInternalText
+     * @see JXG2.AbstractRenderer#drawText
+     * @see JXG2.AbstractRenderer#updateText
+     * @see JXG2.AbstractRenderer#updateTextStyle
      */
     drawInternalText(el/*: GeometryElement*/) {
         // console.log('drawInternalText', el)
@@ -756,14 +756,14 @@ export class SVGRenderer extends AbstractRenderer {
     }
 
     /**
-     * Updates visual properties of an already existing {@link JXG.Text} element.
-     * @param {JXG.Text} el Reference to an {@link JXG.Text} object, that has to be updated.
+     * Updates visual properties of an already existing {@link JXG2.Text} element.
+     * @param {JXG2.Text} el Reference to an {@link JXG2.Text} object, that has to be updated.
      * @see Text
-     * @see JXG.Text
-     * @see JXG.AbstractRenderer#drawInternalText
-     * @see JXG.AbstractRenderer#drawText
-     * @see JXG.AbstractRenderer#updateText
-     * @see JXG.AbstractRenderer#updateTextStyle
+     * @see JXG2.Text
+     * @see JXG2.AbstractRenderer#drawInternalText
+     * @see JXG2.AbstractRenderer#drawText
+     * @see JXG2.AbstractRenderer#updateText
+     * @see JXG2.AbstractRenderer#updateTextStyle
      */
     updateInternalText(el) {
         var content = el.plaintext,
@@ -838,8 +838,8 @@ export class SVGRenderer extends AbstractRenderer {
     /**
      * Set color and opacity of internal texts.
      * @private
-     * @see JXG.AbstractRenderer#updateTextStyle
-     * @see JXG.AbstractRenderer#updateInternalTextStyle
+     * @see JXG2.AbstractRenderer#updateTextStyle
+     * @see JXG2.AbstractRenderer#updateInternalTextStyle
      */
     updateInternalTextStyle(el/*: GeometryElement*/, strokeColor: string, strokeOpacity: number) {
         this.setObjectFillColor(el, strokeColor, strokeOpacity);
@@ -848,12 +848,12 @@ export class SVGRenderer extends AbstractRenderer {
     /* ********* Image related stuff *********** */
 
     /**
-     * Draws an {@link JXG.Image} on a board; This is just a template that has to be implemented by special
+     * Draws an {@link JXG2.Image} on a board; This is just a template that has to be implemented by special
      * renderers.
-     * @param {JXG.Image} el Reference to the image object that is to be drawn
+     * @param {JXG2.Image} el Reference to the image object that is to be drawn
      * @see Image
-     * @see JXG.Image
-     * @see JXG.AbstractRenderer#updateImage
+     * @see JXG2.Image
+     * @see JXG2.AbstractRenderer#updateImage
      */
     drawImage(el) {
         var node = this.createPrim("image", el.id);
@@ -872,8 +872,8 @@ export class SVGRenderer extends AbstractRenderer {
      * Only affine transformation are supported, no proper projective transformations. This means, the
      * respective entries of the transformation matrix are simply ignored.
      *
-     * @param {JXG.Image|JXG.Text} el A {@link JXG.Image} or {@link JXG.Text} object.
-     * @param {Array} transformations An array of {@link JXG.Transformation} objects. This is usually the
+     * @param {JXG2.Image|JXG2.Text} el A {@link JXG2.Image} or {@link JXG2.Text} object.
+     * @param {Array} transformations An array of {@link JXG2.Transformation} objects. This is usually the
      * transformations property of the given element <tt>el</tt>.
      */
     transformRect(el, t) {
@@ -914,8 +914,8 @@ export class SVGRenderer extends AbstractRenderer {
 
     /**
      * If the URL of the image is provided by a function the URL has to be updated during updateImage()
-     * @param {JXG.Image} el Reference to an image object.
-     * @see JXG.AbstractRenderer#updateImage
+     * @param {JXG2.Image} el Reference to an image object.
+     * @see JXG2.AbstractRenderer#updateImage
      */
     updateImageURL(el) {
         var url = el.eval(el.url);
@@ -931,7 +931,7 @@ export class SVGRenderer extends AbstractRenderer {
         return false;
     }
 
-    // Already documented in JXG.AbstractRenderer
+    // Already documented in JXG2.AbstractRenderer
     updateImageStyle(el, doHighlight) {
         var css = el.evalVisProp(
             doHighlight ? 'highlightcssclass' : 'cssclass'
@@ -940,7 +940,7 @@ export class SVGRenderer extends AbstractRenderer {
         el.rendNode.setAttributeNS(null, "class", css);
     }
 
-    // Already documented in JXG.AbstractRenderer
+    // Already documented in JXG2.AbstractRenderer
     drawForeignObject(el) {
         el.rendNode = this.appendChildPrim(
             this.createPrim("foreignObject", el.id),
@@ -951,7 +951,7 @@ export class SVGRenderer extends AbstractRenderer {
         this.updateForeignObject(el);
     }
 
-    // Already documented in JXG.AbstractRenderer
+    // Already documented in JXG2.AbstractRenderer
     updateForeignObject(el) {
         if (el._useUserSize) {
             el.rendNode.style.overflow = "hidden";
@@ -979,10 +979,10 @@ export class SVGRenderer extends AbstractRenderer {
     /**
     * Stores the rendering nodes.
     * the <tt>createPrim</tt> method.
-    * @param {JXG.GeometryElement} el A JSXGraph element.
+    * @param {JXG2.GeometryElement} el A JSXGraph element.
     * @param {String} type The XML node name. Only used in VMLRenderer.
     */
-    // Already documented in JXG.AbstractRenderer
+    // Already documented in JXG2.AbstractRenderer
     appendNodesToElement(el, type: string) {
         if (type === "shape" || type === "path" || type === 'polygon') {
             el.rendNodePath = this.getElementById(el.id + "_path");
@@ -998,7 +998,7 @@ export class SVGRenderer extends AbstractRenderer {
      * Appends a node to a specific layer level.
      * @param {Node} node A DOM tree node.
      * @param {Number} level The layer the node is attached to. This is the index of the layer in
-     * {@link JXG.SVGRenderer#layer} or the <tt>z-index</tt> style property of the node in SVGRenderer.
+     * {@link JXG2.SVGRenderer#layer} or the <tt>z-index</tt> style property of the node in SVGRenderer.
      */
     appendChildPrim(node: Node, level: number = 0) {  // trace nodes have level not set
 
@@ -1071,7 +1071,7 @@ export class SVGRenderer extends AbstractRenderer {
     /**
      * Can be used to create the nodes to display arrows. This is an abstract method which has to be implemented
      * in any descendant renderer.
-     * @param {JXG.GeometryElement} el The element the arrows are to be attached to.
+     * @param {JXG2.GeometryElement} el The element the arrows are to be attached to.
      * @param {Object} arrowData Data concerning possible arrow heads
     *
      */
@@ -1180,7 +1180,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Number} p1y The first point's y coordinate.
      * @param {Number} p2x The second point's x coordinate.
      * @param {Number} p2y The second point's y coordinate.
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      */
     updateLinePrim(node, p1x, p1y, p2x, p2y) {
         var huge = 1000000;
@@ -1207,7 +1207,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Node} node The path node.
      * @param {String} pathString A string formatted like e.g. <em>'M 1,2 L 3,1 L5,5'</em>. The format of the string
      * depends on the rendering engine.
-     * @param {JXG.Board} board Reference to the element's board.
+     * @param {JXG2.Board} board Reference to the element's board.
      */
     updatePathPrim(node, pointString, board: Board) {
         if (pointString === "") {
@@ -1221,7 +1221,7 @@ export class SVGRenderer extends AbstractRenderer {
      * the format of such a string usually depends on the renderer this method
      * is only an abstract method. Therefore, it has to be implemented in the descendant renderer itself unless
      * the renderer does not use the createPrim interface but the draw* interfaces to paint.
-     * @param {JXG.Point} el The point element
+     * @param {JXG2.Point} el The point element
      * @param {Number} size A positive number describing the size. Usually the half of the width and height of
      * the drawn point.
      * @param {String} type A string describing the point's face. This method only accepts the shortcut version of
@@ -1376,10 +1376,10 @@ export class SVGRenderer extends AbstractRenderer {
     }
 
     /**
-     * Builds a path data string from a {@link JXG.Curve} element. Since the path data strings heavily depend on the
+     * Builds a path data string from a {@link JXG2.Curve} element. Since the path data strings heavily depend on the
      * underlying rendering technique this method is just a stub. Although such a path string is of no use for the
      * CanvasRenderer, this method is used there to draw a path directly.
-     * @param {JXG.GeometryElement} el
+     * @param {JXG2.GeometryElement} el
      */
     updatePathStringPrim(el) {
         var i,
@@ -1441,11 +1441,11 @@ export class SVGRenderer extends AbstractRenderer {
     }
 
     /**
-     * Builds a path data string from a {@link JXG.Curve} element such that the curve looks like hand drawn. Since
+     * Builds a path data string from a {@link JXG2.Curve} element such that the curve looks like hand drawn. Since
      * the path data strings heavily depend on the underlying rendering technique this method is just a stub.
      * Although such a path string is of no use for the CanvasRenderer, this method is used there to draw a path
      * directly.
-     * @param  {JXG.GeometryElement} el
+     * @param  {JXG2.GeometryElement} el
      */
     updatePathStringBezierPrim(el) {
         var i, j, k,
@@ -1516,7 +1516,7 @@ export class SVGRenderer extends AbstractRenderer {
     /**
      * Update a polygon primitive.
      * @param {Node} node
-     * @param {JXG.Polygon} el A JSXGraph element of type {@link JXG.Polygon}
+     * @param {JXG2.Polygon} el A JSXGraph element of type {@link JXG2.Polygon}
      */
     updatePolygonPrim(node, el) {
         var i,
@@ -1579,9 +1579,9 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Function} setFunc       Some function which usually sets some attributes
      * @param {String} testAttribute If this string is the empty string  the function is called immediately,
      *                               otherwise it is called in a setImeout.
-     * @see JXG.SVGRenderer#setObjectFillColor
-     * @see JXG.SVGRenderer#setObjectStrokeColor
-     * @see JXG.SVGRenderer#_setArrowColor
+     * @see JXG2.SVGRenderer#setObjectFillColor
+     * @see JXG2.SVGRenderer#setObjectStrokeColor
+     * @see JXG2.SVGRenderer#_setArrowColor
      * @private
      */
     _setAttribute(setFunc, testAttribute) {
@@ -1594,7 +1594,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     /**
     * Shows or hides an element on the canvas; Only a stub, requires implementation in the derived renderer.
-    * @param {JXG.GeometryElement} el Reference to the object that has to appear.
+    * @param {JXG2.GeometryElement} el Reference to the object that has to appear.
     * @param {Boolean} show true to show the element, false to hide the element.
     */
 
@@ -1622,9 +1622,9 @@ export class SVGRenderer extends AbstractRenderer {
     /**
      * Hides an element on the canvas; Only a stub, requires implementation in the derived renderer.
      *
-     * Please use JXG.AbstractRenderer#display instead
-     * @param {JXG.GeometryElement} el Reference to the geometry element that has to disappear.
-     * @see JXG.AbstractRenderer#show
+     * Please use JXG2.AbstractRenderer#display instead
+     * @param {JXG2.GeometryElement} el Reference to the geometry element that has to disappear.
+     * @see JXG2.AbstractRenderer#show
      * @deprecated
      */
     hide(el) {
@@ -1641,7 +1641,7 @@ export class SVGRenderer extends AbstractRenderer {
      * For example, the value of the JSXGraph attribute 'aria.label' will be set to the
      * HTML attribute 'aria-label'.
      *
-     * @param {JXG.GeometryElement} el Reference of the object that wants new
+     * @param {JXG2.GeometryElement} el Reference of the object that wants new
      *        ARIA attributes.
      */
     setARIA(el) {
@@ -1664,7 +1664,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     /**
      * Sets the buffering as recommended by SVGWG. Until now only Opera supports this and will be ignored by other
-     * browsers. Although this feature is only supported by SVG we have this method in {@link JXG.AbstractRenderer}
+     * browsers. Although this feature is only supported by SVG we have this method in {@link JXG2.AbstractRenderer}
      * because it is called from outside the renderer.
      * @param {Node} node The SVG DOM Node which buffering type to update.
      * @param {String} type Either 'auto', 'dynamic', or 'static'. For an explanation see
@@ -1677,7 +1677,7 @@ export class SVGRenderer extends AbstractRenderer {
     /**
      * Sets CSS classes for elements (relevant for SVG only).
      *
-     * @param {JXG.GeometryElement} el Reference of the object that wants a
+     * @param {JXG2.GeometryElement} el Reference of the object that wants a
      *         new set of CSS classes.
      * @param {String} cssClass String containing a space separated list of CSS classes.
      */
@@ -1690,7 +1690,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     /**
      * Sets an element's dash style.
-     * @param {JXG.GeometryElement} el An JSXGraph element.
+     * @param {JXG2.GeometryElement} el An JSXGraph element.
      */
     setDashStyle(el) {
         var dashStyle = el.evalVisProp('dash'),
@@ -1713,7 +1713,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     /**
      * Sets up nodes for rendering a gradient fill.
-     * @param {JXG.GeometryElement}  el Reference of the object which gets the gradient
+     * @param {JXG2.GeometryElement}  el Reference of the object which gets the gradient
      */
     setGradient(el) {
         var fillNode = el.rendNode,
@@ -1754,10 +1754,10 @@ export class SVGRenderer extends AbstractRenderer {
      * Possible values for the attribute 'linecap' are: 'butt', 'round', 'square'.
      * The default value is 'butt'. Not available for VML renderer.
      *
-     * @param {JXG.Line} element A arbitrary line.
+     * @param {JXG2.Line} element A arbitrary line.
      * @see Line
-     * @see JXG.Line
-     * @see JXG.AbstractRenderer#updateLine
+     * @see JXG2.Line
+     * @see JXG2.AbstractRenderer#updateLine
      */
     setLineCap(el) {
         var capStyle = el.evalVisProp('linecap');
@@ -1777,7 +1777,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     /**
      * Sets an objects fill color.
-     * @param {JXG.GeometryElement} el Reference of the object that wants a new fill color.
+     * @param {JXG2.GeometryElement} el Reference of the object that wants a new fill color.
      * @param {String} color Color in a HTML/CSS compatible format. If you don't want any fill color at all, choose
      * 'none'.
      * @param {Number} opacity Opacity of the fill color. Must be between 0 and 1.
@@ -1853,7 +1853,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     /**
      * Changes an objects stroke color to the given color.
-     * @param {JXG.GeometryElement} el Reference of the {@link JXG.GeometryElement} that gets a new stroke
+     * @param {JXG2.GeometryElement} el Reference of the {@link JXG2.GeometryElement} that gets a new stroke
      * color.
      * @param {String} color Color value in a HTML compatible format, e.g. <strong>#00ff00</strong> or
      * <strong>green</strong> for green.
@@ -1934,7 +1934,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     /**
      * Sets an element's stroke width.
-     * @param {JXG.GeometryElement} el Reference to the geometry element.
+     * @param {JXG2.GeometryElement} el Reference to the geometry element.
      * @param {Number} width The new stroke width to be assigned to the element.
      */
     setObjectStrokeWidth(el, width) {
@@ -1967,7 +1967,7 @@ export class SVGRenderer extends AbstractRenderer {
     /**
      * Sets the transition duration (in milliseconds) for fill color and stroke
      * color and opacity.
-     * @param {JXG.GeometryElement} el Reference of the object that wants a
+     * @param {JXG2.GeometryElement} el Reference of the object that wants a
      *         new transition duration.
      * @param {Number} duration (Optional) duration in milliseconds. If not given,
      *        element.visProp.transitionDuration is taken. This is the default.
@@ -2033,7 +2033,7 @@ export class SVGRenderer extends AbstractRenderer {
     /**
      * Sets the shadow properties to a geometry element. This method is only a stub, it is implemented in the actual
      * renderers.
-     * @param {JXG.GeometryElement} el Reference to a geometry object, that should get a shadow
+     * @param {JXG2.GeometryElement} el Reference to a geometry object, that should get a shadow
      */
     setShadow(el) {
         var ev_s = el.evalVisProp('shadow'),
@@ -2096,7 +2096,7 @@ export class SVGRenderer extends AbstractRenderer {
      * Set the attribute `tabindex` to the attribute `tabindex` of an element.
      * This is only relevant for the SVG renderer.
      *
-     * @param {JXG.GeometryElement} el
+     * @param {JXG2.GeometryElement} el
      */
     setTabindex(el) {
         var val;
@@ -2128,9 +2128,9 @@ export class SVGRenderer extends AbstractRenderer {
     /**
      * Shows a hidden element on the canvas; Only a stub, requires implementation in the derived renderer.
      *
-     * Please use JXG.AbstractRenderer#display instead
-     * @param {JXG.GeometryElement} el Reference to the object that has to appear.
-     * @see JXG.AbstractRenderer#hide
+     * Please use JXG2.AbstractRenderer#display instead
+     * @param {JXG2.GeometryElement} el Reference to the object that has to appear.
+     * @see JXG2.AbstractRenderer#hide
      * @deprecated
      */
     show(el) {
@@ -2147,7 +2147,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     /**
      * Updates the gradient fill.
-     * @param {JXG.GeometryElement} el An JSXGraph element with an area that can be filled.
+     * @param {JXG2.GeometryElement} el An JSXGraph element with an area that can be filled.
      */
     updateGradient(el) {
         var col,
@@ -2264,7 +2264,7 @@ export class SVGRenderer extends AbstractRenderer {
       * Stop redraw. This method is called before every update, so a non-vector-graphics based renderer can use this
       * method to delete the contents of the drawing panel. This is an abstract method every descendant renderer
       * should implement, if appropriate.
-      * @see JXG.AbstractRenderer#unsuspendRedraw
+      * @see JXG2.AbstractRenderer#unsuspendRedraw
       */
     suspendRedraw() {
         // It seems to be important for the Linux version of firefox
@@ -2273,7 +2273,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     /**
      * Restart redraw. This method is called after updating all the rendering node attributes.
-     * @see JXG.AbstractRenderer#suspendRedraw
+     * @see JXG2.AbstractRenderer#suspendRedraw
      */
     unsuspendRedraw() {
         (this.svgRoot as SVGSVGElement).unsuspendRedraw(this.suspendHandle);
@@ -2487,7 +2487,7 @@ export class SVGRenderer extends AbstractRenderer {
      * <textarea id="output2023" rows="5" cols="50"></textarea>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG1bad4bec-6d08-4ce0-9b7f-d817e8dd762d',
+     *         var board = JXG2.JSXGraph.initBoard('JXG1bad4bec-6d08-4ce0-9b7f-d817e8dd762d',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *     var A = board.create('point', [2, 2]);
      *
@@ -2696,7 +2696,7 @@ export class SVGRenderer extends AbstractRenderer {
      * <li> Safari: full (No text support in versions prior to 12).
      * </ul>
      *
-     * @param {JXG.Board} board Link to the board.
+     * @param {JXG2.Board} board Link to the board.
      * @param {String} imgId Optional id of an img object. If given and different from the empty string,
      * the screenshot is copied to this img object. The width and height will be set to the values of the
      * JSXGraph container.

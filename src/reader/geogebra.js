@@ -29,17 +29,17 @@
  and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true*/
+/*global JXG2: true*/
 /*jslint nomen: true, plusplus: true*/
 
 (function () {
     "use strict";
 
-    JXG.GeogebraReader = function (board, str) {
+    JXG2.GeogebraReader = function (board, str) {
         var tree, content;
 
         content = this.prepareString(str);
-        tree = JXG.XML.parse(content);
+        tree = JXG2.XML.parse(content);
 
         this.tree = tree;
         this.board = board;
@@ -60,9 +60,9 @@
         );
     };
 
-    JXG.extend(
-        JXG.GeogebraReader.prototype,
-        /** @lends JXG.GeogebraReader.prototype */ {
+    JXG2.extend(
+        JXG2.GeogebraReader.prototype,
+        /** @lends JXG2.GeogebraReader.prototype */ {
             /**
              * @param {String} type the type of expression
              * @param {String} m first input value
@@ -74,10 +74,10 @@
                     s2,
                     a,
                     regexValue = new RegExp(
-                        "JXG\\.boards\\['" + this.board.id + '\'\\].select\\("(.+?)"\\)\\.'
+                        "JXG2\\.boards\\['" + this.board.id + '\'\\].select\\("(.+?)"\\)\\.'
                     ),
                     regexSelect = new RegExp(
-                        "JXG\\.boards\\['" + this.board.id + "'\\].select"
+                        "JXG2\\.boards\\['" + this.board.id + "'\\].select"
                     ),
                     v1 = m,
                     v2 = n;
@@ -87,10 +87,10 @@
                         return v1;
                     case "coord":
                         s1 = this.ggbElements[v1]
-                            ? "JXG.boards['" + this.board.id + "'].select('" + v1 + "')"
+                            ? "JXG2.boards['" + this.board.id + "'].select('" + v1 + "')"
                             : v1;
                         s2 = this.ggbElements[v2]
-                            ? "JXG.boards['" + this.board.id + "'].select('" + v2 + "')"
+                            ? "JXG2.boards['" + this.board.id + "'].select('" + v2 + "')"
                             : v2;
                         return [s1, s2];
                     case "le": // smaller than
@@ -114,7 +114,7 @@
                         // The first match (which is negated) is to check if we are looking at a blank element or a value from this element
                         // If the select() call is followed by a '.', a property or a value is accessed, ergo we must not append .X() and .Y().
                         if (
-                            JXG.isString(v1) &&
+                            JXG2.isString(v1) &&
                             !v1.match(regexValue) &&
                             v1.match(regexSelect)
                         ) {
@@ -124,7 +124,7 @@
                         }
 
                         if (
-                            JXG.isString(v2) &&
+                            JXG2.isString(v2) &&
                             !v2.match(regexValue) &&
                             v2.match(regexSelect)
                         ) {
@@ -134,31 +134,31 @@
                         }
 
                         //Add: Vector + Point
-                        if (this.isGGBVector(s1) && JXG.isArray(s2)) {
+                        if (this.isGGBVector(s1) && JXG2.isArray(s2)) {
                             return [s1[1] + "+" + s2[0], s1[2] + "+" + s2[1]];
                         }
 
                         //Add: Vector + Point
-                        if (this.isGGBVector(s2) && JXG.isArray(s1)) {
+                        if (this.isGGBVector(s2) && JXG2.isArray(s1)) {
                             return [s2[1] + "+" + s1[0], s2[2] + "+" + s1[1]];
                         }
 
-                        if (JXG.isArray(s1) && JXG.isArray(s2)) {
+                        if (JXG2.isArray(s1) && JXG2.isArray(s2)) {
                             return [s1[0] + " + " + s2[0], s1[1] + " + " + s2[1]];
                         }
 
                         if (
-                            (JXG.isNumber(s1) || JXG.isString(s1)) &&
-                            (JXG.isNumber(s2) || JXG.isString(s2))
+                            (JXG2.isNumber(s1) || JXG2.isString(s1)) &&
+                            (JXG2.isNumber(s2) || JXG2.isString(s2))
                         ) {
                             return s1 + " + " + s2;
                         }
 
-                        if ((JXG.isNumber(s1) || JXG.isString(s1)) && JXG.isArray(s2)) {
+                        if ((JXG2.isNumber(s1) || JXG2.isString(s1)) && JXG2.isArray(s2)) {
                             return [s1 + " + " + s2[0], s1 + " + " + s2[1]];
                         }
 
-                        if (JXG.isArray(s1) && (JXG.isNumber(s2) || JXG.isString(s2))) {
+                        if (JXG2.isArray(s1) && (JXG2.isNumber(s2) || JXG2.isString(s2))) {
                             return [s1[0] + " + " + s2, s1[1] + " + " + s2];
                         }
 
@@ -170,7 +170,7 @@
                         }
 
                         if (
-                            JXG.isString(v1) &&
+                            JXG2.isString(v1) &&
                             !v1.match(regexValue) &&
                             v1.match(regexSelect)
                         ) {
@@ -180,7 +180,7 @@
                         }
 
                         if (
-                            JXG.isString(v2) &&
+                            JXG2.isString(v2) &&
                             !v2.match(regexValue) &&
                             v2.match(regexSelect)
                         ) {
@@ -190,31 +190,31 @@
                         }
 
                         //Add: Vector - Point
-                        if (this.isGGBVector(s1) && JXG.isArray(s2)) {
+                        if (this.isGGBVector(s1) && JXG2.isArray(s2)) {
                             return [s1[1] + "-" + s2[0], s1[2] + "-" + s2[1]];
                         }
 
                         //Add: Punkt - Vector
-                        if (JXG.isArray(s1) && this.isGGBVector(s2)) {
+                        if (JXG2.isArray(s1) && this.isGGBVector(s2)) {
                             return [s1[0] + "-(" + s2[1] + ")", s1[1] + "-(" + s2[2] + ")"];
                         }
 
-                        if (JXG.isArray(s1) && JXG.isArray(s2)) {
+                        if (JXG2.isArray(s1) && JXG2.isArray(s2)) {
                             return [s1[0] + " - " + s2[0], s1[1] + " - " + s2[1]];
                         }
 
                         if (
-                            (JXG.isNumber(s1) || JXG.isString(s1)) &&
-                            (JXG.isNumber(s2) || JXG.isString(s2))
+                            (JXG2.isNumber(s1) || JXG2.isString(s1)) &&
+                            (JXG2.isNumber(s2) || JXG2.isString(s2))
                         ) {
                             return s1 + " - " + s2;
                         }
 
-                        if ((JXG.isNumber(s1) || JXG.isString(s1)) && JXG.isArray(s2)) {
+                        if ((JXG2.isNumber(s1) || JXG2.isString(s1)) && JXG2.isArray(s2)) {
                             return [s1 + " - " + s2[0], s1 + " - " + s2[1]];
                         }
 
-                        if (JXG.isArray(s1) && (JXG.isNumber(s2) || JXG.isString(s2))) {
+                        if (JXG2.isArray(s1) && (JXG2.isNumber(s2) || JXG2.isString(s2))) {
                             return [s1[0] + " - " + s2, s1[1] + " - " + s2];
                         }
 
@@ -228,12 +228,12 @@
                     case "and":
                         return "(" + v1 + "&&" + v2 + ")";
                     case "mul":
-                        if (this.isGGBVector(v1) && !JXG.isArray(v2)) {
+                        if (this.isGGBVector(v1) && !JXG2.isArray(v2)) {
                             // Mult: Vector * Skalar
                             return [1, "(" + v1[1] + ")*" + v2, "(" + v1[2] + ")*" + v2];
                         }
 
-                        if (!JXG.isArray(v1) && this.isGGBVector(v2)) {
+                        if (!JXG2.isArray(v1) && this.isGGBVector(v2)) {
                             // Mult: Skalar * Vector
                             return [1, "(" + v2[1] + ")*" + v1, "(" + v2[2] + ")*" + v1];
                         }
@@ -254,7 +254,7 @@
                         }
 
                         if (
-                            JXG.isString(v1) &&
+                            JXG2.isString(v1) &&
                             !v1.match(regexValue) &&
                             v1.match(regexSelect)
                         ) {
@@ -264,7 +264,7 @@
                         }
 
                         if (
-                            JXG.isString(v2) &&
+                            JXG2.isString(v2) &&
                             !v2.match(regexValue) &&
                             v2.match(regexSelect)
                         ) {
@@ -273,29 +273,29 @@
                             s2 = v2;
                         }
 
-                        if (JXG.isArray(s1) && JXG.isArray(s2)) {
+                        if (JXG2.isArray(s1) && JXG2.isArray(s2)) {
                             return [s1[0] + " * " + s2[0], s1[1] + " * " + s2[1]];
                         }
 
                         if (
-                            (JXG.isNumber(s1) || JXG.isString(s1)) &&
-                            (JXG.isNumber(s2) || JXG.isString(s2))
+                            (JXG2.isNumber(s1) || JXG2.isString(s1)) &&
+                            (JXG2.isNumber(s2) || JXG2.isString(s2))
                         ) {
                             return s1 + " * " + s2;
                         }
 
-                        if ((JXG.isNumber(s1) || JXG.isString(s1)) && JXG.isArray(s2)) {
+                        if ((JXG2.isNumber(s1) || JXG2.isString(s1)) && JXG2.isArray(s2)) {
                             return [s1 + " * " + s2[0], s1 + " * " + s2[1]];
                         }
 
-                        if (JXG.isArray(s1) && (JXG.isNumber(s2) || JXG.isString(s2))) {
+                        if (JXG2.isArray(s1) && (JXG2.isNumber(s2) || JXG2.isString(s2))) {
                             return [s1[0] + " * " + s2, s1[1] + " * " + s2];
                         }
 
                         return s1 + " * " + s2;
                     case "div":
                         if (
-                            JXG.isString(v1) &&
+                            JXG2.isString(v1) &&
                             !v1.match(regexValue) &&
                             v1.match(regexSelect)
                         ) {
@@ -305,7 +305,7 @@
                         }
 
                         if (
-                            JXG.isString(v2) &&
+                            JXG2.isString(v2) &&
                             !v2.match(regexValue) &&
                             v2.match(regexSelect)
                         ) {
@@ -314,22 +314,22 @@
                             s2 = v2;
                         }
 
-                        if (JXG.isArray(s1) && JXG.isArray(s2)) {
+                        if (JXG2.isArray(s1) && JXG2.isArray(s2)) {
                             return [s1[0] + " / " + s2[0], s1[1] + " / " + s2[1]];
                         }
 
                         if (
-                            (JXG.isNumber(s1) || JXG.isString(s1)) &&
-                            (JXG.isNumber(s2) || JXG.isString(s2))
+                            (JXG2.isNumber(s1) || JXG2.isString(s1)) &&
+                            (JXG2.isNumber(s2) || JXG2.isString(s2))
                         ) {
                             return s1 + " / " + s2;
                         }
 
-                        if ((JXG.isNumber(s1) || JXG.isString(s1)) && JXG.isArray(s2)) {
+                        if ((JXG2.isNumber(s1) || JXG2.isString(s1)) && JXG2.isArray(s2)) {
                             return [s1 + " / " + s2[0], s1 + " / " + s2[1]];
                         }
 
-                        if (JXG.isArray(s1) && (JXG.isNumber(s2) || JXG.isString(s2))) {
+                        if (JXG2.isArray(s1) && (JXG2.isNumber(s2) || JXG2.isString(s2))) {
                             return [s1[0] + " / " + s2, s1[1] + " / " + s2];
                         }
 
@@ -366,7 +366,7 @@
                         s2 = v2[1].split("]")[0];
                         if (s1.toLowerCase() === 'name') {
                             return (
-                                "JXG.boards['" +
+                                "JXG2.boards['" +
                                 this.board.id +
                                 "'].select('" +
                                 s2 +
@@ -408,15 +408,15 @@
                             }
 
                             a = this.checkElement(v1);
-                            if (JXG.exists(this.board.ggb[v1])) {
+                            if (JXG2.exists(this.board.ggb[v1])) {
                                 return (
-                                    "JXG.boards['" + this.board.id + "'].ggb[\"" + v1 + '"]()'
+                                    "JXG2.boards['" + this.board.id + "'].ggb[\"" + v1 + '"]()'
                                 );
                             }
 
-                            if (JXG.exists(a.Value)) {
+                            if (JXG2.exists(a.Value)) {
                                 return (
-                                    "JXG.boards['" +
+                                    "JXG2.boards['" +
                                     this.board.id +
                                     "'].select(\"" +
                                     v1 +
@@ -424,9 +424,9 @@
                                 );
                             }
 
-                            if (JXG.exists(a.Area)) {
+                            if (JXG2.exists(a.Area)) {
                                 return (
-                                    "JXG.boards['" +
+                                    "JXG2.boards['" +
                                     this.board.id +
                                     "'].select(\"" +
                                     v1 +
@@ -434,9 +434,9 @@
                                 );
                             }
 
-                            if (JXG.exists(a.plaintextStr)) {
+                            if (JXG2.exists(a.plaintextStr)) {
                                 return (
-                                    "1.0*JXG.boards['" +
+                                    "1.0*JXG2.boards['" +
                                     this.board.id +
                                     "'].select(\"" +
                                     v1 +
@@ -444,23 +444,23 @@
                                 );
                             }
 
-                            if (a.type === JXG.OBJECT_TYPE_VECTOR) {
+                            if (a.type === JXG2.OBJECT_TYPE_VECTOR) {
                                 return [
                                     1,
-                                    "JXG.boards['" +
+                                    "JXG2.boards['" +
                                         this.board.id +
                                         "'].select(\"" +
                                         v1 +
-                                        "\").point2.X()-JXG.boards['" +
+                                        "\").point2.X()-JXG2.boards['" +
                                         this.board.id +
                                         "'].select(\"" +
                                         v1 +
                                         '").point1.X()',
-                                    "JXG.boards['" +
+                                    "JXG2.boards['" +
                                         this.board.id +
                                         "'].select(\"" +
                                         v1 +
-                                        "\").point2.Y()-JXG.boards['" +
+                                        "\").point2.Y()-JXG2.boards['" +
                                         this.board.id +
                                         "'].select(\"" +
                                         v1 +
@@ -468,13 +468,13 @@
                                 ];
                             }
 
-                            if (a.elementClass === JXG.OBJECT_CLASS_LINE) {
+                            if (a.elementClass === JXG2.OBJECT_CLASS_LINE) {
                                 return (
-                                    "JXG.boards['" +
+                                    "JXG2.boards['" +
                                     this.board.id +
                                     "'].select(\"" +
                                     v1 +
-                                    "\").point1.Dist(JXG.boards['" +
+                                    "\").point1.Dist(JXG2.boards['" +
                                     this.board.id +
                                     "'].select(\"" +
                                     v1 +
@@ -482,7 +482,7 @@
                                 );
                             }
 
-                            return "JXG.boards['" + this.board.id + "'].select(\"" + v1 + '")';
+                            return "JXG2.boards['" + this.board.id + "'].select(\"" + v1 + '")';
                         }
                 }
             },
@@ -505,7 +505,7 @@
                     element = el ? this.board.select(this.ggbElements[el].id) : false;
 
                 if (element) {
-                    JXG.debug("Update element: " + element.name + "(" + element.id + ")");
+                    JXG2.debug("Update element: " + element.name + "(" + element.id + ")");
                 }
 
                 /*
@@ -1962,14 +1962,14 @@
                         }
 
                         if (dbg_withtrace) {
-                            JXG.debug(dbg_string);
+                            JXG2.debug(dbg_string);
                             dbg_string = "";
                         }
                     }
 
                     if (dbg_withtrace) {
                         dbg_print("\nParse complete.");
-                        JXG.debug(dbg_string);
+                        JXG2.debug(dbg_string);
                     }
 
                     return err_cnt;
@@ -1989,7 +1989,7 @@
                             error_lookaheads[i].join() +
                             "'\n";
                     }
-                    JXG.debug(errstr);
+                    JXG2.debug(errstr);
                 }
 
                 return str;
@@ -2015,19 +2015,19 @@
                 this.board.options.line.highlightStrokeColor = "#000000";
                 this.board.options.line.strokeColor = "#000000";
 
-                this.board.options.polygon.fillColor = JXG.rgb2hex(153, 51, 0);
+                this.board.options.polygon.fillColor = JXG2.rgb2hex(153, 51, 0);
                 this.board.options.polygon.fillOpacity = 0.1;
                 this.board.options.polygon.highlightFillColor =
                     this.board.options.polygon.fillColor;
                 this.board.options.polygon.highlightFillOpacity = 0.1;
 
-                this.board.options.sector.fillColor = JXG.rgb2hex(153, 51, 0);
+                this.board.options.sector.fillColor = JXG2.rgb2hex(153, 51, 0);
                 this.board.options.sector.fillOpacity = 0.1;
                 this.board.options.sector.highlightFillColor =
                     this.board.options.sector.fillColor;
                 this.board.options.sector.highlightFillOpacity = 0.1;
 
-                this.board.options.angle.fillColor = JXG.rgb2hex(0, 100, 0);
+                this.board.options.angle.fillColor = JXG2.rgb2hex(0, 100, 0);
                 this.board.options.angle.fillOpacity = 0.1;
                 this.board.options.angle.highlightFillOpacity = 0.1;
             },
@@ -2159,8 +2159,8 @@
                         );
                     }
                 } else if (Data.getElementsByTagName('absoluteScreenLocation')[0]) {
-                    tmp = new JXG.Coords(
-                        JXG.COORDS_BY_SCREEN,
+                    tmp = new JXG2.Coords(
+                        JXG2.COORDS_BY_SCREEN,
                         [
                             parseFloat(
                                 Data.getElementsByTagName(
@@ -2202,11 +2202,11 @@
                     fix = Data.getElementsByTagName('fix');
 
                 if (show.length > 0 && show[0].getAttribute('object')) {
-                    attr.visible = JXG.str2Bool(show[0].getAttribute('object'));
+                    attr.visible = JXG2.str2Bool(show[0].getAttribute('object'));
                 }
 
                 if (show.length > 0 && show[0].getAttribute('label')) {
-                    attr.withLabel = JXG.str2Bool(show[0].getAttribute('label'));
+                    attr.withLabel = JXG2.str2Bool(show[0].getAttribute('label'));
                 }
 
                 if (pointSize.length > 0 && pointSize[0].getAttribute('val')) {
@@ -2384,7 +2384,7 @@
                 //   this.ggbElements[name] = this.writeElement(name, input, type);
                 // } else
 
-                if (!JXG.exists(this.ggbElements[name]) || this.ggbElements[name] === "") {
+                if (!JXG2.exists(this.ggbElements[name]) || this.ggbElements[name] === "") {
                     input = this.getElement(name) || this.getElement(name, true);
                     if (!input) {
                         var i, j, Data;
@@ -2406,7 +2406,7 @@
                                     .getElementsByTagName('construction')
                                     [i].getElementsByTagName('expression')[j];
                                 var exp2 = this.ggbParse(Data.getAttribute('exp'));
-                                if (JXG.isArray(exp1) && JXG.isArray(exp2)) {
+                                if (JXG2.isArray(exp1) && JXG2.isArray(exp2)) {
                                     if (exp1[0] == exp2[0] && exp1[1] == exp2[1]) {
                                         input = this.getElement(Data.getAttribute('label'));
                                     }
@@ -2571,7 +2571,7 @@
                         : 12;
 
                 // the new board storage
-                JXG.boards[this.board.id] = this.board;
+                JXG2.boards[this.board.id] = this.board;
 
                 // Update of properties during update() is not necessary in GEONExT files
                 this.board.renderer.enhancedRendering = true;
@@ -2691,22 +2691,22 @@
                         };
                     };
 
-                element = JXG.isArray(output) ? output[0] : output;
+                element = JXG2.isArray(output) ? output[0] : output;
                 // geometric element
                 gxtEl = {};
                 // Attributes of geometric elements
                 attr = {};
 
-                JXG.debug(element);
+                JXG2.debug(element);
 
                 gxtEl.type =
-                    element && element.attributes && !JXG.exists(cmd)
+                    element && element.attributes && !JXG2.exists(cmd)
                         ? element.getAttribute('type').toLowerCase()
                         : cmd;
                 gxtEl.label = element.getAttribute('label');
                 attr.name = gxtEl.label;
 
-                JXG.debug("Constructing " + attr.name + "(" + gxtEl.type + "):");
+                JXG2.debug("Constructing " + attr.name + "(" + gxtEl.type + "):");
 
                 switch (gxtEl.type) {
                     case "point":
@@ -2727,7 +2727,7 @@
                             gxtEl = this.coordinates(gxtEl, element);
                         }
 
-                        if (!JXG.exists(attr.styleGGB)) {
+                        if (!JXG2.exists(attr.styleGGB)) {
                             attr.face = 'circle'
                             attr.fillColor = attr.strokeColor;
                             attr.fillOpacity = 1;
@@ -2737,15 +2737,15 @@
                             attr.strokeWidth = 1;
                         }
 
-                        JXG.debug(gxtEl);
-                        JXG.debug(input);
+                        JXG2.debug(gxtEl);
+                        JXG2.debug(input);
 
                         try {
                             match = /Circle\[\s*(\w+)\s*,\s*([\d\.]+)\s*\]/.exec(input);
                             matchDep = /Circle\[\s*(\w+)\s*,\s*(\w+)\s*\]/.exec(input);
 
-                            if (JXG.exists(input)) {
-                                if (JXG.exists(match) && match.length === 3) {
+                            if (JXG2.exists(input)) {
+                                if (JXG2.exists(match) && match.length === 3) {
                                     // from Circle[A, 5] take "A" and "5", stored in ma[1] and ma[2]
                                     q = this.checkElement(match[1]);
                                     c = this.board.create("circle", [q, parseFloat(match[2])], {
@@ -2758,7 +2758,7 @@
                                         [gxtEl.x, gxtEl.y, c],
                                         attr
                                     );
-                                } else if (JXG.exists(matchDep) && matchDep.length === 3) {
+                                } else if (JXG2.exists(matchDep) && matchDep.length === 3) {
                                     // Circle around point ma[1] with radius defined by another elements Value-function ma[2]
                                     q = this.checkElement(matchDep[1]);
                                     m = this.checkElement(matchDep[2]);
@@ -2777,7 +2777,7 @@
                                         [gxtEl.x, gxtEl.y, c],
                                         attr
                                     );
-                                } else if (JXG.isArray(input)) {
+                                } else if (JXG2.isArray(input)) {
                                     p = this.board.create(
                                         "glider",
                                         [gxtEl.x, gxtEl.y, input[0]],
@@ -2795,7 +2795,7 @@
                             }
                             return p;
                         } catch (exc1) {
-                            JXG.debug("* Err: Point " + attr.name);
+                            JXG2.debug("* Err: Point " + attr.name);
                             return false;
                         }
                         break;
@@ -2819,13 +2819,13 @@
                             ];
                         } else if (
                             this.board.select(input[1].id).elementClass ===
-                            JXG.OBJECT_CLASS_LINE
+                            JXG2.OBJECT_CLASS_LINE
                         ) {
                             type = 'parallel'
                         }
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Segment: (" +
                                     attr.name +
                                     ") First: " +
@@ -2838,7 +2838,7 @@
                             p = this.board.create("line", input, attr);
                             return p;
                         } catch (exc2) {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Err: Segment " +
                                     attr.name +
                                     " First: " +
@@ -2870,7 +2870,7 @@
                             ];
                         } else if (
                             this.board.select(input[1].id).elementClass ===
-                            JXG.OBJECT_CLASS_LINE
+                            JXG2.OBJECT_CLASS_LINE
                         ) {
                             // Parallel line through point
                             type = 'parallel'
@@ -2880,7 +2880,7 @@
                             p = this.board.create(type, input, attr);
                             return p;
                         } catch (exc3) {
-                            JXG.debug("* Err: Line " + attr.label);
+                            JXG2.debug("* Err: Line " + attr.label);
                             return false;
                         }
                         break;
@@ -2891,7 +2891,7 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Orthogonalline: First: " +
                                     input[0].id +
                                     ", Last: " +
@@ -2900,7 +2900,7 @@
                             p = this.board.create("normal", input, attr);
                             return p;
                         } catch (exc4) {
-                            JXG.debug("* Err: Orthogonalline " + attr.label);
+                            JXG2.debug("* Err: Orthogonalline " + attr.label);
                             return false;
                         }
                         break;
@@ -2917,7 +2917,7 @@
                         }
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Polygon: First: " +
                                     input[0].name +
                                     ", Second: " +
@@ -2985,7 +2985,7 @@
                             }
                             return p;
                         } catch (exc5) {
-                            JXG.debug("* Err: Polygon " + attr.name);
+                            JXG2.debug("* Err: Polygon " + attr.name);
                             return false;
                         }
                         break;
@@ -2996,13 +2996,13 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Intersection: First: " +
                                     input[0].name +
                                     ", Second: " +
                                     input[1].name
                             );
-                            if (!JXG.exists(attr.styleGGB)) {
+                            if (!JXG2.exists(attr.styleGGB)) {
                                 attr.face = 'circle'
                                 attr.fillColor = attr.strokeColor;
                                 attr.fillOpacity = 1;
@@ -3038,7 +3038,7 @@
 
                             return p;
                         } catch (exc6) {
-                            JXG.debug("* Err: Intersection " + attr.name);
+                            JXG2.debug("* Err: Intersection " + attr.name);
                             return false;
                         }
                         break;
@@ -3049,7 +3049,7 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Distance: First: " +
                                     input[0].name +
                                     ", Second: " +
@@ -3078,8 +3078,8 @@
                                             input[0].name +
                                             input[1].name +
                                             "</span> = " +
-                                            JXG.trimNumber(
-                                                JXG.toFixed(
+                                            JXG2.trimNumber(
+                                                JXG2.toFixed(
                                                     that.board
                                                         .select(input[0].id)
                                                         .Dist(that.board.select(input[1].id)),
@@ -3100,7 +3100,7 @@
 
                             return p;
                         } catch (exc7) {
-                            JXG.debug("* Err: Distance " + attr.name);
+                            JXG2.debug("* Err: Distance " + attr.name);
                             return false;
                         }
                         break;
@@ -3168,7 +3168,7 @@
 
                                 // the input to these evals were verified by the parser unit above
                                 /*jslint evil:true*/
-                                if (JXG.isArray(exp)) {
+                                if (JXG2.isArray(exp)) {
                                     exp = [
                                         new Function("return " + exp[1] + ";"),
                                         new Function("return " + exp[2] + ";")
@@ -3178,7 +3178,7 @@
                                 }
                                 /*jslint evil:false*/
 
-                                JXG.debug("exp: " + exp);
+                                JXG2.debug("exp: " + exp);
                                 p = this.board.create(
                                     "arrow",
                                     [
@@ -3194,11 +3194,11 @@
                         }
 
                         try {
-                            JXG.debug("* Vector: First: " + attr.name);
+                            JXG2.debug("* Vector: First: " + attr.name);
                             p = this.board.create("arrow", [s, e], attr);
                             return p;
                         } catch (exc8) {
-                            JXG.debug("* Err: Vector " + attr.name + e);
+                            JXG2.debug("* Err: Vector " + attr.name + e);
                             return false;
                         }
                         break;
@@ -3209,12 +3209,12 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Rotate: First: " + input[0].name + ", Second: " + input[1]
                             );
                             attr.type = 'rotate'
 
-                            if (!JXG.exists(attr.styleGGB)) {
+                            if (!JXG2.exists(attr.styleGGB)) {
                                 attr.face = 'circle'
                                 attr.fillColor = attr.strokeColor;
                                 attr.fillOpacity = 1;
@@ -3232,7 +3232,7 @@
                             p = this.board.create("point", [input[0], t], attr);
                             return p;
                         } catch (exc9) {
-                            JXG.debug("* Err: Rotate " + attr.name);
+                            JXG2.debug("* Err: Rotate " + attr.name);
                             return false;
                         }
                         break;
@@ -3243,7 +3243,7 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Dilate: First: " + input[0].name + ", Second: " + input[1]
                             );
                             attr.type = 'rotate'
@@ -3262,7 +3262,7 @@
                                 { type: "translate" }
                             );
 
-                            if (!JXG.exists(attr.styleGGB)) {
+                            if (!JXG2.exists(attr.styleGGB)) {
                                 attr.face = 'circle'
                                 attr.fillColor = attr.strokeColor;
                                 attr.fillOpacity = 1;
@@ -3275,7 +3275,7 @@
 
                             return p;
                         } catch (exc10) {
-                            JXG.debug("* Err: Dilate " + attr.name);
+                            JXG2.debug("* Err: Dilate " + attr.name);
                             return false;
                         }
                         break;
@@ -3299,7 +3299,7 @@
                                 { type: "translate" }
                             );
 
-                            if (!JXG.exists(attr.styleGGB)) {
+                            if (!JXG2.exists(attr.styleGGB)) {
                                 attr.face = 'circle'
                                 attr.fillColor = attr.strokeColor;
                                 attr.fillOpacity = 1;
@@ -3311,7 +3311,7 @@
                             p = this.board.create("point", [input[0], t], attr);
                             return p;
                         } catch (exc11) {
-                            JXG.debug("* Err: Translate " + attr.name);
+                            JXG2.debug("* Err: Translate " + attr.name);
                             return false;
                         }
                         break;
@@ -3322,18 +3322,18 @@
                         attr = this.visualProperties(element, attr);
 
                         // Punktspiegelung
-                        if (JXG.isPoint(this.board.select(input[1].id))) {
+                        if (JXG2.isPoint(this.board.select(input[1].id))) {
                             type = 'mirrorpoint'
                             // Achsenspiegelung
                         } else if (
                             this.board.select(input[1].id).elementClass ===
-                            JXG.OBJECT_CLASS_LINE
+                            JXG2.OBJECT_CLASS_LINE
                         ) {
                             type = 'reflection'
                         }
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Mirror: First: " +
                                     input[0].name +
                                     ", Second: " +
@@ -3342,7 +3342,7 @@
                             p = this.board.create(type, [input[0], input[1]], attr);
                             return p;
                         } catch (exc12) {
-                            JXG.debug("* Err: Mirror " + attr.name);
+                            JXG2.debug("* Err: Mirror " + attr.name);
                             return false;
                         }
                         break;
@@ -3353,13 +3353,13 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Circle: First: " + input[0].name + ", Second: " + input[1]
                             );
                             p = this.board.create("circle", input, attr);
                             return p;
                         } catch (exc13) {
-                            JXG.debug("* Err: Circle " + attr.name);
+                            JXG2.debug("* Err: Circle " + attr.name);
                             return false;
                         }
                         break;
@@ -3370,7 +3370,7 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* CircleArc: First: " +
                                     input[0].name +
                                     ", Second: " +
@@ -3381,7 +3381,7 @@
                             p = this.board.create("arc", input, attr);
                             return p;
                         } catch (exc14) {
-                            JXG.debug("* Err: CircleArc " + attr.name);
+                            JXG2.debug("* Err: CircleArc " + attr.name);
                             return false;
                         }
                         break;
@@ -3392,7 +3392,7 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Ellipse: First: " +
                                     input[0].name +
                                     ", Second: " +
@@ -3410,7 +3410,7 @@
                             p = this.board.create("ellipse", input, attr);
                             return p;
                         } catch (exc15) {
-                            JXG.debug("* Err: Ellipse " + attr.name);
+                            JXG2.debug("* Err: Ellipse " + attr.name);
                             return false;
                         }
                         break;
@@ -3440,7 +3440,7 @@
                             }
                             return p;
                         } catch (exc16) {
-                            JXG.debug("* Err: Conic " + attr.name);
+                            JXG2.debug("* Err: Conic " + attr.name);
                             return false;
                         }
                         break;
@@ -3450,7 +3450,7 @@
                         gxtEl = this.coordinates(gxtEl, element);
                         attr = this.visualProperties(element, attr);
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* CircleSector: First: " +
                                     input[0].name +
                                     ", Second: " +
@@ -3465,7 +3465,7 @@
                             );
                             return p;
                         } catch (exc17) {
-                            JXG.debug("* Err: CircleSector " + attr.name);
+                            JXG2.debug("* Err: CircleSector " + attr.name);
                             return false;
                         }
                         break;
@@ -3476,13 +3476,13 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* LineBiSector (Mittelsenkrechte): First: " + input[0].name
                             );
                             m = this.board.create("midpoint", input, { visible: false });
                             if (
-                                JXG.isPoint(this.board.select(input[0].id)) &&
-                                JXG.isPoint(this.board.select(input[1].id))
+                                JXG2.isPoint(this.board.select(input[0].id)) &&
+                                JXG2.isPoint(this.board.select(input[1].id))
                             ) {
                                 t = this.board.create("line", input, { visible: "false" });
                                 p = this.board.create("perpendicular", [m, t], attr);
@@ -3491,7 +3491,7 @@
                             }
                             return p;
                         } catch (exc18) {
-                            JXG.debug("* Err: LineBiSector (Mittelsenkrechte) " + attr.name);
+                            JXG2.debug("* Err: LineBiSector (Mittelsenkrechte) " + attr.name);
                             return false;
                         }
                         break;
@@ -3502,13 +3502,13 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug("* Ray: First: " + input[0].name);
+                            JXG2.debug("* Ray: First: " + input[0].name);
                             attr.straightFirst = true;
                             attr.straightLast = false;
                             p = this.board.create("line", [input[1], input[0]], attr);
                             return p;
                         } catch (exc19) {
-                            JXG.debug("* Err: Ray " + attr.name);
+                            JXG2.debug("* Err: Ray " + attr.name);
                             return false;
                         }
                         break;
@@ -3519,7 +3519,7 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Tangent: First: " +
                                     input[0].name +
                                     ", Sec.: " +
@@ -3557,7 +3557,7 @@
                                     return [t1, t2];
                             }
                         } catch (exc20) {
-                            JXG.debug("* Err: Tangent " + attr.name + " " + attr2.name);
+                            JXG2.debug("* Err: Tangent " + attr.name + " " + attr2.name);
                             return false;
                         }
                         break;
@@ -3568,11 +3568,11 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug("* CircumcircleArc: First: " + input[0].name);
+                            JXG2.debug("* CircumcircleArc: First: " + input[0].name);
                             p = this.board.create("circumcirclearc", input, attr);
                             return p;
                         } catch (exc21) {
-                            JXG.debug("* Err: CircumcircleArc " + attr.name);
+                            JXG2.debug("* Err: CircumcircleArc " + attr.name);
                             return false;
                         }
                         break;
@@ -3583,7 +3583,7 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug("* CircumcircleSector: First: " + input[0].name);
+                            JXG2.debug("* CircumcircleSector: First: " + input[0].name);
                             p = this.board.create(
                                 "circumcirclesector",
                                 [input[0], input[1], input[2]],
@@ -3591,7 +3591,7 @@
                             );
                             return p;
                         } catch (exc22) {
-                            JXG.debug("* Err: CircumcircleSector " + attr.name);
+                            JXG2.debug("* Err: CircumcircleSector " + attr.name);
                             return false;
                         }
                         break;
@@ -3602,11 +3602,11 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug("* Semicircle: First: " + input[0].name);
+                            JXG2.debug("* Semicircle: First: " + input[0].name);
                             p = this.board.create("semicircle", [input[0], input[1]], attr);
                             return p;
                         } catch (exc23) {
-                            JXG.debug("* Err: Semicircle " + attr.name);
+                            JXG2.debug("* Err: Semicircle " + attr.name);
                             return false;
                         }
                         break;
@@ -3617,11 +3617,11 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug("* Angle: First: " + input[0].name);
+                            JXG2.debug("* Angle: First: " + input[0].name);
                             p = this.board.create("angle", input, attr);
                             return p;
                         } catch (exc24) {
-                            JXG.debug("* Err: Angle " + attr.name);
+                            JXG2.debug("* Err: Angle " + attr.name);
                             return false;
                         }
                         break;
@@ -3634,11 +3634,11 @@
                         attr.straightLast = true;
 
                         try {
-                            JXG.debug("* Angularbisector: First: " + input[0].name);
+                            JXG2.debug("* Angularbisector: First: " + input[0].name);
                             p = this.board.create("bisector", input, attr);
                             return p;
                         } catch (exc25) {
-                            JXG.debug("* Err: Angularbisector " + attr.name);
+                            JXG2.debug("* Err: Angularbisector " + attr.name);
                             return false;
                         }
                         break;
@@ -3659,7 +3659,7 @@
                             this.board.ggb[attr.name] = new Function("return " + exp + ";");
                             /*jslint evil:false*/
 
-                            JXG.debug("value: " + this.board.ggb[attr.name]());
+                            JXG2.debug("value: " + this.board.ggb[attr.name]());
                             return this.board.ggb[attr.name];
                         }
                         attr = this.boardProperties(gxtEl, element, attr);
@@ -3686,8 +3686,8 @@
                                     .getElementsByTagName('slider')[0]
                                     .getAttribute('absoluteScreenLocation') === "true"
                             ) {
-                                tmp = new JXG.Coords(
-                                    JXG.COORDS_BY_SCREEN,
+                                tmp = new JXG2.Coords(
+                                    JXG2.COORDS_BY_SCREEN,
                                     [sx, sy],
                                     this.board
                                 );
@@ -3736,7 +3736,7 @@
                             }
 
                             try {
-                                JXG.debug("* Numeric: First: " + attr.name);
+                                JXG2.debug("* Numeric: First: " + attr.name);
                                 attr.withTicks = false;
                                 p = this.board.create(
                                     "slider",
@@ -3765,7 +3765,7 @@
                                 );
                                 return p;
                             } catch (exc26) {
-                                JXG.debug("* Err: Numeric " + attr.name);
+                                JXG2.debug("* Err: Numeric " + attr.name);
                                 return false;
                             }
                         }
@@ -3777,7 +3777,7 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            if (!JXG.exists(attr.styleGGB)) {
+                            if (!JXG2.exists(attr.styleGGB)) {
                                 attr.face = 'circle'
                                 attr.fillColor = attr.strokeColor;
                                 attr.fillOpacity = 1;
@@ -3787,7 +3787,7 @@
                                 attr.strokeWidth = 1;
                             }
                             p = this.board.create("midpoint", input, attr);
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Midpoint (" +
                                     p.id +
                                     "): " +
@@ -3800,7 +3800,7 @@
                             );
                             return p;
                         } catch (exc27) {
-                            JXG.debug("* Err: Midpoint " + attr.name);
+                            JXG2.debug("* Err: Midpoint " + attr.name);
                             return false;
                         }
                         break;
@@ -3810,7 +3810,7 @@
                         gxtEl = this.coordinates(gxtEl, element);
                         attr = this.visualProperties(element, attr);
                         try {
-                            if (!JXG.exists(attr.styleGGB)) {
+                            if (!JXG2.exists(attr.styleGGB)) {
                                 attr.face = 'circle'
                                 attr.fillColor = attr.strokeColor;
                                 attr.fillOpacity = 1;
@@ -3831,7 +3831,7 @@
                                 ],
                                 attr
                             );
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Center (" +
                                     p.id +
                                     "): " +
@@ -3844,7 +3844,7 @@
                             );
                             return p;
                         } catch (exc28) {
-                            JXG.debug("* Err: Center " + attr.name);
+                            JXG2.debug("* Err: Center " + attr.name);
                             return false;
                         }
                         break;
@@ -3862,13 +3862,13 @@
                             func = this.functionParse("s", func);
                         }
 
-                        JXG.debug(func);
+                        JXG2.debug(func);
 
                         length = func.length;
                         func[func.length - 1] =
                             "return " + this.ggbParse(func[func.length - 1]) + ";";
 
-                        JXG.debug(func);
+                        JXG2.debug(func);
 
                         range = [
                             input && input[1] ? input[1] : null,
@@ -3941,7 +3941,7 @@
 
                             return p;
                         } catch (exc29) {
-                            JXG.debug("* Err: Functiongraph " + attr.name);
+                            JXG2.debug("* Err: Functiongraph " + attr.name);
                             return false;
                         }
 
@@ -3953,13 +3953,13 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Polar: First: " + input[0].name + ", Sec.: " + input[1].name
                             );
                             p = this.board.create("polar", input, attr);
                             return p;
                         } catch (exc30) {
-                            JXG.debug("* Err: Polar " + attr.name);
+                            JXG2.debug("* Err: Polar " + attr.name);
                             return false;
                         }
                         break;
@@ -3970,7 +3970,7 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug("* Slope (" + attr.name + "): First: " + input[0].name);
+                            JXG2.debug("* Slope (" + attr.name + "): First: " + input[0].name);
 
                             slopeWidth = parseInt(attr.slopeWidth, 10) || 1;
                             p1 = input[0].glider || input[0].point1;
@@ -4015,8 +4015,8 @@
                                             " " +
                                             this.name +
                                             " = " +
-                                            JXG.trimNumber(
-                                                JXG.toFixed(
+                                            JXG2.trimNumber(
+                                                JXG2.toFixed(
                                                     slopeWidth * input[0].getSlope(),
                                                     that.decimals
                                                 )
@@ -4064,7 +4064,7 @@
                             });
                             return t;
                         } catch (exc31) {
-                            JXG.debug("* Err: Slope " + attr.name);
+                            JXG2.debug("* Err: Slope " + attr.name);
                             return false;
                         }
                         break;
@@ -4098,7 +4098,7 @@
                                         res =
                                             res +
                                             RegExp.$1 +
-                                            '" + JXG.trimNumber(JXG.toFixed(' +
+                                            '" + JXG2.trimNumber(JXG2.toFixed(' +
                                             re2 +
                                             ", " +
                                             this.decimals +
@@ -4115,7 +4115,7 @@
                                     res =
                                         res +
                                         RegExp.$1 +
-                                        '" + JXG.trimNumber(JXG.toFixed(' +
+                                        '" + JXG2.trimNumber(JXG2.toFixed(' +
                                         this.ggbParse(RegExp.$2) +
                                         ", " +
                                         this.decimals +
@@ -4124,7 +4124,7 @@
                                     res = res + t;
                                 }
 
-                                JXG.debug("Text: " + res);
+                                JXG2.debug("Text: " + res);
 
                                 // res is verified by ggbParse
                                 /*jslint evil:true*/
@@ -4135,15 +4135,15 @@
                                 );
                                 /*jslint evil:false, regexp:false*/
                             } else {
-                                JXG.debug(this.getElement(attr.name, true).getAttribute('exp'));
+                                JXG2.debug(this.getElement(attr.name, true).getAttribute('exp'));
                                 t = this.functionParse(
                                     false,
                                     this.getElement(attr.name, true).getAttribute('exp')
                                 );
                                 t = this.ggbParse(t);
-                                JXG.debug(t[1]);
+                                JXG2.debug(t[1]);
 
-                                if (JXG.isArray(t)) {
+                                if (JXG2.isArray(t)) {
                                     // input string is verified by ggbParse
                                     /*jslint evil:true*/
                                     p = this.board.create(
@@ -4154,7 +4154,7 @@
                                             new Function(
                                                 "return " +
                                                     t[0] +
-                                                    ' + " " + JXG.trimNumber(JXG.toFixed(parseFloat(' +
+                                                    ' + " " + JXG2.trimNumber(JXG2.toFixed(parseFloat(' +
                                                     t[1] +
                                                     ", " +
                                                     this.decimals +
@@ -4168,10 +4168,10 @@
                                     p = this.board.create("text", [gxtEl.x, gxtEl.y, t], attr);
                                 }
                             }
-                            JXG.debug("* Text: " + t);
+                            JXG2.debug("* Text: " + t);
                             return p;
                         } catch (exc32) {
-                            JXG.debug("* Err: Text: " + t, exc32, exc32.stack);
+                            JXG2.debug("* Err: Text: " + t, exc32, exc32.stack);
                             return false;
                         }
                         break;
@@ -4185,7 +4185,7 @@
                             output[i] = this.checkElement(output[i].getAttribute('label'));
                         }
 
-                        if (JXG.isArray(input)) {
+                        if (JXG2.isArray(input)) {
                             inp = input[0];
                         } else {
                             inp = input;
@@ -4210,7 +4210,7 @@
                         attr = this.visualProperties(element, attr);
 
                         try {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Integral: First: " +
                                     input[0].name +
                                     ", Sec.: " +
@@ -4218,7 +4218,7 @@
                                     ", Thir.: " +
                                     input[2].name
                             );
-                            JXG.debug([input[1](), input[2]()]);
+                            JXG2.debug([input[1](), input[2]()]);
                             p = this.board.create(
                                 "integral",
                                 [this.board.select(input[0]), [input[1], input[2]]],
@@ -4226,7 +4226,7 @@
                             );
                             return p;
                         } catch (exc33) {
-                            JXG.debug("* Err: Integral " + attr.name + e);
+                            JXG2.debug("* Err: Integral " + attr.name + e);
                             return false;
                         }
                         break;
@@ -4294,8 +4294,8 @@
                     for (s = 0; s < cmds.length; s++) {
                         Data = cmds[s];
 
-                        JXG.debug("now i'll parse the command:");
-                        JXG.debug(Data);
+                        JXG2.debug("now i'll parse the command:");
+                        JXG2.debug(Data);
 
                         input = [];
                         for (
@@ -4332,7 +4332,7 @@
                         }
 
                         if (
-                            !JXG.exists(this.ggbElements[elname]) ||
+                            !JXG2.exists(this.ggbElements[elname]) ||
                             this.ggbElements[elname] === ""
                         ) {
                             this.ggbElements[elname] = this.writeElement(
@@ -4351,14 +4351,14 @@
                         }
                     }
 
-                    JXG.debug("Restesammler: ");
+                    JXG2.debug("Restesammler: ");
                     // create "single" elements which do not depend on any other
                     elements = constructions[t].getElementsByTagName('element');
                     for (s = 0; s < elements.length; s++) {
                         Data = elements[s];
                         el = Data.getAttribute('label');
 
-                        if (!JXG.exists(this.ggbElements[el]) || this.ggbElements === "") {
+                        if (!JXG2.exists(this.ggbElements[el]) || this.ggbElements === "") {
                             this.ggbElements[el] = this.writeElement(Data);
 
                             expr = this.getElement(el, true);
@@ -4423,11 +4423,11 @@
 
                 if (isString && fileStr.indexOf("<") !== 0) {
                     // first try to decode assuming we got a base64 encoded ggb file
-                    fstr = JXG.Util.Base64.decode(fileStr);
+                    fstr = JXG2.Util.Base64.decode(fileStr);
 
                     if (fstr.slice(0, 2) !== 'PK') {
                         // ooops, that was no ggb file. try again with utf8 parameter set.
-                        fstr = JXG.Util.Base64.decode(fileStr, true);
+                        fstr = JXG2.Util.Base64.decode(fileStr, true);
                     }
                     fileStr = fstr;
                 }
@@ -4436,13 +4436,13 @@
                     bA = [];
                     len = fileStr.length;
                     for (i = 0; i < len; i++) {
-                        bA[i] = JXG.Util.UTF8.asciiCharCodeAt(fileStr, i);
+                        bA[i] = JXG2.Util.UTF8.asciiCharCodeAt(fileStr, i);
                     }
 
                     // Unzip
-                    fileStr = new JXG.Util.Unzip(bA).unzipFile('geogebra.xml');
+                    fileStr = new JXG2.Util.Unzip(bA).unzipFile('geogebra.xml');
                 }
-                fileStr = JXG.Util.UTF8.decode(fileStr);
+                fileStr = JXG2.Util.UTF8.decode(fileStr);
                 fileStr = this.utf8replace(fileStr);
 
                 return fileStr;
@@ -4454,10 +4454,10 @@
              * @returns {Boolean}
              */
             isGGBVector: function (v) {
-                return JXG.isArray(v) && v.length === 3 && v[0] === 1;
+                return JXG2.isArray(v) && v.length === 3 && v[0] === 1;
             }
         }
     );
 
-    JXG.registerReader(JXG.GeogebraReader, ["ggb", "geogebra"]);
+    JXG2.registerReader(JXG2.GeogebraReader, ["ggb", "geogebra"]);
 })();

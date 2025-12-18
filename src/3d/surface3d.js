@@ -26,9 +26,9 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {JSXMath} from "../math/math.js";
 import {Geometry} from "../math/geometry.js";
@@ -36,10 +36,10 @@ import {Type} from "../utils/type.js";
 
 /**
  * Constructor for 3D surfaces.
- * @class Creates a new 3D surface object. Do not use this constructor to create a 3D surface. Use {@link JXG.View3D#create} with type {@link Surface3D} instead.
+ * @class Creates a new 3D surface object. Do not use this constructor to create a 3D surface. Use {@link JXG2.View3D#create} with type {@link Surface3D} instead.
  *
- * @augments JXG.GeometryElement3D
- * @augments JXG.GeometryElement
+ * @augments JXG2.GeometryElement3D
+ * @augments JXG2.GeometryElement
  * @param {View3D} view
  * @param {Function} F
  * @param {Function} X
@@ -48,9 +48,9 @@ import {Type} from "../utils/type.js";
  * @param {Array} range_u
  * @param {Array} range_v
  * @param {Object} attributes
- * @see JXG.Board#generateName
+ * @see JXG2.Board#generateName
  */
-JXG.Surface3D = function (view, F, X, Y, Z, range_u, range_v, attributes) {
+JXG2.Surface3D = function (view, F, X, Y, Z, range_u, range_v, attributes) {
     this.constructor(
         view.board,
         attributes,
@@ -136,12 +136,12 @@ JXG.Surface3D = function (view, F, X, Y, Z, range_u, range_v, attributes) {
         // TODO
     });
 };
-JXG.Surface3D.prototype = new JXG.GeometryElement();
-Type.copyPrototypeMethods(JXG.Surface3D, JXG.GeometryElement3D, 'constructor3D');
+JXG2.Surface3D.prototype = new JXG2.GeometryElement();
+Type.copyPrototypeMethods(JXG2.Surface3D, JXG2.GeometryElement3D, 'constructor3D');
 
-JXG.extend(
-    JXG.Surface3D.prototype,
-    /** @lends JXG.Surface3D.prototype */ {
+JXG2.extend(
+    JXG2.Surface3D.prototype,
+    /** @lends JXG2.Surface3D.prototype */ {
 
         updateWireframe: function () {
             var steps_u, steps_v,
@@ -421,7 +421,7 @@ JXG.extend(
  * </pre><div id="JXG52da0ecc-1ba9-4d41-850c-36e5120025a5" class="jxgbox" style="width: 500px; height: 500px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG52da0ecc-1ba9-4d41-850c-36e5120025a5',
+ *         var board = JXG2.JSXGraph.initBoard('JXG52da0ecc-1ba9-4d41-850c-36e5120025a5',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, pan: {enabled: false}, showcopyright: false, shownavigation: false});
  *     var view = board.create('view3d',
  *            [[-6, -3], [8, 8],
@@ -444,7 +444,7 @@ JXG.extend(
  * </script><pre>
  *
  */
-JXG.createParametricSurface3D = function (board, parents, attributes) {
+JXG2.createParametricSurface3D = function (board, parents, attributes) {
     var view = parents[0],
         F, X, Y, Z,
         range_u, range_v, attr,
@@ -479,7 +479,7 @@ JXG.createParametricSurface3D = function (board, parents, attributes) {
     }
 
     attr = Type.copyAttributes(attributes, board.options, 'surface3d');
-    el = new JXG.Surface3D(view, F, X, Y, Z, range_u, range_v, attr);
+    el = new JXG2.Surface3D(view, F, X, Y, Z, range_u, range_v, attr);
 
     attr = el.setAttr2D(attr);
     el.element2D = view.create("curve", [[], []], attr);
@@ -509,7 +509,7 @@ JXG.createParametricSurface3D = function (board, parents, attributes) {
 
     return el;
 };
-JXG.registerElement("parametricsurface3d", JXG.createParametricSurface3D);
+JXG2.registerElement("parametricsurface3d", JXG2.createParametricSurface3D);
 
 /**
  * @class A 3D functiongraph  visualizes a map (x, y) &rarr; f(x, y).
@@ -555,7 +555,7 @@ JXG.registerElement("parametricsurface3d", JXG.createParametricSurface3D);
  * </pre><div id="JXG87646dd4-9fe5-4c21-8734-089abc612515" class="jxgbox" style="width: 500px; height: 500px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG87646dd4-9fe5-4c21-8734-089abc612515',
+ *         var board = JXG2.JSXGraph.initBoard('JXG87646dd4-9fe5-4c21-8734-089abc612515',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, pan: {enabled: false}, showcopyright: false, shownavigation: false});
  *     var box = [-5, 5];
  *     var view = board.create('view3d',
@@ -586,7 +586,7 @@ JXG.registerElement("parametricsurface3d", JXG.createParametricSurface3D);
  * </script><pre>
  *
  */
-JXG.createFunctiongraph3D = function (board, parents, attributes) {
+JXG2.createFunctiongraph3D = function (board, parents, attributes) {
     var view = parents[0],
         X = function (u, v) {
             return u;
@@ -603,4 +603,4 @@ JXG.createFunctiongraph3D = function (board, parents, attributes) {
     el.elType = 'functiongraph3d';
     return el;
 };
-JXG.registerElement("functiongraph3d", JXG.createFunctiongraph3D);
+JXG2.registerElement("functiongraph3d", JXG2.createFunctiongraph3D);

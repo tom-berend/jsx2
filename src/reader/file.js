@@ -29,10 +29,10 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG:true, define: true, ActiveXObject:true, jxgBinFileReader:true, DOMParser:true, XMLHttpRequest:true, document:true, navigator:true*/
+/*global JXG2:true, define: true, ActiveXObject:true, jxgBinFileReader:true, DOMParser:true, XMLHttpRequest:true, document:true, navigator:true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { Env } from "../utils/env.js";
 import {Type} from "../utils/type.js";
 import{ Encoding }from "../utils/encoding.js";
@@ -41,11 +41,11 @@ import{ Base64 }from "../utils/base64.js";
 /**
  * The FileReader object bundles the file input capabilities of JSXGraph.
  */
-JXG.FileReader = {
+JXG2.FileReader = {
     /**
      *
      * @param {String} url
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {String} format
      * @param {Boolean} async
      * @param {Function} callback
@@ -74,7 +74,7 @@ JXG.FileReader = {
             }
         }
         if (!request) {
-            JXG.debug("AJAX not activated!");
+            JXG2.debug("AJAX not activated!");
             return;
         }
 
@@ -129,7 +129,7 @@ JXG.FileReader = {
     /**
      *
      * @param {Blob} url The Blob or File from which to read
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {String} format
      * @param {Boolean} async
      * @param {Function} callback
@@ -165,9 +165,9 @@ JXG.FileReader = {
     },
 
     /**
-     * Opens a file using the given URL and passes the contents to {@link JXG.FileReader#parseString}
+     * Opens a file using the given URL and passes the contents to {@link JXG2.FileReader#parseString}
      * @param {String} url
-     * @param {JXG.Board|function} board Either a board or in case <tt>format</tt> equals 'raw' this has to be a callback function.
+     * @param {JXG2.Board|function} board Either a board or in case <tt>format</tt> equals 'raw' this has to be a callback function.
      * @param {String} format The expected file format. Possible values are <dl>
      * <dt>raw</dt><dd>Raw text file. In this case <tt>board</tt> has to be a callback function.</dd>
      * <dt>geonext</dt><dd>Geonext File <a href="https://www.geonext.de">https://www.geonext.de</a></dd>
@@ -192,7 +192,7 @@ JXG.FileReader = {
     /**
      * Parses a given string according to the file format given in format.
      * @param {String} str Contents of the file.
-     * @param {JXG.Board} board The board the construction in the file should be loaded in.
+     * @param {JXG2.Board} board The board the construction in the file should be loaded in.
      * @param {String} format Possible values are <dl>
      * <dt>raw</dt><dd>Raw text file. In this case <tt>board</tt> has to be a callback function.</dd>
      * <dt>geonext</dt><dd>Geonext File <a href="https://www.geonext.de">https://www.geonext.de</a></dd>
@@ -209,7 +209,7 @@ JXG.FileReader = {
         var Reader, read;
 
         format = format.toLowerCase();
-        Reader = JXG.readers[format];
+        Reader = JXG2.readers[format];
 
         if (Type.exists(Reader)) {
             read = new Reader(board, str);
@@ -285,4 +285,4 @@ End Function\n\
     );
 }
 
-export default JXG.FileReader;
+export default JXG2.FileReader;

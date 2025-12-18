@@ -29,10 +29,10 @@
  and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import Symbolic from "../math/symbolic.js";
 import {Type} from "../utils/type.js";
 
@@ -42,12 +42,12 @@ import {Type} from "../utils/type.js";
  * @description The locus element is used to visualize the curve a given point describes.
  * @constructor
  * @name Locus
- * @type JXG.Curve
- * @augments JXG.Curve
+ * @type JXG2.Curve
+ * @augments JXG2.Curve
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point} p The constructed curve is the geometric locus of the given point.
+ * @param {JXG2.Point} p The constructed curve is the geometric locus of the given point.
  * @example
- *  // This examples needs JXG.Server up and running, otherwise it won't work.
+ *  // This examples needs JXG2.Server up and running, otherwise it won't work.
  *  p1 = board.create('point', [0, 0]);
  *  p2 = board.create('point', [6, -1]);
  *  c1 = board.create('circle', [p1, 2]);
@@ -59,7 +59,7 @@ import {Type} from "../utils/type.js";
  *  loc = board.create('locus', [m1], {strokeColor: 'red'});
  * </pre><div class="jxgbox" id="JXGd45d7188-6624-4d6e-bebb-1efa2a305c8a" style="width: 400px; height: 400px;"></div>
  * <script type="text/javascript">
- *  lcex_board = JXG.JSXGraph.initBoard('JXGd45d7188-6624-4d6e-bebb-1efa2a305c8a', {boundingbox:[-4, 6, 10, -6], axis: true, grid: false, keepaspectratio: true});
+ *  lcex_board = JXG2.JSXGraph.initBoard('JXGd45d7188-6624-4d6e-bebb-1efa2a305c8a', {boundingbox:[-4, 6, 10, -6], axis: true, grid: false, keepaspectratio: true});
  *  lcex_p1 = lcex_board.create('point', [0, 0]);
  *  lcex_p2 = lcex_board.create('point', [6, -1]);
  *  lcex_c1 = lcex_board.create('circle', [lcex_p1, 2]);
@@ -71,7 +71,7 @@ import {Type} from "../utils/type.js";
  *  lcex_loc = board.create('locus', [lcex_m1], {strokeColor: 'red'});
  * </script><pre>
  */
-JXG.createLocus = function (board, parents, attributes) {
+JXG2.createLocus = function (board, parents, attributes) {
     var c, p;
 
     if (Type.isArray(parents) && parents.length === 1 && Type.isPoint(parents[0])) {
@@ -90,7 +90,7 @@ JXG.createLocus = function (board, parents, attributes) {
     c.setParents([p.id]);
 
     /**
-     * Should be documented in JXG.Curve
+     * Should be documented in JXG2.Curve
      * @ignore
      */
     c.updateDataArray = function () {
@@ -153,8 +153,8 @@ JXG.createLocus = function (board, parents, attributes) {
     return c;
 };
 
-JXG.registerElement("locus", JXG.createLocus);
+JXG2.registerElement("locus", JXG2.createLocus);
 
 // export default {
-//     createLocus: JXG.createLocus
+//     createLocus: JXG2.createLocus
 // };

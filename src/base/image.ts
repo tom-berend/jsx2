@@ -29,14 +29,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview In this file the geometry element Image is defined.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 import GeometryElement from "./element.js";
@@ -51,18 +51,18 @@ import CoordsElement from "./coordselement.js";
  * like "data:image/png;base64, /9j/4AAQSkZJRgA..." or a function returning
  * an URL: function(){ return 'xxx.png; }.
  *
- * @class Creates a new image object. Do not use this constructor to create a image. Use {@link JXG.Board#create} with
+ * @class Creates a new image object. Do not use this constructor to create a image. Use {@link JXG2.Board#create} with
  * type {@link Image} instead.
- * @augments JXG.GeometryElement
- * @augments JXG.CoordsElement
- * @param {string|JXG.Board} board The board the new image is drawn on.
+ * @augments JXG2.GeometryElement
+ * @augments JXG2.CoordsElement
+ * @param {string|JXG2.Board} board The board the new image is drawn on.
  * @param {Array} coordinates An array with the user coordinates of the image.
  * @param {Object} attributes An object containing visual and - optionally - a name and an id.
  * @param {string|function} url An URL string or a function returning an URL string.
  * @param  {Array} size Array containing width and height of the image in user coordinates.
  *
  */
-JXG.Image = function (board, coords, attributes, url, size) {
+JXG2.Image = function (board, coords, attributes, url, size) {
     this.constructor(board, attributes, OBJECT_TYPE.IMAGE, OBJECT_CLASS.OTHER);
     this.element = this.board.select(attributes.anchor);
     this.coordsConstructor(coords);
@@ -115,12 +115,12 @@ JXG.Image = function (board, coords, attributes, url, size) {
     });
 };
 
-JXG.Image.prototype = new GeometryElement();
-Type.copyPrototypeMethods(JXG.Image, CoordsElement, 'coordsConstructor');
+JXG2.Image.prototype = new GeometryElement();
+Type.copyPrototypeMethods(JXG2.Image, CoordsElement, 'coordsConstructor');
 
-JXG.extend(
-    JXG.Image.prototype,
-    /** @lends JXG.Image.prototype */ {
+JXG2.extend(
+    JXG2.Image.prototype,
+    /** @lends JXG2.Image.prototype */ {
         /**
          * Checks whether (x,y) is over or near the image;
          * @param {Number} x Coordinate in x direction, screen coordinates.
@@ -178,7 +178,7 @@ JXG.extend(
         /**
          * Recalculate the coordinates of lower left corner and the width and height.
          *
-         * @returns {JXG.GeometryElement} A reference to the element
+         * @returns {JXG2.GeometryElement} A reference to the element
          * @private
          */
         update: function (fromParent) {
@@ -203,7 +203,7 @@ JXG.extend(
 
         /**
          * Updates the internal arrays containing size of the image.
-         * @returns {JXG.GeometryElement} A reference to the element
+         * @returns {JXG2.GeometryElement} A reference to the element
          * @private
          */
         updateSize: function () {
@@ -219,7 +219,7 @@ JXG.extend(
         /**
          * Update the anchor point of the image, i.e. the lower left corner
          * and the two vectors which span the rectangle.
-         * @returns {JXG.GeometryElement} A reference to the element
+         * @returns {JXG2.GeometryElement} A reference to the element
          * @private
          *
          */
@@ -297,7 +297,7 @@ JXG.extend(
          *                            that determines the new width of the image
          * @param  {number|function|string} height Number, function or string
          *                            that determines the new height of the image
-         * @returns {JXG.GeometryElement} A reference to the element
+         * @returns {JXG2.GeometryElement} A reference to the element
          *
          * @example
          * var im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg',
@@ -308,7 +308,7 @@ JXG.extend(
          * </pre><div id="JXG8411e60c-f009-11e5-b1bf-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG8411e60c-f009-11e5-b1bf-901b0e1b8723',
+         *         var board = JXG2.JSXGraph.initBoard('JXG8411e60c-f009-11e5-b1bf-901b0e1b8723',
          *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
          *     var im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg', [-3,-2],    [3,3]]);
          *     //im.setSize(4, 4);
@@ -331,7 +331,7 @@ JXG.extend(
          * </pre><div id="JXG4ce706c0-f00a-11e5-b1bf-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *         var board = JXG.JSXGraph.initBoard('JXG4ce706c0-f00a-11e5-b1bf-901b0e1b8723',
+         *         var board = JXG2.JSXGraph.initBoard('JXG4ce706c0-f00a-11e5-b1bf-901b0e1b8723',
          *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
          *     var p0 = board.create('point', [-3, -2]),
          *         im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg',
@@ -374,8 +374,8 @@ JXG.extend(
  * @class Display of an external image.
  * @pseudo
  * @name Image
- * @type JXG.Image
- * @augments JXG.Image
+ * @type JXG2.Image
+ * @augments JXG2.Image
  * @constructor
  * @constructor
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
@@ -394,11 +394,11 @@ JXG.extend(
  *
  * </pre><div class="jxgbox" id="JXG9850cda0-7ea0-4750-981c-68bacf9cca57" style="width: 400px; height: 400px;"></div>
  * <script type="text/javascript">
- *   var image_board = JXG.JSXGraph.initBoard('JXG9850cda0-7ea0-4750-981c-68bacf9cca57', {boundingbox: [-4, 4, 4, -4], axis: true, showcopyright: false, shownavigation: false});
+ *   var image_board = JXG2.JSXGraph.initBoard('JXG9850cda0-7ea0-4750-981c-68bacf9cca57', {boundingbox: [-4, 4, 4, -4], axis: true, showcopyright: false, shownavigation: false});
  *   var image_im = image_board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg', [-3,-2],[3,3]]);
  * </script><pre>
  */
-JXG.createImage = function (board, parents, attributes) {
+JXG2.createImage = function (board, parents, attributes) {
     var attr,
         im,
         url = parents[0],
@@ -406,7 +406,7 @@ JXG.createImage = function (board, parents, attributes) {
         size = parents[2];
 
     attr = Type.copyAttributes(attributes, board.options, 'image');
-    im = CoordsElement.create(JXG.Image, board, coords, attr, url, size);
+    im = CoordsElement.create(JXG2.Image, board, coords, attr, url, size);
     if (!im) {
         throw new Error(
             "JSXGraph: Can't create image with parent types '" +
@@ -426,10 +426,10 @@ JXG.createImage = function (board, parents, attributes) {
     return im;
 };
 
-JXG.registerElement("image", JXG.createImage);
+JXG2.registerElement("image", JXG2.createImage);
 
-export default JXG.Image;
+export default JXG2.Image;
 // export default {
-//     Image: JXG.Image,
-//     createImage: JXG.createImage
+//     Image: JXG2.Image,
+//     createImage: JXG2.createImage
 // };

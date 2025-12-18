@@ -29,23 +29,23 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, XMLSerializer: true, Image: true*/
+/*global JXG2: true, XMLSerializer: true, Image: true*/
 /*jslint nomen: true, plusplus: true*/
 
 (function () {
     "use strict";
 
-    JXG.GeonextReader = function (board, str) {
+    JXG2.GeonextReader = function (board, str) {
         var content;
 
         this.board = board;
         content = this.prepareString(str);
-        this.tree = JXG.XML.parse(content);
+        this.tree = JXG2.XML.parse(content);
     };
 
-    JXG.extend(
-        JXG.GeonextReader.prototype,
-        /** @lends JXG.GeonextReader.prototype */ {
+    JXG2.extend(
+        JXG2.GeonextReader.prototype,
+        /** @lends JXG2.GeonextReader.prototype */ {
             changeOriginIds: function (board, id) {
                 if (
                     id === "gOOe0" ||
@@ -71,12 +71,12 @@
             gEBTN: function (node, tag, idx, fc) {
                 var tmp = [];
 
-                if (!JXG.exists(node || !node.getElementsByTagName)) {
+                if (!JXG2.exists(node || !node.getElementsByTagName)) {
                     return node;
                 }
 
                 // Default values for optional parameters idx and fc
-                if (!JXG.exists(fc)) {
+                if (!JXG2.exists(fc)) {
                     fc = true;
                 }
 
@@ -108,33 +108,33 @@
 
                 //gxtEl.strokewidth = Data.getElementsByTagName('strokewidth')[0].firstChild.data;
                 // colorStroke = strokeColor etc. is here for downwards compatibility:
-                // once upon a time we used to create elements in here using the "new JXG.Element" constructor mechanism
+                // once upon a time we used to create elements in here using the "new JXG2.Element" constructor mechanism
                 // then we changed to board.create + setProperty afterwords
                 // now i want to use the board.create method with an appropriate attributes object to avoid setProperty calls
                 // and as gxtEl happens to be somewhat like an attributes object it's  just slightly different so we adjust it
                 // for downwards compatibility during the transformation of this reader we use both properties
 
-                rgbo = JXG.rgba2rgbo(this.gEBTN(color, 'stroke'));
+                rgbo = JXG2.rgba2rgbo(this.gEBTN(color, 'stroke'));
                 gxtEl.strokeColor = rgbo[0];
                 gxtEl.strokeOpacity = rgbo[1];
 
-                rgbo = JXG.rgba2rgbo(this.gEBTN(color, 'lighting'));
+                rgbo = JXG2.rgba2rgbo(this.gEBTN(color, 'lighting'));
                 gxtEl.highlightStrokeColor = rgbo[0];
                 gxtEl.highlightStrokeOpacity = rgbo[1];
 
-                rgbo = JXG.rgba2rgbo(this.gEBTN(color, 'fill'));
+                rgbo = JXG2.rgba2rgbo(this.gEBTN(color, 'fill'));
                 gxtEl.fillColor = rgbo[0];
                 gxtEl.fillOpacity = rgbo[1];
 
                 gxtEl.highlightFillColor = gxtEl.fillColor;
                 gxtEl.highlightFillOpacity = gxtEl.fillOpacity;
 
-                rgbo = JXG.rgba2rgbo(this.gEBTN(color, 'label'));
+                rgbo = JXG2.rgba2rgbo(this.gEBTN(color, 'label'));
                 gxtEl.labelColor = rgbo[0];
                 gxtEl.withLabel = rgbo[1] > 0;
                 gxtEl.labelOpacity = rgbo[1];
 
-                gxtEl.colorDraft = JXG.rgba2rgbo(this.gEBTN(color, 'draft'))[0];
+                gxtEl.colorDraft = JXG2.rgba2rgbo(this.gEBTN(color, 'draft'))[0];
 
                 // backwards compatibility
                 gxtEl.colorStroke = gxtEl.strokeColor;
@@ -147,7 +147,7 @@
             firstLevelProperties: function (gxtEl, Data) {
                 var n, key, arr;
 
-                if (!JXG.exists(Data) || !JXG.exists(Data.childNodes)) {
+                if (!JXG2.exists(Data) || !JXG2.exists(Data.childNodes)) {
                     return gxtEl;
                 }
 
@@ -155,7 +155,7 @@
 
                 for (n = 0; n < arr.length; n++) {
                     if (
-                        JXG.exists(arr[n].firstChild) &&
+                        JXG2.exists(arr[n].firstChild) &&
                         arr[n].nodeName !== "data" &&
                         arr[n].nodeName !== "straight"
                     ) {
@@ -201,8 +201,8 @@
             },
 
             visualProperties: function (gxtEl, Data) {
-                gxtEl.visible = JXG.str2Bool(this.gEBTN(Data, 'visible'));
-                gxtEl.trace = JXG.str2Bool(this.gEBTN(Data, 'trace'));
+                gxtEl.visible = JXG2.str2Bool(this.gEBTN(Data, 'visible'));
+                gxtEl.trace = JXG2.str2Bool(this.gEBTN(Data, 'trace'));
 
                 return gxtEl;
             },
@@ -265,13 +265,13 @@
                 gxtEl.face = facemap[parseInt(gxtEl.style, 10)] || 'cross'
                 gxtEl.size = sizemap[parseInt(gxtEl.style, 10)] || 3;
 
-                gxtEl.straightFirst = JXG.str2Bool(gxtEl.straightFirst);
-                gxtEl.straightLast = JXG.str2Bool(gxtEl.straightLast);
+                gxtEl.straightFirst = JXG2.str2Bool(gxtEl.straightFirst);
+                gxtEl.straightLast = JXG2.str2Bool(gxtEl.straightLast);
 
-                gxtEl.visible = JXG.str2Bool(gxtEl.visible);
+                gxtEl.visible = JXG2.str2Bool(gxtEl.visible);
                 //gxtEl.withLabel = gxtEl.visible;           // withLabel is set in colorProperties()
-                gxtEl.draft = JXG.str2Bool(gxtEl.draft);
-                gxtEl.trace = JXG.str2Bool(gxtEl.trace);
+                gxtEl.draft = JXG2.str2Bool(gxtEl.draft);
+                gxtEl.trace = JXG2.str2Bool(gxtEl.trace);
 
                 if (type === 'point') {
                     // Fill properties are ignored by GEONExT
@@ -302,9 +302,9 @@
                     arr = this.gEBTN(Data, nodeType, 0, false).childNodes;
 
                 for (n = 0; n < arr.length; n++) {
-                    if (JXG.exists(arr[n].firstChild)) {
-                        if (JXG.exists(prefix)) {
-                            key = prefix + JXG.capitalize(arr[n].nodeName);
+                    if (JXG2.exists(arr[n].firstChild)) {
+                        if (JXG2.exists(prefix)) {
+                            key = prefix + JXG2.capitalize(arr[n].nodeName);
                         } else {
                             key = arr[n].nodeName;
                         }
@@ -328,9 +328,9 @@
                 var pic = "",
                     nod = node;
 
-                if (JXG.exists(nod)) {
+                if (JXG2.exists(nod)) {
                     pic = nod.data;
-                    while (JXG.exists(nod.nextSibling)) {
+                    while (JXG2.exists(nod.nextSibling)) {
                         nod = nod.nextSibling;
                         pic += nod.data;
                     }
@@ -350,11 +350,11 @@
                 }
 
                 // Background image
-                if (JXG.exists(fileNode.getElementsByTagName('src')[0])) {
+                if (JXG2.exists(fileNode.getElementsByTagName('src')[0])) {
                     tag = 'src'
                 } else if (
-                    JXG.exists(fileNode.getElementsByTagName('image')[0]) &&
-                    JXG.exists(this.gEBTN(fileNode, 'image'))
+                    JXG2.exists(fileNode.getElementsByTagName('image')[0]) &&
+                    JXG2.exists(this.gEBTN(fileNode, 'image'))
                 ) {
                     tag = 'image'
                 } else {
@@ -396,7 +396,7 @@
                             wOrg = this.width,
                             hOrg = this.height;
 
-                        if (el.elementClass === JXG.OBJECT_CLASS_LINE) {
+                        if (el.elementClass === JXG2.OBJECT_CLASS_LINE) {
                             // A line containing an image, runs through the horizontal middle
                             // of the image.
                             xf = function () {
@@ -434,7 +434,7 @@
 
                             tRot.bindTo(im);
                             el.image = im;
-                        } else if (el.elementClass === JXG.OBJECT_CLASS_POINT) {
+                        } else if (el.elementClass === JXG2.OBJECT_CLASS_POINT) {
                             wf = function () {
                                 return wOrg / board.unitX;
                             };
@@ -455,7 +455,7 @@
                             });
                             board.renderer.display(el.label, false);
                             el.image = im;
-                        } else if (el.elementClass === JXG.OBJECT_CLASS_CIRCLE) {
+                        } else if (el.elementClass === JXG2.OBJECT_CLASS_CIRCLE) {
                             // A circle containing an image
                             wf = function () {
                                 return 2.0 * el.Radius();
@@ -496,7 +496,7 @@
                     ob,
                     conditions = "";
 
-                if (JXG.exists(node)) {
+                if (JXG2.exists(node)) {
                     for (i = 0; i < node.getElementsByTagName('data').length; i++) {
                         ob = node.getElementsByTagName('data')[i];
                         s = this.subtreeToString(ob);
@@ -525,7 +525,7 @@
             },
 
             printDebugMessage: function (outputEl, gxtEl, nodetyp, success) {
-                JXG.debug("* " + success + ":  " + nodetyp + " " + gxtEl.name + " " + gxtEl.id);
+                JXG2.debug("* " + success + ":  " + nodetyp + " " + gxtEl.name + " " + gxtEl.id);
             },
 
             readNode: function (elChildNodes, s, board) {
@@ -549,7 +549,7 @@
                 gxtEl = this.defProperties(gxtEl, Data);
 
                 // Skip text nodes
-                if (!JXG.exists(gxtEl)) {
+                if (!JXG2.exists(gxtEl)) {
                     return;
                 }
 
@@ -561,7 +561,7 @@
                         gxtEl = this.visualProperties(gxtEl, Data);
                         gxtEl = this.firstLevelProperties(gxtEl, Data);
                         gxtEl = this.readNodes(gxtEl, Data, 'data');
-                        gxtEl.fixed = JXG.str2Bool(this.gEBTN(Data, 'fix'));
+                        gxtEl.fixed = JXG2.str2Bool(this.gEBTN(Data, 'fix'));
                         gxtEl = this.transformProperties(gxtEl, 'point');
 
                         //try {
@@ -631,7 +631,7 @@
                         gxtEl = this.firstLevelProperties(gxtEl, Data);
 
                         gxtEl = this.readNodes(gxtEl, Data, 'data');
-                        gxtEl.fixed = JXG.str2Bool(this.gEBTN(Data, 'fix'));
+                        gxtEl.fixed = JXG2.str2Bool(this.gEBTN(Data, 'fix'));
                         gxtEl = this.readNodes(gxtEl, Data, "animate", 'animate');
                         gxtEl = this.transformProperties(gxtEl, 'point');
                         try {
@@ -644,7 +644,7 @@
                                 gxtEl
                             );
                             p.onPolygon =
-                                JXG.exists(gxtEl.onpolygon) && JXG.str2Bool(gxtEl.onpolygon);
+                                JXG2.exists(gxtEl.onpolygon) && JXG2.str2Bool(gxtEl.onpolygon);
 
                             this.parseImage(
                                 board,
@@ -659,7 +659,7 @@
 
                             this.printDebugMessage("debug", gxtEl, Data.nodeName, 'OK');
                         } catch (e) {
-                            JXG.debug(
+                            JXG2.debug(
                                 "* Err:  Slider " +
                                     gxtEl.name +
                                     " " +
@@ -673,7 +673,7 @@
                         gxtEl = this.colorProperties(gxtEl, Data);
                         gxtEl = this.visualProperties(gxtEl, Data);
                         gxtEl = this.firstLevelProperties(gxtEl, Data);
-                        gxtEl.fixed = JXG.str2Bool(
+                        gxtEl.fixed = JXG2.str2Bool(
                             Data.getElementsByTagName('fix')[0].firstChild.data
                         );
                         gxtEl = this.readNodes(gxtEl, Data, 'data');
@@ -692,7 +692,7 @@
                         gxtEl.outFirst = this.colorProperties(gxtEl.outFirst, xmlNode);
                         gxtEl.outFirst = this.visualProperties(gxtEl.outFirst, xmlNode);
                         gxtEl.outFirst = this.firstLevelProperties(gxtEl.outFirst, xmlNode);
-                        gxtEl.outFirst.fixed = JXG.str2Bool(
+                        gxtEl.outFirst.fixed = JXG2.str2Bool(
                             xmlNode.getElementsByTagName('fix')[0].firstChild.data
                         );
                         gxtEl.outFirst = this.transformProperties(gxtEl.outFirst, 'point');
@@ -700,8 +700,8 @@
                         gxtEl.last = this.changeOriginIds(board, gxtEl.last);
 
                         if (
-                            board.select(gxtEl.first).elementClass === JXG.OBJECT_CLASS_LINE &&
-                            board.select(gxtEl.last).elementClass === JXG.OBJECT_CLASS_LINE
+                            board.select(gxtEl.first).elementClass === JXG2.OBJECT_CLASS_LINE &&
+                            board.select(gxtEl.last).elementClass === JXG2.OBJECT_CLASS_LINE
                         ) {
                             inter = board.create(
                                 "intersection",
@@ -714,7 +714,7 @@
                             }
                         } else {
                             xmlNode = Data.getElementsByTagName('last')[1];
-                            if (JXG.exists(xmlNode)) {
+                            if (JXG2.exists(xmlNode)) {
                                 gxtEl.outLast = {};
                                 gxtEl.outLast = this.colorProperties(gxtEl.outLast, xmlNode);
                                 gxtEl.outLast = this.visualProperties(gxtEl.outLast, xmlNode);
@@ -722,7 +722,7 @@
                                     gxtEl.outLast,
                                     xmlNode
                                 );
-                                gxtEl.outLast.fixed = JXG.str2Bool(
+                                gxtEl.outLast.fixed = JXG2.str2Bool(
                                     xmlNode.getElementsByTagName('fix')[0].firstChild.data
                                 );
                                 gxtEl.outLast = this.transformProperties(
@@ -961,10 +961,10 @@
                                 // a point and two lines.
                                 // Gliders on sectors also run through the borders.
                                 gxtEl.out = this.defProperties(gxtEl.out, xmlNode);
-                                gxtEl.out.firstArrow = JXG.str2Bool(
+                                gxtEl.out.firstArrow = JXG2.str2Bool(
                                     this.gEBTN(xmlNode, 'firstarrow')
                                 );
-                                gxtEl.out.lastArrow = JXG.str2Bool(
+                                gxtEl.out.lastArrow = JXG2.str2Bool(
                                     this.gEBTN(xmlNode, 'lastarrow')
                                 );
 
@@ -1068,12 +1068,12 @@
                                 xmlNode.getElementsByTagName('name')[0].firstChild.data;
                             gxtEl.borders.names.push(gxtEl.border[i].name);
 
-                            gxtEl.border[i].straightFirst = JXG.str2Bool(
+                            gxtEl.border[i].straightFirst = JXG2.str2Bool(
                                 xmlNode
                                     .getElementsByTagName('straight')[0]
                                     .getElementsByTagName('first')[0].firstChild.data
                             );
-                            gxtEl.border[i].straightLast = JXG.str2Bool(
+                            gxtEl.border[i].straightLast = JXG2.str2Bool(
                                 xmlNode
                                     .getElementsByTagName('straight')[0]
                                     .getElementsByTagName('last')[0].firstChild.data
@@ -1088,18 +1088,18 @@
                                     xmlNode.getElementsByTagName('width')[0].firstChild.data;
                             }
                             try {
-                                gxtEl.border[i].dash = JXG.str2Bool(
+                                gxtEl.border[i].dash = JXG2.str2Bool(
                                     xmlNode.getElementsByTagName('dash')[0].firstChild.data
                                 );
                             } catch (exc) {}
 
-                            gxtEl.border[i].visible = JXG.str2Bool(
+                            gxtEl.border[i].visible = JXG2.str2Bool(
                                 xmlNode.getElementsByTagName('visible')[0].firstChild.data
                             );
-                            gxtEl.border[i].draft = JXG.str2Bool(
+                            gxtEl.border[i].draft = JXG2.str2Bool(
                                 xmlNode.getElementsByTagName('draft')[0].firstChild.data
                             );
-                            gxtEl.border[i].trace = JXG.str2Bool(
+                            gxtEl.border[i].trace = JXG2.str2Bool(
                                 xmlNode.getElementsByTagName('trace')[0].firstChild.data
                             );
 
@@ -1107,19 +1107,19 @@
                                 Data.getElementsByTagName('border')[i].getElementsByTagName(
                                     "color"
                                 )[0];
-                            rgbo = JXG.rgba2rgbo(
+                            rgbo = JXG2.rgba2rgbo(
                                 xmlNode.getElementsByTagName('stroke')[0].firstChild.data
                             );
                             gxtEl.border[i].strokeColor = rgbo[0];
                             gxtEl.border[i].strokeOpacity = rgbo[1];
 
-                            rgbo = JXG.rgba2rgbo(
+                            rgbo = JXG2.rgba2rgbo(
                                 xmlNode.getElementsByTagName('lighting')[0].firstChild.data
                             );
                             gxtEl.border[i].highlightStrokeColor = rgbo[0];
                             gxtEl.border[i].highlightStrokeOpacity = rgbo[1];
 
-                            rgbo = JXG.rgba2rgbo(
+                            rgbo = JXG2.rgba2rgbo(
                                 xmlNode.getElementsByTagName('fill')[0].firstChild.data
                             );
                             gxtEl.border[i].fillColor = rgbo[0];
@@ -1169,7 +1169,7 @@
                             fillColor: "none",
                             highlightFillColor: "none",
                             highlightStrokeColor: gxtEl.highlightStrokeColor,
-                            visible: JXG.str2Bool(gxtEl.visible)
+                            visible: JXG2.str2Bool(gxtEl.visible)
                         });
 
                         this.printDebugMessage("debug", gxtEl, Data.nodeName, 'OK');
@@ -1196,10 +1196,10 @@
                         gxtEl = this.readNodes(gxtEl, Data, 'data');
 
                         // It seems that JSXGraph and GEONExT use opposite directions.
-                        gxtEl.firstArrow = JXG.str2Bool(
+                        gxtEl.firstArrow = JXG2.str2Bool(
                             Data.getElementsByTagName('lastarrow')[0].firstChild.data
                         );
-                        gxtEl.lastArrow = JXG.str2Bool(
+                        gxtEl.lastArrow = JXG2.str2Bool(
                             Data.getElementsByTagName('firstarrow')[0].firstChild.data
                         );
 
@@ -1303,7 +1303,7 @@
                                 isLabel: false,
                                 strokeColor: gxtEl.colorLabel,
                                 fixed: gxtEl.fixed,
-                                visible: JXG.str2Bool(gxtEl.visible)
+                                visible: JXG2.str2Bool(gxtEl.visible)
                             }
                         );
                         break;
@@ -1367,11 +1367,11 @@
                             gxtEl.members[i] = this.changeOriginIds(board, gxtEl.members[i]);
                         }
 
-                        c = new JXG.Group(board, gxtEl.id, gxtEl.name, gxtEl.members);
+                        c = new JXG2.Group(board, gxtEl.id, gxtEl.name, gxtEl.members);
                         this.printDebugMessage("debug", gxtEl, Data.nodeName, 'OK');
                         break;
                     default:
-                        JXG.debug("* Err: " + Data.nodeName + " not yet implemented");
+                        JXG2.debug("* Err: " + Data.nodeName + " not yet implemented");
                 }
             },
 
@@ -1389,7 +1389,7 @@
                     board = this.board,
                     strTrue = 'true'
 
-                // maybe this is not necessary as we already provide layer options for sectors and circles via JXG.Options but
+                // maybe this is not necessary as we already provide layer options for sectors and circles via JXG2.Options but
                 // maybe these have to be the same for geonext.
                 board.options.layer.sector = board.options.layer.angle;
                 board.options.layer.circle = board.options.layer.angle;
@@ -1404,8 +1404,8 @@
                 // set the board background color
                 s = this.gEBTN(boardData, "background", 0, false);
                 s = this.gEBTN(s, "color", 0, true);
-                tmp = JXG.rgba2rgbo(s);
-                s = JXG.rgbParser(tmp[0]);
+                tmp = JXG2.rgba2rgbo(s);
+                s = JXG2.rgbParser(tmp[0]);
                 board.containerObj.style.backgroundColor =
                     "rgba(" + s[0] + ", " + s[1] + ", " + s[2] + ", " + tmp[1] + ")";
 
@@ -1462,11 +1462,11 @@
 
                 // jsxgraph chooses an id for the board but we don't want to use it, we want to use
                 // the id stored in the geonext file. if you know why this is required, please note it here.
-                delete JXG.boards[board.id];
+                delete JXG2.boards[board.id];
 
                 board.id = this.gEBTN(boardData, 'id');
 
-                JXG.boards[board.id] = board;
+                JXG2.boards[board.id] = board;
 
                 // this creates some basic elements present in every geonext construction but not explicitly present in the file
                 board.initGeonextBoard();
@@ -1508,9 +1508,9 @@
                     board.options.point.snapSizeY = 1 / parseFloat(tmp);
                 }
 
-                board.options.grid.gridDash = JXG.str2Bool(this.gEBTN(xmlNode, 'dash'));
+                board.options.grid.gridDash = JXG2.str2Bool(this.gEBTN(xmlNode, 'dash'));
 
-                tmp = JXG.rgba2rgbo(this.gEBTN(xmlNode, 'color'));
+                tmp = JXG2.rgba2rgbo(this.gEBTN(xmlNode, 'color'));
                 board.options.grid.gridColor = tmp[0];
                 board.options.grid.gridOpacity = tmp[1];
 
@@ -1539,7 +1539,7 @@
                 if (tmp.length === 8) {
                     tmp = "#" + tmp;
                 }
-                board.containerObj.style.backgroundColor = JXG.rgba2rgbo(tmp)[0];
+                board.containerObj.style.backgroundColor = JXG2.rgba2rgbo(tmp)[0];
 
                 elChildNodes = tree.getElementsByTagName('elements')[0].childNodes;
                 for (s = 0; s < elChildNodes.length; s++) {
@@ -1552,7 +1552,7 @@
                 var unz;
 
                 if (str.indexOf("<GEONEXT>") < 0) {
-                    unz = new JXG.Util.Unzip(JXG.Util.Base64.decodeAsArray(str)).unzip();
+                    unz = new JXG2.Util.Unzip(JXG2.Util.Base64.decodeAsArray(str)).unzip();
                     if (unz === "") {
                         return str;
                     }
@@ -1724,7 +1724,7 @@
                     expr = new RegExp(regex, 'g');
 
                 // First, we convert all < to &lt; and > to &gt;
-                str = JXG.escapeHTML(str);
+                str = JXG2.escapeHTML(str);
                 // Second, we convert all GEONExT tags of the form &lt;tag&gt; back to <tag>
                 str = str.replace(expr, "<$1>");
 
@@ -1740,5 +1740,5 @@
         }
     );
 
-    JXG.registerReader(JXG.GeonextReader, ["gxt", "geonext"]);
+    JXG2.registerReader(JXG2.GeonextReader, ["gxt", "geonext"]);
 })();

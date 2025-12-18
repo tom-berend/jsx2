@@ -26,14 +26,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview Implementation of smart labels..
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import {Type} from "../utils/type.js";
 
@@ -52,21 +52,21 @@ import {Type} from "../utils/type.js";
  * The default attributes for smartlabels are defined for each type of measured element in the following sub-objects.
  * This is a deviation from the usual JSXGraph attribute usage.
  * <ul>
- *  <li> <tt>JXG.Options.smartlabelangle</tt> for smartlabels of angle objects
- *  <li> <tt>JXG.Options.smartlabelcircle</tt> for smartlabels of circle objects
- *  <li> <tt>JXG.Options.smartlabelline</tt> for smartlabels of line objects
- *  <li> <tt>JXG.Options.smartlabelpoint</tt> for smartlabels of point objects.
- *  <li> <tt>JXG.Options.smartlabelpolygon</tt> for smartlabels of polygon objects.
+ *  <li> <tt>JXG2.Options.smartlabelangle</tt> for smartlabels of angle objects
+ *  <li> <tt>JXG2.Options.smartlabelcircle</tt> for smartlabels of circle objects
+ *  <li> <tt>JXG2.Options.smartlabelline</tt> for smartlabels of line objects
+ *  <li> <tt>JXG2.Options.smartlabelpoint</tt> for smartlabels of point objects.
+ *  <li> <tt>JXG2.Options.smartlabelpolygon</tt> for smartlabels of polygon objects.
  * </ul>
  *
  *
  * @pseudo
  * @name Smartlabel
- * @augments JXG.Text
+ * @augments JXG2.Text
  * @constructor
- * @type JXG.Text
+ * @type JXG2.Text
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.GeometryElement} Parent parent object: point, line, circle, polygon, angle.
+ * @param {JXG2.GeometryElement} Parent parent object: point, line, circle, polygon, angle.
  * @param {String|Function} Txt Optional text. In case, this content is not the empty string,
  *  the measurement is overwritten by this text.
  *
@@ -77,7 +77,7 @@ import {Type} from "../utils/type.js";
  * </pre><div id="JXG30cd1f9e-7e78-48f3-91a2-9abd466a754f" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG30cd1f9e-7e78-48f3-91a2-9abd466a754f',
+ *         var board = JXG2.JSXGraph.initBoard('JXG30cd1f9e-7e78-48f3-91a2-9abd466a754f',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [3, 4], {showInfobox: false, withLabel: false});
  *     board.create('smartlabel', [p1], {digits: 1, unit: 'cm', dir: 'col', useMathJax: false});
@@ -95,7 +95,7 @@ import {Type} from "../utils/type.js";
  * </pre><div id="JXGfb4423dc-ee3a-4122-a186-82123019a835" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGfb4423dc-ee3a-4122-a186-82123019a835',
+ *         var board = JXG2.JSXGraph.initBoard('JXGfb4423dc-ee3a-4122-a186-82123019a835',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var s1 = board.create('line', [[-7, 2], [6, -6]], {point1: {visible:true}, point2: {visible:true}});
  *     board.create('smartlabel', [s1], {unit: 'm', measure: 'length', prefix: 'L = ', useMathJax: false});
@@ -116,7 +116,7 @@ import {Type} from "../utils/type.js";
  * </pre><div id="JXG763c4700-8273-4eb7-9ed9-1dc6c2c52e93" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG763c4700-8273-4eb7-9ed9-1dc6c2c52e93',
+ *         var board = JXG2.JSXGraph.initBoard('JXG763c4700-8273-4eb7-9ed9-1dc6c2c52e93',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var c1 = board.create('circle', [[0, 1], [4, 1]], {point2: {visible: true}});
  *     board.create('smartlabel', [c1], {unit: 'm', measure: 'perimeter', prefix: 'U = ', useMathJax: false});
@@ -148,7 +148,7 @@ import {Type} from "../utils/type.js";
  * </pre><div id="JXG376425ac-b4e5-41f2-979c-6ff32a01e9c8" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG376425ac-b4e5-41f2-979c-6ff32a01e9c8',
+ *         var board = JXG2.JSXGraph.initBoard('JXG376425ac-b4e5-41f2-979c-6ff32a01e9c8',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p2 = board.create('polygon', [[-6, -5], [7, -7], [-4, 3]], {});
  *     board.create('smartlabel', [p2], {
@@ -177,7 +177,7 @@ import {Type} from "../utils/type.js";
  * </pre><div id="JXG48d6d1ae-e04a-45f4-a743-273976712c0b" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG48d6d1ae-e04a-45f4-a743-273976712c0b',
+ *         var board = JXG2.JSXGraph.initBoard('JXG48d6d1ae-e04a-45f4-a743-273976712c0b',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var a1 = board.create('angle', [[1, -1], [1, 2], [1, 5]], {name: '&beta;', withLabel: false});
  *     var sma = board.create('smartlabel', [a1], {digits: 1, prefix: a1.name + '=', unit: '°', useMathJax: false});
@@ -187,7 +187,7 @@ import {Type} from "../utils/type.js";
  * </script><pre>
  *
  */
-JXG.createSmartLabel = function (board, parents, attributes) {
+JXG2.createSmartLabel = function (board, parents, attributes) {
     var el, attr,
         p, user_supplied_text,
         getTextFun, txt_fun;
@@ -472,4 +472,4 @@ JXG.createSmartLabel = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("smartlabel", JXG.createSmartLabel);
+JXG2.registerElement("smartlabel", JXG2.createSmartLabel);

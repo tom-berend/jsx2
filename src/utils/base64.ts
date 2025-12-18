@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true, bitwise: true*/
 
 import { Encoding } from "./encoding.js";
@@ -123,7 +123,7 @@ export class Base64 {
     /**
      * Decode from Base64
      * @param {String} input Base64 encoded data
-     * @param {Boolean} utf8 In case this parameter is true {@link JXG.Util.UTF8.decode} will be applied to
+     * @param {Boolean} utf8 In case this parameter is true {@link JXG2.Util.UTF8.decode} will be applied to
      * the result of the base64 decoder.
      * @throws {Error} If the string has the wrong length.
      * @returns {String}

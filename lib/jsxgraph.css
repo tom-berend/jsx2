@@ -57,7 +57,7 @@
     font-family: Courier, monospace;
     /*
      * The default font family is now set in
-     * JXG.Options.text.cssdefaultstyle = 'font-family: Arial, Helvetica, Geneva, sans-serif;'
+     * JXG2.Options.text.cssdefaultstyle = 'font-family: Arial, Helvetica, Geneva, sans-serif;'
      */
 
     /* "background-color: transparent;" may produce artefacts in IE. Solution: setting a color explicitly. */

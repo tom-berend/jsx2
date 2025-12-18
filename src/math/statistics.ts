@@ -29,10 +29,10 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { JSXMath } from "./math.js";
 import { Type } from "../utils/type.js";
 
@@ -400,7 +400,7 @@ export class Statistics {
      * @memberof Statistics
      */
     static divide() {
-        JXG.deprecated("Statistics.divide()", "Statistics.div()");
+        JXG2.deprecated("Statistics.divide()", "Statistics.div()");
         Statistics.div.apply(Statistics, arguments);
     }
 
@@ -549,12 +549,12 @@ export class Statistics {
      * Statistics.TheilSenRegression(a.map(el => el.coords));
      * </pre>
      *
-     * @param {Array} coords Array of {@link JXG.Coords}.
+     * @param {Array} coords Array of {@link JXG2.Coords}.
      * @returns {Array} A stdform array of the regression line.
      * @memberof Statistics
      *
      * @example
-     * var board = JXG.JSXGraph.initBoard('jxgbox', { boundingbox: [-6,6,6,-6], axis : true });
+     * var board = JXG2.JSXGraph.initBoard('jxgbox', { boundingbox: [-6,6,6,-6], axis : true });
      * var a=[];
      * a[0]=board.create('point', [0,0]);
      * a[1]=board.create('point', [3,0]);
@@ -568,7 +568,7 @@ export class Statistics {
      * </pre><div id="JXG0a28be85-91c5-44d3-aae6-114e81217cf0" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG0a28be85-91c5-44d3-aae6-114e81217cf0',
+     *         var board = JXG2.JSXGraph.initBoard('JXG0a28be85-91c5-44d3-aae6-114e81217cf0',
      *             {boundingbox: [-6,6,6,-6], axis: true, showcopyright: false, shownavigation: false});
      *     var a=[];
      *     a[0]=board.create('point', [0,0]);
@@ -652,7 +652,7 @@ export class Statistics {
      * @memberof Statistics
      * @see Statistics.generateGaussian
      * @example
-     *  let board = JXG.JSXGraph.initBoard('JXGbox',
+     *  let board = JXG2.JSXGraph.initBoard('JXGbox',
      *       { boundingbox: [-5, 1.5, 5, -.03], axis: true});
      *
      *   let runs = [
@@ -675,7 +675,7 @@ export class Statistics {
      * </pre><div id="JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-4" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      * {
-     *  let board = JXG.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-4',
+     *  let board = JXG2.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-4',
      *       { boundingbox: [-5, 1.5, 5, -.03], axis: true});
      *
      *   let runs = [
@@ -723,7 +723,7 @@ export class Statistics {
      * @returns Number
      * @memberof Statistics
      * @example
-     *  let board = JXG.JSXGraph.initBoard('JXGbox',
+     *  let board = JXG2.JSXGraph.initBoard('JXGbox',
      *       { boundingbox: [-.5, 1.5, 5, -.1], axis: true});
      *
      *   let runs = [
@@ -745,7 +745,7 @@ export class Statistics {
      * </pre><div id="JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-5" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      * {
-     *  let board = JXG.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-5',
+     *  let board = JXG2.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-5',
      *       { boundingbox: [-.5, 1.5, 5, -.1], axis: true});
      *
      *   let runs = [
@@ -794,7 +794,7 @@ export class Statistics {
      * @returns Number
      * @memberof Statistics
      * @example
-     *  let board = JXG.JSXGraph.initBoard('jxgbox',
+     *  let board = JXG2.JSXGraph.initBoard('jxgbox',
      *       { boundingbox: [-1.7, .5, 20, -.03], axis: true});
      *
      *   let runs = [
@@ -824,7 +824,7 @@ export class Statistics {
      * <div id="JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-6" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      * {
-     *  let board = JXG.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-6',
+     *  let board = JXG2.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-6',
      *       { boundingbox: [-1.7, .5, 20, -.03], axis: true});
      *
      *   let runs = [
@@ -997,7 +997,7 @@ export class Statistics {
      * @memberof Statistics
      *
      * @example
-     * let board = JXG.JSXGraph.initBoard('jxgbox',
+     * let board = JXG2.JSXGraph.initBoard('jxgbox',
      *     { boundingbox: [-1.7, .5, 30, -.03], axis: true });
      *
      * let runs = [
@@ -1025,7 +1025,7 @@ export class Statistics {
      * </pre><div id="JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-3" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      * {
-     *  let board = JXG.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-3',
+     *  let board = JXG2.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-3',
      *       { boundingbox: [-1.7, .5, 30, -.03], axis: true});
      *
      *   let runs = [
@@ -1277,9 +1277,9 @@ export class Statistics {
      * @memberof Statistics
      *
      * @example
-     *  let board = JXG.JSXGraph.initBoard('jxgbox',
+     *  let board = JXG2.JSXGraph.initBoard('jxgbox',
      *       { boundingbox: [-1.7, .5, 20, -.03], axis: true});
-     *  let board2 = JXG.JSXGraph.initBoard('jxgbox2',
+     *  let board2 = JXG2.JSXGraph.initBoard('jxgbox2',
      *       { boundingbox: [-1.6, 1.1, 20, -.06], axis: true});
      *
      *   let runs = [
@@ -1315,9 +1315,9 @@ export class Statistics {
      * <div id="JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-2" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      * {
-     *  let board = JXG.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302',
+     *  let board = JXG2.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302',
      *       { boundingbox: [-1.7, .5, 20, -.03], axis: true});
-     *  let board2 = JXG.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-2',
+     *  let board2 = JXG2.JSXGraph.initBoard('JXGda56df4d-a5a5-4c87-9ffc-9bbc1b512302-2',
      *       { boundingbox: [-1.6, 1.1, 20, -.06], axis: true});
      *
      *   let runs = [

@@ -27,27 +27,27 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
-import { JXG } from '../jxg.js';
+import { JXG2 } from '../jxg.js';
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Type } from '../utils/type.js';
 import {JSXMath} from '../math/math.js';
 
 /**
  * Constructor for 3D polygons.
- * @class Creates a new 3D polygon object. Do not use this constructor to create a 3D polygon. Use {@link JXG.View3D#create} with type {@link Polygon3D} instead.
+ * @class Creates a new 3D polygon object. Do not use this constructor to create a 3D polygon. Use {@link JXG2.View3D#create} with type {@link Polygon3D} instead.
  *
- * @augments JXG.GeometryElement3D
- * @augments JXG.GeometryElement
+ * @augments JXG2.GeometryElement3D
+ * @augments JXG2.GeometryElement
  * @param {View3D} view
  * @param {Point3D|Array} point
  * @param {Array} direction
  * @param {Array} range
  * @param {Object} attributes
- * @see JXG.Board#generateName
+ * @see JXG2.Board#generateName
  */
-JXG.Polygon3D = function (view, vertices, attributes) {
+JXG2.Polygon3D = function (view, vertices, attributes) {
     var i;
 
     this.constructor(view.board, attributes, OBJECT_TYPE.POLYGON3D, OBJECT_CLASS._3D);
@@ -57,7 +57,7 @@ JXG.Polygon3D = function (view, vertices, attributes) {
 
     /**
      * References to the points defining the polygon.
-     * Compared to the 2D {@link JXG.Polygon#vertices}, it contains one point less, i.e. for a quadrangle
+     * Compared to the 2D {@link JXG2.Polygon#vertices}, it contains one point less, i.e. for a quadrangle
      * 'vertices' contains four points. In a 2D quadrangle, 'vertices' will contain five points, the last one being
      * a copy of the first one.
      * @type Array
@@ -75,12 +75,12 @@ JXG.Polygon3D = function (view, vertices, attributes) {
         }
     }
 };
-JXG.Polygon3D.prototype = new JXG.GeometryElement();
-Type.copyPrototypeMethods(JXG.Polygon3D, JXG.GeometryElement3D, 'constructor3D');
+JXG2.Polygon3D.prototype = new JXG2.GeometryElement();
+Type.copyPrototypeMethods(JXG2.Polygon3D, JXG2.GeometryElement3D, 'constructor3D');
 
-JXG.extend(
-    JXG.Polygon3D.prototype,
-    /** @lends JXG.Polygon3D.prototype */ {
+JXG2.extend(
+    JXG2.Polygon3D.prototype,
+    /** @lends JXG2.Polygon3D.prototype */ {
         update: function () {
             return this;
         },
@@ -130,12 +130,12 @@ JXG.extend(
  * @pseudo
  * @constructor
  * @name Polygon3D
- * @type JXG.Polygon3D
- * @augments JXG.Polygon3D
+ * @type JXG2.Polygon3D
+ * @augments JXG2.Polygon3D
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
  * @param {Array} vertices The polygon's vertices.
  */
-JXG.createPolygon3D = function (board, parents, attributes) {
+JXG2.createPolygon3D = function (board, parents, attributes) {
     var view = parents[0],
         el, i, le, obj,
         points = [],
@@ -179,7 +179,7 @@ JXG.createPolygon3D = function (board, parents, attributes) {
         }
     }
 
-    el = new JXG.Polygon3D(view, points, attr);
+    el = new JXG2.Polygon3D(view, points, attr);
     el.isDraggable = true;
 
     attr = el.setAttr2D(attr);
@@ -203,4 +203,4 @@ JXG.createPolygon3D = function (board, parents, attributes) {
 
     return el;
 };
-JXG.registerElement('polygon3d', JXG.createPolygon3D);
+JXG2.registerElement('polygon3d', JXG2.createPolygon3D);

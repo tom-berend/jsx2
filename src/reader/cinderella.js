@@ -29,20 +29,20 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG:true*/
+/*global JXG2:true*/
 /*jslint nomen:true, plusplus:true, regexp:true*/
 
 (function () {
     "use strict";
 
-    JXG.CinderellaReader = function (board, str) {
+    JXG2.CinderellaReader = function (board, str) {
         this.board = board;
         this.data = this.prepareString(str);
     };
 
-    JXG.extend(
-        JXG.CinderellaReader.prototype,
-        /** @lends JXG.CinderellaReader.prototype */ {
+    JXG2.extend(
+        JXG2.CinderellaReader.prototype,
+        /** @lends JXG2.CinderellaReader.prototype */ {
             read: function () {
                 var dataLines,
                     i,
@@ -861,8 +861,8 @@
                 this.board.zoomY *= scale / 2.4;
                 oX = this.board.origin.scrCoords[1] * this.board.attr.zoom.factorx;
                 oY = this.board.origin.scrCoords[2] * this.board.attr.zoom.factory;
-                this.board.origin = new JXG.Coords(
-                    JXG.COORDS_BY_SCREEN,
+                this.board.origin = new JXG2.Coords(
+                    JXG2.COORDS_BY_SCREEN,
                     [oX - 150, oY + 50],
                     this.board
                 );
@@ -1016,23 +1016,23 @@
 
                 // if isString is true, str is the base64 encoded zip file, otherwise it's just the zip file
                 if (isString) {
-                    fileStr = JXG.Util.Base64.decode(fileStr);
+                    fileStr = JXG2.Util.Base64.decode(fileStr);
                 }
 
                 if (fileStr.indexOf("<") !== 0) {
                     len = fileStr.length;
 
                     for (i = 0; i < len; i++) {
-                        bA[i] = JXG.Util.UTF8.asciiCharCodeAt(fileStr, i);
+                        bA[i] = JXG2.Util.UTF8.asciiCharCodeAt(fileStr, i);
                     }
 
                     // Unzip
-                    fileStr = new JXG.Util.Unzip(bA).unzip()[0][0];
+                    fileStr = new JXG2.Util.Unzip(bA).unzip()[0][0];
                 }
                 return fileStr;
             }
         }
     );
 
-    JXG.registerReader(JXG.CinderellaReader, ["cdy", "cindy", "cinderella"]);
+    JXG2.registerReader(JXG2.CinderellaReader, ["cdy", "cindy", "cinderella"]);
 })();

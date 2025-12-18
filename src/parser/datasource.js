@@ -29,18 +29,18 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, document: true*/
+/*global JXG2: true, define: true, document: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
- * @fileoverview The JXG.DataSource is a helper class for data organization. Currently supported data sources are
+ * @fileoverview The JXG2.DataSource is a helper class for data organization. Currently supported data sources are
  * javascript arrays and HTML tables.
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {Type} from "../utils/type.js";
 
-JXG.DataSource = function () {
+JXG2.DataSource = function () {
     this.data = [];
     this.columnHeaders = [];
     this.rowHeaders = [];
@@ -48,9 +48,9 @@ JXG.DataSource = function () {
     return this;
 };
 
-JXG.extend(
-    JXG.DataSource.prototype,
-    /** @lends JXG.DataSource.prototype */ {
+JXG2.extend(
+    JXG2.DataSource.prototype,
+    /** @lends JXG2.DataSource.prototype */ {
         loadFromArray: function (table, columnHeader, rowHeader) {
             var i, j, cell;
 
@@ -234,4 +234,4 @@ JXG.extend(
     }
 );
 
-export default JXG.DataSource;
+export default JXG2.DataSource;

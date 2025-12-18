@@ -32,16 +32,16 @@ const dbugColor = `color:black;background-color:aliceblue`;
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, AMprocessNode: true, MathJax: true, window: true, document: true, init: true, translateASCIIMath: true, google: true*/
+/*global JXG2: true, define: true, AMprocessNode: true, MathJax: true, window: true, document: true, init: true, translateASCIIMath: true, google: true*/
 
 /*jslint nomen: true, plusplus: true*/
 
 /**
- * @fileoverview The JXG.Board class is defined in this file. JXG.Board controls all properties and methods
+ * @fileoverview The JXG2.Board class is defined in this file. JXG2.Board controls all properties and methods
  * used to manage a geonext board like managing geometric elements, managing mouse and touch events, etc.
  */
 
-import { JXG } from '../jxg.js';
+import { JXG2 } from '../jxg.js';
 import { LooseObject } from '../interfaces.js';
 import { BOARD_MODE, BOARD_QUALITY, OBJECT_CLASS, OBJECT_TYPE, COORDS_BY, Version } from './constants.js';
 import { Coords } from './coords.js';
@@ -69,27 +69,27 @@ import { Dim } from '../interfaces.js'
 
 /**
  * Constructs a new Board object.
- * @class JXG.Board controls all properties and methods used to manage a geonext board like managing geometric
+ * @class JXG2.Board controls all properties and methods used to manage a geonext board like managing geometric
  * elements, managing mouse and touch events, etc. You probably don't want to use this constructor directly.
- * Please use {@link JXG.JSXGraph.initBoard} to initialize a board.
+ * Please use {@link JXG2.JSXGraph.initBoard} to initialize a board.
  * @constructor
  * @param {String|Object} container The id of or reference to the HTML DOM element
  * the board is drawn in. This is usually a HTML div. If it is the reference to an HTML element and this element does not have an attribute "id",
  * this attribute "id" is set to a random value.
- * @param {JXG.AbstractRenderer} renderer The reference of a renderer.
+ * @param {JXG2.AbstractRenderer} renderer The reference of a renderer.
  * @param {String} id Unique identifier for the board, may be an empty string or null or even undefined.
- * @param {JXG.Coords} origin The coordinates where the origin is placed, in user coordinates.
+ * @param {JXG2.Coords} origin The coordinates where the origin is placed, in user coordinates.
  * @param {Number} zoomX Zoom factor in x-axis direction
  * @param {Number} zoomY Zoom factor in y-axis direction
  * @param {Number} unitX Units in x-axis direction
  * @param {Number} unitY Units in y-axis direction
  * @param {Number} canvasWidth  The width of canvas
  * @param {Number} canvasHeight The height of canvas
- * @param {Object} attributes The attributes object given to {@link JXG.JSXGraph.initBoard}
- * @borrows JXG.EventEmitter#on as this.on
- * @borrows JXG.EventEmitter#off as this.off
- * @borrows JXG.EventEmitter#triggerEventHandlers as this.triggerEventHandlers
- * @borrows JXG.EventEmitter#eventHandlers as this.eventHandlers
+ * @param {Object} attributes The attributes object given to {@link JXG2.JSXGraph.initBoard}
+ * @borrows JXG2.EventEmitter#on as this.on
+ * @borrows JXG2.EventEmitter#off as this.off
+ * @borrows JXG2.EventEmitter#triggerEventHandlers as this.triggerEventHandlers
+ * @borrows JXG2.EventEmitter#eventHandlers as this.eventHandlers
  */
 export class Board extends Events {
     /**
@@ -118,7 +118,7 @@ export class Board extends Events {
 
     /**
      * Board is in drag mode, objects aren't highlighted on mouse over and the object referenced in
-     * {@link JXG.Board#mouse} is updated on mouse movement.
+     * {@link JXG2.Board#mouse} is updated on mouse movement.
      * @type Number
      * @constant
      */
@@ -135,7 +135,7 @@ export class Board extends Events {
      * Update is made with high quality, e.g. graphs are evaluated at much more points.
      * @type Number
      * @constant
-     * @see JXG.Board#updateQuality
+     * @see JXG2.Board#updateQuality
      */
     BOARD_MODE_ZOOM = 0x0011;
 
@@ -143,7 +143,7 @@ export class Board extends Events {
      * Update is made with low quality, e.g. graphs are evaluated at a lesser amount of points.
      * @type Number
      * @constant
-     * @see JXG.Board#updateQuality
+     * @see JXG2.Board#updateQuality
      */
     BOARD_QUALITY_LOW = 0x1;
 
@@ -151,7 +151,7 @@ export class Board extends Events {
      * Update is made with high quality, e.g. graphs are evaluated at much more points.
      * @type Number
      * @constant
-     * @see JXG.Board#updateQuality
+     * @see JXG2.Board#updateQuality
      */
     BOARD_QUALITY_HIGH = 0x2;
 
@@ -184,8 +184,8 @@ export class Board extends Events {
 
     /**
      * A reference to this boards renderer.
-     * @type JXG.AbstractRenderer
-     * @name JXG.Board#renderer
+     * @type JXG2.AbstractRenderer
+     * @name JXG2.Board#renderer
      * @private
      * @ignore
      */
@@ -200,7 +200,7 @@ export class Board extends Events {
 
     /**
      * Copy of the default options for all objects
-     * @type JXG.Options
+     * @type JXG2.Options
      */
     options
 
@@ -229,7 +229,7 @@ export class Board extends Events {
     /**
      * Zoom factor in X direction. It only stores the zoom factor to be able
      * to get back to 100% in zoom100().
-     * @name JXG.Board.zoomX
+     * @name JXG2.Board.zoomX
      * @type Number
      * @private
      * @ignore
@@ -239,7 +239,7 @@ export class Board extends Events {
     /**
      * Zoom factor in Y direction. It only stores the zoom factor to be able
      * to get back to 100% in zoom100().
-     * @name JXG.Board.zoomY
+     * @name JXG2.Board.zoomY
      * @type Number
      * @private
      * @ignore
@@ -287,8 +287,8 @@ export class Board extends Events {
     /**
      * An array containing all other boards that are updated after this board has been updated.
      * @type Array
-     * @see JXG.Board#addChild
-     * @see JXG.Board#removeChild
+     * @see JXG2.Board#addChild
+     * @see JXG2.Board#removeChild
      */
     dependentBoards = [];
 
@@ -344,25 +344,25 @@ export class Board extends Events {
     /**
      * The board mode the board is currently in. Possible values are
      * <ul>
-     * <li>JXG.Board.BOARD_MODE_NONE</li>
-     * <li>JXG.Board.BOARD_MODE_DRAG</li>
-     * <li>JXG.Board.BOARD_MODE_MOVE_ORIGIN</li>
+     * <li>JXG2.Board.BOARD_MODE_NONE</li>
+     * <li>JXG2.Board.BOARD_MODE_DRAG</li>
+     * <li>JXG2.Board.BOARD_MODE_MOVE_ORIGIN</li>
      * </ul>
      * @type Number
      */
     mode = this.BOARD_MODE_NONE;
 
     /**
-     * The update quality of the board. In most cases this is set to {@link JXG.Board#BOARD_QUALITY_HIGH}.
-     * If {@link JXG.Board#mode} equals {@link JXG.Board#BOARD_MODE_DRAG} this is set to
-     * {@link JXG.Board#BOARD_QUALITY_LOW} to speed up the update process by e.g. reducing the number of
+     * The update quality of the board. In most cases this is set to {@link JXG2.Board#BOARD_QUALITY_HIGH}.
+     * If {@link JXG2.Board#mode} equals {@link JXG2.Board#BOARD_MODE_DRAG} this is set to
+     * {@link JXG2.Board#BOARD_QUALITY_LOW} to speed up the update process by e.g. reducing the number of
      * evaluation points when plotting functions. Possible values are
      * <ul>
      * <li>BOARD_QUALITY_LOW</li>
      * <li>BOARD_QUALITY_HIGH</li>
      * </ul>
      * @type Number
-     * @see JXG.Board#mode
+     * @see JXG2.Board#mode
      */
     updateQuality = BOARD_QUALITY.HIGH;
 
@@ -376,41 +376,41 @@ export class Board extends Events {
     /**
      * The distance from the mouse to the dragged object in x direction when the user clicked the mouse button.
      * @type Number
-     * @see JXG.Board#drag_dy
+     * @see JXG2.Board#drag_dy
      */
     drag_dx = 0;
 
     /**
      * The distance from the mouse to the dragged object in y direction when the user clicked the mouse button.
      * @type Number
-     * @see JXG.Board#drag_dx
+     * @see JXG2.Board#drag_dx
      */
     drag_dy = 0;
 
     /**
      * The last position where a drag event has been fired.
      * @type Array
-     * @see JXG.Board#moveObject
+     * @see JXG2.Board#moveObject
      */
     drag_position: number | any[] = [0, 0];
 
     /**
      * References to the object that is dragged with the mouse on the board.
-     * @type JXG.GeometryElement
-     * @see JXG.Board#touches
+     * @type JXG2.GeometryElement
+     * @see JXG2.Board#touches
      */
     mouse: { obj: LooseObject, targets: any[] };
 
     /**
-     * Keeps track on touched elements, like {@link JXG.Board#mouse} does for mouse events.
+     * Keeps track on touched elements, like {@link JXG2.Board#mouse} does for mouse events.
      * @type Array
-     * @see JXG.Board#mouse
+     * @see JXG2.Board#mouse
      */
     touches = [];
 
     /**
      * A string containing the XML text of the construction.
-     * This is set in {@link JXG.FileReader.parseString}.
+     * This is set in {@link JXG2.FileReader.parseString}.
      * Only useful if a construction is read from a GEONExT-, Intergeo-, Geogebra-, or Cinderella-File.
      * @type String
      */
@@ -482,10 +482,10 @@ export class Board extends Events {
     /**
      * If GEONExT constructions are displayed, then this property should be set to true.
      * At the moment there should be no difference. But this may change.
-     * This is set in {@link JXG.GeonextReader.readGeonext}.
+     * This is set in {@link JXG2.GeonextReader.readGeonext}.
      * @type Boolean
      * @default false
-     * @see JXG.GeonextReader.readGeonext
+     * @see JXG2.GeonextReader.readGeonext
      */
     geonextCompatibilityMode = false;
 
@@ -519,14 +519,14 @@ export class Board extends Events {
     hasWheelHandlers = false;
 
     /**
-     * A flag which tells if the board the JXG.Board#mouseUpListener is currently registered.
+     * A flag which tells if the board the JXG2.Board#mouseUpListener is currently registered.
      * @type Boolean
      * @default false
      */
     hasMouseUp = false;
 
     /**
-     * A flag which tells if the board the JXG.Board#touchEndListener is currently registered.
+     * A flag which tells if the board the JXG2.Board#touchEndListener is currently registered.
      * @type Boolean
      * @default false
      */
@@ -588,7 +588,7 @@ export class Board extends Events {
      * @type Boolean
      * @private
      * @default false
-     * @see JXG.Board#scrollListener
+     * @see JXG2.Board#scrollListener
      */
     _isScrolling = false;
 
@@ -597,7 +597,7 @@ export class Board extends Events {
      * @type Boolean
      * @private
      * @default false
-     * @see JXG.Board#resizeListener
+     * @see JXG2.Board#resizeListener
      */
     _isResizing = false;
 
@@ -633,7 +633,7 @@ export class Board extends Events {
     userLog = [];
 
     // mathLib = Math;        // Math or Geometry.IntervalArithmetic
-    // mathLibJXG = JXG.Math; // JXG.Math or Geometry.IntervalArithmetic
+    // mathLibJXG = JXG2.Math; // JXG2.Math or Geometry.IntervalArithmetic
 
     // missing definitions
     cssTransMat: number[][];
@@ -734,8 +734,8 @@ export class Board extends Events {
 
         this.attr = attributes;
 
-        if (this.attr.theme !== 'default' && Type.exists(JXG.themes[this.attr.theme])) {
-            Type.mergeAttr(this.options, JXG.themes[this.attr.theme], true);
+        if (this.attr.theme !== 'default' && Type.exists(JXG2.themes[this.attr.theme])) {
+            Type.mergeAttr(this.options, JXG2.themes[this.attr.theme], true);
         }
 
 
@@ -860,7 +860,7 @@ export class Board extends Events {
 
         // since this.infobox should never be null
         // this.infobox = new Text(this, [0, 0], {}, '[0,0]')
-        this.infobox = JXG.createText(this, [0, 0, '[0,0]'], {})
+        this.infobox = JXG2.createText(this, [0, 0, '[0,0]'], {})
 
         this.displayInfobox(false)
 
@@ -868,12 +868,12 @@ export class Board extends Events {
 
     /**
      * Generates an unique name for the given object. The result depends on the objects type, if the
-     * object is a {@link JXG.Point} capital characters are used, if it is of type {@link JXG.Line}
-     * only lower case characters are used. If object is of type {@link JXG.Polygon} a bunch of lower
-     * case characters prefixed with P_ are used. If object is of type {@link JXG.Circle} the name is
+     * object is a {@link JXG2.Point} capital characters are used, if it is of type {@link JXG2.Line}
+     * only lower case characters are used. If object is of type {@link JXG2.Polygon} a bunch of lower
+     * case characters prefixed with P_ are used. If object is of type {@link JXG2.Circle} the name is
      * generated using lower case characters. prefixed with k_ is used. In any other case, lower case
      * chars prefixed with s_ is used.
-     * @param {Object} object Reference of an JXG.GeometryElement that is to be named.
+     * @param {Object} object Reference of an JXG2.GeometryElement that is to be named.
      * @returns {String} Unique name for the object.
      */
     generateName(object/*: GeometryElement*/): string {
@@ -980,7 +980,7 @@ export class Board extends Events {
 
     /**
      * Composes an id for an element. If the ID is empty ('' or null) a new ID is generated, depending on the
-     * object type. As a side effect {@link JXG.Board#numObjects}
+     * object type. As a side effect {@link JXG2.Board#numObjects}
      * is updated.
      * @param {Object} obj Reference of an geometry object that needs an id.
      * @param {Number} type Type of the object.
@@ -1045,9 +1045,9 @@ export class Board extends Events {
      * @param {Events} evt Event object given by the browser (unused)
      * @returns {Boolean} If the event has been triggered faster than the maximum frame rate, false is returned.
      * @private
-     * @see JXG.Board#pointerMoveListener
-     * @see JXG.Board#touchMoveListener
-     * @see JXG.Board#mouseMoveListener
+     * @see JXG2.Board#pointerMoveListener
+     * @see JXG2.Board#touchMoveListener
+     * @see JXG2.Board#mouseMoveListener
      */
     checkFrameRate(evt) {
         var handleEvt = false,
@@ -1274,7 +1274,7 @@ export class Board extends Events {
      * </pre><div id="JXG4b3efef5-839d-4fac-bad1-7a14c0a89c70" class="jxgbox" style="width: 500px; height: 500px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG4b3efef5-839d-4fac-bad1-7a14c0a89c70',
+     *         var board = JXG2.JSXGraph.initBoard('JXG4b3efef5-839d-4fac-bad1-7a14c0a89c70',
      *             {boundingbox: [-8, 8, 8,-8], maxboundingbox: [-7.5,7.5,7.5,-7.5], axis: true, showcopyright: false, shownavigation: false, showZoom: false});
      *     var point1, point2, point3, point4, margin,
      *             p1Location, p2Location, p3Location, p4Location,
@@ -1389,7 +1389,7 @@ export class Board extends Events {
      * @param {Events} e Event object given by the browser.
      * @param {Number} [i] Only use in case of touch events. This determines which finger to use and should not be set
      * for mouseevents.
-     * @returns {Array} Contains the mouse coordinates in screen coordinates, ready for {@link JXG.Coords}
+     * @returns {Array} Contains the mouse coordinates in screen coordinates, ready for {@link JXG2.Coords}
      */
     getMousePosition(e: Events, i?: number) {
         var cPos = this.getCoordsTopLeftCorner(),
@@ -1571,7 +1571,7 @@ export class Board extends Events {
      * Moves an object.
      * @param {Number} x Coordinate
      * @param {Number} y Coordinate
-     * @param {Object} o The touch object that is dragged: {JXG.Board#mouse} or {JXG.Board#touches}.
+     * @param {Object} o The touch object that is dragged: {JXG2.Board#mouse} or {JXG2.Board#touches}.
      * @param {Object} evt The event object.
      * @param {String} type Mouse or touch event?
      */
@@ -1658,7 +1658,7 @@ export class Board extends Events {
      * Moves elements in multitouch mode.
      * @param {Array} p1 x,y coordinates of first touch
      * @param {Array} p2 x,y coordinates of second touch
-     * @param {Object} o The touch object that is dragged: {JXG.Board#touches}.
+     * @param {Object} o The touch object that is dragged: {JXG2.Board#touches}.
      * @param {Object} evt The event object that lead to this movement.
      */
     twoFingerMove(o, id, evt) {
@@ -1747,7 +1747,7 @@ export class Board extends Events {
      * If one vertex of the polygon snaps to the grid or to points or is not draggable,
      * two-finger-movement is cancelled.
      *
-     * @param {Array} tar Array containing touch event objects: {JXG.Board#touches.targets}.
+     * @param {Array} tar Array containing touch event objects: {JXG2.Board#touches.targets}.
      * @param {object} drag The object that is dragged:
      * @param {Number} id pointerId of the event. In case of old touch event this is emulated.
      */
@@ -1803,7 +1803,7 @@ export class Board extends Events {
 
     /*
      * Moves, rotates and scales a circle with two fingers.
-     * @param {Array} tar Array containing touch event objects: {JXG.Board#touches.targets}.
+     * @param {Array} tar Array containing touch event objects: {JXG2.Board#touches.targets}.
      * @param {object} drag The object that is dragged:
      * @param {Number} id pointerId of the event. In case of old touch event this is emulated.
      */
@@ -1924,7 +1924,7 @@ export class Board extends Events {
      * Helper function which returns a reasonable starting point for the object being dragged.
      * Formerly known as initXYstart().
      * @private
-     * @param {JXG.GeometryElement} obj The object to be dragged
+     * @param {JXG2.GeometryElement} obj The object to be dragged
      * @param {Array} targets Array of targets. It is changed by this function.
      */
     saveStartPos(obj, targets) {
@@ -1969,7 +1969,7 @@ export class Board extends Events {
             try {
                 xy.push(obj.coords.usrCoords);
             } catch (e) {
-                JXG.debug(
+                JXG2.debug(
                     'JSXGraph+ saveStartPos: obj.coords.usrCoords not available: ' + e
                 );
             }
@@ -2166,7 +2166,7 @@ export class Board extends Events {
                 // window.matchMedia('screen').addEventListener('change', this.printListenerMatch.bind(this));
                 this.resizeHandlers.push('print');
             } catch (err) {
-                JXG.debug("Error adding printListener", err);
+                JXG2.debug("Error adding printListener", err);
             }
             // if (Type.isFunction(MediaQueryList.prototype.addEventListener)) {
             //     window.matchMedia('print').addEventListener('change', function (mql) {
@@ -2452,7 +2452,7 @@ export class Board extends Events {
 
     /**
      * Handler for click on left arrow in the navigation bar
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     clickLeftArrow() {
         this.moveOrigin(
@@ -2464,7 +2464,7 @@ export class Board extends Events {
 
     /**
      * Handler for click on right arrow in the navigation bar
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     clickRightArrow() {
         this.moveOrigin(
@@ -2476,7 +2476,7 @@ export class Board extends Events {
 
     /**
      * Handler for click on up arrow in the navigation bar
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     clickUpArrow() {
         this.moveOrigin(
@@ -2488,7 +2488,7 @@ export class Board extends Events {
 
     /**
      * Handler for click on down arrow in the navigation bar
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     clickDownArrow() {
         this.moveOrigin(
@@ -2701,7 +2701,7 @@ export class Board extends Events {
 
     /**
      *
-     * Check if pointer event is already registered in {@link JXG.Board#_board_touches}.
+     * Check if pointer event is already registered in {@link JXG2.Board#_board_touches}.
      *
      * @param  {Object} evt Event object
      * @return {Boolean} true if down event has already been sent.
@@ -2722,12 +2722,12 @@ export class Board extends Events {
     /**
      *
      * Store the position of a pointer event.
-     * If not yet done, registers a pointer event in {@link JXG.Board#_board_touches}.
+     * If not yet done, registers a pointer event in {@link JXG2.Board#_board_touches}.
      * Allows to follow the path of that finger on the screen.
      * Only two simultaneous touches are supported.
      *
      * @param {Object} evt Event object
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      * @private
      */
     _pointerStorePosition(evt) {
@@ -2755,11 +2755,11 @@ export class Board extends Events {
     }
 
     /**
-     * Deregisters a pointer event in {@link JXG.Board#_board_touches}.
+     * Deregisters a pointer event in {@link JXG2.Board#_board_touches}.
      * It happens if a finger has been lifted from the screen.
      *
      * @param {Object} evt Event object
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      * @private
      */
     _pointerRemoveTouches(evt) {
@@ -2775,9 +2775,9 @@ export class Board extends Events {
     }
 
     /**
-     * Remove all registered fingers from {@link JXG.Board#_board_touches}.
+     * Remove all registered fingers from {@link JXG2.Board#_board_touches}.
      * This might be necessary if too many fingers have been registered.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      * @private
      */
     _pointerClearTouches(pId) {
@@ -2806,10 +2806,10 @@ export class Board extends Events {
      * This affects the precision and certain events.
      * In case of no browser, 'mouse' is used.
      *
-     * @see JXG.Board#pointerDownListener
-     * @see JXG.Board#pointerMoveListener
-     * @see JXG.Board#initMoveObject
-     * @see JXG.Board#moveObject
+     * @see JXG2.Board#pointerDownListener
+     * @see JXG2.Board#pointerMoveListener
+     * @see JXG2.Board#initMoveObject
+     * @see JXG2.Board#moveObject
      *
      * @param {Events} evt The browsers event object.
      * @returns {String} 'mouse', 'pen', or 'touch'
@@ -3390,7 +3390,7 @@ export class Board extends Events {
 
     /**
      * Triggered by the pointerleave event. This is needed in addition to
-     * {@link JXG.Board#pointerUpListener} in the situation that a pen is used
+     * {@link JXG2.Board#pointerUpListener} in the situation that a pen is used
      * and after an up event the pen leaves the hover range vertically. Here, it happens that
      * after the pointerup event further pointermove events are fired and elements get highlighted.
      * This highlighting has to be cancelled.
@@ -3501,7 +3501,7 @@ export class Board extends Events {
                 );
 
                 if (touchTargets[j].num === -1) {
-                    JXG.debug(
+                    JXG2.debug(
                         "i couldn't find a targettouches for target no " +
                         j +
                         ' on ' +
@@ -3510,7 +3510,7 @@ export class Board extends Events {
                         this.touches[i].obj.id +
                         '). Removed the target.'
                     );
-                    JXG.debug(
+                    JXG2.debug(
                         'eps = ' + eps + ', touchMax = ' + Options.precision.touchMax
                     );
                     touchTargets.splice(i, 1);
@@ -4168,9 +4168,9 @@ export class Board extends Events {
      *
      * @param  {Events} evt The browser's event object
      *
-     * @see JXG.Board#keyboard
-     * @see JXG.Board#keyFocusInListener
-     * @see JXG.Board#keyFocusOutListener
+     * @see JXG2.Board#keyboard
+     * @see JXG2.Board#keyFocusInListener
+     * @see JXG2.Board#keyFocusOutListener
      *
      */
     keyDownListener(evt) {
@@ -4348,9 +4348,9 @@ export class Board extends Events {
      * This is needed for highlighting when using keyboard control.
      * Only elements having the attribute 'tabindex' can receive focus.
      *
-     * @see JXG.Board#keyFocusOutListener
-     * @see JXG.Board#keyDownListener
-     * @see JXG.Board#keyboard
+     * @see JXG2.Board#keyFocusOutListener
+     * @see JXG2.Board#keyDownListener
+     * @see JXG2.Board#keyboard
      *
      * @param  {Events} evt The browser's event object
      */
@@ -4381,9 +4381,9 @@ export class Board extends Events {
      * This is needed for dehighlighting when using keyboard control.
      * Only elements having the attribute 'tabindex' can receive focus.
      *
-     * @see JXG.Board#keyFocusInListener
-     * @see JXG.Board#keyDownListener
-     * @see JXG.Board#keyboard
+     * @see JXG2.Board#keyFocusInListener
+     * @see JXG2.Board#keyDownListener
+     * @see JXG2.Board#keyboard
      *
      * @param  {Events} evt The browser's event object
      */
@@ -4404,12 +4404,12 @@ export class Board extends Events {
      * If necessary, also call setBoundingBox().
      * @param {Number} [width=this.containerObj.offsetWidth] Width of the container element
      * @param {Number} [height=this.containerObj.offsetHeight] Height of the container element
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      *
-     * @see JXG.Board#startResizeObserver
-     * @see JXG.Board#resizeListener
-     * @see JXG.Board#resizeContainer
-     * @see JXG.Board#setBoundingBox
+     * @see JXG2.Board#startResizeObserver
+     * @see JXG2.Board#resizeListener
+     * @see JXG2.Board#resizeContainer
+     * @see JXG2.Board#setBoundingBox
      *
      */
     updateContainerDims(width?: number, height?: number) {
@@ -4479,10 +4479,10 @@ export class Board extends Events {
      * Therefore, also a scrollListener is started.
      * Resize can be controlled with the board attribute resize.
      *
-     * @see JXG.Board#updateContainerDims
-     * @see JXG.Board#resizeListener
-     * @see JXG.Board#scrollListener
-     * @see JXG.Board#resize
+     * @see JXG2.Board#updateContainerDims
+     * @see JXG2.Board#resizeListener
+     * @see JXG2.Board#scrollListener
+     * @see JXG2.Board#resize
      *
      */
     startResizeObserver() {
@@ -4501,7 +4501,7 @@ export class Board extends Events {
                     try {
                         that.updateContainerDims(bb.width, bb.height);
                     } catch (e) {
-                        JXG.debug(e);   // Used to log errors during board.update()
+                        JXG2.debug(e);   // Used to log errors during board.update()
                         that.stopResizeObserver();
                     } finally {
                         that._isResizing = false;
@@ -4514,7 +4514,7 @@ export class Board extends Events {
 
     /**
      * Stops the resize observer.
-     * @see JXG.Board#startResizeObserver
+     * @see JXG2.Board#startResizeObserver
      *
      */
     stopResizeObserver() {
@@ -4535,8 +4535,8 @@ export class Board extends Events {
      * which watches changes in the visibility of the JSXGraph container element.
      * This is necessary e.g. for register tabs or dia shows.
      *
-     * @see JXG.Board#startResizeObserver
-     * @see JXG.Board#startIntersectionObserver
+     * @see JXG2.Board#startResizeObserver
+     * @see JXG2.Board#startIntersectionObserver
      */
     resizeListener() {
         var that = this;
@@ -4557,8 +4557,8 @@ export class Board extends Events {
      * Listener to watch for scroll events. Sets board._isScrolling = true
      * @param  {Events} evt The browser's event object
      *
-     * @see JXG.Board#startResizeObserver
-     * @see JXG.Board#resizeListener
+     * @see JXG2.Board#startResizeObserver
+     * @see JXG2.Board#resizeListener
      *
      */
     scrollListener(evt) {
@@ -4578,8 +4578,8 @@ export class Board extends Events {
     /**
      * Watch for changes of the visibility of the JSXGraph container element.
      *
-     * @see JXG.Board#startResizeObserver
-     * @see JXG.Board#resizeListener
+     * @see JXG2.Board#startResizeObserver
+     * @see JXG2.Board#resizeListener
      *
      */
     startIntersectionObserver() {
@@ -4599,14 +4599,14 @@ export class Board extends Events {
             }, options);
             this.intersectionObserver.observe(that.containerObj);
         } catch (err) {
-            JXG.debug('JSXGraph: IntersectionObserver not available in this browser.');
+            JXG2.debug('JSXGraph: IntersectionObserver not available in this browser.');
         }
     }
 
     /**
      * Stop the intersection observer
      *
-     * @see JXG.Board#startIntersectionObserver
+     * @see JXG2.Board#startIntersectionObserver
      *
      */
     stopIntersectionObserver() {
@@ -4642,7 +4642,7 @@ export class Board extends Events {
     /**
      * Initialize the info box object which is used to display
      * the coordinates of points near the mouse pointer,
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     initInfobox(attributes = {}) {
         if (dbug) console.warn(`%c board: initInfobox(attributes: '${JSON.stringify(attributes)}, this.id = '${this.id}'`, dbugColor)
@@ -4651,15 +4651,15 @@ export class Board extends Events {
 
         /**
          * Infobox close to points in which the points' coordinates are displayed.
-         * This is simply a JXG.Text element. Access through board.infobox.
+         * This is simply a JXG2.Text element. Access through board.infobox.
          * Uses CSS class .JXGinfobox.
          *
          * @namespace
-         * @name JXG.Board.infobox
-         * @type JXG.Text
+         * @name JXG2.Board.infobox
+         * @type JXG2.Text
          *
          * @example
-         * const board = JXG.JSXGraph.initBoard(BOARDID, {
+         * const board = JXG2.JSXGraph.initBoard(BOARDID, {
          *     boundingbox: [-0.5, 0.5, 0.5, -0.5],
          *     intl: {
          *         enabled: false,
@@ -4683,7 +4683,7 @@ export class Board extends Events {
          * </pre><div id="JXG822161af-fe77-4769-850f-cdf69935eab0" class="jxgbox" style="width: 300px; height: 300px;"></div>
          * <script type="text/javascript">
          *     (function() {
-         *     const board = JXG.JSXGraph.initBoard('JXG822161af-fe77-4769-850f-cdf69935eab0', {
+         *     const board = JXG2.JSXGraph.initBoard('JXG822161af-fe77-4769-850f-cdf69935eab0', {
          *         boundingbox: [-0.5, 0.5, 0.5, -0.5], showcopyright: false, shownavigation: false,
          *         intl: {
          *             enabled: false,
@@ -4725,10 +4725,10 @@ export class Board extends Events {
 
     /**
      * Updates and displays a little info box to show coordinates of current selected points.
-     * @param {JXG.GeometryElement} el A GeometryElement
-     * @returns {JXG.Board} Reference to the board
-     * @see JXG.Board#displayInfobox
-     * @see JXG.Board#showInfobox
+     * @param {JXG2.GeometryElement} el A GeometryElement
+     * @returns {JXG2.Board} Reference to the board
+     * @see JXG2.Board#displayInfobox
+     * @see JXG2.Board#showInfobox
      * @see Point#showInfobox
      *
      */
@@ -4797,8 +4797,8 @@ export class Board extends Events {
      * In this way, many DOM access can be avoided.
      *
      * @param  {Boolean} val true for visible, false for invisible
-     * @returns {JXG.Board} Reference to the board.
-     * @see JXG.Board#updateInfobox
+     * @returns {JXG2.Board} Reference to the board.
+     * @see JXG2.Board#updateInfobox
      *
      */
     displayInfobox(val: boolean): this {
@@ -4831,8 +4831,8 @@ export class Board extends Events {
      * Changes the text of the info box to show the given coordinates.
      * @param {Number} x
      * @param {Number} y
-     * @param {JXG.GeometryElement} [el] The element the mouse is pointing at
-     * @returns {JXG.Board} Reference to the board.
+     * @param {JXG2.GeometryElement} [el] The element the mouse is pointing at
+     * @returns {JXG2.Board} Reference to the board.
      */
     highlightInfobox(x, y, el) {
         this.highlightCustomInfobox('(' + x + ', ' + y + ')', el);
@@ -4842,8 +4842,8 @@ export class Board extends Events {
     /**
      * Changes the text of the info box to what is provided via text.
      * @param {String} text
-     * @param {JXG.GeometryElement} [el]
-     * @returns {JXG.Board} Reference to the board.
+     * @param {JXG2.GeometryElement} [el]
+     * @returns {JXG2.Board} Reference to the board.
      */
     highlightCustomInfobox(text, el) {
         this.infobox['setText'](text);
@@ -4852,7 +4852,7 @@ export class Board extends Events {
 
     /**
      * Remove highlighting of all elements.
-     * @returns {JXG.Board} Reference to the board.
+     * @returns {JXG2.Board} Reference to the board.
      */
     dehighlightAll() {
         var el,
@@ -4902,7 +4902,7 @@ export class Board extends Events {
      * @param {Number} x X coordinate in screen coordinates
      * @param {Number} y Y coordinate in screen coordinates
      * @returns {Array} Coordinates [x, y] of the mouse in screen coordinates.
-     * @see JXG.Board#getUsrCoordsOfMouse
+     * @see JXG2.Board#getUsrCoordsOfMouse
      */
     getScrCoordsOfMouse(x, y) {
         return [x, y];
@@ -4925,7 +4925,7 @@ export class Board extends Events {
      * </pre><div id='JXG48d5066b-16ba-4920-b8ea-a4f8eff6b746' class='jxgbox' style='width: 300px; height: 300px;'></div>
      * <script type='text/javascript'>
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG48d5066b-16ba-4920-b8ea-a4f8eff6b746',
+     *         var board = JXG2.JSXGraph.initBoard('JXG48d5066b-16ba-4920-b8ea-a4f8eff6b746',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *     board.on('up', function (evt) {
      *             var a = board.getUsrCoordsOfMouse(evt),
@@ -4940,8 +4940,8 @@ export class Board extends Events {
      *
      * </script><pre>
      *
-     * @see JXG.Board#getScrCoordsOfMouse
-     * @see JXG.Board#getAllUnderMouse
+     * @see JXG2.Board#getScrCoordsOfMouse
+     * @see JXG2.Board#getAllUnderMouse
      */
     getUsrCoordsOfMouse(evt) {
         var cPos = this.getCoordsTopLeftCorner(),
@@ -4957,8 +4957,8 @@ export class Board extends Events {
      * Collects all elements under current mouse position plus current user coordinates of mouse cursor.
      * @param {Events} evt Event object containing the mouse coordinates.
      * @returns {Array} Array of elements at the current mouse position plus current user coordinates of mouse.
-     * @see JXG.Board#getUsrCoordsOfMouse
-     * @see JXG.Board#getAllObjectsUnderMouse
+     * @see JXG2.Board#getUsrCoordsOfMouse
+     * @see JXG2.Board#getAllObjectsUnderMouse
      */
     getAllUnderMouse(evt) {
         var elList = this.getAllObjectsUnderMouse(evt);
@@ -4971,7 +4971,7 @@ export class Board extends Events {
      * Collects all elements under current mouse position.
      * @param {Events} evt Event object containing the mouse coordinates.
      * @returns {Array} Array of elements at the current mouse position.
-     * @see JXG.Board#getAllUnderMouse
+     * @see JXG2.Board#getAllUnderMouse
      */
     getAllObjectsUnderMouse(evt) {
         var cPos = this.getCoordsTopLeftCorner(),
@@ -4996,7 +4996,7 @@ export class Board extends Events {
     /**
      * Update the coords object of all elements which possess this
      * property. This is necessary after changing the viewport.
-     * @returns {JXG.Board} Reference to this board.
+     * @returns {JXG2.Board} Reference to this board.
      **/
     updateCoords() {
         var el, ob,
@@ -5032,7 +5032,7 @@ export class Board extends Events {
      * @param {Number} x
      * @param {Number} y
      * @param {Boolean} [diff=false]
-     * @returns {JXG.Board} Reference to this board.
+     * @returns {JXG2.Board} Reference to this board.
      */
     moveOrigin(x, y, diff = false) {
         var ox, oy, ul, lr;
@@ -5167,7 +5167,7 @@ export class Board extends Events {
 
             // Debug
             if (!Type.exists(this.elementsByName[name])) {
-                JXG.debug('debug conditions: |' + name + '| undefined');
+                JXG2.debug('debug conditions: |' + name + '| undefined');
             } else {
                 // plaintext += 'el = this.objects[\'' + el.id + '\'];\n';
 
@@ -5199,7 +5199,7 @@ export class Board extends Events {
                     case 'label':
                         break;
                     default:
-                        JXG.debug(
+                        JXG2.debug(
                             'property "' +
                             property +
                             '" in conditions not yet implemented:' +
@@ -5230,7 +5230,7 @@ export class Board extends Events {
      * Computes the commands in the conditions-section of the gxt file.
      * It is evaluated after an update, before the unsuspendRedraw.
      * The function is generated in
-     * @see JXG.Board#addConditions
+     * @see JXG2.Board#addConditions
      * @private
      */
     updateConditions() {
@@ -5239,7 +5239,7 @@ export class Board extends Events {
 
     /**
      * Calculates adequate snap sizes.
-     * @returns {JXG.Board} Reference to the board.
+     * @returns {JXG2.Board} Reference to the board.
      */
     calculateSnapSizes() {
         var p1, p2,
@@ -5299,7 +5299,7 @@ export class Board extends Events {
 
     /**
      * Apply update on all objects with the new zoom-factors. Clears all traces.
-     * @returns {JXG.Board} Reference to the board.
+     * @returns {JXG2.Board} Reference to the board.
      */
     applyZoom() {
         this.updateCoords().calculateSnapSizes().clearTraces().fullUpdate();
@@ -5312,7 +5312,7 @@ export class Board extends Events {
      * The zoom operation is centered at x, y.
      * @param {Number} [x]
      * @param {Number} [y]
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     zoomIn(x?: number, y?: number) {
         var bb = this.getBoundingBox(),
@@ -5358,7 +5358,7 @@ export class Board extends Events {
      *
      * @param {Number} [x]
      * @param {Number} [y]
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     zoomOut(x?: number, y?: number) {
         var bb = this.getBoundingBox(),
@@ -5400,7 +5400,7 @@ export class Board extends Events {
      * (i.e. if the board as been initialized with unitX/Y and originX/Y),
      * just set the zoom level to 100%.
      *
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     zoom100() {
         var bb, dX, dY;
@@ -5423,7 +5423,7 @@ export class Board extends Events {
 
     /**
      * Zooms the board so every visible point is shown. Keeps aspect ratio.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     zoomAllPoints() {
         var el,
@@ -5471,7 +5471,7 @@ export class Board extends Events {
      * Reset the bounding box and the zoom level to 100% such that a given set of elements is
      * within the board's viewport.
      * @param {Array} elements A set of elements given by id, reference, or name.
-     * @returns {JXG.Board} Reference to the board.
+     * @returns {JXG2.Board} Reference to the board.
      */
     zoomElements(elements) {
         var i, e,
@@ -5525,7 +5525,7 @@ export class Board extends Events {
      * Sets the zoom level to <tt>fX</tt> resp <tt>fY</tt>.
      * @param {Number} fX
      * @param {Number} fY
-     * @returns {JXG.Board} Reference to the board.
+     * @returns {JXG2.Board} Reference to the board.
      */
     setZoom(fX, fY) {
         var oX = this.attr.zoom.factorx,
@@ -5545,14 +5545,14 @@ export class Board extends Events {
     /**
      * Inner, recursive method of removeObject.
      *
-     * @param {JXG.GeometryElement|Array} object The object to remove or array of objects to be removed.
+     * @param {JXG2.GeometryElement|Array} object The object to remove or array of objects to be removed.
      * The element(s) is/are given by name, id or a reference.
      * @param {Boolean} [saveMethod=false] If saveMethod=true, the algorithm runs through all elements
      * and tests if the element to be deleted is a child element. If this is the case, it will be
      * removed from the list of child elements. If saveMethod=false (default), the element
      * is removed from the lists of child elements of all its ancestors.
      * The latter should be much faster.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      * @private
      */
     _removeObj(object, saveMethod) {
@@ -5629,7 +5629,7 @@ export class Board extends Events {
                     this.objectsList[i]._pos--;
                 }
             } else if (object.type !== OBJECT_TYPE.TURTLE) {
-                JXG.debug(
+                JXG2.debug(
                     'Board.removeObject: object ' + object.id + ' not found in list.'
                 );
             }
@@ -5646,7 +5646,7 @@ export class Board extends Events {
                 object.remove();
             }
         } catch (e) {
-            JXG.debug(object.id + ': Could not be removed: ' + e);
+            JXG2.debug(object.id + ': Could not be removed: ' + e);
         }
 
         return this;
@@ -5665,14 +5665,14 @@ export class Board extends Events {
      * <tt>board.unsuspendUpdate()</tt> after the loop. Further, it is advisable to loop
      * in reverse order, i.e. remove the object in reverse order of their creation time.
      * </ul>
-     * @param {JXG.GeometryElement|Array} object The object to remove or array of objects to be removed.
+     * @param {JXG2.GeometryElement|Array} object The object to remove or array of objects to be removed.
      * The element(s) is/are given by name, id or a reference.
      * @param {Boolean} saveMethod If true, the algorithm runs through all elements
      * and tests if the element to be deleted is a child element. If yes, it will be
      * removed from the list of child elements. If false (default), the element
      * is removed from the lists of child elements of all its ancestors.
      * This should be much faster.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     removeObject(object, saveMethod = false) {
         var i;
@@ -5693,8 +5693,8 @@ export class Board extends Events {
 
     /**
      * Removes the ancestors of an object an the object itself from board and renderer.
-     * @param {JXG.GeometryElement} object The object to remove.
-     * @returns {JXG.Board} Reference to the board
+     * @param {JXG2.GeometryElement} object The object to remove.
+     * @returns {JXG2.Board} Reference to the board
      */
     removeAncestors(object) {
         var anc;
@@ -5713,7 +5713,7 @@ export class Board extends Events {
     /**
      * Initialize some objects which are contained in every GEONExT construction by default,
      * but are not contained in the gxt files.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     initGeonextBoard() {
         var p1, p2, p3;
@@ -5761,7 +5761,7 @@ export class Board extends Events {
 
     /**
      * Change the height and width of the board's container.
-     * After doing so, {@link JXG.JSXGraph.setBoundingBox} is called using
+     * After doing so, {@link JXG2.JSXGraph.setBoundingBox} is called using
      * the actual size of the bounding box and the actual value of keepaspectratio.
      * If setBoundingbox() should not be called automatically,
      * call resizeContainer with dontSetBoundingBox == true.
@@ -5769,7 +5769,7 @@ export class Board extends Events {
      * @param {Number} canvasHeight New height of the container.
      * @param {Boolean} [dontset=false] If true do not set the CSS width and height of the DOM element.
      * @param {Boolean} [dontSetBoundingBox=false] If true do not call setBoundingBox(), but keep view centered around original visible center.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     resizeContainer(canvasWidth, canvasHeight, dontset, dontSetBoundingBox = false) {
         var box,
@@ -5811,7 +5811,7 @@ export class Board extends Events {
 
     /**
      * Lists the dependencies graph in a new HTML-window.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     showDependencies() {
         var el, t, c, f, i;
@@ -5852,7 +5852,7 @@ export class Board extends Events {
 
     /**
      * Lists the XML code of the construction in a new HTML-window.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     showXML() {
         var f = window.open('');
@@ -5864,8 +5864,8 @@ export class Board extends Events {
 
     /**
      * Sets for all objects the needsUpdate flag to 'true'.
-     * @param{JXG.GeometryElement} [drag=undefined] Optional element that is dragged.
-     * @returns {JXG.Board} Reference to the board
+     * @param{JXG2.GeometryElement} [drag=undefined] Optional element that is dragged.
+     * @returns {JXG2.Board} Reference to the board
      */
     prepareUpdate(drag?) {
         var el, i,
@@ -5917,8 +5917,8 @@ export class Board extends Events {
 
     /**
      * Runs through all elements and calls their update() method.
-     * @param {JXG.GeometryElement} drag Element that caused the update.
-     * @returns {JXG.Board} Reference to the board
+     * @param {JXG2.GeometryElement} drag Element that caused the update.
+     * @returns {JXG2.Board} Reference to the board
      */
     updateElements(drag) {
         var el, pEl;
@@ -5961,7 +5961,7 @@ export class Board extends Events {
 
     /**
      * Runs through all elements and calls their update() method.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     updateRenderer() {
         var el,
@@ -6022,7 +6022,7 @@ export class Board extends Events {
      * Runs through all elements and calls their update() method.
      * This is a special version for the CanvasRenderer.
      * Here, we have to do our own layer handling.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     updateRendererCanvas() {
         var el, pEl,
@@ -6105,7 +6105,7 @@ export class Board extends Events {
     }
 
     /**
-     * Please use {@link JXG.Board.on} instead.
+     * Please use {@link JXG2.Board.on} instead.
      * @param {Function} hook A function to be called by the board after an update occurred.
      * @param {String} [m='update'] When the hook is to be called. Possible values are <i>mouseup</i>, <i>mousedown</i> and <i>update</i>.
      * @param {Object} [context=board] Determines the execution context the hook is called. This parameter is optional, default is the
@@ -6114,7 +6114,7 @@ export class Board extends Events {
      * @deprecated
      */
     addHook(hook, m, context) {
-        JXG.deprecated('Board.addHook()', 'Board.on()');
+        JXG2.deprecated('Board.addHook()', 'Board.on()');
         m = Type.def(m, 'update');
 
         context = Type.def(context, this);
@@ -6126,19 +6126,19 @@ export class Board extends Events {
     }
 
     /**
-     * Alias of {@link JXG.Board.on}.
+     * Alias of {@link JXG2.Board.on}.
      */
     // TODO
-    // addEvent: JXG.shortcut(JXG.Board.prototype, 'on'),
+    // addEvent: JXG2.shortcut(JXG2.Board.prototype, 'on'),
 
     /**
-     * Please use {@link JXG.Board.off} instead.
+     * Please use {@link JXG2.Board.off} instead.
      * @param {Number|function} id The number you got when you added the hook or a reference to the event handler.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      * @deprecated
      */
     removeHook(id) {
-        JXG.deprecated('Board.removeHook()', 'Board.off()');
+        JXG2.deprecated('Board.removeHook()', 'Board.off()');
         if (this.hooks[id]) {
             this.off(this.hooks[id][0], this.hooks[id][1]);
             this.hooks[id] = null;
@@ -6148,20 +6148,20 @@ export class Board extends Events {
     }
 
     /**
-     * Alias of {@link JXG.Board.off}.
+     * Alias of {@link JXG2.Board.off}.
      */
     // TODO ??
-    // removeEvent: JXG.shortcut(JXG.Board.prototype, 'off')
+    // removeEvent: JXG2.shortcut(JXG2.Board.prototype, 'off')
 
     /**
      * Runs through all hooked functions and calls them.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      * @deprecated
      */
     updateHooks(m) {
         var arg = Array.prototype.slice.call(arguments, 0);
 
-        JXG.deprecated('Board.updateHooks()', 'Board.triggerEventHandlers()');
+        JXG2.deprecated('Board.updateHooks()', 'Board.triggerEventHandlers()');
 
         arg[0] = Type.def(arg[0], 'update');
         this.triggerEventHandlers([arg[0]], arguments);
@@ -6171,8 +6171,8 @@ export class Board extends Events {
 
     /**
      * Adds a dependent board to this board.
-     * @param {JXG.Board} board A reference to board which will be updated after an update of this board occurred.
-     * @returns {JXG.Board} Reference to the board
+     * @param {JXG2.Board} board A reference to board which will be updated after an update of this board occurred.
+     * @returns {JXG2.Board} Reference to the board
      */
     addChild(board) {
         if (Type.exists(board) && Type.exists(board.containerObj)) {
@@ -6184,8 +6184,8 @@ export class Board extends Events {
 
     /**
      * Deletes a board from the list of dependent boards.
-     * @param {JXG.Board} board Reference to the board which will be removed.
-     * @returns {JXG.Board} Reference to the board
+     * @param {JXG2.Board} board Reference to the board which will be removed.
+     * @returns {JXG2.Board} Reference to the board
      */
     removeChild(board) {
         var i;
@@ -6200,8 +6200,8 @@ export class Board extends Events {
 
     /**
      * Runs through most elements and calls their update() method and update the conditions.
-     * @param {JXG.GeometryElement} [drag] Element that caused the update.
-     * @returns {JXG.Board} Reference to the board
+     * @param {JXG2.GeometryElement} [drag] Element that caused the update.
+     * @returns {JXG2.Board} Reference to the board
      */
     update(drag? /*: GeometryElement*/) {
         var i, len, b, insert, storeActiveEl;
@@ -6241,7 +6241,7 @@ export class Board extends Events {
         }
 
         // To resolve dependencies between boards
-        // for (var board in JXG.boards) {
+        // for (var board in JXG2.boards) {
         len = this.dependentBoards.length;
         for (i = 0; i < len; i++) {
             b = this.dependentBoards[i];
@@ -6262,7 +6262,7 @@ export class Board extends Events {
     /**
      * Runs through all elements and calls their update() method and update the conditions.
      * This is necessary after zooming and changing the bounding box.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     fullUpdate() {
         this.needsFullUpdate = true;
@@ -6273,7 +6273,7 @@ export class Board extends Events {
 
     /**
      * Adds a grid to the board according to the settings given in board.options.
-     * @returns {JXG.Board} Reference to the board.
+     * @returns {JXG2.Board} Reference to the board.
      */
     addGrid() {
         this.create('grid', []);
@@ -6284,7 +6284,7 @@ export class Board extends Events {
     /**
      * Removes all grids assigned to this board. Warning: This method also removes all objects depending on one or
      * more of the grids.
-     * @returns {JXG.Board} Reference to the board object.
+     * @returns {JXG2.Board} Reference to the board object.
      */
     removeGrids() {
         var i;
@@ -6303,7 +6303,7 @@ export class Board extends Events {
      * Creates a new geometric element of type elementType.
      * @param {String} elementType Type of the element to be constructed given as a string e.g. 'point' or 'circle'.
      * @param {Array} parents Array of parent elements needed to construct the element e.g. coordinates for a point or two
-     * points to construct a line. This highly depends on the elementType that is constructed. See the corresponding JXG.create*
+     * points to construct a line. This highly depends on the elementType that is constructed. See the corresponding JXG2.create*
      * methods for a list of possible parameters.
      * @param {Object} [attributes] An object containing the attributes to be set. This also depends on the elementType.
      * Common attributes are name, visible, strokeColor.
@@ -6346,16 +6346,16 @@ export class Board extends Events {
             }
         }
 
-        // tbtb - really JXG.elements, not JXG_elements?
-        if (Type.isFunction(JXG.elements[elementType])) {
-            el = JXG.elements[elementType](this, parents, attributes);
+        // tbtb - really JXG2.elements, not JXG_elements?
+        if (Type.isFunction(JXG2.elements[elementType])) {
+            el = JXG2.elements[elementType](this, parents, attributes);
             if (dbug) console.warn(`%c board: creating elementType '${elementType}', el.id = '${el.id}'`, dbugColor)
         } else {
             throw new Error('JSXGraph: create: Unknown element type given: ' + elementType);
         }
 
         if (!Type.exists(el)) {
-            JXG.debug('JSXGraph: create: failure creating ' + elementType);
+            JXG2.debug('JSXGraph: create: failure creating ' + elementType);
             return el;
         }
 
@@ -6366,7 +6366,7 @@ export class Board extends Events {
     }
 
     /**
-     * Deprecated name for {@link JXG.Board.create}.
+     * Deprecated name for {@link JXG2.Board.create}.
      * @deprecated
      */
     createElement() {
@@ -6376,7 +6376,7 @@ export class Board extends Events {
 
     /**
      * Delete the elements drawn as part of a trace of an element.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     clearTraces() {
         var el;
@@ -6391,7 +6391,7 @@ export class Board extends Events {
 
     /**
      * Stop updates of the board.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     suspendUpdate() {
         if (!this.inUpdate) {
@@ -6402,7 +6402,7 @@ export class Board extends Events {
 
     /**
      * Enable updates of the board.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     unsuspendUpdate() {
         if (this.isSuspendedUpdate) {
@@ -6418,9 +6418,9 @@ export class Board extends Events {
      * @param {Boolean} [keepaspectratio=false] If set to true, the aspect ratio will be 1:1, but
      * the resulting viewport may be larger.
      * @param {String} [setZoom='reset'] Reset, keep or update the zoom level of the board. 'reset'
-     * sets {@link JXG.Board#zoomX} and {@link JXG.Board#zoomY} to the start values (or 1.0).
+     * sets {@link JXG2.Board#zoomX} and {@link JXG2.Board#zoomY} to the start values (or 1.0).
      * 'update' adapts these values accoring to the new bounding box and 'keep' does nothing.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     setBoundingBox(bbox: [number, number, number, number], keepaspectratio = false, setZoom = 'reset') {
         var h, w, ux, uy,
@@ -6566,10 +6566,10 @@ export class Board extends Events {
      * Some board attributes are immutable, like e.g. the renderer type.
      *
      * @param {Object} attributes An object with attributes.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      *
      * @example
-     * const board = JXG.JSXGraph.initBoard('jxgbox', {
+     * const board = JXG2.JSXGraph.initBoard('jxgbox', {
      *     boundingbox: [-5, 5, 5, -5],
      *     keepAspectRatio: false,
      *     axis:true,
@@ -6624,7 +6624,7 @@ export class Board extends Events {
      * </pre><div id="JXGea7b8e09-beac-4d95-9a0c-5fc1c761ffbc" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *     const board = JXG.JSXGraph.initBoard('JXGea7b8e09-beac-4d95-9a0c-5fc1c761ffbc', {
+     *     const board = JXG2.JSXGraph.initBoard('JXGea7b8e09-beac-4d95-9a0c-5fc1c761ffbc', {
      *         boundingbox: [-5, 5, 5, -5],
      *         keepAspectRatio: false,
      *         axis:true,
@@ -6698,7 +6698,7 @@ export class Board extends Events {
                 attributes[Type.trim(pair[0])] = Type.trim(pair[1]);
             } else if (!Array.isArray(arg)) {
                 // pairRaw consists of objects of the form {key1:value1,key2:value2,...}
-                JXG.extend(attributes, arg);
+                JXG2.extend(attributes, arg);
             } else {
                 // pairRaw consists of array [key,value]
                 attributes[arg[0]] = arg[1];
@@ -6840,8 +6840,8 @@ export class Board extends Events {
     /**
      * Adds an animation. Animations are controlled by the boards, so the boards need to be aware of the
      * animated elements. This function tells the board about new elements to animate.
-     * @param {JXG.GeometryElement} element The element which is to be animated.
-     * @returns {JXG.Board} Reference to the board
+     * @param {JXG2.GeometryElement} element The element which is to be animated.
+     * @returns {JXG2.Board} Reference to the board
      */
     addAnimation(element) {
 
@@ -6858,7 +6858,7 @@ export class Board extends Events {
 
     /**
      * Cancels all running animations.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     stopAllAnimation() {
         var el;
@@ -6882,7 +6882,7 @@ export class Board extends Events {
     /**
      * General purpose animation function. This currently only supports moving points from one place to another. This
      * is faster than managing the animation per point, especially if there is more than one animated point at the same time.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     animate() {
         var props,
@@ -6976,11 +6976,11 @@ export class Board extends Events {
      * For example, a circle around the point src
      * receives the new center dest. The old center src
      * will be deleted.
-     * @param {JXG.Point} src Original point which will be deleted
-     * @param {JXG.Point} dest New point with the dependencies of src.
+     * @param {JXG2.Point} src Original point which will be deleted
+     * @param {JXG2.Point} dest New point with the dependencies of src.
      * @param {Boolean} copyName Flag which decides if the name of the src element is copied to the
      *  dest element.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     migratePoint(src, dest, copyName) {
         var child,
@@ -7061,7 +7061,7 @@ export class Board extends Events {
     /**
      * Initializes color blindness simulation.
      * @param {String} deficiency Describes the color blindness deficiency which is simulated. Accepted values are 'protanopia', 'deuteranopia', and 'tritanopia'.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      */
     emulateColorblindness(deficiency) {
         var e, o;
@@ -7080,7 +7080,7 @@ export class Board extends Events {
 
                 if (deficiency !== 'none') {
                     if (this.currentCBDef === 'none') {
-                        // this could be accomplished by JXG.extend, too. But do not use
+                        // this could be accomplished by JXG2.extend, too. But do not use
                         // Type.deepCopy as this could result in an infinite loop because in
                         // visProp there could be geometry elements which contain the board which
                         // contains all objects which contain board etc.
@@ -7110,7 +7110,7 @@ export class Board extends Events {
                         )
                     });
                 } else if (Type.exists(o.visPropOriginal)) {
-                    JXG.extend(o.visProp, o.visPropOriginal);
+                    JXG2.extend(o.visProp, o.visPropOriginal);
                 }
             }
         }
@@ -7126,7 +7126,7 @@ export class Board extends Events {
      * be used as a filter to return multiple elements at once filtered by the properties of the object.
      * @param {Boolean} onlyByIdOrName If true (default:false) elements are only filtered by their id, name or groupId.
      * The advanced filters consisting of objects or functions are ignored.
-     * @returns {JXG.GeometryElement|JXG.Composition}
+     * @returns {JXG2.GeometryElement|JXG2.Composition}
      * @example
      * // select the element with name A
      * board.select('A');
@@ -7138,7 +7138,7 @@ export class Board extends Events {
      *
      * // select all points on or below the x axis and make them black.
      * board.select({
-     *   elementClass: JXG.OBJECT_CLASS_POINT,
+     *   elementClass: JXG2.OBJECT_CLASS_POINT,
      *   Y(v) {
      *     return v <= 0;
      *   }
@@ -7212,8 +7212,8 @@ export class Board extends Events {
 
     /**
      * Checks if the given point is inside the boundingbox.
-     * @param {Number|JXG.Coords} x User coordinate or {@link JXG.Coords} object.
-     * @param {Number} [y] User coordinate. May be omitted in case <tt>x</tt> is a {@link JXG.Coords} object.
+     * @param {Number|JXG2.Coords} x User coordinate or {@link JXG2.Coords} object.
+     * @param {Number} [y] User coordinate. May be omitted in case <tt>x</tt> is a {@link JXG2.Coords} object.
      * @returns {Boolean}
      */
     hasPoint(x, y) {
@@ -7238,7 +7238,7 @@ export class Board extends Events {
 
     /**
      * Update CSS transformations of type scaling. It is used to correct the mouse position
-     * in {@link JXG.Board.getMousePosition}.
+     * in {@link JXG2.Board.getMousePosition}.
      * The inverse transformation matrix is updated on each mouseDown and touchStart event.
      *
      * It is up to the user to call this method after an update of the CSS transformation
@@ -7294,7 +7294,7 @@ export class Board extends Events {
      * //
      * // Set a new bounding box from the selection rectangle
      * //
-     * var board = JXG.JSXGraph.initBoard('jxgbox', {
+     * var board = JXG2.JSXGraph.initBoard('jxgbox', {
      *         boundingBox:[-3,2,3,-2],
      *         keepAspectRatio: false,
      *         axis:true,
@@ -7332,7 +7332,7 @@ export class Board extends Events {
      *     //
      *     // Set a new bounding box from the selection rectangle
      *     //
-     *     var board = JXG.JSXGraph.initBoard('JXG11eff3a6-8c50-11e5-b01d-901b0e1b8723', {
+     *     var board = JXG2.JSXGraph.initBoard('JXG11eff3a6-8c50-11e5-b01d-901b0e1b8723', {
      *             boundingBox:[-3,2,3,-2],
      *             keepAspectRatio: false,
      *             axis:true,
@@ -7382,7 +7382,7 @@ export class Board extends Events {
      * Finalize the selection: disable selection mode and return the coordinates
      * of the selection rectangle.
      * @returns {Array} Coordinates of the selection rectangle. The array
-     * contains two {@link JXG.Coords} objects. One the upper left corner and
+     * contains two {@link JXG2.Coords} objects. One the upper left corner and
      * the second for the lower right corner.
      */
     stopSelectionMode() {
@@ -7463,7 +7463,7 @@ export class Board extends Events {
 
     /**
      * Test if a down event should start a selection. Test if the
-     * required keys are pressed. If yes, {@link JXG.Board.startSelectionMode} is called.
+     * required keys are pressed. If yes, {@link JXG2.Board.startSelectionMode} is called.
      * @param  {Object} evt Event object
      */
     _testForSelection(evt) {
@@ -7512,8 +7512,8 @@ export class Board extends Events {
 
     /**
      * @event
-     * @description Whenever the {@link JXG.Board#setAttribute} is called.
-     * @name JXG.Board#attribute
+     * @description Whenever the {@link JXG2.Board#setAttribute} is called.
+     * @name JXG2.Board#attribute
      * @param {Events} e The browser's event object.
      */
     __evt__attribute(e) { }
@@ -7521,7 +7521,7 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user starts to touch or click the board.
-     * @name JXG.Board#down
+     * @name JXG2.Board#down
      * @param {Events} e The browser's event object.
      */
     __evt__down(e) { }
@@ -7529,7 +7529,7 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user starts to click on the board.
-     * @name JXG.Board#mousedown
+     * @name JXG2.Board#mousedown
      * @param {Events} e The browser's event object.
      */
     __evt__mousedown(e) { }
@@ -7537,7 +7537,7 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user taps the pen on the board.
-     * @name JXG.Board#pendown
+     * @name JXG2.Board#pendown
      * @param {Events} e The browser's event object.
      */
     __evt__pendown(e) { }
@@ -7546,7 +7546,7 @@ export class Board extends Events {
      * @event
      * @description Whenever the user starts to click on the board with a
      * device sending pointer events.
-     * @name JXG.Board#pointerdown
+     * @name JXG2.Board#pointerdown
      * @param {Events} e The browser's event object.
      */
     __evt__pointerdown(e) { }
@@ -7554,7 +7554,7 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user starts to touch the board.
-     * @name JXG.Board#touchstart
+     * @name JXG2.Board#touchstart
      * @param {Events} e The browser's event object.
      */
     __evt__touchstart(e) { }
@@ -7562,7 +7562,7 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user stops to touch or click the board.
-     * @name JXG.Board#up
+     * @name JXG2.Board#up
      * @param {Events} e The browser's event object.
      */
     __evt__up(e) { }
@@ -7570,7 +7570,7 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user releases the mousebutton over the board.
-     * @name JXG.Board#mouseup
+     * @name JXG2.Board#mouseup
      * @param {Events} e The browser's event object.
      */
     __evt__mouseup(e) { }
@@ -7579,7 +7579,7 @@ export class Board extends Events {
      * @event
      * @description Whenever the user releases the mousebutton over the board with a
      * device sending pointer events.
-     * @name JXG.Board#pointerup
+     * @name JXG2.Board#pointerup
      * @param {Events} e The browser's event object.
      */
     __evt__pointerup(e) { }
@@ -7587,7 +7587,7 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user stops touching the board.
-     * @name JXG.Board#touchend
+     * @name JXG2.Board#touchend
      * @param {Events} e The browser's event object.
      */
     __evt__touchend(e) { }
@@ -7595,8 +7595,8 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user clicks on the board.
-     * @name JXG.Board#click
-     * @see JXG.Board#clickDelay
+     * @name JXG2.Board#click
+     * @see JXG2.Board#clickDelay
      * @param {Events} e The browser's event object.
      */
     __evt__click(e) { }
@@ -7606,9 +7606,9 @@ export class Board extends Events {
      * @description Whenever the user double clicks on the board.
      * This event works on desktop browser, but is undefined
      * on mobile browsers.
-     * @name JXG.Board#dblclick
-     * @see JXG.Board#clickDelay
-     * @see JXG.Board#dblClickSuppressClick
+     * @name JXG2.Board#dblclick
+     * @see JXG2.Board#clickDelay
+     * @see JXG2.Board#dblClickSuppressClick
      * @param {Events} e The browser's event object.
      */
     __evt__dblclick(e) { }
@@ -7616,7 +7616,7 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user clicks on the board with a mouse device.
-     * @name JXG.Board#mouseclick
+     * @name JXG2.Board#mouseclick
      * @param {Events} e The browser's event object.
      */
     __evt__mouseclick(e) { }
@@ -7624,8 +7624,8 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user double clicks on the board with a mouse device.
-     * @name JXG.Board#mousedblclick
-     * @see JXG.Board#clickDelay
+     * @name JXG2.Board#mousedblclick
+     * @see JXG2.Board#clickDelay
      * @param {Events} e The browser's event object.
      */
     __evt__mousedblclick(e) { }
@@ -7633,7 +7633,7 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever the user clicks on the board with a pointer device.
-     * @name JXG.Board#pointerclick
+     * @name JXG2.Board#pointerclick
      * @param {Events} e The browser's event object.
      */
     __evt__pointerclick(e) { }
@@ -7643,8 +7643,8 @@ export class Board extends Events {
      * @description Whenever the user double clicks on the board with a pointer device.
      * This event works on desktop browser, but is undefined
      * on mobile browsers.
-     * @name JXG.Board#pointerdblclick
-     * @see JXG.Board#clickDelay
+     * @name JXG2.Board#pointerdblclick
+     * @see JXG2.Board#clickDelay
      * @param {Events} e The browser's event object.
      */
     __evt__pointerdblclick(e) { }
@@ -7652,30 +7652,30 @@ export class Board extends Events {
     /**
      * @event
      * @description This event is fired whenever the user is moving the finger or mouse pointer over the board.
-     * @name JXG.Board#move
+     * @name JXG2.Board#move
      * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
-     * @see JXG.Board#mode
+     * @see JXG2.Board#mode
      */
     __evt__move(e, mode) { }
 
     /**
      * @event
      * @description This event is fired whenever the user is moving the mouse over the board.
-     * @name JXG.Board#mousemove
+     * @name JXG2.Board#mousemove
      * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
-     * @see JXG.Board#mode
+     * @see JXG2.Board#mode
      */
     __evt__mousemove(e, mode) { }
 
     /**
      * @event
      * @description This event is fired whenever the user is moving the pen over the board.
-     * @name JXG.Board#penmove
+     * @name JXG2.Board#penmove
      * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
-     * @see JXG.Board#mode
+     * @see JXG2.Board#mode
      */
     __evt__penmove(e, mode) { }
 
@@ -7683,20 +7683,20 @@ export class Board extends Events {
      * @event
      * @description This event is fired whenever the user is moving the mouse over the board with a
      * device sending pointer events.
-     * @name JXG.Board#pointermove
+     * @name JXG2.Board#pointermove
      * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
-     * @see JXG.Board#mode
+     * @see JXG2.Board#mode
      */
     __evt__pointermove(e, mode) { }
 
     /**
      * @event
      * @description This event is fired whenever the user is moving the finger over the board.
-     * @name JXG.Board#touchmove
+     * @name JXG2.Board#touchmove
      * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
-     * @see JXG.Board#mode
+     * @see JXG2.Board#mode
      */
     __evt__touchmove(e, mode) { }
 
@@ -7704,19 +7704,19 @@ export class Board extends Events {
      * @event
      * @description This event is fired whenever the user is moving an element over the board by
      * pressing arrow keys on a keyboard.
-     * @name JXG.Board#keymove
+     * @name JXG2.Board#keymove
      * @param {Events} e The browser's event object.
      * @param {Number} mode The mode the board currently is in
-     * @see JXG.Board#mode
+     * @see JXG2.Board#mode
      */
     __evt__keymove(e, mode) { }
 
     /**
      * @event
      * @description Whenever an element is highlighted this event is fired.
-     * @name JXG.Board#hit
+     * @name JXG2.Board#hit
      * @param {Events} e The browser's event object.
-     * @param {JXG.GeometryElement} el The hit element.
+     * @param {JXG2.GeometryElement} el The hit element.
      * @param target
      *
      * @example
@@ -7728,7 +7728,7 @@ export class Board extends Events {
      * </pre><div id='JXG19eb31ac-88e6-11e8-bcb5-901b0e1b8723' class='jxgbox' style='width: 300px; height: 300px;'></div>
      * <script type='text/javascript'>
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG19eb31ac-88e6-11e8-bcb5-901b0e1b8723',
+     *         var board = JXG2.JSXGraph.initBoard('JXG19eb31ac-88e6-11e8-bcb5-901b0e1b8723',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *     var c = board.create('circle', [[1, 1], 2]);
      *     board.on('hit', function(evt, el) {
@@ -7744,10 +7744,10 @@ export class Board extends Events {
     /**
      * @event
      * @description Whenever an element is highlighted this event is fired.
-     * @name JXG.Board#mousehit
-     * @see JXG.Board#hit
+     * @name JXG2.Board#mousehit
+     * @see JXG2.Board#hit
      * @param {Events} e The browser's event object.
-     * @param {JXG.GeometryElement} el The hit element.
+     * @param {JXG2.GeometryElement} el The hit element.
      * @param target
      */
     __evt__mousehit(e, el, target) { }
@@ -7755,22 +7755,22 @@ export class Board extends Events {
     /**
      * @event
      * @description This board is updated.
-     * @name JXG.Board#update
+     * @name JXG2.Board#update
      */
     __evt__update() { }
 
     /**
      * @event
      * @description The bounding box of the board has changed.
-     * @name JXG.Board#boundingbox
+     * @name JXG2.Board#boundingbox
      */
     __evt__boundingbox() { }
 
     /**
      * @event
      * @description Select a region is started during a down event or by calling
-     * {@link JXG.Board.startSelectionMode}
-     * @name JXG.Board#startselecting
+     * {@link JXG2.Board.startSelectionMode}
+     * @name JXG2.Board#startselecting
      */
     __evt__startselecting() { }
 
@@ -7778,8 +7778,8 @@ export class Board extends Events {
      * @event
      * @description Select a region is started during a down event
      * from a device sending mouse events or by calling
-     * {@link JXG.Board.startSelectionMode}.
-     * @name JXG.Board#mousestartselecting
+     * {@link JXG2.Board.startSelectionMode}.
+     * @name JXG2.Board#mousestartselecting
      */
     __evt__mousestartselecting() { }
 
@@ -7787,8 +7787,8 @@ export class Board extends Events {
      * @event
      * @description Select a region is started during a down event
      * from a device sending pointer events or by calling
-     * {@link JXG.Board.startSelectionMode}.
-     * @name JXG.Board#pointerstartselecting
+     * {@link JXG2.Board.startSelectionMode}.
+     * @name JXG2.Board#pointerstartselecting
      */
     __evt__pointerstartselecting() { }
 
@@ -7796,15 +7796,15 @@ export class Board extends Events {
      * @event
      * @description Select a region is started during a down event
      * from a device sending touch events or by calling
-     * {@link JXG.Board.startSelectionMode}.
-     * @name JXG.Board#touchstartselecting
+     * {@link JXG2.Board.startSelectionMode}.
+     * @name JXG2.Board#touchstartselecting
      */
     __evt__touchstartselecting() { }
 
     /**
      * @event
      * @description Selection of a region is stopped during an up event.
-     * @name JXG.Board#stopselecting
+     * @name JXG2.Board#stopselecting
      */
     __evt__stopselecting() { }
 
@@ -7812,7 +7812,7 @@ export class Board extends Events {
      * @event
      * @description Selection of a region is stopped during an up event
      * from a device sending mouse events.
-     * @name JXG.Board#mousestopselecting
+     * @name JXG2.Board#mousestopselecting
      */
     __evt__mousestopselecting() { }
 
@@ -7820,7 +7820,7 @@ export class Board extends Events {
      * @event
      * @description Selection of a region is stopped during an up event
      * from a device sending pointer events.
-     * @name JXG.Board#pointerstopselecting
+     * @name JXG2.Board#pointerstopselecting
      */
     __evt__pointerstopselecting() { }
 
@@ -7828,14 +7828,14 @@ export class Board extends Events {
      * @event
      * @description Selection of a region is stopped during an up event
      * from a device sending touch events.
-     * @name JXG.Board#touchstopselecting
+     * @name JXG2.Board#touchstopselecting
      */
     __evt__touchstopselecting() { }
 
     /**
      * @event
      * @description A move event while selecting of a region is active.
-     * @name JXG.Board#moveselecting
+     * @name JXG2.Board#moveselecting
      */
     __evt__moveselecting() { }
 
@@ -7843,7 +7843,7 @@ export class Board extends Events {
      * @event
      * @description A move event while selecting of a region is active
      * from a device sending mouse events.
-     * @name JXG.Board#mousemoveselecting
+     * @name JXG2.Board#mousemoveselecting
      */
     __evt__mousemoveselecting() { }
 
@@ -7851,7 +7851,7 @@ export class Board extends Events {
      * @event
      * @description Select a region is started during a down event
      * from a device sending mouse events.
-     * @name JXG.Board#pointermoveselecting
+     * @name JXG2.Board#pointermoveselecting
      */
     __evt__pointermoveselecting() { }
 
@@ -7859,7 +7859,7 @@ export class Board extends Events {
      * @event
      * @description Select a region is started during a down event
      * from a device sending touch events.
-     * @name JXG.Board#touchmoveselecting
+     * @name JXG2.Board#touchmoveselecting
      */
     __evt__touchmoveselecting() { }
 
@@ -7886,14 +7886,14 @@ export class Board extends Events {
      * If not provided, this defaults to the JSXGraph div. However, it may be necessary for the aspect ratio trick
      * which using padding-bottom/top and an out div element. Then, the id of the outer div has to be supplied.
      *
-     * @return {JXG.Board} Reference to the board
+     * @return {JXG2.Board} Reference to the board
      *
      * @example
      * &lt;div id='jxgbox' class='jxgbox' style='width:500px; height:200px;'&gt;&lt;/div&gt;
      * &lt;button onClick='board.toFullscreen()'&gt;Fullscreen&lt;/button&gt;
      *
      * &lt;script language='Javascript' type='text/javascript'&gt;
-     * var board = JXG.JSXGraph.initBoard('jxgbox', {axis:true, boundingbox:[-5,5,5,-5]});
+     * var board = JXG2.JSXGraph.initBoard('jxgbox', {axis:true, boundingbox:[-5,5,5,-5]});
      * var p = board.create('point', [0, 1]);
      * &lt;/script&gt;
      *
@@ -7901,7 +7901,7 @@ export class Board extends Events {
      * <script type='text/javascript'>
      *      var board_d5bab8b6;
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXGd5bab8b6-fd40-11e8-ab14-901b0e1b8723',
+     *         var board = JXG2.JSXGraph.initBoard('JXGd5bab8b6-fd40-11e8-ab14-901b0e1b8723',
      *             {boundingbox:[-5,5,5,-5], axis: true, showcopyright: false, shownavigation: false});
      *         var p = board.create('point', [0, 1]);
      *         board_d5bab8b6 = board;
@@ -7917,7 +7917,7 @@ export class Board extends Events {
      * &lt;button onClick='board.toFullscreen('outer')'&gt;Fullscreen&lt;/button&gt;
      *
      * &lt;script language='Javascript' type='text/javascript'&gt;
-     * var board = JXG.JSXGraph.initBoard('jxgbox', {
+     * var board = JXG2.JSXGraph.initBoard('jxgbox', {
      *     axis:true,
      *     boundingbox:[-5,5,5,-5],
      *     fullscreen: { id: 'outer' }
@@ -7933,7 +7933,7 @@ export class Board extends Events {
      * <script type='text/javascript'>
      *     var board_JXG7103f6be;
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG7103f6be-6993-4ff8-8133-c78e50a8afac',
+     *         var board = JXG2.JSXGraph.initBoard('JXG7103f6be-6993-4ff8-8133-c78e50a8afac',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, fullscreen: { id: 'JXG7103f6b_outer' } showFullscreen: true,
      *              showcopyright: false, shownavigation: false});
      *     var p = board.create('point', [-2, 3], {});
@@ -8085,9 +8085,9 @@ export class Board extends Events {
      *
      * @param {Object} node DOM object which is in fullscreen mode. It is the wrapper element
      * around the JSXGraph div.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      * @private
-     * @see JXG.Board#toFullscreen
+     * @see JXG2.Board#toFullscreen
      *
      */
     startFullscreenResizeObserver(node) {
@@ -8134,9 +8134,9 @@ export class Board extends Events {
      * Remove resize observer to handle orientation changes in fullscreen mode.
      * @param {Object} node DOM object which is in fullscreen mode. It is the wrapper element
      * around the JSXGraph div.
-     * @returns {JXG.Board} Reference to the board
+     * @returns {JXG2.Board} Reference to the board
      * @private
-     * @see JXG.Board#toFullscreen
+     * @see JXG2.Board#toFullscreen
      */
     stopFullscreenResizeObserver(node) {
         if (!Env.isBrowser || !this.attr.resize || !this.attr.resize.enabled) {
@@ -8155,8 +8155,8 @@ export class Board extends Events {
      * @param {String} type Event type, e.g. 'drag'
      * @param {Object} obj JSXGraph element object
      *
-     * @see JXG.Board#userLog
-     * @return {JXG.Board} Reference to the board
+     * @see JXG2.Board#userLog
+     * @return {JXG2.Board} Reference to the board
      */
     addLogEntry(type, obj, pos) {
         var t, id,
@@ -8229,7 +8229,7 @@ export class Board extends Events {
     /**
      * Further initialization of the board. Set some properties from attribute values.
      *
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {Object} attr attributes object
      * @param {Object} dimensions Object containing dimensions of the canvas
      *
@@ -8321,7 +8321,7 @@ export class Board extends Events {
  *
  * </pre><div class='jxgbox' id='JXGe5e1b53c-a036-4a46-9e35-190d196beca5' style='width: 300px; height: 300px;'></div>
  * <script type='text/javascript'>
- * var brd = JXG.JSXGraph.initBoard('JXGe5e1b53c-a036-4a46-9e35-190d196beca5', {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright:false, shownavigation: false});
+ * var brd = JXG2.JSXGraph.initBoard('JXGe5e1b53c-a036-4a46-9e35-190d196beca5', {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright:false, shownavigation: false});
  * // Line which will be the floor to roll upon.
  * var line = brd.create('curve', [function (t) { return t;} function (t){ return 1;}], {strokeWidth:6});
  * // Center of the rolling circle

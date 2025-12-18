@@ -56,7 +56,7 @@
     (2011-05-31)
 */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -64,7 +64,7 @@
  * by D.E. Knuth and J.D. Hobby.
  */
 
-import {JXG} from "../jxg.js"
+import {JXG2} from "../jxg.js"
 import {Type} from "../utils/type.js";
 import {JSXMath} from "./math.js";
 
@@ -73,10 +73,10 @@ import {JSXMath} from "./math.js";
  * by D.E. Knuth and J.D. Hobby.
  *
  * @name Geometry.Metapost
- * @exports JXG.JSXMath.Metapost as Geometry.Metapost
+ * @exports JXG2.JSXMath.Metapost as Geometry.Metapost
  * @namespace
  */
-JXG.JSXMath.Metapost = {
+JXG2.JSXMath.Metapost = {
     MP_ENDPOINT: 0,
     MP_EXPLICIT: 1,
     MP_GIVEN: 2,
@@ -755,4 +755,4 @@ JXG.JSXMath.Metapost = {
         }
 };
 
-export default JXG.JSXMath.Metapost;
+export default JXG2.JSXMath.Metapost;

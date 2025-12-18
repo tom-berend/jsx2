@@ -38,7 +38,7 @@
  * @type Object
  * @returns An object consisting of several arrays (lines, circles, points, angles, ...) where the created elements are stored.
  */
-JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroName) {
+JXG2.Board.prototype.construct = function (string, mode, params, paraIn, macroName) {
     var splitted,
         i,
         j,
@@ -60,7 +60,7 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
         propName,
         propValue,
         attributes;
-    if (!JXG.exists(mode)) {
+    if (!JXG2.exists(mode)) {
         mode = 'normal'
     } else {
         // mode = 'macro'
@@ -121,8 +121,8 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                             }
                         }
                         //alert("_"+objName+"_"+propName+"_"+propValue+"_");
-                        //alert(JXG.getReference(this,objName).name);
-                        JXG.getReference(this, objName).setAttribute(
+                        //alert(JXG2.getReference(this,objName).name);
+                        JXG2.getReference(this, objName).setAttribute(
                             propName + ":" + propValue
                         );
                     }
@@ -203,7 +203,7 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                 defElements[1] = RegExp.$2;
                             } // sonst wird die Gerade durch zwei Punkte definiert, die einen Namen haben, der aus nur jeweils einem Buchstaben besteht
                             if (objName != "") {
-                                if (!JXG.exists(attributes.withLabel)) {
+                                if (!JXG2.exists(attributes.withLabel)) {
                                     attributes.withLabel = true;
                                 }
                                 attributes.name = objName;
@@ -237,13 +237,13 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                             }
                             if (typeof defElements == 'string') {
                                 defElements = [
-                                    JXG.getReference(this, defElements.charAt(0)),
-                                    JXG.getReference(this, defElements.charAt(1))
+                                    JXG2.getReference(this, defElements.charAt(0)),
+                                    JXG2.getReference(this, defElements.charAt(1))
                                 ];
                             } else {
                                 defElements = [
-                                    JXG.getReference(this, defElements[0]),
-                                    JXG.getReference(this, defElements[1])
+                                    JXG2.getReference(this, defElements[0]),
+                                    JXG2.getReference(this, defElements[1])
                                 ];
                             }
                             output.lines.push(this.create("line", defElements, attributes));
@@ -293,17 +293,17 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                     if (typeof defElements[j] == 'string') {
                                         defElements[j] = (function (el, board) {
                                             return function () {
-                                                return JXG.getReference(
+                                                return JXG2.getReference(
                                                     board,
                                                     el.charAt(0)
-                                                ).Dist(JXG.getReference(board, el.charAt(1))); // TODO
+                                                ).Dist(JXG2.getReference(board, el.charAt(1))); // TODO
                                             };
                                         })(defElements[j], this);
                                     } else {
                                         defElements[j] = (function (el, board) {
                                             return function () {
-                                                return JXG.getReference(board, el[0]).Dist(
-                                                    JXG.getReference(board, el[1])
+                                                return JXG2.getReference(board, el[0]).Dist(
+                                                    JXG2.getReference(board, el[1])
                                                 ); // TODO
                                             };
                                         })(defElements[j], this);
@@ -329,11 +329,11 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                             }
                                         }
                                     }
-                                    defElements[j] = JXG.getReference(this, defElements[j]);
+                                    defElements[j] = JXG2.getReference(this, defElements[j]);
                                 }
                             }
                             if (objName != "") {
-                                if (!JXG.exists(attributes.withLabel)) {
+                                if (!JXG2.exists(attributes.withLabel)) {
                                     attributes.withLabel = true;
                                 }
                                 attributes.name = objName;
@@ -426,7 +426,7 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                     [
                                         defElements[1],
                                         defElements[2],
-                                        JXG.getReference(this, defElements[0])
+                                        JXG2.getReference(this, defElements[0])
                                     ],
                                     attributes
                                 )
@@ -458,13 +458,13 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                     }
                                 }
                             }
-                            defElements[0] = JXG.getReference(this, defElements[0]);
-                            defElements[1] = JXG.getReference(this, defElements[1]);
+                            defElements[0] = JXG2.getReference(this, defElements[0]);
+                            defElements[1] = JXG2.getReference(this, defElements[1]);
                             if (
-                                (defElements[0].elementClass == JXG.OBJECT_CLASS_LINE ||
-                                    defElements[0].elementClass == JXG.OBJECT_CLASS_CURVE) &&
-                                (defElements[1].elementClass == JXG.OBJECT_CLASS_LINE ||
-                                    defElements[1].elementClass == JXG.OBJECT_CLASS_CURVE)
+                                (defElements[0].elementClass == JXG2.OBJECT_CLASS_LINE ||
+                                    defElements[0].elementClass == JXG2.OBJECT_CLASS_CURVE) &&
+                                (defElements[1].elementClass == JXG2.OBJECT_CLASS_LINE ||
+                                    defElements[1].elementClass == JXG2.OBJECT_CLASS_CURVE)
                             ) {
                                 if (objName != "") {
                                     attributes.name = objName;
@@ -555,7 +555,7 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                             }
                             if (objName != "") {
                                 attributes.name = objName;
-                                if (!JXG.exists(attributes.withLabel)) {
+                                if (!JXG2.exists(attributes.withLabel)) {
                                     attributes.withLabel = true;
                                 }
                                 if (mode == 'macro') {
@@ -569,8 +569,8 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                 this.create(
                                     type,
                                     [
-                                        JXG.getReference(this, defElements[0]),
-                                        JXG.getReference(this, defElements[1])
+                                        JXG2.getReference(this, defElements[0]),
+                                        JXG2.getReference(this, defElements[1])
                                     ],
                                     attributes
                                 )
@@ -609,9 +609,9 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                     this.create(
                                         "angle",
                                         [
-                                            JXG.getReference(this, defElements[0]),
-                                            JXG.getReference(this, defElements[1]),
-                                            JXG.getReference(this, defElements[2])
+                                            JXG2.getReference(this, defElements[0]),
+                                            JXG2.getReference(this, defElements[1]),
+                                            JXG2.getReference(this, defElements[2])
                                         ],
                                         attributes
                                     )
@@ -658,7 +658,7 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                         }
                                     }
                                 }
-                                if (!JXG.exists(attributes.withLabel)) {
+                                if (!JXG2.exists(attributes.withLabel)) {
                                     attributes.withLabel = true;
                                 }
                                 if (mode == 'macro') {
@@ -671,9 +671,9 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                     this.create(
                                         "angle",
                                         [
-                                            JXG.getReference(this, defElements[0]),
-                                            JXG.getReference(this, defElements[1]),
-                                            JXG.getReference(this, defElements[2])
+                                            JXG2.getReference(this, defElements[0]),
+                                            JXG2.getReference(this, defElements[1]),
+                                            JXG2.getReference(this, defElements[2])
                                         ],
                                         attributes
                                     )
@@ -708,8 +708,8 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                     }
                                 }
                             }
-                            defElements[1] = JXG.getReference(this, RegExp.$3);
-                            defElements[2] = JXG.getReference(this, RegExp.$4);
+                            defElements[1] = JXG2.getReference(this, RegExp.$3);
+                            defElements[2] = JXG2.getReference(this, RegExp.$4);
                             obj = [];
                             obj[0] = (function (el, board) {
                                 return function () {
@@ -745,7 +745,7 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                         } else if (splitted[i].search(/(\S*)\s*:\s*(.*)/) != -1) {
                             // Funktionsgraph
                             objName = RegExp.$1;
-                            tmp = JXG.GeonextParser.geonext2JS(RegExp.$2, this);
+                            tmp = JXG2.GeonextParser.geonext2JS(RegExp.$2, this);
                             defElements = [new Function("x", "var y = " + tmp + "; return y;")];
                             attributes.name = objName;
                             output.functions.push(
@@ -773,7 +773,7 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                         } else if (splitted[i].search(/(\S*)\s*\[(.*)\]/) != -1) {
                             // Polygon
                             attributes.name = RegExp.$1;
-                            if (!JXG.exists(attributes.withLabel)) {
+                            if (!JXG2.exists(attributes.withLabel)) {
                                 attributes.withLabel = true;
                             }
                             defElements = RegExp.$2;
@@ -798,7 +798,7 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
                                         }
                                     }
                                 }
-                                defElements[j] = JXG.getReference(this, defElements[j]);
+                                defElements[j] = JXG2.getReference(this, defElements[j]);
                             }
                             output.polygons.push(
                                 this.create("polygon", defElements, attributes)
@@ -817,12 +817,12 @@ JXG.Board.prototype.construct = function (string, mode, params, paraIn, macroNam
 
 /**
  * Parses a string like<br />
- * <tt>&lt;macro-name&gt; = Macro(A, B, C) { <Command in JSXGraph Construction syntax>; ...<Command in JXG-Construct syntax>; }</tt><br />
+ * <tt>&lt;macro-name&gt; = Macro(A, B, C) { <Command in JSXGraph Construction syntax>; ...<Command in JXG2-Construct syntax>; }</tt><br />
  * and adds it as a macro so it can be used in the JSXGraph Construction Syntax.
  * @param {String} string A string like the one in the methods description.
  * @see #construct
  */
-JXG.Board.prototype.addMacro = function (string) {
+JXG2.Board.prototype.addMacro = function (string) {
     var defHead,
         defBody,
         defName = "",

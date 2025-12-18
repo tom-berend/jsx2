@@ -28,7 +28,7 @@
 
 "use strict";
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { Type } from "../utils/type.js";
 import { JSXMath } from "./math.js";
 import { Geometry } from "./geometry.js";
@@ -50,7 +50,7 @@ import Quadtree from "./bqdt.js";
  * keep the construction responsive.
  *
  * @name Geometry.ImplicitPlot
- * @exports JXG.JSXMath.ImplicitPlot as Geometry.ImplicitPlot
+ * @exports JXG2.JSXMath.ImplicitPlot as Geometry.ImplicitPlot
  * @param {Array} bbox Bounding box of the area in which solutions of the equation
  * are determined.
  * @param {Object} config Configuration object. Default:
@@ -120,7 +120,7 @@ import Quadtree from "./bqdt.js";
  * </pre><div id="JXGf3e8cd82-2b67-4efb-900a-471eb92b3b96" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGf3e8cd82-2b67-4efb-900a-471eb92b3b96',
+ *         var board = JXG2.JSXGraph.initBoard('JXGf3e8cd82-2b67-4efb-900a-471eb92b3b96',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var f = (x, y) => x**3 - 2 * x * y + y**3;
  *             var c = board.create('curve', [[], []], {
@@ -162,7 +162,7 @@ import Quadtree from "./bqdt.js";
  * </script><pre>
  *
  */
-JXG.JSXMath.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
+JXG2.JSXMath.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
 
     // Default values
     var cfg_default = {
@@ -220,8 +220,8 @@ JXG.JSXMath.ImplicitPlot = function (bbox, config, f, dfx, dfy) {
     this.components = [];
 };
 
-JXG.extend(
-    JXG.JSXMath.ImplicitPlot.prototype,
+JXG2.extend(
+    JXG2.JSXMath.ImplicitPlot.prototype,
     /** @lends Geometry.ImplicitPlot.prototype */ {
 
         /**
@@ -1021,5 +1021,5 @@ JXG.extend(
 
 );
 
-export default JXG.JSXMath.ImplicitPlot;
+export default JXG2.JSXMath.ImplicitPlot;
 

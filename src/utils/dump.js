@@ -29,24 +29,24 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
- * @fileoverview The JXG.Dump namespace provides methods to save a board to javascript.
+ * @fileoverview The JXG2.Dump namespace provides methods to save a board to javascript.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { Type } from "./type.js";
 
 /**
- * The JXG.Dump namespace provides classes and methods to save a board to javascript.
+ * The JXG2.Dump namespace provides classes and methods to save a board to javascript.
  * @namespace
  */
-JXG.Dump = {
+JXG2.Dump = {
     /**
      * Adds markers to every element of the board
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {Array|String} markers
      * @param {Array} values
      */
@@ -77,7 +77,7 @@ JXG.Dump = {
 
     /**
      * Removes markers from every element on the board.
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {Array|String} markers
      */
     deleteMarkers: function (board, markers) {
@@ -114,10 +114,10 @@ JXG.Dump = {
     },
 
     /**
-     * Eliminate default values given by {@link JXG.Options} from the attributes object.
+     * Eliminate default values given by {@link JXG2.Options} from the attributes object.
      * @param {Object} instance Attribute object of the element
      * @param {Object} s Arbitrary number of objects <tt>instance</tt> will be compared to. Usually these are
-     * sub-objects of the {@link JXG.Board#options} structure.
+     * sub-objects of the {@link JXG2.Board#options} structure.
      * @returns {Object} Minimal attributes object
      */
     minimizeObject: function (instance, s) {
@@ -132,7 +132,7 @@ JXG.Dump = {
             defaults.push(arguments[i]);
         }
 
-        def = Type.deepCopy(def, JXG.Options.elements, true);
+        def = Type.deepCopy(def, JXG2.Options.elements, true);
         for (i = defaults.length; i > 0; i--) {
             def = Type.deepCopy(def, defaults[i - 1], true);
         }
@@ -153,21 +153,21 @@ JXG.Dump = {
 
     /**
      * Prepare the attributes object for an element to be dumped as JavaScript or JessieCode code.
-     * @param {JXG.Board} board
-     * @param {JXG.GeometryElement} obj Geometry element which attributes object is generated
+     * @param {JXG2.Board} board
+     * @param {JXG2.GeometryElement} obj Geometry element which attributes object is generated
      * @returns {Object} An attributes object.
      */
     prepareAttributes: function (board, obj) {
         var a, s;
 
-        a = this.minimizeObject(obj.getAttributes(), JXG.Options[obj.elType]);
+        a = this.minimizeObject(obj.getAttributes(), JXG2.Options[obj.elType]);
 
         for (s in obj.subs) {
             if (obj.subs.hasOwnProperty(s)) {
                 a[s] = this.minimizeObject(
                     obj.subs[s].getAttributes(),
-                    JXG.Options[obj.elType][s],
-                    JXG.Options[obj.subs[s].elType]
+                    JXG2.Options[obj.elType][s],
+                    JXG2.Options[obj.subs[s].elType]
                 );
                 a[s].id = obj.subs[s].id;
                 a[s].name = obj.subs[s].name;
@@ -191,9 +191,9 @@ JXG.Dump = {
     },
 
     /**
-     * Generate a save-able structure with all elements. This is used by {@link JXG.Dump#toJessie} and
-     * {@link JXG.Dump#toJavaScript} to generate the script.
-     * @param {JXG.Board} board
+     * Generate a save-able structure with all elements. This is used by {@link JXG2.Dump#toJessie} and
+     * {@link JXG2.Dump#toJavaScript} to generate the script.
+     * @param {JXG2.Board} board
      * @returns {Array} An array with all metadata necessary to save the construction.
      */
     dump: function (board) {
@@ -259,7 +259,7 @@ JXG.Dump = {
      * Converts an array of different values into a parameter string that can be used by the code generators.
      * @param {Array} a
      * @param {function} converter A function that is used to transform the elements of <tt>a</tt>. Usually
-     * {@link JXG.toJSON} or {@link JXG.Dump.toJCAN} are used.
+     * {@link JXG2.toJSON} or {@link JXG2.Dump.toJCAN} are used.
      * @returns {String}
      */
     arrayToParamStr: function (a, converter) {
@@ -315,7 +315,7 @@ JXG.Dump = {
 
     /**
      * Saves the construction in <tt>board</tt> to JessieCode.
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @returns {String} JessieCode
      */
     toJessie: function (board) {
@@ -376,7 +376,7 @@ JXG.Dump = {
 
     /**
      * Saves the construction in <tt>board</tt> to JavaScript.
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @returns {String} JavaScript
      */
     toJavaScript: function (board) {
@@ -444,4 +444,4 @@ JXG.Dump = {
     }
 };
 
-export default JXG.Dump;
+export default JXG2.Dump;

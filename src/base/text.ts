@@ -40,14 +40,14 @@
         Tim Sauer
  */
 
-/*global JXG: true, define: true, window: true*/
+/*global JXG2: true, define: true, window: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview In this file the Text element is defined.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import GeometryElement from "./element.js";
 import GeonextParser from "../parser/geonext.js";
@@ -72,20 +72,20 @@ var priv = {
  * Construct and handle texts.
  *
  * The coordinates can be relative to the coordinates of an element
- * given in {@link JXG.Options#text.anchor}.
+ * given in {@link JXG2.Options#text.anchor}.
  *
  * MathJax, HTML and GEONExT syntax can be handled.
- * @class Creates a new text object. Do not use this constructor to create a text. Use {@link JXG.Board#create} with
+ * @class Creates a new text object. Do not use this constructor to create a text. Use {@link JXG2.Board#create} with
  * type {@link Text} instead.
- * @augments JXG.GeometryElement
- * @augments JXG.CoordsElement
- * @param {string|JXG.Board} board The board the new text is drawn on.
+ * @augments JXG2.GeometryElement
+ * @augments JXG2.CoordsElement
+ * @param {string|JXG2.Board} board The board the new text is drawn on.
  * @param {Array} coordinates An array with the user coordinates of the text.
  * @param {Object} attributes An object containing visual properties and optional a name and a id.
  * @param {string|function} content A string or a function returning a string.
  *
  */
-JXG.Text = function (board, coords, attributes, content) {
+JXG2.Text = function (board, coords, attributes, content) {
     var tmp;
 
     this.constructor(board, attributes, OBJECT_TYPE.TEXT, OBJECT_CLASS.TEXT);
@@ -140,12 +140,12 @@ JXG.Text = function (board, coords, attributes, content) {
     });
 };
 
-JXG.Text.prototype = new GeometryElement();
-Type.copyPrototypeMethods(JXG.Text, CoordsElement, 'coordsConstructor');
+JXG2.Text.prototype = new GeometryElement();
+Type.copyPrototypeMethods(JXG2.Text, CoordsElement, 'coordsConstructor');
 
-JXG.extend(
-    JXG.Text.prototype,
-    /** @lends JXG.Text.prototype */ {
+JXG2.extend(
+    JXG2.Text.prototype,
+    /** @lends JXG2.Text.prototype */ {
         /**
          * @private
          * @param {Number} x
@@ -211,10 +211,10 @@ JXG.extend(
 
         /**
          * This sets the updateText function of this element depending on the type of text content passed.
-         * Used by {@link JXG.Text#_setText}.
+         * Used by {@link JXG2.Text#_setText}.
          * @param {String|Function|Number} text
          * @private
-         * @see JXG.Text#_setText
+         * @see JXG2.Text#_setText
          */
         _createFctUpdateText: function (text) {
             var updateText, e, digits,
@@ -365,10 +365,10 @@ JXG.extend(
         },
 
         /**
-         * Defines new content. This is used by {@link JXG.Text#setTextJessieCode} and {@link JXG.Text#setText}. This is required because
+         * Defines new content. This is used by {@link JXG2.Text#setTextJessieCode} and {@link JXG2.Text#setText}. This is required because
          * JessieCode needs to filter all Texts inserted into the DOM and thus has to replace setText by setTextJessieCode.
          * @param {String|Function|Number} text
-         * @returns {JXG.Text}
+         * @returns {JXG2.Text}
          * @private
          */
         _setText: function (text) {
@@ -418,7 +418,7 @@ JXG.extend(
         /**
          * Defines new content.
          * @param {String|function} text
-         * @returns {JXG.Text} Reference to the text object.
+         * @returns {JXG2.Text} Reference to the text object.
          */
         setText: function (text) {
             return this._setText(text);
@@ -426,12 +426,12 @@ JXG.extend(
 
         /**
          * Recompute the width and the height of the text box.
-         * Updates the array {@link JXG.Text#size} with pixel values.
+         * Updates the array {@link JXG2.Text#size} with pixel values.
          * The result may differ from browser to browser
          * by some pixels.
          * In canvas an old IEs we use a very crude estimation of the dimensions of
          * the textbox.
-         * JSXGraph needs {@link JXG.Text#size} for applying rotations in IE and
+         * JSXGraph needs {@link JXG2.Text#size} for applying rotations in IE and
          * for aligning text.
          *
          * @return {this} [description]
@@ -648,9 +648,9 @@ JXG.extend(
 
         /**
          * Used to save updateSize() calls.
-         * Called in JXG.Text.update
+         * Called in JXG2.Text.update
          * That means this.update() has been called.
-         * More tests are in JXG.Renderer.updateTextStyle. The latter tests
+         * More tests are in JXG2.Renderer.updateTextStyle. The latter tests
          * are one update off. But this should pose not too many problems, since
          * it affects fontSize and cssClass changes.
          *
@@ -704,7 +704,7 @@ JXG.extend(
          * the text is added as child to these objects.
          * This method is called if the attribute parse==true is set.
          *
-         * Obsolete, replaced by JXG.Text.valueTagToJessieCode
+         * Obsolete, replaced by JXG2.Text.valueTagToJessieCode
          *
          * @param{String} contentStr String to be parsed
          * @param{Boolean} [expand] Optional flag if shortened math syntax is allowed (e.g. 3x instead of 3*x).
@@ -716,8 +716,8 @@ JXG.extend(
          *
          * @deprecated
          * @private
-         * @see JXG.GeonextParser#geonext2JS
-         * @see JXG.Text#valueTagToJessieCode
+         * @see JXG2.GeonextParser#geonext2JS
+         * @see JXG2.Text#valueTagToJessieCode
          *
          */
         generateTerm: function (contentStr, expand, avoidGeonext2JS) {
@@ -883,11 +883,11 @@ JXG.extend(
          *
          * @param {String|Array} s
          * @returns {String|Array}
-         * @see JXG.Text#convertGeonextAndSketchometry2CSS
+         * @see JXG2.Text#convertGeonextAndSketchometry2CSS
          * @private
-         * @see JXG.Text#replaceSub
-         * @see JXG.Text#replaceSup
-         * @see JXG.Text#convertGeonextAndSketchometry2CSS
+         * @see JXG2.Text#replaceSub
+         * @see JXG2.Text#replaceSup
+         * @see JXG2.Text#convertGeonextAndSketchometry2CSS
          */
         poorMansTeX: function (s) {
             var i, a;
@@ -934,8 +934,8 @@ JXG.extend(
          * Converts the GEONExT tags <overline> and <arrow> to
          * HTML span tags with proper CSS formatting.
          * @private
-         * @see JXG.Text.poorMansTeX
-         * @see JXG.Text._setText
+         * @see JXG2.Text.poorMansTeX
+         * @see JXG2.Text._setText
          */
         convertGeonext2CSS: function (s) {
             if (Type.isString(s)) {
@@ -962,8 +962,8 @@ JXG.extend(
          * @param {Boolean} escape Flag if ticks should be escaped. Escaping is necessary
          * if s is a text. It has to be avoided if s is a function returning text.
          * @private
-         * @see JXG.Text._setText
-         * @see JXG.Text.convertGeonextAndSketchometry2CSS
+         * @see JXG2.Text._setText
+         * @see JXG2.Text.convertGeonextAndSketchometry2CSS
          *
          */
         convertSketchometry2CSS: function (s, escape) {
@@ -988,8 +988,8 @@ JXG.extend(
          * @param {String|Function|Number} s Text
          * @param {Boolean} escape Flag if ticks should be escaped
          * @private
-         * @see JXG.Text.convertGeonext2CSS
-         * @see JXG.Text.convertSketchometry2CSS
+         * @see JXG2.Text.convertGeonext2CSS
+         * @see JXG2.Text.convertSketchometry2CSS
          */
         convertGeonextAndSketchometry2CSS: function (s, escape) {
             s = this.convertGeonext2CSS(s);
@@ -1334,7 +1334,7 @@ JXG.extend(
          * It evaluates each position using calculateScore(radius, angle) and chooses the position with the highest score.
          * Then the label's anchor points and offset are adjusted accordingly.
          *
-         * @returns {JXG.Text} Reference to the text object.
+         * @returns {JXG2.Text} Reference to the text object.
          */
         setAutoPosition: function () {
             var radius, angle, radiusStep,
@@ -1476,7 +1476,7 @@ JXG.extend(
         //  * of overlaps with other elements, while retaining the distance to its
         //  * anchor element. Twelve different angles are possible.
         //  *
-        //  * @returns {JXG.Text} Reference to the text object.
+        //  * @returns {JXG2.Text} Reference to the text object.
         //  */
         // setAutoPosition: function () {
         //     var x, y, cx, cy,
@@ -1595,9 +1595,9 @@ JXG.extend(
  * </ul>
  * @pseudo
  * @name Text
- * @augments JXG.Text
+ * @augments JXG2.Text
  * @constructor
- * @type JXG.Text
+ * @type JXG2.Text
  *
  * @param {number,function_number,function_number,function_String,function} z_,x,y,str Parent elements for text elements.
  *                     <p>
@@ -1616,13 +1616,13 @@ JXG.extend(
  * applied.
  * <p>
  * In case of 'internal', an SVG text element is used to display the text.
- * @see JXG.Text
+ * @see JXG2.Text
  * @example
  * // Create a fixed text at position [0,1].
  *   var t1 = board.create('text',[0,1,"Hello World"]);
  * </pre><div class="jxgbox" id="JXG896013aa-f24e-4e83-ad50-7bc7df23f6b7" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
- *   var t1_board = JXG.JSXGraph.initBoard('JXG896013aa-f24e-4e83-ad50-7bc7df23f6b7', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
+ *   var t1_board = JXG2.JSXGraph.initBoard('JXG896013aa-f24e-4e83-ad50-7bc7df23f6b7', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
  *   var t1 = t1_board.create('text',[0,1,"Hello World"]);
  * </script><pre>
  * @example
@@ -1630,14 +1630,14 @@ JXG.extend(
  *   var s = board.create('slider',[[0,4],[3,4],[-2,0,2]]);
  *   var graph = board.create('text',
  *                        [function(x){ return s.Value();}, 1,
- *                         function(){return "The value of s is"+JXG.toFixed(s.Value(), 2);}
+ *                         function(){return "The value of s is"+JXG2.toFixed(s.Value(), 2);}
  *                        ]
  *                     );
  * </pre><div class="jxgbox" id="JXG5441da79-a48d-48e8-9e53-75594c384a1c" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
- *   var t2_board = JXG.JSXGraph.initBoard('JXG5441da79-a48d-48e8-9e53-75594c384a1c', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
+ *   var t2_board = JXG2.JSXGraph.initBoard('JXG5441da79-a48d-48e8-9e53-75594c384a1c', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
  *   var s = t2_board.create('slider',[[0,4],[3,4],[-2,0,2]]);
- *   var t2 = t2_board.create('text',[function(x){ return s.Value();}, 1, function(){return "The value of s is "+JXG.toFixed(s.Value(), 2);}]);
+ *   var t2 = t2_board.create('text',[function(x){ return s.Value();}, 1, function(){return "The value of s is "+JXG2.toFixed(s.Value(), 2);}]);
  * </script><pre>
  * @example
  * // Create a text bound to the point A
@@ -1647,7 +1647,7 @@ JXG.extend(
  * </pre><div class="jxgbox" id="JXGff5a64b2-2b9a-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGff5a64b2-2b9a-11e5-8dd9-901b0e1b8723',
+ *         var board = JXG2.JSXGraph.initBoard('JXGff5a64b2-2b9a-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p = board.create('point',[0, 1]),
  *         t = board.create('text',[0, -1,"Hello World"], {anchor: p});
@@ -1657,7 +1657,7 @@ JXG.extend(
  * </script><pre>
  *
  */
-JXG.createText = function (board, parents, attributes) {
+JXG2.createText = function (board, parents, attributes) {
     var t,
         attr = Type.copyAttributes(attributes, board.options, 'text'),
         coords = parents.slice(0, -1),
@@ -1665,7 +1665,7 @@ JXG.createText = function (board, parents, attributes) {
 
     // Backwards compatibility
     attr.anchor = attr.parent || attr.anchor;
-    t = CoordsElement.create(JXG.Text, board, coords, attr, content);
+    t = CoordsElement.create(JXG2.Text, board, coords, attr, content);
 
     if (!t) {
         throw new Error(
@@ -1686,7 +1686,7 @@ JXG.createText = function (board, parents, attributes) {
     return t;
 };
 
-JXG.registerElement("text", JXG.createText);
+JXG2.registerElement("text", JXG2.createText);
 
 /**
  * @class Labels are text objects tied to other elements like points, lines and curves.
@@ -1707,16 +1707,16 @@ JXG.registerElement("text", JXG.createText);
  *
  * @pseudo
  * @name Label
- * @augments JXG.Text
+ * @augments JXG2.Text
  * @constructor
- * @type JXG.Text
+ * @type JXG2.Text
  */
 //  See element.js#createLabel
 
 /**
  * [[x,y], [w px, h px], [range]
  */
-JXG.createHTMLSlider = function (board, parents, attributes) {
+JXG2.createHTMLSlider = function (board, parents, attributes) {
     var t,
         par,
         attr = Type.copyAttributes(attributes, board.options, 'htmlslider');
@@ -1744,7 +1744,7 @@ JXG.createHTMLSlider = function (board, parents, attributes) {
         "</form>"
     ];
 
-    t = JXG.createText(board, par, attr);
+    t = JXG2.createText(board, par, attr);
     t.type = OBJECT_TYPE.HTMLSLIDER;
 
     t.rendNodeForm = t.rendNode.childNodes[0];
@@ -1770,7 +1770,7 @@ JXG.createHTMLSlider = function (board, parents, attributes) {
         t.rendNodeRange.id = t.rendNode.id + "_range";
         t.rendNodeOut.id = t.rendNode.id + "_out";
     } catch (e) {
-        JXG.debug(e);
+        JXG2.debug(e);
     }
 
     t.rendNodeRange.style.width = attr.widthrange + 'px';
@@ -1779,7 +1779,7 @@ JXG.createHTMLSlider = function (board, parents, attributes) {
 
     t._val = parents[1][1];
 
-    if (JXG.supportsVML()) {
+    if (JXG2.supportsVML()) {
         /*
          * OnChange event is used for IE browsers
          * The range element is supported since IE10
@@ -1799,11 +1799,11 @@ JXG.createHTMLSlider = function (board, parents, attributes) {
     return t;
 };
 
-JXG.registerElement("htmlslider", JXG.createHTMLSlider);
+JXG2.registerElement("htmlslider", JXG2.createHTMLSlider);
 
-export default JXG.Text;
+export default JXG2.Text;
 // export default {
-//     Text: JXG.Text,
-//     createText: JXG.createText,
-//     createHTMLSlider: JXG.createHTMLSlider
+//     Text: JXG2.Text,
+//     createText: JXG2.createText,
+//     createHTMLSlider: JXG2.createHTMLSlider
 // };

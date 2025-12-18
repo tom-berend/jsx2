@@ -33,14 +33,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true, bitwise: true*/
 
 /**
  * @fileoverview Utilities for uncompressing and base64 decoding
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 
 // Zip routine constants
 
@@ -86,7 +86,7 @@ var bitReverse = [
     NAMEMAX = 256;
 
 // Util namespace
-JXG.Util = JXG.Util || {};
+JXG2.Util = JXG2.Util || {};
 
 /**
  * @class Unzip class
@@ -98,7 +98,7 @@ JXG.Util = JXG.Util || {};
  * @see http://www.cs.tut.fi/~albert/Dev/gunzip/gunzip.c
  * @see http://www.cs.tut.fi/~albert
  */
-JXG.Util.Unzip = function (barray) {
+JXG2.Util.Unzip = function (barray) {
     var gpflags,
         // SIZE,
         fileout,
@@ -345,7 +345,7 @@ JXG.Util.Unzip = function (barray) {
                 cSum |= readByte() << 8;
 
                 if ((blockLen ^ ~cSum) & 0xffff) {
-                    JXG.debug("BlockLen checksum mismatch\n");
+                    JXG2.debug("BlockLen checksum mismatch\n");
                 }
 
                 while (blockLen--) {
@@ -829,7 +829,7 @@ JXG.Util.Unzip = function (barray) {
 
     }
 
-    JXG.Util.Unzip.prototype.unzipFile = function (name) {
+    JXG2.Util.Unzip.prototype.unzipFile = function (name) {
         var i;
 
         this.unzip();
@@ -843,10 +843,10 @@ JXG.Util.Unzip = function (barray) {
         return "";
     };
 
-    JXG.Util.Unzip.prototype.unzip = function () {
+    JXG2.Util.Unzip.prototype.unzip = function () {
         nextFile();
         return unzipped;
     };
 };
 
-export default JXG.Util;
+export default JXG2.Util;

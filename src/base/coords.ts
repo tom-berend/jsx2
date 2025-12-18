@@ -36,7 +36,7 @@ const dbugColor = `color:black;background-color:white`;
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, AMprocessNode: true, MathJax: true, document: true */
+/*global JXG2: true, define: true, AMprocessNode: true, MathJax: true, document: true */
 /*jslint nomen: true, plusplus: true*/
 
 import type { Board } from './board.js'
@@ -166,7 +166,7 @@ export class Coords extends Events{   // tbtb - should NOT extend event!!
     /**
      * Calculate distance of one point to another.
      * @param {Number} coord_type The type of coordinates used here. Possible values are <b>COORDS_BY.USER</b> and <b>COORDS_BY.SCREEN</b>.
-     * @param {JXG.Coords} coordinates The Coords object to which the distance is calculated.
+     * @param {JXG2.Coords} coordinates The Coords object to which the distance is calculated.
      * @returns {Number} The distance
      */
     distance(coord_type: COORDS_BY, coordinates: Coords): number {
@@ -198,7 +198,7 @@ export class Coords extends Events{   // tbtb - should NOT extend event!!
      * @param {Boolean} [doRound=true] flag If true or null round the coordinates in usr2screen. This is used in smooth curve plotting.
      * The IE needs rounded coordinates. Id doRound==false we have to round in updatePathString.
      * @param {Boolean} [noevent=false]
-     * @returns {JXG.Coords} Reference to the coords object.
+     * @returns {JXG2.Coords} Reference to the coords object.
      */
     setCoordinates(coord_type: COORDS_BY, coordinates: number[], doRound: boolean = true, noevent: boolean = false) {
         var uc = this.usrCoords,
@@ -274,7 +274,7 @@ export class Coords extends Events{   // tbtb - should NOT extend event!!
 
     /**
      * Triggered whenever the coordinates change.
-     * @name JXG.Coords#update
+     * @name JXG2.Coords#update
      * @param {Array} ou Old user coordinates
      * @param {Array} os Old screen coordinates
      * @event

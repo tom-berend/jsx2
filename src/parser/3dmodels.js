@@ -27,20 +27,20 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, Float32Array: true */
+/*global JXG2: true, define: true, Float32Array: true */
 /*jslint nomen: true, plusplus: true, bitwise: true*/
 
 /**
- * @fileoverview In this file the namespace JXG.Parse3D is defined.
+ * @fileoverview In this file the namespace JXG2.Parse3D is defined.
  */
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 // import {Type} from "../utils/type.js";
 
 /**
  * Namespace Parse3D. Contains parsers for 3D models like STL.
  * @namespace
  */
-JXG.Parse3D = {
+JXG2.Parse3D = {
 
     /**
      * Parser for the ASCII STL format, see https://en.wikipedia.org/wiki/STL_(file_format).
@@ -49,7 +49,7 @@ JXG.Parse3D = {
      * @param {String} str String containing STL file format
      * @returns {Array} [[vertices, faces], ...] as list of polyhedra. Each entry is the input for a polyhedron3d.
      * @example
-     *         const board = JXG.JSXGraph.initBoard(
+     *         const board = JXG2.JSXGraph.initBoard(
      *             'jxgbox',
      *             {
      *                 boundingbox: [-8, 8, 8, -8],
@@ -120,7 +120,7 @@ JXG.Parse3D = {
      *   endfacet
      * endsolid m`;
      *
-     * var m = JXG.Parse3D.STL(model);
+     * var m = JXG2.Parse3D.STL(model);
      *
      *  for (let i = 0; i < m.length; i++) {
      *      view.create('polyhedron3d', m[i], {
@@ -142,7 +142,7 @@ JXG.Parse3D = {
      * </pre><div id="JXG8fa8ce22-3613-452f-9775-69588a1c1e34" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG8fa8ce22-3613-452f-9775-69588a1c1e34', {
+     *         var board = JXG2.JSXGraph.initBoard('JXG8fa8ce22-3613-452f-9775-69588a1c1e34', {
      *                     showcopyright: false, shownavigation: false,
      *                     boundingbox: [-8, 8, 8, -8],
      *                     minimizeReflow: 'svg',
@@ -212,7 +212,7 @@ JXG.Parse3D = {
      *       endfacet
      *     endsolid m`;
      *
-     *             var m = JXG.Parse3D.STL(model);
+     *             var m = JXG2.Parse3D.STL(model);
      *
      *  for (let i = 0; i < m.length; i++) {
      *      view.create('polyhedron3d', m[i], {
@@ -268,7 +268,7 @@ JXG.Parse3D = {
                 coords = li.split(' ').slice(1).map((x) => parseFloat(x));
                 found = false;
                 for (j = 0; j < vertices.length; j++) {
-                    if (Geometry.distance(vertices[j], coords, 3) < JXG.JSXMath.eps) {
+                    if (Geometry.distance(vertices[j], coords, 3) < JXG2.JSXMath.eps) {
                         // Debug:
                         // console.log("Point already defined")
                         found = true;
@@ -292,4 +292,4 @@ JXG.Parse3D = {
 };
 
 
-export default JXG.Parse3D;
+export default JXG2.Parse3D;

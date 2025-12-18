@@ -43,7 +43,7 @@
  * @example
  *
  */
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {Type} from "../utils/type.js";
 import {JSXMath} from "../math/math.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
@@ -74,7 +74,7 @@ import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
  * the method circle.Area().
  * <li> prefix expressions (for binary operators)
  * <li> 'exec': call functions. Example: ['exec', 'sin', ['V', slider]] computes 'Math.sin(slider.Value())'.
- * As functions only functions in Math or JXG.Math are allowed.
+ * As functions only functions in Math or JXG2.Math are allowed.
  * </ul>
  * @namespace
  *
@@ -99,7 +99,7 @@ import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
  * var ang = board.create('angle', [[4, 0], [0, 0], [2, 2]]);
  * // Valid prefix expression:  ['V', ang, 'degrees']);
  */
-JXG.PrefixParser = {
+JXG2.PrefixParser = {
     /**
      * Parse a prefix expression and apply an action.
      * @param {array|number} term Expression
@@ -392,4 +392,4 @@ JXG.PrefixParser = {
     }
 };
 
-export default JXG.PrefixParser;
+export default JXG2.PrefixParser;

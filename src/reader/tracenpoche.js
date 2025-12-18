@@ -25,7 +25,7 @@
  and <https://opensource.org/licenses/MIT/>.
  */
 
-JXG.TracenpocheReader = function (board, str) {
+JXG2.TracenpocheReader = function (board, str) {
     this.board = board;
     this.content = str;
 
@@ -800,9 +800,9 @@ JXG.TracenpocheReader = function (board, str) {
         // Set the correct labels and names
         var el;
         for (el in tep) {
-            if (JXG.exists(tep[el].setProperty)) {
+            if (JXG2.exists(tep[el].setProperty)) {
                 tep[el].setAttribute({ name: el });
-                if (JXG.exists(tep[el].label) && JXG.exists(tep[el].label)) {
+                if (JXG2.exists(tep[el].label) && JXG2.exists(tep[el].label)) {
                     tep[el].label.setText(el);
                 }
             }
@@ -813,8 +813,8 @@ JXG.TracenpocheReader = function (board, str) {
     //---------------------------------------------------------------------
     //
     this.prepareString = function (fileStr) {
-        //fileStr = JXG.Util.utf8Decode(fileStr);
-        //fileStr = JXG.GeogebraReader.utf8replace(fileStr);
+        //fileStr = JXG2.Util.utf8Decode(fileStr);
+        //fileStr = JXG2.GeogebraReader.utf8replace(fileStr);
         return fileStr;
     };
 
@@ -907,7 +907,7 @@ JXG.TracenpocheReader = function (board, str) {
         var p1, p2, c, lambda, par3;
 
         par3 = parents[parents.length - 1];
-        if (JXG.isNumber(par3)) {
+        if (JXG2.isNumber(par3)) {
             lambda = function () {
                 return par3;
             };
@@ -935,7 +935,7 @@ JXG.TracenpocheReader = function (board, str) {
             );
         } else if (parents.length == 2) {
             // point on segment
-            if (parents[0].elementClass == JXG.OBJECT_CLASS_LINE) {
+            if (parents[0].elementClass == JXG2.OBJECT_CLASS_LINE) {
                 p1 = parents[0].point1;
                 p2 = parents[0].point2;
                 return this.board.create(
@@ -978,7 +978,7 @@ JXG.TracenpocheReader = function (board, str) {
                 this.handleAtts(attributes)
             );
         } else if (parents.length == 3) {
-            if (JXG.isNumber(parents[2])) {
+            if (JXG2.isNumber(parents[2])) {
                 // line circle
                 parents[2] -= 1;
                 return this.board.create("intersection", parents, this.handleAtts(attributes));
@@ -1136,7 +1136,7 @@ JXG.TracenpocheReader = function (board, str) {
             f = parents[0],
             x = parents[1];
 
-        if (JXG.isNumber(parents[1])) {
+        if (JXG2.isNumber(parents[1])) {
             x = parents[1];
             gli = this.board.create("glider", [x, f.Y(x), f], {
                 fixed: true,
@@ -1144,7 +1144,7 @@ JXG.TracenpocheReader = function (board, str) {
                 withLabel: false
             });
             return this.board.create("tangent", [f, gli], this.handleAtts(attributes));
-        } else if (JXG.exists(parents[1].Value)) {
+        } else if (JXG2.exists(parents[1].Value)) {
             // Fake glider: it needs the properties "position" and "slideObject".
             gli = this.board.create(
                 "point",
@@ -1240,7 +1240,7 @@ JXG.TracenpocheReader = function (board, str) {
     this.homothetie = function (parents, attributes) {
         var c = parents[0],
             a = parents[1];
-        if (JXG.isNumber(a)) {
+        if (JXG2.isNumber(a)) {
             return this.board.create(
                 "transform",
                 [
@@ -1289,7 +1289,7 @@ JXG.TracenpocheReader = function (board, str) {
     };
 
     this.symetrie = function (parents, attributes) {
-        if (parents.length == 1 && JXG.isPoint(parents[0])) {
+        if (parents.length == 1 && JXG2.isPoint(parents[0])) {
             return this.board.create("transform", [Math.PI, parents[0]], {
                 type: "rotate"
             });
@@ -1302,7 +1302,7 @@ JXG.TracenpocheReader = function (board, str) {
 
     this.rotation = function (parents, attributes) {
         var a = parents[1];
-        if (JXG.isNumber(a)) {
+        if (JXG2.isNumber(a)) {
             a = (Math.PI * a) / 180.0;
             return this.board.create("transform", [a, parents[0]], {
                 type: "rotate"
@@ -1353,6 +1353,6 @@ JXG.TracenpocheReader = function (board, str) {
     };
 };
 
-JXG.registerReader(JXG.TracenpocheReader, ["tracenpoche"]);
+JXG2.registerReader(JXG2.TracenpocheReader, ["tracenpoche"]);
 
-export default JXG.TracenpocheReader;
+export default JXG2.TracenpocheReader;

@@ -26,13 +26,13 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
 /**
  * Create axes and rear and front walls of the
  * view3d bounding box bbox3D.
  */
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {Type} from "../utils/type.js";
 
 /**
@@ -52,7 +52,7 @@ import {Type} from "../utils/type.js";
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
  *
  */
-JXG.createAxes3D = function (board, parents, attributes) {
+JXG2.createAxes3D = function (board, parents, attributes) {
     var view = parents[0],
     directions = ["x", "y", "z"],
     suffixAxis = "Axis",
@@ -203,7 +203,7 @@ JXG.createAxes3D = function (board, parents, attributes) {
 
     return axes;
 };
-JXG.registerElement("axes3d", JXG.createAxes3D);
+JXG2.registerElement("axes3d", JXG2.createAxes3D);
 
 /**
  * @class A 3D axis element is a line together with optional ticks and labels.
@@ -220,7 +220,7 @@ JXG.registerElement("axes3d", JXG.createAxes3D);
  * @param {Array_Array} start,end Two arrays of length 3 for the start point and the end point of the axis.
  *
  */
-JXG.createAxis3D = function (board, parents, attributes) {
+JXG2.createAxis3D = function (board, parents, attributes) {
     var view = parents[0],
         attr,
         start = parents[1],
@@ -274,7 +274,7 @@ JXG.createAxis3D = function (board, parents, attributes) {
 
     return el;
 };
-JXG.registerElement("axis3d", JXG.createAxis3D);
+JXG2.registerElement("axis3d", JXG2.createAxis3D);
 
 /**
  * @class Display a rectangular mesh on a 3D plane element.
@@ -295,7 +295,7 @@ JXG.registerElement("axis3d", JXG.createAxis3D);
  * All parameters can be supplied as functions returning an appropriate data type.
  *
  */
-JXG.createMesh3D = function (board, parents, attributes) {
+JXG2.createMesh3D = function (board, parents, attributes) {
     var view = parents[0],
         attr, el;
 
@@ -401,4 +401,4 @@ JXG.createMesh3D = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("mesh3d", JXG.createMesh3D);
+JXG2.registerElement("mesh3d", JXG2.createMesh3D);

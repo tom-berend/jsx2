@@ -29,14 +29,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview Example file for a triangle implemented as a extension to JSXGraph.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import {Type} from "../utils/type.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import Polygon from "../base/polygon.js";
@@ -69,13 +69,13 @@ var priv = {
  * @class Slope triangle to visualize the slope of a tangent to a curve, circle or line.
  * @pseudo
  * @name Slopetriangle
- * @augments JXG.Line
+ * @augments JXG2.Line
  * @constructor
- * @type JXG.Polygon
+ * @type JXG2.Polygon
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
  * Parameter options:
- * @param {JXG.Line} t A tangent based on a glider on some object, e.g. curve, circle, line or turtle.
- * @param {JXG.Line_JXG.Point} li, p A line and a point on that line.
+ * @param {JXG2.Line} t A tangent based on a glider on some object, e.g. curve, circle, line or turtle.
+ * @param {JXG2.Line_JXG.Point} li, p A line and a point on that line.
  *  The user has to take care that the point is a member of the line.
  * @example
  * // Create a slopetriangle on a tangent
@@ -88,7 +88,7 @@ var priv = {
  * </pre><div class="jxgbox" id="JXG951ccb6a-52bc-4dc2-80e9-43db064f0f1b" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function () {
- *   var board = JXG.JSXGraph.initBoard('JXG951ccb6a-52bc-4dc2-80e9-43db064f0f1b', {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXG951ccb6a-52bc-4dc2-80e9-43db064f0f1b', {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright: false, shownavigation: false}),
  *     f = board.create('plot', ['sin(x)']),
  *     g = board.create('glider', [1, 2, f]),
  *     t = board.create('tangent', [g]),
@@ -109,7 +109,7 @@ var priv = {
  * </pre><div class="jxgbox" id="JXGb52f451c-22cf-4677-852a-0bb9d764ee95" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function () {
- *   var board = JXG.JSXGraph.initBoard('JXGb52f451c-22cf-4677-852a-0bb9d764ee95', {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright: false, shownavigation: false}),
+ *   var board = JXG2.JSXGraph.initBoard('JXGb52f451c-22cf-4677-852a-0bb9d764ee95', {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright: false, shownavigation: false}),
  *     p1 = board.create('point', [-2, 3]),
  *     p2 = board.create('point', [2, -3]),
  *     li = board.create('line', [p1, p2]),
@@ -119,7 +119,7 @@ var priv = {
  * })();
  * </script><pre>
  */
-JXG.createSlopeTriangle = function (board, parents, attributes) {
+JXG2.createSlopeTriangle = function (board, parents, attributes) {
     var el, tangent, tglide, glider,
         toppoint, baseline, basepoint,
         label, attr,
@@ -279,8 +279,8 @@ JXG.createSlopeTriangle = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("slopetriangle", JXG.createSlopeTriangle);
+JXG2.registerElement("slopetriangle", JXG2.createSlopeTriangle);
 
 // export default {
-//     createSlopeTriangle: JXG.createSlopeTriangle
+//     createSlopeTriangle: JXG2.createSlopeTriangle
 // };

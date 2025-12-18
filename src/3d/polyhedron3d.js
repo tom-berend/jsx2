@@ -26,17 +26,17 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
 /**
  * Create axes and rear and front walls of the
  * view3d bounding box bbox3D.
  */
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
 
-JXG.Polyhedron3D = function (view, polyhedron, faces, attributes) {
+JXG2.Polyhedron3D = function (view, polyhedron, faces, attributes) {
     var e,
         genericMethods,
         generateMethod,
@@ -118,12 +118,12 @@ JXG.Polyhedron3D = function (view, polyhedron, faces, attributes) {
         addTransform: "addTransform"
     });
 };
-JXG.Polyhedron3D.prototype = new JXG.GeometryElement();
-Type.copyPrototypeMethods(JXG.Polyhedron3D, JXG.GeometryElement3D, 'constructor3D');
+JXG2.Polyhedron3D.prototype = new JXG2.GeometryElement();
+Type.copyPrototypeMethods(JXG2.Polyhedron3D, JXG2.GeometryElement3D, 'constructor3D');
 
-JXG.extend(
-    JXG.Polyhedron3D.prototype,
-    /** @lends JXG.Polyhedron3D.prototype */ {
+JXG2.extend(
+    JXG2.Polyhedron3D.prototype,
+    /** @lends JXG2.Polyhedron3D.prototype */ {
 
         // Already documented in element3d.js
         addTransform: function (el, transform) {
@@ -177,7 +177,7 @@ JXG.extend(
  * be 0-, 1- or 2-dimensional.
  *
  * @name Polyhedron3D
- * @augments JXG.GeometryElement3D
+ * @augments JXG2.GeometryElement3D
  * @constructor
  * @type Object
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
@@ -227,7 +227,7 @@ JXG.extend(
  * </pre><div id="JXG2ab3325b-4171-4a00-9896-a1b886969e18" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG2ab3325b-4171-4a00-9896-a1b886969e18',
+ *         var board = JXG2.JSXGraph.initBoard('JXG2ab3325b-4171-4a00-9896-a1b886969e18',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
  *     var box = [-4, 4];
  *     var view = board.create(
@@ -326,7 +326,7 @@ JXG.extend(
  * </pre><div id="JXG1e862f44-3e38-424b-98d5-f972338a8b7f" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG1e862f44-3e38-424b-98d5-f972338a8b7f',
+ *         var board = JXG2.JSXGraph.initBoard('JXG1e862f44-3e38-424b-98d5-f972338a8b7f',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
  *     var box = [-4, 4];
  *     var view = board.create(
@@ -432,7 +432,7 @@ JXG.extend(
  * </pre><div id="JXG6f27584b-b648-4743-a864-a6c559ead00e" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG6f27584b-b648-4743-a864-a6c559ead00e',
+ *         var board = JXG2.JSXGraph.initBoard('JXG6f27584b-b648-4743-a864-a6c559ead00e',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
  *     var box = [-4, 4];
  *     var view = board.create(
@@ -548,7 +548,7 @@ JXG.extend(
  * </pre><div id="JXGfea93484-96e9-4eb5-9e45-bb53d612aead" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGfea93484-96e9-4eb5-9e45-bb53d612aead',
+ *         var board = JXG2.JSXGraph.initBoard('JXGfea93484-96e9-4eb5-9e45-bb53d612aead',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
  *     var box = [-4, 4];
  *     var view = board.create(
@@ -614,7 +614,7 @@ JXG.extend(
  * </script><pre>
  *
  */
-JXG.createPolyhedron3D = function (board, parents, attributes) {
+JXG2.createPolyhedron3D = function (board, parents, attributes) {
     var view = parents[0],
         i, le,
         face, f,
@@ -680,7 +680,7 @@ JXG.createPolyhedron3D = function (board, parents, attributes) {
         face = view.create('face3d', [polyhedron, i], attr);
         faceList.push(face);
     }
-    el = new JXG.Polyhedron3D(view, polyhedron, faceList, attr_polyhedron);
+    el = new JXG2.Polyhedron3D(view, polyhedron, faceList, attr_polyhedron);
     el.setParents(el); // Sets el as parent to all faces.
     for (i = 0; i < le; i++) {
         el.inherits.push(el.faces[i]);
@@ -697,4 +697,4 @@ JXG.createPolyhedron3D = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("polyhedron3d", JXG.createPolyhedron3D);
+JXG2.registerElement("polyhedron3d", JXG2.createPolyhedron3D);

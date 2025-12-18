@@ -27,17 +27,17 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { JSXMath } from "./math.js";
 import { Type } from "../utils/type.js";
 
-if (JXG.JSXMath === undefined)
-    JXG.JSXMath = {}
+if (JXG2.JSXMath === undefined)
+    JXG2.JSXMath = {}
 
-JXG.JSXMath.DoubleBits = function () {
+JXG2.JSXMath.DoubleBits = function () {
     var DOUBLE_VIEW = new Float64Array(1),
         UINT_VIEW = new Uint32Array(DOUBLE_VIEW.buffer),
         doubleBitsLE,
@@ -145,9 +145,9 @@ JXG.JSXMath.DoubleBits = function () {
     // }
 };
 
-JXG.extend(
-    JXG.JSXMath.DoubleBits.prototype,
-    /** @lends JXG.JSXMath.DoubleBits.prototype */ {
+JXG2.extend(
+    JXG2.JSXMath.DoubleBits.prototype,
+    /** @lends JXG2.JSXMath.DoubleBits.prototype */ {
         sign: function (n) {
             return this.hi(n) >>> 31;
         },
@@ -175,14 +175,14 @@ JXG.extend(
     }
 );
 
-var doubleBits = new JXG.JSXMath.DoubleBits(),
+var doubleBits = new JXG2.JSXMath.DoubleBits(),
     /**
      * Interval for interval arithmetics. Consists of the properties
      * <ul>
      *  <li>lo
      *  <li>hi
      * </ul>
-     * @name JXG.JSXMath.Interval
+     * @name JXG2.JSXMath.Interval
      * @type Object
      */
     MatInterval = function (lo, hi) {
@@ -193,7 +193,7 @@ var doubleBits = new JXG.JSXMath.DoubleBits(),
             if (JSXMath.IntervalArithmetic.isInterval(lo)) {
                 if (!JSXMath.IntervalArithmetic.isSingleton(lo)) {
                     throw new TypeError(
-                        "JXG.JSXMath.IntervalArithmetic: interval `lo` must be a singleton"
+                        "JXG2.JSXMath.IntervalArithmetic: interval `lo` must be a singleton"
                     );
                 }
                 this.lo = lo.lo;
@@ -203,7 +203,7 @@ var doubleBits = new JXG.JSXMath.DoubleBits(),
             if (JSXMath.IntervalArithmetic.isInterval(hi)) {
                 if (!JSXMath.IntervalArithmetic.isSingleton(hi)) {
                     throw new TypeError(
-                        "JXG.JSXMath.IntervalArithmetic: interval `hi` must be a singleton"
+                        "JXG2.JSXMath.IntervalArithmetic: interval `hi` must be a singleton"
                     );
                 }
                 this.hi = hi.hi;
@@ -227,7 +227,7 @@ var doubleBits = new JXG.JSXMath.DoubleBits(),
         }
     };
 
-JXG.extend(MatInterval.prototype, {
+JXG2.extend(MatInterval.prototype, {
     print: function () {
         console.log("[", this.lo, this.hi, "]");
     },
@@ -248,7 +248,7 @@ JXG.extend(MatInterval.prototype, {
 
     assign: function (lo, hi) {
         if (typeof lo !== "number" || typeof hi !== 'number') {
-            throw new TypeError("JXG.JSXMath.Interval#assign: arguments must be numbers");
+            throw new TypeError("JXG2.JSXMath.Interval#assign: arguments must be numbers");
         }
         if (isNaN(lo) || isNaN(hi) || lo > hi) {
             return this.setEmpty();
@@ -287,9 +287,9 @@ JXG.extend(MatInterval.prototype, {
 
 /**
  * Object for interval arithmetics.
- * @name JXG.JSXMath.IntervalArithmetic
+ * @name JXG2.JSXMath.IntervalArithmetic
  * @namespace
- * @exports JSXMath.IntervalArithmetic as JXG.JSXMath.IntervalArithmetic
+ * @exports JSXMath.IntervalArithmetic as JXG2.JSXMath.IntervalArithmetic
  *
  * @description
  * Interval arithmetic is a technique used to mitigate rounding and measurement errors in mathematical computation
@@ -301,16 +301,16 @@ JXG.extend(MatInterval.prototype, {
  * so 0.9995 ≤ L ≤ 1.0005, the other nominally as W=2 so the interval is [1.9995, 2.0005].
  *
  * <pre>
- * let L = JXG.JSXMath.IntervalArithmetic.Interval(0.9995, 1.0005)
- * let W = JXG.JSXMath.IntervalArithmetic.Interval(1.9995, 2.0005)
+ * let L = JXG2.JSXMath.IntervalArithmetic.Interval(0.9995, 1.0005)
+ * let W = JXG2.JSXMath.IntervalArithmetic.Interval(1.9995, 2.0005)
  *
- * let A = JXG.JSXMath.IntervalArithmetic.mul(L, W)
+ * let A = JXG2.JSXMath.IntervalArithmetic.mul(L, W)
  *
  * console.log('area:', A) // {hi: 2.0015002500000003, lo: 1.99850025}
  * </pre>
  *
  */
-JXG.JSXMath.IntervalArithmetic = {
+JXG2.JSXMath.IntervalArithmetic = {
     Interval: function (lo, hi) {
         return new MatInterval(lo, hi);
     },
@@ -335,9 +335,9 @@ JXG.JSXMath.IntervalArithmetic = {
     /**
      * Addition
      *
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @param {JXG.JSXMath.Interval|Number} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @param {JXG2.JSXMath.Interval|Number} y
+     * @returns JXG2.JSXMath.Interval
      */
     add: function (x, y) {
         if (Type.isNumber(x)) {
@@ -352,9 +352,9 @@ JXG.JSXMath.IntervalArithmetic = {
     /**
      * Subtraction
      *
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @param {JXG.JSXMath.Interval|Number} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @param {JXG2.JSXMath.Interval|Number} y
+     * @returns JXG2.JSXMath.Interval
      */
     sub: function (x, y) {
         if (Type.isNumber(x)) {
@@ -369,9 +369,9 @@ JXG.JSXMath.IntervalArithmetic = {
     /**
      * Multiplication
      *
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @param {JXG.JSXMath.Interval|Number} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @param {JXG2.JSXMath.Interval|Number} y
+     * @returns JXG2.JSXMath.Interval
      */
     mul: function (x, y) {
         var xl, xh, yl, yh, out;
@@ -473,9 +473,9 @@ JXG.JSXMath.IntervalArithmetic = {
     /**
      * Division
      *
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @param {JXG.JSXMath.Interval|Number} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @param {JXG2.JSXMath.Interval|Number} y
+     * @returns JXG2.JSXMath.Interval
      */
     div: function (x, y) {
         if (Type.isNumber(x)) {
@@ -506,8 +506,8 @@ JXG.JSXMath.IntervalArithmetic = {
     /**
      * Return +x (i.e. identity)
      *
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     positive: function (x) {
         return new MatInterval(x.lo, x.hi);
@@ -516,8 +516,8 @@ JXG.JSXMath.IntervalArithmetic = {
     /**
      * Return -x
      *
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     negative: function (x) {
         if (Type.isNumber(x)) {
@@ -532,7 +532,7 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Test if interval is empty set.
-     * @param {JXG.JSXMath.Interval} i
+     * @param {JXG2.JSXMath.Interval} i
      * @returns Boolean
      */
     isEmpty: function (i) {
@@ -541,7 +541,7 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Test if interval is (-Infinity, Infinity).
-     * @param {JXG.JSXMath.Interval} i
+     * @param {JXG2.JSXMath.Interval} i
      * @returns Boolean
      */
     isWhole: function (i) {
@@ -550,7 +550,7 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Test if interval contains 0.
-     * @param {JXG.JSXMath.Interval} i
+     * @param {JXG2.JSXMath.Interval} i
      * @returns Boolean
      */
     zeroIn: function (i) {
@@ -559,7 +559,7 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Test if interval contains a specific value.
-     * @param {JXG.JSXMath.Interval} i
+     * @param {JXG2.JSXMath.Interval} i
      * @param {Number} value
      * @returns Boolean
      */
@@ -572,8 +572,8 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Test if interval x contains interval y.
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
     hasInterval: function (x, y) {
@@ -585,8 +585,8 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Test if intervals x and y have non-zero intersection.
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
     intervalsOverlap: function (x, y) {
@@ -601,9 +601,9 @@ JXG.JSXMath.IntervalArithmetic = {
      */
     /**
      * @private
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
+     * @returns JXG2.JSXMath.Interval
      */
     divNonZero: function (x, y) {
         var xl = x.lo,
@@ -642,9 +642,9 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * @private
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
+     * @returns JXG2.JSXMath.Interval
      */
     divPositive: function (x, v) {
         if (x.lo === 0 && x.hi === 0) {
@@ -666,9 +666,9 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * @private
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
+     * @returns JXG2.JSXMath.Interval
      */
     divNegative: function (x, v) {
         if (x.lo === 0 && x.hi === 0) {
@@ -690,8 +690,8 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * @private
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     divZero: function (x) {
         if (x.lo === 0 && x.hi === 0) {
@@ -705,9 +705,9 @@ JXG.JSXMath.IntervalArithmetic = {
      */
     /**
      * x mod y:  x - n * y
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @param {JXG.JSXMath.Interval|Number} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @param {JXG2.JSXMath.Interval|Number} y
+     * @returns JXG2.JSXMath.Interval
      */
     fmod: function (x, y) {
         var yb, n;
@@ -733,8 +733,8 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * 1 / x
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @returns JXG2.JSXMath.Interval
      */
     multiplicativeInverse: function (x) {
         if (Type.isNumber(x)) {
@@ -765,9 +765,9 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * x<sup>power</sup>
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @param {JXG.JSXMath.Interval|Number} power
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @param {JXG2.JSXMath.Interval|Number} power
+     * @returns JXG2.JSXMath.Interval
      */
     pow: function (x, power) {
         var yl, yh;
@@ -835,8 +835,8 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * sqrt(x)
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @returns JXG2.JSXMath.Interval
      */
     sqrt: function (x) {
         if (Type.isNumber(x)) {
@@ -847,9 +847,9 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * x<sup>1/n</sup>
-     * @param {JXG.JSXMath.Interval|Number} x
+     * @param {JXG2.JSXMath.Interval|Number} x
      * @param {Number} n
-     * @returns JXG.JSXMath.Interval
+     * @returns JXG2.JSXMath.Interval
      */
     nthRoot: function (x, n) {
         var power, yl, yh, yp, yn;
@@ -904,8 +904,8 @@ JXG.JSXMath.IntervalArithmetic = {
      */
     /**
      *
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @returns JXG2.JSXMath.Interval
      */
     exp: function (x) {
         if (Type.isNumber(x)) {
@@ -919,8 +919,8 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Natural log
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @returns JXG2.JSXMath.Interval
      */
     log: function (x) {
         var l;
@@ -935,9 +935,9 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * Natural log, alias for {@link JXG.JSXMath.IntervalArithmetic#log}.
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @returns JXG.JSXMath.Interval
+     * Natural log, alias for {@link JXG2.JSXMath.IntervalArithmetic#log}.
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @returns JXG2.JSXMath.Interval
      */
     ln: function (x) {
         return this.log(x);
@@ -947,8 +947,8 @@ JXG.JSXMath.IntervalArithmetic = {
     // export const LOG_EXP_2 = log(new MatInterval(2, 2))
     /**
      * Logarithm to base 10.
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @returns JXG2.JSXMath.Interval
      */
     log10: function (x) {
         if (this.isEmpty(x)) {
@@ -959,8 +959,8 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Logarithm to base 2.
-     * @param {JXG.JSXMath.Interval|Number} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval|Number} x
+     * @returns JXG2.JSXMath.Interval
      */
     log2: function (x) {
         if (this.isEmpty(x)) {
@@ -971,9 +971,9 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Hull of intervals x and y
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
+     * @returns JXG2.JSXMath.Interval
      */
     hull: function (x, y) {
         var badX = this.isEmpty(x),
@@ -992,9 +992,9 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Intersection of intervals x and y
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
+     * @returns JXG2.JSXMath.Interval
      */
     intersection: function (x, y) {
         var lo, hi;
@@ -1011,9 +1011,9 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Union of overlapping intervals x and y
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
+     * @returns JXG2.JSXMath.Interval
      */
     union: function (x, y) {
         if (!this.intervalsOverlap(x, y)) {
@@ -1024,9 +1024,9 @@ JXG.JSXMath.IntervalArithmetic = {
 
     /**
      * Difference of overlapping intervals x and y
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
+     * @returns JXG2.JSXMath.Interval
      */
     difference: function (x, y) {
         if (this.isEmpty(x) || this.isWhole(y)) {
@@ -1060,8 +1060,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     width: function (x) {
         if (this.isEmpty(x)) {
@@ -1071,8 +1071,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     abs: function (x) {
         if (Type.isNumber(x)) {
@@ -1091,9 +1091,9 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
+     * @returns JXG2.JSXMath.Interval
      */
     max: function (x, y) {
         var badX = this.isEmpty(x),
@@ -1111,9 +1111,9 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
+     * @returns JXG2.JSXMath.Interval
      */
     min: function (x, y) {
         var badX = this.isEmpty(x),
@@ -1153,8 +1153,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     cos: function (x) {
         var cache, pi2, t, cosv, lo, hi, rlo, rhi;
@@ -1200,8 +1200,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     sin: function (x) {
         if (this.isEmpty(x) || this.onlyInfinity(x)) {
@@ -1211,8 +1211,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     tan: function (x) {
         var cache, t, pi;
@@ -1236,8 +1236,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     asin: function (x) {
         var lo, hi;
@@ -1250,8 +1250,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     acos: function (x) {
         var lo, hi;
@@ -1264,8 +1264,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     acot: function (x) {
         if (this.isEmpty(x)) {
@@ -1275,8 +1275,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     atan: function (x) {
         if (this.isEmpty(x)) {
@@ -1286,8 +1286,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     sinh: function (x) {
         if (this.isEmpty(x)) {
@@ -1297,8 +1297,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     cosh: function (x) {
         if (this.isEmpty(x)) {
@@ -1314,8 +1314,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @returns JXG.JSXMath.Interval
+     * @param {JXG2.JSXMath.Interval} x
+     * @returns JXG2.JSXMath.Interval
      */
     tanh: function (x) {
         if (this.isEmpty(x)) {
@@ -1329,8 +1329,8 @@ JXG.JSXMath.IntervalArithmetic = {
      */
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
     equal: function (x, y) {
@@ -1348,8 +1348,8 @@ JXG.JSXMath.IntervalArithmetic = {
     // },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
     notEqual: function (x, y) {
@@ -1360,8 +1360,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
     lt: function (x, y) {
@@ -1378,8 +1378,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
     gt: function (x, y) {
@@ -1396,8 +1396,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
     leq: function (x, y) {
@@ -1414,8 +1414,8 @@ JXG.JSXMath.IntervalArithmetic = {
     },
 
     /**
-     * @param {JXG.JSXMath.Interval} x
-     * @param {JXG.JSXMath.Interval} y
+     * @param {JXG2.JSXMath.Interval} x
+     * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
     geq: function (x, y) {
@@ -1687,21 +1687,21 @@ JXG.JSXMath.IntervalArithmetic = {
 };
 
 ///////// tbtb where does pilow and similar belong?
-// JXG.JSXMath.IntervalArithmetic.PI = new MatInterval(
+// JXG2.JSXMath.IntervalArithmetic.PI = new MatInterval(
 //     JSXMath.IntervalArithmetic.piLow,
 //     JSXMath.IntervalArithmetic.piHigh
 // );
-// JXG.JSXMath.IntervalArithmetic.PI_HALF = new MatInterval(
+// JXG2.JSXMath.IntervalArithmetic.PI_HALF = new MatInterval(
 //     JSXMath.IntervalArithmetic.piHalfLow,
 //     JSXMath.IntervalArithmetic.piHalfHigh
 // );
-// JXG.JSXMath.IntervalArithmetic.PI_TWICE = new MatInterval(
+// JXG2.JSXMath.IntervalArithmetic.PI_TWICE = new MatInterval(
 //     JSXMath.IntervalArithmetic.piTwiceLow,
 //     JSXMath.IntervalArithmetic.piTwiceHigh
 // );
-// JXG.JSXMath.IntervalArithmetic.ZERO = new MatInterval(0);
-// JXG.JSXMath.IntervalArithmetic.ONE = new MatInterval(1);
-// JXG.JSXMath.IntervalArithmetic.WHOLE = new MatInterval().setWhole();
-// JXG.JSXMath.IntervalArithmetic.EMPTY = new MatInterval().setEmpty();
+// JXG2.JSXMath.IntervalArithmetic.ZERO = new MatInterval(0);
+// JXG2.JSXMath.IntervalArithmetic.ONE = new MatInterval(1);
+// JXG2.JSXMath.IntervalArithmetic.WHOLE = new MatInterval().setWhole();
+// JXG2.JSXMath.IntervalArithmetic.EMPTY = new MatInterval().setEmpty();
 
-export default JXG.JSXMath.IntervalArithmetic;
+export default JXG2.JSXMath.IntervalArithmetic;

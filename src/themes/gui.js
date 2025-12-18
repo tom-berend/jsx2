@@ -1,4 +1,4 @@
-JXG.Options = JXG.merge(JXG.Options, {
+JXG2.Options = JXG2.merge(JXG2.Options, {
     //renderer: 'canvas',
     device: "tablet",
     opacityLevel: 0.5,
@@ -303,9 +303,9 @@ JXG.Options = JXG.merge(JXG.Options, {
 */
 });
 
-if (JXG.isAndroid() || JXG.isApple()) {
-    JXG.Options.curve.RDPsmoothing = false;
-    JXG.Options.curve.numberPointsHigh = 600;
-    JXG.Options.curve.numberPointsLow = 100;
-    JXG.Options.curve.doAdvancedPlot = true;
+if (JXG2.isAndroid() || JXG2.isApple()) {
+    JXG2.Options.curve.RDPsmoothing = false;
+    JXG2.Options.curve.numberPointsHigh = 600;
+    JXG2.Options.curve.numberPointsLow = 100;
+    JXG2.Options.curve.doAdvancedPlot = true;
 }

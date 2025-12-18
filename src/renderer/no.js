@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, AMprocessNode: true, MathJax: true, document: true */
+/*global JXG2: true, define: true, AMprocessNode: true, MathJax: true, document: true */
 /*jslint nomen: true, plusplus: true, newcap:true, unparam: true*/
 /*eslint no-unused-vars: "off"*/
 
@@ -41,22 +41,22 @@
  * renderers is the class AbstractRenderer.
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {AbstractRenderer} from "./abstract.js";
 
 /**
  * This renderer draws nothing. It is intended to be used in environments where none of our rendering engines
  * are available, e.g. WebWorkers. All methods are empty.
  *
- * @class JXG.NoRenderer
- * @augments JXG.AbstractRenderer
- * @see JXG.AbstractRenderer
+ * @class JXG2.NoRenderer
+ * @augments JXG2.AbstractRenderer
+ * @see JXG2.AbstractRenderer
  */
-JXG.NoRenderer = function () {
+JXG2.NoRenderer = function () {
     /**
      * If this property is set to <tt>true</tt> the visual properties of the elements are updated
      * on every update. Visual properties means: All the stuff stored in the
-     * {@link JXG.GeometryElement#visProp} property won't be set if enhancedRendering is <tt>false</tt>
+     * {@link JXG2.GeometryElement#visProp} property won't be set if enhancedRendering is <tt>false</tt>
      * @type Boolean
      * @default true
      */
@@ -72,11 +72,11 @@ JXG.NoRenderer = function () {
     this.type = 'no';
 };
 
-JXG.extend(
-    JXG.NoRenderer.prototype,
-    /** @lends JXG.NoRenderer.prototype */ {
+JXG2.extend(
+    JXG2.NoRenderer.prototype,
+    /** @lends JXG2.NoRenderer.prototype */ {
 
-        // All methods are already documented in JXG.AbstractRenderer
+        // All methods are already documented in JXG2.AbstractRenderer
 
         /* ********* Point related stuff *********** */
 
@@ -217,6 +217,6 @@ JXG.extend(
 /**
  * @ignore
  */
-JXG.NoRenderer.prototype = new AbstractRenderer();
+JXG2.NoRenderer.prototype = new AbstractRenderer();
 
-export default JXG.NoRenderer;
+export default JXG2.NoRenderer;

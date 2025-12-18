@@ -1,4 +1,4 @@
-import JXG
+import JXG2
 
 class JXGServerModule(object):
 

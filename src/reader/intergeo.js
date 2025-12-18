@@ -29,23 +29,23 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true*/
+/*global JXG2: true*/
 /*jslint nomen: true, plusplus: true*/
 
 (function () {
     "use strict";
 
-    JXG.IntergeoReader = function (board, str) {
+    JXG2.IntergeoReader = function (board, str) {
         var xmlStr;
 
         this.board = board;
         xmlStr = this.prepareString(str);
-        this.tree = JXG.XML.parse(xmlStr);
+        this.tree = JXG2.XML.parse(xmlStr);
     };
 
-    JXG.extend(
-        JXG.IntergeoReader.prototype,
-        /** @lends JXG.IntergeoReader.prototype */ {
+    JXG2.extend(
+        JXG2.IntergeoReader.prototype,
+        /** @lends JXG2.IntergeoReader.prototype */ {
             /**
              * this.objects holds all objects from the XML file.
              * Every object gets an attribute "exists"
@@ -93,7 +93,7 @@
                     //} else if (node.nodeName === 'polygon') {
                     // ignore, see this.addPolygonByVertices
                 } else {
-                    JXG.debug(
+                    JXG2.debug(
                         "Not implemented: " + node.nodeName + " " + node.getAttribute('id')
                     );
                 }
@@ -141,7 +141,7 @@
                                 }
                             } else {
                                 // <complex>
-                                JXG.debug("Not implemented: " + p.childNodes[j].nodeName);
+                                JXG2.debug("Not implemented: " + p.childNodes[j].nodeName);
                                 return;
                             }
                         }
@@ -163,7 +163,7 @@
                         parents = [c[4], c[0], c[2]];
                     } else {
                         // <complex>
-                        JXG.debug("type not supported, yet");
+                        JXG2.debug("type not supported, yet");
                         return;
                     }
                     // the latter one is a workaround for faulty i2g construction exported by DynaGeo
@@ -193,7 +193,7 @@
                     }
                     parents = [c[0] * Math.cos(c[1]), c[0] * Math.sin(c[1])];
                 } else {
-                    JXG.debug("This coordinate type is not yet implemented: " + p.nodeName);
+                    JXG2.debug("This coordinate type is not yet implemented: " + p.nodeName);
                     return;
                 }
 
@@ -395,7 +395,7 @@
                     // do nothing
                 } else {
                     param = this.readParams(node);
-                    JXG.debug(
+                    JXG2.debug(
                         "readConstraints: not implemented: " + node.nodeName + ": " + param[0]
                     );
                 }
@@ -491,7 +491,7 @@
                             } else if (this.objects[p].i2geoType === 'conic') {
                                 this.addConic(this.objects[p]);
                             } else {
-                                JXG.debug(
+                                JXG2.debug(
                                     "forgotten: " +
                                         this.objects[p].id +
                                         " of type " +
@@ -1035,23 +1035,23 @@
 
                 if (
                     fileStr.slice(0, 2) === "PK" ||
-                    JXG.Util.UTF8.asciiCharCodeAt(fileStr.slice(0, 1), 0) === 31
+                    JXG2.Util.UTF8.asciiCharCodeAt(fileStr.slice(0, 1), 0) === 31
                 ) {
                     isZip = true;
                 }
 
                 // It's not a zip file but it doesn't start with '<' either -> base64!
                 if (!isZip && fileStr.indexOf("<") !== 0) {
-                    fileStr = JXG.Util.Base64.decode(fileStr);
+                    fileStr = JXG2.Util.Base64.decode(fileStr);
                 }
 
                 if (fileStr.indexOf("<") !== 0) {
                     //binary = false;
                     for (i = 0; i < fileStr.length; i++) {
-                        bA[i] = JXG.Util.UTF8.asciiCharCodeAt(fileStr, i);
+                        bA[i] = JXG2.Util.UTF8.asciiCharCodeAt(fileStr, i);
                     }
 
-                    fileStr = new JXG.Util.Unzip(bA).unzipFile("construction/intergeo.xml");
+                    fileStr = new JXG2.Util.Unzip(bA).unzipFile("construction/intergeo.xml");
                     // Extract "construction/intergeo.xml" from
                     // the zip-archive in bA.
                 }
@@ -1118,7 +1118,7 @@
                                     // Setting size to 1 is missing
                                     val = 'o'
                                 } else {
-                                    JXG.debug("Display: not implemented" + node.nodeName);
+                                    JXG2.debug("Display: not implemented" + node.nodeName);
                                     // Missing:
                                     // circumference, image
                                 }
@@ -1128,14 +1128,14 @@
                     }
                     el.setAttribute(prop);
                 } else {
-                    JXG.debug("Display: not implemented" + node.nodeName);
+                    JXG2.debug("Display: not implemented" + node.nodeName);
                 }
             },
 
             readDisplay: function (tree) {
                 var s;
 
-                if (!JXG.exists(tree) || !JXG.isArray(tree)) {
+                if (!JXG2.exists(tree) || !JXG2.isArray(tree)) {
                     return;
                 }
 
@@ -1146,5 +1146,5 @@
         }
     );
 
-    JXG.registerReader(JXG.IntergeoReader, ["i2g", "xml", "intergeo"]);
+    JXG2.registerReader(JXG2.IntergeoReader, ["i2g", "xml", "intergeo"]);
 })();

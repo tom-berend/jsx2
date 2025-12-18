@@ -1,5 +1,5 @@
 from JXGServerModule import JXGServerModule
-import JXG
+import JXG2
 import urllib.request, urllib.error, urllib.parse, http.client, io, gzip
 import datetime, math, random
 
@@ -61,7 +61,7 @@ class YahooFinance(JXGServerModule):
         else:
             smax = self.daxmax
             smin = self.daxmin
-        
+
         diff = smax - smin
         base = smin + diff/2. * (1. + math.sin(datetime.datetime.now().second * 2*math.pi))
         price = base + random.uniform(-diff/60., diff/60.)
@@ -75,7 +75,7 @@ class YahooFinance(JXGServerModule):
         else:
             smax = self.daxmax
             smin = self.daxmin
-        
+
         resp.addData('max', smax)
         resp.addData('min', smin)
         return

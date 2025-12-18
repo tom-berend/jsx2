@@ -26,14 +26,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview Implementation of vector fields and slope fields.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import {Type} from "../utils/type.js";
 
 /**
@@ -44,9 +44,9 @@ import {Type} from "../utils/type.js";
  *
  * @pseudo
  * @name Vectorfield
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
  * Parameter options:
  * @param {Array|Function|String} F Either an array containing two functions f1(x, y) and f2(x, y) or function f(x, y) returning an array of length 2.
@@ -69,7 +69,7 @@ import {Type} from "../utils/type.js";
  * </pre><div id="JXGa2040e30-48ea-47d4-9840-bd24cd49150b" class="jxgbox" style="width: 500px; height: 500px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGa2040e30-48ea-47d4-9840-bd24cd49150b',
+ *         var board = JXG2.JSXGraph.initBoard('JXGa2040e30-48ea-47d4-9840-bd24cd49150b',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     // Defining functions
  *     var fx = (x, y) => Math.sin(y);
@@ -114,7 +114,7 @@ import {Type} from "../utils/type.js";
  * </pre><div id="JXG9196337e-66f0-4d09-8065-11d88c4ff140" class="jxgbox" style="width: 500px; height: 500px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG9196337e-66f0-4d09-8065-11d88c4ff140',
+ *         var board = JXG2.JSXGraph.initBoard('JXG9196337e-66f0-4d09-8065-11d88c4ff140',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     // Slider to control length of vectors
  *     var s = board.create('slider', [[-3, 7], [3, 7], [0, 0.33, 1]], {name: 'length'});
@@ -146,7 +146,7 @@ import {Type} from "../utils/type.js";
  * </script><pre>
  *
  */
-JXG.createVectorField = function (board, parents, attributes) {
+JXG2.createVectorField = function (board, parents, attributes) {
     var el, attr;
 
     if (!(parents.length >= 3 &&
@@ -165,7 +165,7 @@ JXG.createVectorField = function (board, parents, attributes) {
     attr = Type.copyAttributes(attributes, board.options, 'vectorfield');
 
     /**
-     * @type {JXG.Curve}
+     * @type {JXG2.Curve}
      * @ignore
      */
     el = board.create('curve', [[], []], attr);
@@ -260,7 +260,7 @@ JXG.createVectorField = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("vectorfield", JXG.createVectorField);
+JXG2.registerElement("vectorfield", JXG2.createVectorField);
 
 /**
  * @class A slope field is a graphical representation of the solutions
@@ -272,7 +272,7 @@ JXG.registerElement("vectorfield", JXG.createVectorField);
  * @name Slopefield
  * @augments Vectorfield
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
  * Parameter options:
  * @param {Function|String} F Function f(x, y) returning a number.
@@ -290,7 +290,7 @@ JXG.registerElement("vectorfield", JXG.createVectorField);
  * </pre><div id="JXG8a2ee562-eea1-4ce0-91ca-46b71fc7543d" class="jxgbox" style="width: 500px; height: 500px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG8a2ee562-eea1-4ce0-91ca-46b71fc7543d',
+ *         var board = JXG2.JSXGraph.initBoard('JXG8a2ee562-eea1-4ce0-91ca-46b71fc7543d',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var field = board.create('slopefield', [
  *         (x, y) => x * x - x - 2,
@@ -328,7 +328,7 @@ JXG.registerElement("vectorfield", JXG.createVectorField);
  * </pre><div id="JXG1ec9e4d7-6094-4d2b-b72f-4efddd514f55" class="jxgbox" style="width: 500px; height: 500px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG1ec9e4d7-6094-4d2b-b72f-4efddd514f55',
+ *         var board = JXG2.JSXGraph.initBoard('JXG1ec9e4d7-6094-4d2b-b72f-4efddd514f55',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     // Slider to control length of vectors
  *     var s = board.create('slider', [[-3, 7], [3, 7], [0, 0.33, 1]], {name: 'length'});
@@ -358,7 +358,7 @@ JXG.registerElement("vectorfield", JXG.createVectorField);
  * </script><pre>
  *
  */
-JXG.createSlopeField = function (board, parents, attributes) {
+JXG2.createSlopeField = function (board, parents, attributes) {
     var el, f, attr;
 
     if (!(parents.length >= 3 &&
@@ -382,7 +382,7 @@ JXG.createSlopeField = function (board, parents, attributes) {
     };
     attr = Type.copyAttributes(attributes, board.options, 'slopefield');
     /**
-     * @type {JXG.Curve}
+     * @type {JXG2.Curve}
      * @ignore
      */
     el = board.create('vectorfield', parents, attr);
@@ -420,4 +420,4 @@ JXG.createSlopeField = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("slopefield", JXG.createSlopeField);
+JXG2.registerElement("slopefield", JXG2.createSlopeField);

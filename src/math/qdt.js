@@ -29,10 +29,10 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import {JSXMath} from "./math.js";
 import {Geometry} from "./geometry.js";
 import { Type } from "../utils/type.js";
@@ -41,14 +41,14 @@ import { Type } from "../utils/type.js";
  * Instantiate a new quadtree.
  *
  * @name Geometry.Quadtree
- * @exports JXG.JSXMath.Quadtree as Geometry.Quadtree
+ * @exports JXG2.JSXMath.Quadtree as Geometry.Quadtree
  * @param {Array} bbox Bounding box of the new quad (sub)tree.
  * @param {Object} config Configuration object. Default value: to {capacity: 10}
  * @param {Object} [parent] Parent object or null if root.
  *
  * @constructor
  */
-JXG.JSXMath.Quadtree = function (bbox, config={capacity:10}, parent=null) {
+JXG2.JSXMath.Quadtree = function (bbox, config={capacity:10}, parent=null) {
     config = config || {
         capacity: 10,
         pointType: 'coords'
@@ -130,8 +130,8 @@ JXG.JSXMath.Quadtree = function (bbox, config={capacity:10}, parent=null) {
 
 };
 
-JXG.extend(
-    JXG.JSXMath.Quadtree.prototype,
+JXG2.extend(
+    JXG2.JSXMath.Quadtree.prototype,
     /** @lends Geometry.Quadtree.prototype */ {
         /**
          * Checks if the given coordinates are inside of the boundaries of the quadtree.
@@ -150,7 +150,7 @@ JXG.extend(
          * Insert a new point into this quadtree if it is inside of
          * the quadtree's boundaries.
          *
-         * @param {JXG.Coords} p
+         * @param {JXG2.Coords} p
          * @returns {Boolean} true if insert succeeded, false otherwise.
          */
         insert: function (p) {
@@ -200,10 +200,10 @@ JXG.extend(
                 cx = this.xlb + (this.xub - this.xlb) * 0.5,
                 cy = this.ylb + (this.yub - this.ylb) * 0.5;
 
-            this.northWest = new JXG.JSXMath.Quadtree([this.xlb, this.yub, cx, cy], this.config, this);
-            this.northEast = new JXG.JSXMath.Quadtree([cx, this.yub, this.xub, cy], this.config, this);
-            this.southEast = new JXG.JSXMath.Quadtree([this.xlb, cy, cx, this.ylb], this.config, this);
-            this.southWest = new JXG.JSXMath.Quadtree([cx, cy, this.xub, this.ylb], this.config, this);
+            this.northWest = new JXG2.JSXMath.Quadtree([this.xlb, this.yub, cx, cy], this.config, this);
+            this.northEast = new JXG2.JSXMath.Quadtree([cx, this.yub, this.xub, cy], this.config, this);
+            this.southEast = new JXG2.JSXMath.Quadtree([this.xlb, cy, cx, this.ylb], this.config, this);
+            this.southWest = new JXG2.JSXMath.Quadtree([cx, cy, this.xub, this.ylb], this.config, this);
 
             // for (i = 0; i < le; i++) {
             //     if (this.northWest.insert(this.points[i])) { continue; }
@@ -218,7 +218,7 @@ JXG.extend(
          * @name Geometry.Quadtree#_query
          * @param {Number} x
          * @param {Number} y
-         * @returns {Boolean|JXG.Quadtree} The quadtree if the point is found, false
+         * @returns {Boolean|JXG2.Quadtree} The quadtree if the point is found, false
          * if none of the quadtrees contains the point (i.e. the point is not inside
          * the root tree's AABB,i.e. axis-aligned bounding box).
          * @private
@@ -258,9 +258,9 @@ JXG.extend(
         /**
          * Retrieve the smallest quad tree that contains the given coordinate pair.
          * @name Geometry.Quadtree#query
-         * @param {JXG.Coords|Number} xp
+         * @param {JXG2.Coords|Number} xp
          * @param {Number} y
-         * @returns {Boolean|JXG.Quadtree} The quadtree if the point is found, false
+         * @returns {Boolean|JXG2.Quadtree} The quadtree if the point is found, false
          * if none of the quadtrees contains the point (i.e. the point is not inside
          * the root tree's AABB (Axis-Aligned Bounding Box)).
          */
@@ -369,4 +369,4 @@ JXG.extend(
     }
 );
 
-export default JXG.JSXMath.Quadtree;
+export default JXG2.JSXMath.Quadtree;

@@ -1,5 +1,5 @@
 from JXGServerModule import JXGServerModule
-import JXG
+import JXG2
 
 import numpy
 import os

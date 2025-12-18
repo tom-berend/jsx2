@@ -27,9 +27,9 @@
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
     and <https://opensource.org/licenses/MIT/>.
  */
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Type} from "../utils/type.js";
 import {JSXMath} from "../math/math.js";
@@ -40,24 +40,24 @@ import {Geometry} from "../math/geometry.js";
  * A sphere consists of all points with a given distance from a given point.
  * The given point is called the center, and the given distance is called the radius.
  * A sphere can be constructed by providing a center and a point on the sphere or a center and a radius (given as a number or function).
- * @class Creates a new 3D sphere object. Do not use this constructor to create a 3D sphere. Use {@link JXG.View3D#create} with
+ * @class Creates a new 3D sphere object. Do not use this constructor to create a 3D sphere. Use {@link JXG2.View3D#create} with
  * type {@link Sphere3D} instead.
- * @augments JXG.GeometryElement3D
- * @augments JXG.GeometryElement
- * @param {JXG.View3D} view The 3D view the sphere is drawn on.
+ * @augments JXG2.GeometryElement3D
+ * @augments JXG2.GeometryElement
+ * @param {JXG2.View3D} view The 3D view the sphere is drawn on.
  * @param {String} method Can be:
  * <ul><li> <b><code>'twoPoints'</code></b> &ndash; The sphere is defined by its center and a point on the sphere.</li>
  * <li><b><code>'pointRadius'</code></b> &ndash; The sphere is defined by its center and its radius in user units.</li></ul>
  * The parameters <code>p1</code>, <code>p2</code> and <code>radius</code> must be set according to this method parameter.
- * @param {JXG.Point3D} par1 The center of the sphere.
- * @param {JXG.Point3D} par2 Can be:
+ * @param {JXG2.Point3D} par1 The center of the sphere.
+ * @param {JXG2.Point3D} par2 Can be:
  * <ul><li>A point on the sphere (if the construction method is <code>'twoPoints'</code>)</li>
  * <ul><li>A number or function (if the construction method is <code>'pointRadius'</code>)</li>
- * @param {Object} attributes An object containing visual properties like in {@link JXG.Options#point3d} and
- * {@link JXG.Options#elements}, and optional a name and an id.
- * @see JXG.Board#generateName
+ * @param {Object} attributes An object containing visual properties like in {@link JXG2.Options#point3d} and
+ * {@link JXG2.Options#elements}, and optional a name and an id.
+ * @see JXG2.Board#generateName
  */
-JXG.Sphere3D = function (view, method, par1, par2, attributes) {
+JXG2.Sphere3D = function (view, method, par1, par2, attributes) {
     this.constructor(view.board, attributes, OBJECT_TYPE.SPHERE3D, OBJECT_CLASS._3D);
     this.constructor3D(view, 'sphere3d');
 
@@ -69,21 +69,21 @@ JXG.Sphere3D = function (view, method, par1, par2, attributes) {
      * <ul><li><b><code>'twoPoints'</code></b> &ndash; The sphere is defined by its center and a point on the sphere.</li>
      * <li><b><code>'pointRadius'</code></b> &ndash; The sphere is defined by its center and its radius in user units.</li></ul>
      * @type String
-     * @see JXG.Sphere3D#center
-     * @see JXG.Sphere3D#point2
+     * @see JXG2.Sphere3D#center
+     * @see JXG2.Sphere3D#point2
      */
     this.method = method;
 
     /**
      * The sphere's center. Do not set this parameter directly, as that will break JSXGraph's update system.
-     * @type JXG.Point3D
+     * @type JXG2.Point3D
      */
     this.center = this.board.select(par1);
 
     /**
      * A point on the sphere; only set if the construction method is 'twoPoints'. Do not set this parameter directly, as that will break JSXGraph's update system.
-     * @type JXG.Point3D
-     * @see JXG.Sphere3D#method
+     * @type JXG2.Point3D
+     * @see JXG2.Sphere3D#method
      */
     this.point2 = null;
 
@@ -141,12 +141,12 @@ JXG.Sphere3D = function (view, method, par1, par2, attributes) {
         Radius: "Radius"
     });
 };
-JXG.Sphere3D.prototype = new JXG.GeometryElement();
-Type.copyPrototypeMethods(JXG.Sphere3D, JXG.GeometryElement3D, 'constructor3D');
+JXG2.Sphere3D.prototype = new JXG2.GeometryElement();
+Type.copyPrototypeMethods(JXG2.Sphere3D, JXG2.GeometryElement3D, 'constructor3D');
 
-JXG.extend(
-    JXG.Sphere3D.prototype,
-    /** @lends JXG.Sphere3D.prototype */ {
+JXG2.extend(
+    JXG2.Sphere3D.prototype,
+    /** @lends JXG2.Sphere3D.prototype */ {
 
         X: function(u, v) {
             var r = this.Radius();
@@ -181,7 +181,7 @@ JXG.extend(
         /**
          * Set a new radius, then update the board.
          * @param {String|Number|function} r A string, function or number describing the new radius
-         * @returns {JXG.Sphere3D} Reference to this sphere
+         * @returns {JXG2.Sphere3D} Reference to this sphere
          */
         setRadius: function (r) {
             this.updateRadius = Type.createFunction(r, this.board);
@@ -408,12 +408,12 @@ JXG.extend(
  *
  * @pseudo
  * @name Sphere3D
- * @augments JXG.Sphere3D
+ * @augments JXG2.Sphere3D
  * @constructor
- * @type JXG.Sphere3D
+ * @type JXG2.Sphere3D
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point3D_number,JXG.Point3D} center,radius The center must be given as a {@link JXG.Point3D} (see {@link JXG.providePoints3D}),
- * but the radius can be given as a number (which will create a sphere with a fixed radius) or another {@link JXG.Point3D}.
+ * @param {JXG2.Point3D_number,JXG2.Point3D} center,radius The center must be given as a {@link JXG2.Point3D} (see {@link JXG2.providePoints3D}),
+ * but the radius can be given as a number (which will create a sphere with a fixed radius) or another {@link JXG2.Point3D}.
  * <p>
  * If the radius is supplied as number or the output of a function, its absolute value is taken.
  *
@@ -457,7 +457,7 @@ JXG.extend(
  * </pre><div id="JXG5969b83c-db67-4e62-9702-d0440e5fe2c1" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG5969b83c-db67-4e62-9702-d0440e5fe2c1',
+ *         var board = JXG2.JSXGraph.initBoard('JXG5969b83c-db67-4e62-9702-d0440e5fe2c1',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, pan: {enabled: false}, showcopyright: false, shownavigation: false});
  *         var view = board.create(
  *             'view3d',
@@ -530,7 +530,7 @@ JXG.extend(
  * </pre><div id="JXG672fe3c7-e6fd-48e0-9a24-22f51f2dfa71" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG672fe3c7-e6fd-48e0-9a24-22f51f2dfa71',
+ *         var board = JXG2.JSXGraph.initBoard('JXG672fe3c7-e6fd-48e0-9a24-22f51f2dfa71',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
  *         var view = board.create(
  *             'view3d',
@@ -563,7 +563,7 @@ JXG.extend(
  * </script><pre>
  *
  */
-JXG.createSphere3D = function (board, parents, attributes) {
+JXG2.createSphere3D = function (board, parents, attributes) {
     //   parents[0]: view
     //   parents[1]: point,
     //   parents[2]: point or radius
@@ -595,7 +595,7 @@ JXG.createSphere3D = function (board, parents, attributes) {
 
     if (Type.isPoint3D(p[0]) && Type.isPoint3D(p[1])) {
         // Point/Point
-        el = new JXG.Sphere3D(view, "twoPoints", p[0], p[1], attr);
+        el = new JXG2.Sphere3D(view, "twoPoints", p[0], p[1], attr);
 
         /////////////// nothing in docs suggest you can use [number, pointType]
         // } else if (
@@ -603,14 +603,14 @@ JXG.createSphere3D = function (board, parents, attributes) {
         //     Type.isPoint3D(p[1])
         // ) {
         //     // Number/Point
-        //     el = new JXG.Sphere3D(view, "pointRadius", p[1], p[0], attr);
+        //     el = new JXG2.Sphere3D(view, "pointRadius", p[1], p[0], attr);
 
     } else if (
         Type.isPoint3D(p[0]) &&
         (Type.isNumber(p[1]) || Type.isFunction(p[1]) || Type.isString(p[1]))
     ) {
         // Point/Number
-        el = new JXG.Sphere3D(view, "pointRadius", p[0], p[1], attr);
+        el = new JXG2.Sphere3D(view, "pointRadius", p[0], p[1], attr);
     } else {
         throw new Error(
             "JSXGraph: Can't create sphere3d with parent types '" +
@@ -636,4 +636,4 @@ JXG.createSphere3D = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("sphere3d", JXG.createSphere3D);
+JXG2.registerElement("sphere3d", JXG2.createSphere3D);

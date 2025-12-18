@@ -30,7 +30,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 
 /*jslint nomen: true, plusplus: true*/
 
@@ -39,7 +39,7 @@
  * Stoyan Stefanov <sstoo@gmail.com> (see https://www.phpied.com/rgb-color-parser-in-javascript/)
  */
 
-// import { JXG } from "../jxg.js";
+// import { JXG2 } from "../jxg.js";
 import { Type } from "./type.js";
 import {Env} from "./env.js"
 import { JSXMath } from "../math/math.js";
@@ -393,11 +393,11 @@ export class Color {
     /**
      * Converts a valid HTML/CSS color string from the '#rrggbb' format into the 'rgb(r, g, b)' format.
      * @param {String} hex A valid HTML or CSS styled color value, e.g. '#12ab21', '#abc', or 'black'
-     * @deprecated Use {@link JXG#rgb2css} instead.
+     * @deprecated Use {@link JXG2#rgb2css} instead.
      * @returns {String} A 'rgb(r, g, b)' formatted string
      */
     static hex2rgb(hex) {
-        Env.deprecated("JXG.hex2rgb()", "JXG.rgb2css()");
+        Env.deprecated("JXG2.hex2rgb()", "JXG2.rgb2css()");
         return this.rgb2css(hex);
     };
 
@@ -870,7 +870,7 @@ export class Color {
      * @param {Number} percent
      * @returns {String}
      *
-     * @see JXG.shadeColor
+     * @see JXG2.shadeColor
      */
     static lightenColor(color, percent) {
         return this.shadeColor(color, percent);
@@ -882,7 +882,7 @@ export class Color {
      * @param {Number} percent
      * @returns {String}
      *
-     * @see JXG.shadeColor
+     * @see JXG2.shadeColor
      */
     static darkenColor(color, percent) {
         return this.shadeColor(color, -1 * percent);
@@ -967,15 +967,15 @@ export class Color {
 
     /**
      * Use the color scheme of JSXGraph up to version 1.3.2.
-     * This method has to be called before JXG.JSXGraph.initBoard();
+     * This method has to be called before JXG2.JSXGraph.initBoard();
      *
-     * @see JXG.palette
-     * @see JXG.paletteWong
+     * @see JXG2.palette
+     * @see JXG2.paletteWong
      *
      * @example
      *
-     * JXG.setClassicColors();
-     * var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-5, 5, 5,-5]});
+     * JXG2.setClassicColors();
+     * var board = JXG2.JSXGraph.initBoard('jxgbox', {boundingbox: [-5, 5, 5,-5]});
      *
      */
     setClassicColors() {
@@ -1058,11 +1058,11 @@ export class Color {
      * and
      * <a href="https://davidmathlogic.com/colorblind/">https://davidmathlogic.com/colorblind/</a>.
      *
-     * @name JXG.paletteWong
+     * @name JXG2.paletteWong
      * @type Object
-     * @see JXG.palette
+     * @see JXG2.palette
      * @example
-     * var p = board.create('line', [[-1, 1], [2, -3]], {strokeColor: JXG.paletteWong.yellow});
+     * var p = board.create('line', [[-1, 1], [2, -3]], {strokeColor: JXG2.paletteWong.yellow});
      */
     static paletteWong = {
         black: "#000000",
@@ -1094,10 +1094,10 @@ export class Color {
      * <li> yellow
      * </ul>
      *
-     * @name JXG.palette
+     * @name JXG2.palette
      * @type Object
-     * @default JXG.paletteWong
-     * @see JXG.paletteWong
+     * @default JXG2.paletteWong
+     * @see JXG2.paletteWong
      *
      * @example
      *

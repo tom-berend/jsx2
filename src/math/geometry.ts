@@ -30,7 +30,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -38,7 +38,7 @@
  * stuff like intersection points, angles, midpoint, and so on.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
@@ -66,9 +66,9 @@ export class Geometry {
 
     /**
      * Calculates the angle defined by the points A, B, C.
-     * @param {JXG.Point|Array} A A point  or [x,y] array.
-     * @param {JXG.Point|Array} B Another point or [x,y] array.
-     * @param {JXG.Point|Array} C A circle - no, of course the third point or [x,y] array.
+     * @param {JXG2.Point|Array} A A point  or [x,y] array.
+     * @param {JXG2.Point|Array} B Another point or [x,y] array.
+     * @param {JXG2.Point|Array} C A circle - no, of course the third point or [x,y] array.
      * @deprecated Use {@link Geometry.rad} instead.
      * @see Geometry.rad
      * @see Geometry.trueAngle
@@ -83,7 +83,7 @@ export class Geometry {
             b = [],
             c = [];
 
-        JXG.deprecated("Geometry.angle()", "Geometry.rad()");
+        JXG2.deprecated("Geometry.angle()", "Geometry.rad()");
         if (A.coords) {
             a[0] = A.coords.usrCoords[1];
             a[1] = A.coords.usrCoords[2];
@@ -118,9 +118,9 @@ export class Geometry {
 
     /**
      * Calculates the angle defined by the three points A, B, C if you're going from A to C around B counterclockwise.
-     * @param {JXG.Point|Array} A Point or [x,y] array
-     * @param {JXG.Point|Array} B Point or [x,y] array
-     * @param {JXG.Point|Array} C Point or [x,y] array
+     * @param {JXG2.Point|Array} A Point or [x,y] array
+     * @param {JXG2.Point|Array} B Point or [x,y] array
+     * @param {JXG2.Point|Array} C Point or [x,y] array
      * @see Geometry.rad
      * @returns {Number} The angle in degrees.
      */
@@ -130,9 +130,9 @@ export class Geometry {
 
     /**
      * Calculates the internal angle defined by the three points A, B, C if you're going from A to C around B counterclockwise.
-     * @param {JXG.Point|Array} A Point or [x,y] array
-     * @param {JXG.Point|Array} B Point or [x,y] array
-     * @param {JXG.Point|Array} C Point or [x,y] array
+     * @param {JXG2.Point|Array} A Point or [x,y] array
+     * @param {JXG2.Point|Array} B Point or [x,y] array
+     * @param {JXG2.Point|Array} C Point or [x,y] array
      * @see Geometry.trueAngle
      * @returns {Number} Angle in radians.
      */
@@ -177,11 +177,11 @@ export class Geometry {
      * As a result, the bisection line is defined by two points:
      * Parameter B and the point with the coordinates calculated in this function.
      * Does not work for ideal points.
-     * @param {JXG.Point} A Point
-     * @param {JXG.Point} B Point
-     * @param {JXG.Point} C Point
+     * @param {JXG2.Point} A Point
+     * @param {JXG2.Point} B Point
+     * @param {JXG2.Point} C Point
      * @param [board=A.board] Reference to the board
-     * @returns {JXG.Coords} Coordinates of the second point defining the bisection.
+     * @returns {JXG2.Coords} Coordinates of the second point defining the bisection.
      */
     static angleBisector(A, B, C, board) {
         var phiA,
@@ -234,12 +234,12 @@ export class Geometry {
     //  * The m-section generalizes the bisector to any real number.
     //  * For example, the trisectors of an angle are simply the 1/3-sector and the 2/3-sector.
     //  * Does not work for ideal points.
-    //  * @param {JXG.Point} A Point
-    //  * @param {JXG.Point} B Point
-    //  * @param {JXG.Point} C Point
+    //  * @param {JXG2.Point} A Point
+    //  * @param {JXG2.Point} B Point
+    //  * @param {JXG2.Point} C Point
     //  * @param {Number} m Number
     //  * @param [board=A.board] Reference to the board
-    //  * @returns {JXG.Coords} Coordinates of the second point defining the bisection.
+    //  * @returns {JXG2.Coords} Coordinates of the second point defining the bisection.
     //  */
     // angleMsector: function (A, B, C, m, board) {
     //     var phiA, phiC, phi,
@@ -281,10 +281,10 @@ export class Geometry {
 
     /**
      * Reflects the point along the line.
-     * @param {JXG.Line} line Axis of reflection.
-     * @param {JXG.Point} point Point to reflect.
+     * @param {JXG2.Line} line Axis of reflection.
+     * @param {JXG2.Point} point Point to reflect.
      * @param [board=point.board] Reference to the board
-     * @returns {JXG.Coords} Coordinates of the reflected point.
+     * @returns {JXG2.Coords} Coordinates of the reflected point.
      */
     static reflection(line, point, board) {
         // (v,w) defines the slope of the line
@@ -321,11 +321,11 @@ export class Geometry {
     /**
      * Computes the new position of a point which is rotated
      * around a second point (called rotpoint) by the angle phi.
-     * @param {JXG.Point} rotpoint Center of the rotation
-     * @param {JXG.Point} point point to be rotated
+     * @param {JXG2.Point} rotpoint Center of the rotation
+     * @param {JXG2.Point} point point to be rotated
      * @param {Number} phi rotation angle in arc length
-     * @param {JXG.Board} [board=point.board] Reference to the board
-     * @returns {JXG.Coords} Coordinates of the new position.
+     * @param {JXG2.Board} [board=point.board] Reference to the board
+     * @returns {JXG2.Coords} Coordinates of the new position.
      */
     static rotation(rotpoint, point, phi, board) {
         var x0,
@@ -356,9 +356,9 @@ export class Geometry {
     /**
      * Calculates the coordinates of a point on the perpendicular to the given line through
      * the given point.
-     * @param {JXG.Line} line A line.
-     * @param {JXG.Point} point Point which is projected to the line.
-     * @param {JXG.Board} [board=point.board] Reference to the board
+     * @param {JXG2.Line} line A line.
+     * @param {JXG2.Point} point Point which is projected to the line.
+     * @param {JXG2.Board} [board=point.board] Reference to the board
      * @returns {Array} Array of length two containing coordinates of a point on the perpendicular to the given line
      *                  through the given point and boolean flag "change".
      */
@@ -441,17 +441,17 @@ export class Geometry {
      * @deprecated Please use {@link Geometry.circumcenter} instead.
      */
     static circumcenterMidpoint() {
-        JXG.deprecated("Geometry.circumcenterMidpoint()", "Geometry.circumcenter()");
+        JXG2.deprecated("Geometry.circumcenterMidpoint()", "Geometry.circumcenter()");
         this.circumcenter.apply(this, arguments);
     }
 
     /**
      * Calculates the center of the circumcircle of the three given points.
-     * @param {JXG.Point} point1 Point
-     * @param {JXG.Point} point2 Point
-     * @param {JXG.Point} point3 Point
-     * @param {JXG.Board} [board=point1.board] Reference to the board
-     * @returns {JXG.Coords} Coordinates of the center of the circumcircle of the given points.
+     * @param {JXG2.Point} point1 Point
+     * @param {JXG2.Point} point2 Point
+     * @param {JXG2.Point} point3 Point
+     * @param {JXG2.Board} [board=point1.board] Reference to the board
+     * @returns {JXG2.Coords} Coordinates of the center of the circumcircle of the given points.
      */
     static circumcenter(point1, point2, point3, board) {
         var u,
@@ -527,9 +527,9 @@ export class Geometry {
      * Affine ratio of three collinear points a, b, c: (c - a) / (b - a).
      * If r > 1 or r < 0 then c is outside of the segment ab.
      *
-     * @param {Array|JXG.Coords} a
-     * @param {Array|JXG.Coords} b
-     * @param {Array|JXG.Coords} c
+     * @param {Array|JXG2.Coords} a
+     * @param {Array|JXG2.Coords} b
+     * @param {Array|JXG2.Coords} c
      * @returns {Number} affine ratio (c - a) / (b - a)
      */
     static affineRatio(a, b, c) {
@@ -560,7 +560,7 @@ export class Geometry {
      * Sort vertices counter clockwise starting with the first point.
      * Used in Polygon.sutherlandHodgman, Geometry.signedPolygon.
      *
-     * @param {Array} p An array containing {@link JXG.Point} {@link JXG.Coords} and/or arrays.
+     * @param {Array} p An array containing {@link JXG2.Point} {@link JXG2.Coords} and/or arrays.
      *
      * @returns {Array}
      */
@@ -617,9 +617,9 @@ export class Geometry {
      * <li> If the return value is = 0, then the points p1, p2, p3 are collinear.
      * </ul>
      *
-     * @param {JXG.Point|JXG.Coords|Array} p1
-     * @param {JXG.Point|JXG.Coords|Array} p2
-     * @param {JXG.Point|JXG.Coords|Array} p3
+     * @param {JXG2.Point|JXG2.Coords|Array} p1
+     * @param {JXG2.Point|JXG2.Coords|Array} p2
+     * @param {JXG2.Point|JXG2.Coords|Array} p3
      *
      * @returns {Number}
      */
@@ -634,7 +634,7 @@ export class Geometry {
      * Determine the signed area of a non-self-intersecting polygon.
      * Surveyor's Formula
      *
-     * @param {Array} p An array containing {@link JXG.Point} {@link JXG.Coords} and/or arrays.
+     * @param {Array} p An array containing {@link JXG2.Point} {@link JXG2.Coords} and/or arrays.
      * @param {Boolean} [sort=true]
      *
      * @returns {Number}
@@ -669,7 +669,7 @@ export class Geometry {
     /**
      * Calculate the complex hull of a point cloud by the Graham scan algorithm.
      *
-     * @param {Array} points An array containing {@link JXG.Point} {@link JXG.Coords} and/or arrays.
+     * @param {Array} points An array containing {@link JXG2.Point} {@link JXG2.Coords} and/or arrays.
      *
      * @returns {Array} List of objects <pre>{i: index, c: coords}</pre> containing the convex hull points
      *  in form of the index in the original input array and a coords array.
@@ -701,7 +701,7 @@ export class Geometry {
      * </pre><div id="JXGb310b874-595e-4020-b0c2-566482797836" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXGb310b874-595e-4020-b0c2-566482797836',
+     *         var board = JXG2.JSXGraph.initBoard('JXGb310b874-595e-4020-b0c2-566482797836',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *         var i, hull,
      *           p = [],
@@ -906,9 +906,9 @@ export class Geometry {
     /**
      * Calculate the complex hull of a point cloud by the Graham scan algorithm.
      *
-     * @param {Array} points An array containing {@link JXG.Point} {@link JXG.Coords} and/or arrays.
+     * @param {Array} points An array containing {@link JXG2.Point} {@link JXG2.Coords} and/or arrays.
      * @param {Boolean} [returnCoords=false] If true, return an array of coords. Otherwise return a list of pointers
-     * to the input list elements. That is, if the input is a list of {@link JXG.Point} elements, the returned list
+     * to the input list elements. That is, if the input is a list of {@link JXG2.Point} elements, the returned list
      * will contain the points that form the convex hull.
      * @returns {Array} List containing the convex hull. Format depends on returnCoords.
      * @see Geometry.GrahamScan
@@ -930,7 +930,7 @@ export class Geometry {
      * </pre><div id="JXGdfc76123-81b8-4250-96f9-419253bd95dd" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXGdfc76123-81b8-4250-96f9-419253bd95dd',
+     *         var board = JXG2.JSXGraph.initBoard('JXGdfc76123-81b8-4250-96f9-419253bd95dd',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *         var i, hull,
      *             p = [];
@@ -977,7 +977,7 @@ export class Geometry {
      * </pre><div id="JXG61e51909-da0b-432f-9aa7-9fb0c8bb01c9" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG61e51909-da0b-432f-9aa7-9fb0c8bb01c9',
+     *         var board = JXG2.JSXGraph.initBoard('JXG61e51909-da0b-432f-9aa7-9fb0c8bb01c9',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *         var p = [];
      *
@@ -1035,7 +1035,7 @@ export class Geometry {
     //  * <li> A polygon is complex if its the angle sum is not equal to &plusmn; 2 &pi;.
     //  * That is, there must be self-intersection (contiguous coincident points in the path are not treated as self-intersection).
     //  * </ul>
-    //  * A path  element might be specified as an array of coordinate arrays or {@link JXG.Coords}.
+    //  * A path  element might be specified as an array of coordinate arrays or {@link JXG2.Coords}.
     //  *
     //  * @param {Array|Polygon|PolygonalChain} points Polygon or list of coordinates
     //  * @returns {Number} -1: if complex, 0: if non-convex, 1: if convex
@@ -1048,7 +1048,7 @@ export class Geometry {
      * A single line segment, a single point, or the empty set is considered as convex. A necessary condition for a polygon
      * to be convex that the angle sum of its interior angles equals &plusmn; 2 &pi;.
      * <p>
-     * A path  element might be specified as an array of coordinate arrays or {@link JXG.Coords}.
+     * A path  element might be specified as an array of coordinate arrays or {@link JXG2.Coords}.
      * See the discussion at <a href="https://stackoverflow.com/questions/471962/how-do-i-efficiently-determine-if-a-polygon-is-convex-non-convex-or-complex">stackoverflow</a>.
      *
      * @param {Array|Polygon|PolygonalChain} points Polygon or list of coordinates
@@ -1077,7 +1077,7 @@ export class Geometry {
      * </pre><div id="JXG9b43cc53-15b4-49be-92cc-2a1dfc06665b" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG9b43cc53-15b4-49be-92cc-2a1dfc06665b',
+     *         var board = JXG2.JSXGraph.initBoard('JXG9b43cc53-15b4-49be-92cc-2a1dfc06665b',
      *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
      *     var pol = board.create('polygon', [
      *         [-1, -1],
@@ -1172,15 +1172,15 @@ export class Geometry {
      * A line can be a segment, a straight, or a ray. So it is not always delimited by point1 and point2
      * calcStraight determines the visual start point and end point of the line. A segment is only drawn
      * from start to end point, a straight line is drawn until it meets the boards boundaries.
-     * @param {JXG.Line} el Reference to a line object, that needs calculation of start and end point.
-     * @param {JXG.Coords} point1 Coordinates of the point where line drawing begins. This value is calculated and
+     * @param {JXG2.Line} el Reference to a line object, that needs calculation of start and end point.
+     * @param {JXG2.Coords} point1 Coordinates of the point where line drawing begins. This value is calculated and
      * set by this method.
-     * @param {JXG.Coords} point2 Coordinates of the point where line drawing ends. This value is calculated and set
+     * @param {JXG2.Coords} point2 Coordinates of the point where line drawing ends. This value is calculated and set
      * by this method.
      * @param {Number} margin Optional margin, to avoid the display of the small sides of lines.
      * @returns null
      * @see Line
-     * @see JXG.Line
+     * @see JXG2.Line
      */
     static calcStraight(el, point1, point2, margin) {
         var takePoint1,
@@ -1342,13 +1342,13 @@ export class Geometry {
      * boards boundaries. However, if the line has infinite ticks, it will be delimited by the projection of
      * the boards vertices onto itself.
      *
-     * @param {JXG.Line} el Reference to a line object, that needs calculation of start and end point.
-     * @param {JXG.Coords} point1 Coordinates of the point where line drawing begins. This value is calculated and
+     * @param {JXG2.Line} el Reference to a line object, that needs calculation of start and end point.
+     * @param {JXG2.Coords} point1 Coordinates of the point where line drawing begins. This value is calculated and
      * set by this method.
-     * @param {JXG.Coords} point2 Coordinates of the point where line drawing ends. This value is calculated and set
+     * @param {JXG2.Coords} point2 Coordinates of the point where line drawing ends. This value is calculated and set
      * by this method.
      * @see Line
-     * @see JXG.Line
+     * @see JXG2.Line
      */
     static calcLineDelimitingPoints(el, point1, point2) {
         var distP1P2,
@@ -1542,10 +1542,10 @@ export class Geometry {
     /**
      * The vectors <tt>p2-p1</tt> and <tt>i2-i1</tt> are supposed to be collinear. If their cosine is positive
      * they point into the same direction otherwise they point in opposite direction.
-     * @param {JXG.Coords} p1
-     * @param {JXG.Coords} p2
-     * @param {JXG.Coords} i1
-     * @param {JXG.Coords} i2
+     * @param {JXG2.Coords} p1
+     * @param {JXG2.Coords} p2
+     * @param {JXG2.Coords} i1
+     * @param {JXG2.Coords} i2
      * @returns {Boolean} True, if <tt>p2-p1</tt> and <tt>i2-i1</tt> point into the same direction
      */
     static isSameDir(p1, p2, i1, i2) {
@@ -1570,9 +1570,9 @@ export class Geometry {
     /**
      * If you're looking from point "start" towards point "s" and you can see the point "p", return true.
      * Otherwise return false.
-     * @param {JXG.Coords} start The point you're standing on.
-     * @param {JXG.Coords} p The point in which direction you're looking.
-     * @param {JXG.Coords} s The point that should be visible.
+     * @param {JXG2.Coords} start The point you're standing on.
+     * @param {JXG2.Coords} p The point in which direction you're looking.
+     * @param {JXG2.Coords} s The point that should be visible.
      * @returns {Boolean} True, if from start the point p is in the same direction as s is, that means s-start = k*(p-start) with k>=0.
      */
     static isSameDirection(start, p, s) {
@@ -1620,9 +1620,9 @@ export class Geometry {
      * <p>
      * Non-homogeneous version.
      *
-     * @param  {Array|JXG.Point} p1 First point or its coordinates of the segment. Point object or array of length 3. First (homogeneous) coordinate is equal to 1.
-     * @param  {Array|JXG.Point} p2 Second point or its coordinates of the segment. Point object or array of length 3. First (homogeneous) coordinate is equal to 1.
-     * @param  {Array|JXG.Point} q Point or its coordinates. Point object or array of length 3. First (homogeneous) coordinate is equal to 1.
+     * @param  {Array|JXG2.Point} p1 First point or its coordinates of the segment. Point object or array of length 3. First (homogeneous) coordinate is equal to 1.
+     * @param  {Array|JXG2.Point} p2 Second point or its coordinates of the segment. Point object or array of length 3. First (homogeneous) coordinate is equal to 1.
+     * @param  {Array|JXG2.Point} q Point or its coordinates. Point object or array of length 3. First (homogeneous) coordinate is equal to 1.
      * @return {Number} Signed area of the triangle formed by these three points.
      *
      * @see Geometry.windingNumber
@@ -1663,7 +1663,7 @@ export class Geometry {
      *
      * @param  {Array} usrCoords Homogenous coordinates of the point
      * @param  {Array} path      Array of points / coords determining a path, i.e. the vertices of the polygon / path. The array elements
-     * do not have to be full points, but have to have a subobject "coords" or should be of type JXG.Coords.
+     * do not have to be full points, but have to have a subobject "coords" or should be of type JXG2.Coords.
      * @param  {Boolean} [doNotClosePath=false] If true the last point of the path is not connected to the first point.
      * This is necessary if the path consists of two or more closed subpaths, e.g. if the figure has a hole.
      *
@@ -1784,15 +1784,15 @@ export class Geometry {
      * @param {Number} x_in x-coordinate (screen or user coordinates)
      * @param {Number} y_in y-coordinate (screen or user coordinates)
      * @param  {Array} path  Array of points / coords determining a path, i.e. the vertices of the polygon / path. The array elements
-     * do not have to be full points, but have to have a subobject "coords" or should be of type JXG.Coords.
-     * @param {Number} [coord_type=JXG.COORDS_BY_SCREEN] Type of coordinates used here.
-     *   Possible values are <b>COORDS_BY.USER</b> and <b>JXG.COORDS_BY_SCREEN</b>.
-     *   Default value is JXG.COORDS_BY_SCREEN.
-     * @param {JXG.Board} board Board object
+     * do not have to be full points, but have to have a subobject "coords" or should be of type JXG2.Coords.
+     * @param {Number} [coord_type=JXG2.COORDS_BY_SCREEN] Type of coordinates used here.
+     *   Possible values are <b>COORDS_BY.USER</b> and <b>JXG2.COORDS_BY_SCREEN</b>.
+     *   Default value is JXG2.COORDS_BY_SCREEN.
+     * @param {JXG2.Board} board Board object
      *
      * @returns {Boolean} if (x_in, y_in) is inside of the polygon.
-     * @see JXG.Polygon#hasPoint
-     * @see JXG.Polygon#pnpoly
+     * @see JXG2.Polygon#hasPoint
+     * @see JXG2.Polygon#pnpoly
      * @see Geometry.windingNumber
      *
      * @example
@@ -1806,7 +1806,7 @@ export class Geometry {
      * </pre><div id="JXG4656ed42-f965-4e35-bb66-c334a4529683" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG.JSXGraph.initBoard('JXG4656ed42-f965-4e35-bb66-c334a4529683',
+     *         var board = JXG2.JSXGraph.initBoard('JXG4656ed42-f965-4e35-bb66-c334a4529683',
      *             {boundingbox: [-2, 5, 5,-2], axis: true, showcopyright: false, shownavigation: false});
      *     var pol = board.create('polygon', [[-1,2], [2,2], [-1,4]]);
      *     var p = board.create('point', [4, 3]);
@@ -1859,18 +1859,18 @@ export class Geometry {
 
     /**
      * Generate the function which computes the coordinates of the intersection point.
-     * Primarily used in {@link JXG.Point.createIntersectionPoint}.
-     * @param {JXG.Board} board object
-     * @param {JXG.Line,JXG.Circle_JXG.Line,JXG.Circle_Number|Function} el1,el2,i The result will be a intersection point on el1 and el2.
+     * Primarily used in {@link JXG2.Point.createIntersectionPoint}.
+     * @param {JXG2.Board} board object
+     * @param {JXG2.Line,JXG2.Circle_JXG.Line,JXG2.Circle_Number|Function} el1,el2,i The result will be a intersection point on el1 and el2.
      * i determines the intersection point if two points are available: <ul>
      *   <li>i==0: use the positive square root,</li>
      *   <li>i==1: use the negative square root.</li></ul>
      * @param {Boolean} alwaysintersect. Flag that determines if segments and arc can have an outer intersection point
      * on their defining line or circle.
-     * @returns {Function} Function returning a {@link JXG.Coords} object that determines
+     * @returns {Function} Function returning a {@link JXG2.Coords} object that determines
      * the intersection point.
      *
-     * @see JXG.Point.createIntersectionPoint
+     * @see JXG2.Point.createIntersectionPoint
      */
     static intersectionFunction(board, el1, el2, i, j, alwaysintersect) {
         var func,
@@ -2124,7 +2124,7 @@ export class Geometry {
      * on the circle line. Now it is decided if coords are on the
      * circle restricted to the arc line.
      * @param  {Arc} arc arc or sector element
-     * @param  {JXG.Coords} coords Coords object of an intersection
+     * @param  {JXG2.Coords} coords Coords object of an intersection
      * @returns {Boolean}
      * @private
      */
@@ -2151,7 +2151,7 @@ export class Geometry {
      * @param {Array} el2 stdform of the second element (line or circle)
      * @param {Number|Function} i Index of the intersection point that should be returned.
      * @param board Reference to the board.
-     * @returns {JXG.Coords} Coordinates of one of the possible two or more intersection points.
+     * @returns {JXG2.Coords} Coordinates of one of the possible two or more intersection points.
      * Which point will be returned is determined by i.
      */
     static meet(el1, el2, i, board) {
@@ -2178,7 +2178,7 @@ export class Geometry {
     /**
      * Intersection of the line with the board
      * @param  {Array}     line   stdform of the line in screen coordinates
-     * @param  {JXG.Board} board  reference to a board.
+     * @param  {JXG2.Board} board  reference to a board.
      * @param  {Number}    margin optional margin, to avoid the display of the small sides of lines.
      * @returns {Array}            [intersection coords 1, intersection coords 2]
      */
@@ -2265,8 +2265,8 @@ export class Geometry {
      * @param {Array} l1 stdform of the first line
      * @param {Array} l2 stdform of the second line
      * @param {number} i unused
-     * @param {JXG.Board} board Reference to the board.
-     * @returns {JXG.Coords} Coordinates of the intersection point.
+     * @param {JXG2.Board} board Reference to the board.
+     * @returns {JXG2.Coords} Coordinates of the intersection point.
      */
     static meetLineLine(l1, l2, i, board) {
         var s = isNaN(l1[5] + l2[5]) ? [0, 0, 0] : JSXMath.crossProduct(l1, l2);
@@ -2285,8 +2285,8 @@ export class Geometry {
      * @param {number|function} i number of the returned intersection point.
      *   i==0: use the positive square root,
      *   i==1: use the negative square root.
-     * @param {JXG.Board} board Reference to a board.
-     * @returns {JXG.Coords} Coordinates of the intersection point
+     * @param {JXG2.Board} board Reference to a board.
+     * @returns {JXG2.Coords} Coordinates of the intersection point
      */
     static meetLineCircle(lin, circ, i, board) {
         var a, b, c, d, n, A, B, C, k, t;
@@ -2344,8 +2344,8 @@ export class Geometry {
      * @param {number|function} i number of the returned intersection point.
      *   i==0: use the positive square root,
      *   i==1: use the negative square root.
-     * @param {JXG.Board} board Reference to the board.
-     * @returns {JXG.Coords} Coordinates of the intersection point
+     * @param {JXG2.Board} board Reference to the board.
+     * @returns {JXG2.Coords} Coordinates of the intersection point
      */
     static meetCircleCircle(circ1, circ2, i, board) {
         var radicalAxis;
@@ -2393,11 +2393,11 @@ export class Geometry {
      * Segment-wise search for the nr-th intersection of two curves.
      * testSegment is always assumed to be true.
      *
-     * @param {JXG.Curve} c1 Curve, Line or Circle
-     * @param {JXG.Curve} c2 Curve, Line or Circle
+     * @param {JXG2.Curve} c1 Curve, Line or Circle
+     * @param {JXG2.Curve} c2 Curve, Line or Circle
      * @param {Number} nr the nr-th intersection point will be returned
-     * @param {JXG.Board} [board=c1.board] Reference to a board object
-     * @returns {JXG.Coords} intersection as Coords object
+     * @param {JXG2.Board} [board=c1.board] Reference to a board object
+     * @returns {JXG2.Coords} intersection as Coords object
      *
      * @private
      * @see Geometry.meetCurveCurve
@@ -2418,8 +2418,8 @@ export class Geometry {
      * Apply Newton-Raphson to search for an intersection of two curves
      * in a given range of the first curve.
      *
-     * @param {JXG.Curve} c1 Curve, Line or Circle
-     * @param {JXG.Curve} c2 Curve, Line or Circle
+     * @param {JXG2.Curve} c1 Curve, Line or Circle
+     * @param {JXG2.Curve} c2 Curve, Line or Circle
      * @param {Array} range Domain for the search of an intersection. The start value
      * for the search is chosen to be inside of that range.
      * @param {Boolean} testSegment If true require that t1 and t2 are inside of the allowed bounds.
@@ -2499,8 +2499,8 @@ export class Geometry {
      * Return a list of the (at most) first i intersection points of two curves.
      * Computed iteratively.
      *
-     * @param {JXG.Curve} c1 Curve, Line or Circle
-     * @param {JXG.Curve} c2 Curve, Line or Circle
+     * @param {JXG2.Curve} c1 Curve, Line or Circle
+     * @param {JXG2.Curve} c2 Curve, Line or Circle
      * @param {Number} low Lower bound of the search domain (between [0, 1])
      * @param {Number} up Upper bound of the search domain (between [0, 1])
      * @param {Number} i Return a list of the first i intersection points
@@ -2571,17 +2571,17 @@ export class Geometry {
      * Segment-wise intersection is more stable, but has problems with tangent points.
      * Damped Newton-Raphson converges very rapidly but sometimes behaves chaotic.
      *
-     * @param {JXG.Curve} c1 Curve, Line or Circle
-     * @param {JXG.Curve} c2 Curve, Line or Circle
+     * @param {JXG2.Curve} c1 Curve, Line or Circle
+     * @param {JXG2.Curve} c2 Curve, Line or Circle
      * @param {Number|Function} nr the nr-th intersection point will be returned. For backwards compatibility:
      * if method='newton' and nr is not an integer, {@link Geometry.Numerics.generalizedNewton} is called
      * directly with nr as start value (not recommended).
      * @param {Number} t2ini not longer used. Must be supplied and is ignored.
-     * @param {JXG.Board} [board=c1.board] Reference to a board object.
+     * @param {JXG2.Board} [board=c1.board] Reference to a board object.
      * @param {String} [method] Intersection method, possible values are 'newton' and 'segment'.
      * If both curves are given by functions (assumed to be continuous), 'newton' is the default, otherwise
      * 'segment' is the default.
-     * @returns {JXG.Coords} intersection point
+     * @returns {JXG2.Coords} intersection point
      *
      * @see Geometry.meetCurveCurveDiscrete
      * @see Geometry._meetCurveCurveRecursive
@@ -2634,12 +2634,12 @@ export class Geometry {
      * If higher precision is needed, {@link Geometry.meetCurveLineContinuous}
      * has to be used.
      *
-     * @param {JXG.Curve|JXG.Line} el1 Curve or Line
-     * @param {JXG.Curve|JXG.Line} el2 Curve or Line
+     * @param {JXG2.Curve|JXG2.Line} el1 Curve or Line
+     * @param {JXG2.Curve|JXG2.Line} el2 Curve or Line
      * @param {Number|Function} nr the nr-th intersection point will be returned.
-     * @param {JXG.Board} [board=el1.board] Reference to a board object.
+     * @param {JXG2.Board} [board=el1.board] Reference to a board object.
      * @param {Boolean} alwaysIntersect If false just the segment between the two defining points are tested for intersection
-     * @returns {JXG.Coords} Intersection point. In case no intersection point is detected,
+     * @returns {JXG2.Coords} Intersection point. In case no intersection point is detected,
      * the ideal point [0,1,0] is returned.
      */
     static meetCurveLine(el1, el2, nr, board, alwaysIntersect): Coords | number[] {
@@ -2676,13 +2676,13 @@ export class Geometry {
      * Uses {@link Geometry.meetCurveLineDiscrete} as a first approximation.
      * A more exact solution is then found with {@link Geometry.Numerics.root}.
      *
-     * @param {JXG.Curve} cu Curve
-     * @param {JXG.Line} li Line
+     * @param {JXG2.Curve} cu Curve
+     * @param {JXG2.Line} li Line
      * @param {NumberFunction} nr Will return the nr-th intersection point.
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {Boolean} testSegment Test if intersection has to be inside of the segment or somewhere on the
      * line defined by the segment
-     * @returns {JXG.Coords} Coords object containing the intersection.
+     * @returns {JXG2.Coords} Coords object containing the intersection.
      */
     static meetCurveLineContinuous(cu, li, nr, board, testSegment?) {
         var func0, func1,
@@ -2759,14 +2759,14 @@ export class Geometry {
      * Intersection of line and curve, discrete case.
      * Segments are treated as lines.
      * Finding the nr-th intersection point should work for all nr.
-     * @param {JXG.Curve} cu
-     * @param {JXG.Line} li
+     * @param {JXG2.Curve} cu
+     * @param {JXG2.Line} li
      * @param {Number|Function} nr
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {Boolean} testSegment Test if intersection has to be inside of the segment or somewhere on the
      * line defined by the segment
      *
-     * @returns {JXG.Coords} Intersection point. In case no intersection point is detected,
+     * @returns {JXG2.Coords} Intersection point. In case no intersection point is detected,
      * the ideal point [0,1,0] is returned.
      */
     static meetCurveLineDiscrete(cu, li, nr, board, testSegment) {
@@ -2853,8 +2853,8 @@ export class Geometry {
      * This method works also for transformed curves, since only the already
      * transformed points are used.
      *
-     * @param {JXG.Curve} red
-     * @param {JXG.Curve} blue
+     * @param {JXG2.Curve} red
+     * @param {JXG2.Curve} blue
      * @param {Number|Function} nr
      */
     static meetCurveRedBlueSegments(red, blue, nr) {
@@ -2962,14 +2962,14 @@ export class Geometry {
 
     /**
      * Find the n-th intersection point of two pathes, usually given by polygons. Uses parts of the
-     * Greiner-Hormann algorithm in JXG.JSXMath.Clip.Clip
+     * Greiner-Hormann algorithm in JXG2.JSXMath.Clip.Clip
      *
-     * @param {JXG.Circle|JXG.Curve|JXG.Polygon} path1
-     * @param {JXG.Circle|JXG.Curve|JXG.Polygon} path2
+     * @param {JXG2.Circle|JXG2.Curve|JXG2.Polygon} path1
+     * @param {JXG2.Circle|JXG2.Curve|JXG2.Polygon} path2
      * @param {Number|Function} n
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      *
-     * @returns {JXG.Coords} Intersection point. In case no intersection point is detected,
+     * @returns {JXG2.Coords} Intersection point. In case no intersection point is detected,
      * the ideal point [0,0,0] is returned.
      *
      */
@@ -2977,7 +2977,7 @@ export class Geometry {
         var S, C, len, intersections,
             n = Type.evaluate(nr);
 
-        S = JXG.JSXMath.Clip.Clip_getPath(path1, board);
+        S = JXG2.JSXMath.Clip.Clip_getPath(path1, board);
         len = S.length;
         if (
             len > 0 &&
@@ -2986,7 +2986,7 @@ export class Geometry {
             S.pop();
         }
 
-        C = JXG.JSXMath.Clip.Clip_getPath(path2, board);
+        C = JXG2.JSXMath.Clip.Clip_getPath(path2, board);
         len = C.length;
         if (
             len > 0 &&
@@ -2997,14 +2997,14 @@ export class Geometry {
         }
 
         // Handle cases where at least one of the paths is empty
-        if (nr < 0 || JXG.JSXMath.Clip.ClipisEmptyCase(S, C, 'intersection')) {
+        if (nr < 0 || JXG2.JSXMath.Clip.ClipisEmptyCase(S, C, 'intersection')) {
             return new Coords(COORDS_BY.USER, [0, 0, 0], board);
         }
 
-        JXG.JSXMath.Clip.makeDoublyLinkedList(S);
-        JXG.JSXMath.Clip.makeDoublyLinkedList(C);
+        JXG2.JSXMath.Clip.makeDoublyLinkedList(S);
+        JXG2.JSXMath.Clip.makeDoublyLinkedList(C);
 
-        intersections = JXG.JSXMath.Clip.ClipfindIntersections(S, C, board)[0];
+        intersections = JXG2.JSXMath.Clip.ClipfindIntersections(S, C, board)[0];
         if (n < intersections.length) {
             return intersections[n].coords;
         }
@@ -3013,13 +3013,13 @@ export class Geometry {
 
     /**
      * Find the n-th intersection point between a polygon and a line.
-     * @param {JXG.Polygon} path
-     * @param {JXG.Line} line
+     * @param {JXG2.Polygon} path
+     * @param {JXG2.Line} line
      * @param {Number|Function} nr
-     * @param {JXG.Board} board
+     * @param {JXG2.Board} board
      * @param {Boolean} alwaysIntersect If false just the segment between the two defining points of the line are tested for intersection.
      *
-     * @returns {JXG.Coords} Intersection point. In case no intersection point is detected,
+     * @returns {JXG2.Coords} Intersection point. In case no intersection point is detected,
      * the ideal point [0,0,0] is returned.
      */
     static meetPolygonLine(path, line, nr, board, alwaysIntersect) {
@@ -3330,8 +3330,8 @@ export class Geometry {
 
     /**
      * Find the nr-th intersection point of two Bezier curves, i.e. curves with bezierDegree == 3.
-     * @param {JXG.Curve} red Curve with bezierDegree == 3
-     * @param {JXG.Curve} blue Curve with bezierDegree == 3
+     * @param {JXG2.Curve} red Curve with bezierDegree == 3
+     * @param {JXG2.Curve} blue Curve with bezierDegree == 3
      * @param {Number|Function} nr The number of the intersection point which should be returned.
      * @returns {Array} The homogeneous coordinates of the nr-th intersection point.
      */
@@ -3577,10 +3577,10 @@ export class Geometry {
      * Calculates the coordinates of the projection of a given point on a given circle. I.o.w. the
      * nearest one of the two intersection points of the line through the given point and the circles
      * center.
-     * @param {JXG.Point|JXG.Coords} point Point to project or coords object to project.
-     * @param {JXG.Circle} circle Circle on that the point is projected.
-     * @param {JXG.Board} [board=point.board] Reference to the board
-     * @returns {JXG.Coords} The coordinates of the projection of the given point on the given circle.
+     * @param {JXG2.Point|JXG2.Coords} point Point to project or coords object to project.
+     * @param {JXG2.Circle} circle Circle on that the point is projected.
+     * @param {JXG2.Board} [board=point.board] Reference to the board
+     * @returns {JXG2.Coords} The coordinates of the projection of the given point on the given circle.
      */
     static projectPointToCircle(point, circle, board?) {
         var dist,
@@ -3618,10 +3618,10 @@ export class Geometry {
     /**
      * Calculates the coordinates of the orthogonal projection of a given point on a given line. I.o.w. the
      * intersection point of the given line and its perpendicular through the given point.
-     * @param {JXG.Point|JXG.Coords} point Point to project.
-     * @param {JXG.Line} line Line on that the point is projected.
-     * @param {JXG.Board} [board=point.board|board=line.board] Reference to a board.
-     * @returns {JXG.Coords} The coordinates of the projection of the given point on the given line.
+     * @param {JXG2.Point|JXG2.Coords} point Point to project.
+     * @param {JXG2.Line} line Line on that the point is projected.
+     * @param {JXG2.Board} [board=point.board|board=line.board] Reference to a board.
+     * @returns {JXG2.Coords} The coordinates of the projection of the given point on the given line.
      */
     static projectPointToLine(point, line, board?) {
         var v = [0, line.stdform[1], line.stdform[2]],
@@ -3678,9 +3678,9 @@ export class Geometry {
 
     /**
      * Finds the coordinates of the closest point on a Bezier segment of a
-     * {@link JXG.Curve} to a given coordinate array.
+     * {@link JXG2.Curve} to a given coordinate array.
      * @param {Array} pos Point to project in homogeneous coordinates.
-     * @param {JXG.Curve} curve Curve of type "plot" having Bezier degree 3.
+     * @param {JXG2.Curve} curve Curve of type "plot" having Bezier degree 3.
      * @param {Number} start Number of the Bezier segment of the curve.
      * @returns {Array} The coordinates of the projection of the given point
      * on the given Bezier segment and the preimage of the curve which
@@ -3698,7 +3698,7 @@ export class Geometry {
                 return z[1] * z[1] + z[2] * z[2];
             };
 
-        t0 = JXG.JSXMath.Numerics.fminbr(minfunc, [0.0, 1.0]);
+        t0 = JXG2.JSXMath.Numerics.fminbr(minfunc, [0.0, 1.0]);
 
         return [[1, curve.X(t0 + start), curve.Y(t0 + start)], t0];
     }
@@ -3707,11 +3707,11 @@ export class Geometry {
      * Calculates the coordinates of the projection of a given point on a given curve.
      * Uses {@link Geometry.projectCoordsToCurve}.
      *
-     * @param {JXG.Point} point Point to project.
-     * @param {JXG.Curve} curve Curve on that the point is projected.
-     * @param {JXG.Board} [board=point.board] Reference to a board.
+     * @param {JXG2.Point} point Point to project.
+     * @param {JXG2.Curve} curve Curve on that the point is projected.
+     * @param {JXG2.Board} [board=point.board] Reference to a board.
      * @see Geometry.projectCoordsToCurve
-     * @returns {Array} [JXG.Coords, position] The coordinates of the projection of the given
+     * @returns {Array} [JXG2.Coords, position] The coordinates of the projection of the given
      * point on the given graph and the relative position on the curve (real number).
      */
     static projectPointToCurve(point, curve, board?) {
@@ -3740,10 +3740,10 @@ export class Geometry {
      * @param {Number} x coordinate to project.
      * @param {Number} y coordinate to project.
      * @param {Number} t start value for newtons method
-     * @param {JXG.Curve} curve Curve on that the point is projected.
-     * @param {JXG.Board} [board=curve.board] Reference to a board.
+     * @param {JXG2.Curve} curve Curve on that the point is projected.
+     * @param {JXG2.Board} [board=curve.board] Reference to a board.
      * @see Geometry.projectPointToCurve
-     * @returns {JXG.Coords} Array containing the coordinates of the projection of the given point on the given curve and
+     * @returns {JXG2.Coords} Array containing the coordinates of the projection of the given point on the given curve and
      * the position on the curve.
      */
     static projectCoordsToCurve(x, y, t, curve, board) {
@@ -3918,7 +3918,7 @@ export class Geometry {
      * Calculates the coordinates of the closest orthogonal projection of a given coordinate array onto the
      * border of a polygon.
      * @param {Array} p Point to project.
-     * @param {JXG.Polygon} pol Polygon element
+     * @param {JXG2.Polygon} pol Polygon element
      * @returns {Array} The coordinates of the closest projection of the given point to the border of the polygon.
      */
     static projectCoordsToPolygon(p, pol) {
@@ -3958,10 +3958,10 @@ export class Geometry {
     /**
      * Calculates the coordinates of the projection of a given point on a given turtle. A turtle consists of
      * one or more curves of curveType 'plot'. Uses {@link Geometry.projectPointToCurve}.
-     * @param {JXG.Point} point Point to project.
-     * @param {JXG.Turtle} turtle on that the point is projected.
-     * @param {JXG.Board} [board=point.board] Reference to a board.
-     * @returns {Array} [JXG.Coords, position] Array containing the coordinates of the projection of the given point on the turtle and
+     * @param {JXG2.Point} point Point to project.
+     * @param {JXG2.Turtle} turtle on that the point is projected.
+     * @param {JXG2.Board} [board=point.board] Reference to a board.
+     * @returns {Array} [JXG2.Coords, position] Array containing the coordinates of the projection of the given point on the turtle and
      * the position on the turtle.
      */
     static projectPointToTurtle(point, turtle, board) {
@@ -4014,9 +4014,9 @@ export class Geometry {
 
     /**
      * Trivial projection of a point to another point.
-     * @param {JXG.Point} point Point to project (not used).
-     * @param {JXG.Point} dest Point on that the point is projected.
-     * @returns {JXG.Coords} The coordinates of the projection of the given point on the given circle.
+     * @param {JXG2.Point} point Point to project (not used).
+     * @param {JXG2.Point} dest Point on that the point is projected.
+     * @returns {JXG2.Coords} The coordinates of the projection of the given point on the given circle.
      */
     static projectPointToPoint(point, dest, board?) {
         return dest.coords;
@@ -4024,8 +4024,8 @@ export class Geometry {
 
     /**
      *
-     * @param {JXG.Point|JXG.Coords} point
-     * @param {JXG.Board} [board]
+     * @param {JXG2.Point|JXG2.Coords} point
+     * @param {JXG2.Board} [board]
      */
     static projectPointToBoard(point, board) {
         var i,
@@ -4147,8 +4147,8 @@ export class Geometry {
      * <li> sphere3d, sphere3d
      * </ul>
      *
-     * @param {JXG.GeometryElement3D} el1 Plane or sphere element
-     * @param {JXG.GeometryElement3D} el2 Plane or sphere element
+     * @param {JXG2.GeometryElement3D} el1 Plane or sphere element
+     * @param {JXG2.GeometryElement3D} el2 Plane or sphere element
      * @returns {Array} of functions needed as input to create the intersecting line or circle.
      *
      */
@@ -4306,7 +4306,7 @@ export class Geometry {
      * Given the 2D screen coordinates of a point, finds the nearest point on the given
      * parametric curve or surface, and returns its view-space coordinates.
      * @param {Array} p 3D coordinates for which the closest point on the curve point is searched.
-     * @param {JXG.Curve3D|JXG.Surface3D} target Parametric curve or surface to project to.
+     * @param {JXG2.Curve3D|JXG2.Surface3D} target Parametric curve or surface to project to.
      * @param {Array} params New position of point on the target (i.e. it is a return value),
      * modified in place during the search, ending up at the nearest point.
      * Usually, point.position is supplied for params.
@@ -4373,7 +4373,7 @@ export class Geometry {
             params[0] = f * (r_u[0] + r_u[1]);
             if (n === 2) { params[1] = f * (r_v[0] + r_v[1]); }
         }
-        JXG.JSXMath.Nlp.FindMinimum(_minFunc, n, 0, params, rhobeg, rhoend, iprint, maxfun);
+        JXG2.JSXMath.Nlp.FindMinimum(_minFunc, n, 0, params, rhobeg, rhoend, iprint, maxfun);
         // Update p which is used subsequently in _minFunc
         p = [target.X.apply(target, params),
         target.Y.apply(target, params),
@@ -4388,7 +4388,7 @@ export class Geometry {
             params[0] = f * (r_u[0] + r_u[1]);
             if (n === 2) { params[1] = f * (r_v[0] + r_v[1]); }
 
-            JXG.JSXMath.Nlp.FindMinimum(_minFunc, n, m, params, rhobeg, rhoend, iprint, maxfun);
+            JXG2.JSXMath.Nlp.FindMinimum(_minFunc, n, m, params, rhobeg, rhoend, iprint, maxfun);
         }
 
         return [1,
@@ -4403,7 +4403,7 @@ export class Geometry {
     //  * given parametric curve or surface which is nearest in screen space,
     //  * and returns its view-space coordinates.
     //  * @param {Array} pScr Screen coordinates to project.
-    //  * @param {JXG.Curve3D|JXG.Surface3D} target Parametric curve or surface to project to.
+    //  * @param {JXG2.Curve3D|JXG2.Surface3D} target Parametric curve or surface to project to.
     //  * @param {Array} params Parameters of point on the target, initially specifying the starting point of
     //  * the search. The parameters are modified in place during the search, ending up at the nearest point.
     //  * @returns {Array} Array of length 4 containing the coordinates of the nearest point on the curve or surface.
@@ -4514,7 +4514,7 @@ export class Geometry {
      * @param {Number} nr Number of vertices
      * @returns {Array} An array containing the two functions defining the Reuleaux polygon and the two values
      * for the start and the end of the paramtric curve. array may be used as parent array of a
-     * {@link JXG.Curve}.
+     * {@link JXG2.Curve}.
      *
      * @example
      * var A = brd.create('point',[-2,-2]);
@@ -4525,7 +4525,7 @@ export class Geometry {
      *
      * </pre><div class="jxgbox" id="JXG2543a843-46a9-4372-abc1-94d9ad2db7ac" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
-     * var brd = JXG.JSXGraph.initBoard('JXG2543a843-46a9-4372-abc1-94d9ad2db7ac', {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright:false, shownavigation: false});
+     * var brd = JXG2.JSXGraph.initBoard('JXG2543a843-46a9-4372-abc1-94d9ad2db7ac', {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright:false, shownavigation: false});
      * var A = brd.create('point',[-2,-2]);
      * var B = brd.create('point',[0,1]);
      * var pol = brd.create('regularpolygon',[A,B,3], {withLines:false, fillColor:'none', highlightFillColor:'none', fillOpacity:0.0});

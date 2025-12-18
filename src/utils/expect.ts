@@ -29,21 +29,21 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, html_sanitize: true*/
+/*global JXG2: true, define: true, html_sanitize: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview expect.js provides utilities for parameter magic by normalizing multi-type parameters.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { Type } from "./type.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
 
 /**
- * The JXG.Expect namespace provides method to normalize access on coordinates,
+ * The JXG2.Expect namespace provides method to normalize access on coordinates,
  * i.e. provides utilities for parameter magic by normalizing multi-type parameters.
  * @namespace
  */
@@ -75,10 +75,10 @@ export class Expect {
     /**
      * Normalize points and coord objects into a coord object.
      *
-     * @param {JXG.Point|JXG.Coords} c
+     * @param {JXG2.Point|JXG2.Coords} c
      * @param {Boolean} [copy=false] Return a copy, not a reference
      *
-     * @returns {JXG.Coords}
+     * @returns {JXG2.Coords}
      */
     static coords(c, copy = false) {
         var coord = c;
@@ -99,7 +99,7 @@ export class Expect {
     /**
      * Normalize points, coordinate arrays and coord objects into a coordinate array.
      *
-     * @param {JXG.Point|JXG.Coords|Array} c
+     * @param {JXG2.Point|JXG2.Coords|Array} c
      * @param {Boolean} [copy=false] Return a copy, not a reference
      *
      * @returns {Array} Homogeneous coordinates

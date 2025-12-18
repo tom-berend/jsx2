@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -38,7 +38,7 @@
  * a board.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import {Type} from "../utils/type.js";
 import GeometryElement from "../base/element.js";
 import Prefix from "../parser/prefix.js";
@@ -54,7 +54,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  * @name Tapemeasure
  * @augments Segment
  * @constructor
- * @type JXG.Segment
+ * @type JXG2.Segment
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
  * @param {Array_Array} start,end, The two arrays give the initial position where the tape measure
  * is drawn on the board.
@@ -67,7 +67,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  * </pre><div class="jxgbox" id="JXG6d9a2cda-22fe-4cd1-9d94-34283b1bdc01" style="width: 200px; height: 200px;"></div>
  * <script type="text/javascript">
  *   (function () {
- *     var board = JXG.JSXGraph.initBoard('JXG6d9a2cda-22fe-4cd1-9d94-34283b1bdc01', {boundingbox: [-1, 5, 5, -1], axis: true, showcopyright: false, shownavigation: false});
+ *     var board = JXG2.JSXGraph.initBoard('JXG6d9a2cda-22fe-4cd1-9d94-34283b1bdc01', {boundingbox: [-1, 5, 5, -1], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [0,0]);
  *     var p2 = board.create('point', [1,1]);
  *     var p3 = board.create('point', [3,1]);
@@ -75,7 +75,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  *   })();
  * </script><pre>
  */
-JXG.createTapemeasure = function (board, parents, attributes) {
+JXG2.createTapemeasure = function (board, parents, attributes) {
     var pos0, pos1, attr, withTicks, withText, digits, li, p1, p2, n, ti;
 
     pos0 = parents[0];
@@ -143,7 +143,7 @@ JXG.createTapemeasure = function (board, parents, attributes) {
         board.removeObject(p2);
         board.removeObject(p1);
 
-        JXG.GeometryElement.prototype.remove.call(this);
+        JXG2.GeometryElement.prototype.remove.call(this);
     };
 
     /**
@@ -192,12 +192,12 @@ JXG.createTapemeasure = function (board, parents, attributes) {
     return li;
 };
 
-JXG.registerElement("tapemeasure", JXG.createTapemeasure);
+JXG2.registerElement("tapemeasure", JXG2.createTapemeasure);
 
 /**
  * @class Display measurements of geometric elements and the arithmetic operations of measurements.
  * Under the hood this is a text element which has a method Value. The text to be displayed
- * is the result of the evaluation of a prefix expression, see {@link JXG.PrefixParser}.
+ * is the result of the evaluation of a prefix expression, see {@link JXG2.PrefixParser}.
  * <p>
  * The purpose of this element is to display values of measurements of geometric objects, like the radius of a circle,
  * as well as expressions consisting of measurements.
@@ -206,10 +206,10 @@ JXG.registerElement("tapemeasure", JXG.createTapemeasure);
  * @name Measurement
  * @augments Text
  * @constructor
- * @type JXG.Text
+ * @type JXG2.Text
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
  * @param {Point|Array_Point|Array_Array} x,y,expression
- * Here, expression is a prefix expression, see {@link JXG.PrefixParser}.
+ * Here, expression is a prefix expression, see {@link JXG2.PrefixParser}.
  * @example
  * var p1 = board.create('point', [1, 1]);
  * var p2 = board.create('point', [1, 3]);
@@ -229,7 +229,7 @@ JXG.registerElement("tapemeasure", JXG.createTapemeasure);
  * </pre><div id="JXG6359237a-79bc-4689-92fc-38d3ebeb769d" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG6359237a-79bc-4689-92fc-38d3ebeb769d',
+ *         var board = JXG2.JSXGraph.initBoard('JXG6359237a-79bc-4689-92fc-38d3ebeb769d',
  *             {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [1, 1]);
  *     var p2 = board.create('point', [1, 3]);
@@ -283,7 +283,7 @@ JXG.registerElement("tapemeasure", JXG.createTapemeasure);
  * </pre><div id="JXG49903663-6450-401e-b0d9-f025a6677d4a" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG49903663-6450-401e-b0d9-f025a6677d4a',
+ *         var board = JXG2.JSXGraph.initBoard('JXG49903663-6450-401e-b0d9-f025a6677d4a',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [1, 1]);
  *     var p2 = board.create('point', [1, 3]);
@@ -319,7 +319,7 @@ JXG.registerElement("tapemeasure", JXG.createTapemeasure);
  * </script><pre>
  *
  */
-JXG.createMeasurement = function (board, parents, attributes) {
+JXG2.createMeasurement = function (board, parents, attributes) {
     var el, attr,
         x, y, term,
         i;
@@ -502,4 +502,4 @@ JXG.createMeasurement = function (board, parents, attributes) {
     return el;
 };
 
-JXG.registerElement("measurement", JXG.createMeasurement);
+JXG2.registerElement("measurement", JXG2.createMeasurement);

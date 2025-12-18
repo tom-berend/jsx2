@@ -36,7 +36,7 @@
         Nina Koch
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { JSXMath } from "../math/math.js";
 import { Type } from "../utils/type.js";
 import { OBJECT_TYPE } from "../base/constants.js";
@@ -52,10 +52,10 @@ import { OBJECT_TYPE } from "../base/constants.js";
  * It is usually instantiated on the board's creation via the attribute <tt>grid</tt> set to true.
  * @constructor
  * @name Grid
- * @type JXG.Curve
- * @augments JXG.Curve
+ * @type JXG2.Curve
+ * @augments JXG2.Curve
  * @throws {Error} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Axis_JXG.Axis} a1,a2 Optional parent axis.
+ * @param {JXG2.Axis_JXG.Axis} a1,a2 Optional parent axis.
  *
  * @example
  * // standard grid
@@ -63,7 +63,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  * </pre><div id="JXGc8dde3f5-22ef-4c43-9505-34b299b5b24d" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *  (function() {
- *      var board = JXG.JSXGraph.initBoard('JXGc8dde3f5-22ef-4c43-9505-34b299b5b24d',
+ *      var board = JXG2.JSXGraph.initBoard('JXGc8dde3f5-22ef-4c43-9505-34b299b5b24d',
  *          {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
  *      var g = board.create('grid', [], {});
  *  })();
@@ -86,7 +86,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  * </pre><div id="JXG02374171-b27c-4ccc-a14a-9f5bd1162623" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG02374171-b27c-4ccc-a14a-9f5bd1162623',
+ *         var board = JXG2.JSXGraph.initBoard('JXG02374171-b27c-4ccc-a14a-9f5bd1162623',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
  *         var g = board.create('grid', [], {
  *             major: {
@@ -125,7 +125,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  * </pre><div id="JXG00f3d068-093c-4c1d-a1ab-96c9ee73c173" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG00f3d068-093c-4c1d-a1ab-96c9ee73c173',
+ *         var board = JXG2.JSXGraph.initBoard('JXG00f3d068-093c-4c1d-a1ab-96c9ee73c173',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
  *         var grid = board.create('grid', [], {
  *             major: {
@@ -181,7 +181,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  * </pre><div id="JXG0568e385-248c-43a9-87ed-07aceb8cc3ab" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG0568e385-248c-43a9-87ed-07aceb8cc3ab',
+ *         var board = JXG2.JSXGraph.initBoard('JXG0568e385-248c-43a9-87ed-07aceb8cc3ab',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, showcopyright: false, shownavigation: false});
  *         var axis1 = board.create('axis', [[-1, -2.5], [1, -2.5]], {
  *             ticks: {
@@ -215,7 +215,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  *     }());
  * </script><pre>
  */
-JXG.createGrid = function (board, parents, attributes) {
+JXG2.createGrid = function (board, parents, attributes) {
     var eps = JSXMath.eps,       // to avoid rounding errors
         maxLines = 5000,    // maximum number of vertical or horizontal grid elements (abort criterion for performance reasons)
 
@@ -482,11 +482,11 @@ JXG.createGrid = function (board, parents, attributes) {
             majorStep = [majorStep[0], majorStep[0]];
         }
         if (Type.exists(gridX)) {
-            JXG.deprecated("gridX", 'majorStep');
+            JXG2.deprecated("gridX", 'majorStep');
             majorStep[0] = gridX;
         }
         if (Type.exists(gridY)) {
-            JXG.deprecated("gridY", 'majorStep');
+            JXG2.deprecated("gridY", 'majorStep');
             majorStep[1] = gridY;
         }
 
@@ -1048,4 +1048,4 @@ JXG.createGrid = function (board, parents, attributes) {
     return majorGrid;
 };
 
-JXG.registerElement("grid", JXG.createGrid);
+JXG2.registerElement("grid", JXG2.createGrid);

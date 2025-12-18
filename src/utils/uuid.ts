@@ -6,14 +6,14 @@
  * Dual licensed under the MIT and GPL licenses.
  * @returns {String}
  * @example
- *   var uuid = JXG.Util.genUUID();
+ *   var uuid = JXG2.Util.genUUID();
  *   > uuid = '92329D39-6F5C-4520-ABFC-AAB64544E172'
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true, bitwise: true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 
 // constants
 var uuidCharsStr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -23,9 +23,9 @@ var uuidCharsStr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx
  * General utility routines
  * @namespace
  */
-JXG.Util = JXG.Util || {};
+JXG2.Util = JXG2.Util || {};
 
-JXG.Util.genUUID = function (prefix) {
+JXG2.Util.genUUID = function (prefix) {
     var r,
         i,
         uuid = [],
@@ -56,4 +56,4 @@ JXG.Util.genUUID = function (prefix) {
     return prefix + uuid.join("");
 };
 
-export default JXG.Util;
+export default JXG2.Util;

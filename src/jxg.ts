@@ -45,19 +45,19 @@
  * You can then access these members directly using the class name, without needing to create an object from
  * the class.
  *
- * JXG is a static class
+ * JXG2 is a static class
 */
 
 
 
 
-/*global JXG: true, define: true, jQuery: true, window: true, document: true, navigator: true, require: true, module: true, console: true */
+/*global JXG2: true, define: true, jQuery: true, window: true, document: true, navigator: true, require: true, module: true, console: true */
 /*jslint nomen:true, plusplus:true, forin:true*/
 
 /**
  * @fileoverview The JSXGraph object is defined in this file. JSXGraph controls all boards.
  * It has methods to create, save, load and free boards. Additionally some helper functions are
- * defined in this file directly in the JXG namespace.
+ * defined in this file directly in the JXG2 namespace.
  */
 
 
@@ -120,7 +120,7 @@ export function JXG_registerElement(element: string, creator: Function) {
 
 //     if (!Type.exists(el)) {
 //         throw new Error('JSXGraph: create: failure creating ' + elementType);
-//         // JXG.debug('JSXGraph: create: failure creating ' + elementType);
+//         // JXG2.debug('JSXGraph: create: failure creating ' + elementType);
 //         return el;
 //     }
 // }
@@ -132,9 +132,9 @@ export function JXG_registerElement(element: string, creator: Function) {
 
 
 /**
- * JXG is the top object of JSXGraph and defines the namespace
+ * JXG2 is the top object of JSXGraph and defines the namespace
  */
-export class JXG {
+export class JXG2 {
 
     // tbtb - temporary until more TS classes
     static Circle3D;
@@ -413,21 +413,21 @@ export class JXG {
 
     static themes: Object = {};
 
-    // We need the following two methods "extend" and "shortcut" to create the JXG object via this.extend.
+    // We need the following two methods "extend" and "shortcut" to create the JXG2 object via this.extend.
 
     /**
      * Copy all properties of the <tt>extension</tt> object to <tt>object</tt>.
      * @param  object
      * @param  extension
      * @param  [onlyOwn=false] Only consider properties that belong to extension itself, not any inherited properties.
-     * @param  [toLower=false] If true the keys are convert to lower case. This is needed for visProp, see JXG#copyAttributes
+     * @param  [toLower=false] If true the keys are convert to lower case. This is needed for visProp, see JXG2#copyAttributes
      */
 
 
     static extend(object: Object, extension: Object, onlyOwn: boolean = false, toLower: boolean = false) {
         var e, e2;
 
-        console.warn('Extend - Eliminate this')
+        // console.warn('Extend - Eliminate this')
         onlyOwn = onlyOwn || false;
         toLower = toLower || false;
 
@@ -473,7 +473,7 @@ export class JXG {
      * @param {Object} object
      * @param {Object} constants
      * @param {Boolean} [onlyOwn=false] Only consider properties that belong to extension itself, not any inherited properties.
-     * @param {Boolean} [toUpper=false] If true the keys are convert to lower case. This is needed for visProp, see JXG#copyAttributes
+     * @param {Boolean} [toUpper=false] If true the keys are convert to lower case. This is needed for visProp, see JXG2#copyAttributes
      */
 
     // TODO: eliminate this

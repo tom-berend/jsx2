@@ -29,14 +29,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, window: true*/
+/*global JXG2: true, define: true, window: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview In this file the Text element is defined.
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import { OBJECT_TYPE } from "../base/constants.js";
 import {Env} from "../utils/env.js";
 import {Type} from "../utils/type.js";
@@ -65,7 +65,7 @@ var priv = {
  * @name Button
  * @augments Text
  * @constructor
- * @type JXG.Text
+ * @type JXG2.Text
  *
  * @param {number,function_number,function_String,function_function} x,y,label,handler Parent elements for button elements.
  *  <p>
@@ -92,7 +92,7 @@ var priv = {
  *
  * </pre><div class="jxgbox" id="JXGf19b1bce-dd00-4e35-be97-ff1817d11514" style="width: 500px; height: 300px;"></div>
  * <script type="text/javascript">
- *  var t1_board = JXG.JSXGraph.initBoard('JXGf19b1bce-dd00-4e35-be97-ff1817d11514', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
+ *  var t1_board = JXG2.JSXGraph.initBoard('JXGf19b1bce-dd00-4e35-be97-ff1817d11514', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
  *  var p = t1_board.create('point', [0, -1], {id: 'p1'});
  *
  *  // Create a button element at position [1,2].
@@ -121,7 +121,7 @@ var priv = {
  * }]);
  *
  * // Set initial value for the button
- * if (!JXG.exists(butt.value)) {
+ * if (!JXG2.exists(butt.value)) {
  * 	butt.value = false;
  * }
  *
@@ -134,7 +134,7 @@ var priv = {
  * </pre><div id="JXGa1eaab8f-c73b-4660-96ce-4ca17bcac4d6" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGa1eaab8f-c73b-4660-96ce-4ca17bcac4d6',
+ *         var board = JXG2.JSXGraph.initBoard('JXGa1eaab8f-c73b-4660-96ce-4ca17bcac4d6',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var butt = board.create('button', [-2, -2, 'Off', function() {
  *       var txt;
@@ -148,7 +148,7 @@ var priv = {
  *     }]);
  *
  *     // Set initial value for the button
- *     if (!JXG.exists(butt.value)) {
+ *     if (!JXG2.exists(butt.value)) {
  *     	butt.value = false;
  *     }
  *
@@ -174,7 +174,7 @@ var priv = {
  * </pre><div id="JXG11cac8ff-2354-47e7-9da4-eb928e53de05" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG11cac8ff-2354-47e7-9da4-eb928e53de05',
+ *         var board = JXG2.JSXGraph.initBoard('JXG11cac8ff-2354-47e7-9da4-eb928e53de05',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var i1 = board.create('input', [-3, 4, 'sin(x)', 'f(x)='], {cssStyle: 'width:4em', maxlength: 2});
  *             var c1 = board.create('checkbox', [-3, 2, 'label 1'], {});
@@ -228,7 +228,7 @@ var priv = {
  * <div id="JXG2da6cf73-8c2e-495c-bd31-42de43b71cf8" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG2da6cf73-8c2e-495c-bd31-42de43b71cf8',
+ *         var board = JXG2.JSXGraph.initBoard('JXG2da6cf73-8c2e-495c-bd31-42de43b71cf8',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *       var button = board.create('button', [1, 4, 'answers', function () {
  *       }], {cssClass:'mybutton', highlightCssClass: 'mybutton'});
@@ -238,7 +238,7 @@ var priv = {
  * </script><pre>
  *
  */
-JXG.createButton = function (board, parents, attributes) {
+JXG2.createButton = function (board, parents, attributes) {
     var t,
         par,
         attr = Type.copyAttributes(attributes, board.options, 'button');
@@ -270,7 +270,7 @@ JXG.createButton = function (board, parents, attributes) {
 
     if (parents[3]) {
         if (Type.isString(parents[3])) {
-            t._jc = new JXG.JessieCode();
+            t._jc = new JXG2.JessieCode();
             t._jc.use(board);
             t._handler = function () {
                 t._jc.parse(parents[3]);
@@ -315,8 +315,8 @@ JXG.createButton = function (board, parents, attributes) {
     return t;
 };
 
-JXG.registerElement("button", JXG.createButton);
+JXG2.registerElement("button", JXG2.createButton);
 
 // export default {
-//     createButton: JXG.createButton
+//     createButton: JXG2.createButton
 // };

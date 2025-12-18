@@ -29,14 +29,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, window: true*/
+/*global JXG2: true, define: true, window: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview In this file the ForeignObject element is defined.
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
 import {Coords} from "../base/coords.js";
 import GeometryElement from "./element.js";
@@ -47,18 +47,18 @@ import CoordsElement from "./coordselement.js";
 /**
  * Construct and handle SVG foreignObjects.
  *
- * @class Creates a new foreignObject object. Do not use this constructor to create a foreignObject. Use {@link JXG.Board#create} with
+ * @class Creates a new foreignObject object. Do not use this constructor to create a foreignObject. Use {@link JXG2.Board#create} with
  * type {@link foreignobject} instead.
- * @augments JXG.GeometryElement
- * @augments JXG.CoordsElement
- * @param {string|JXG.Board} board The board the new foreignObject is drawn on.
+ * @augments JXG2.GeometryElement
+ * @augments JXG2.CoordsElement
+ * @param {string|JXG2.Board} board The board the new foreignObject is drawn on.
  * @param {Array} coordinates An array with the user coordinates of the foreignObject.
  * @param {Object} attributes An object containing visual and - optionally - a name and an id.
  * @param {string|function} url An URL string or a function returning an URL string.
  * @param  {Array} size Array containing width and height of the foreignObject in user coordinates.
  *
  */
-JXG.ForeignObject = function (board, coords, attributes, content, size) {
+JXG2.ForeignObject = function (board, coords, attributes, content, size) {
     this.constructor(
         board,
         attributes,
@@ -119,12 +119,12 @@ JXG.ForeignObject = function (board, coords, attributes, content, size) {
     });
 };
 
-JXG.ForeignObject.prototype = new GeometryElement();
-Type.copyPrototypeMethods(JXG.ForeignObject, CoordsElement, 'coordsConstructor');
+JXG2.ForeignObject.prototype = new GeometryElement();
+Type.copyPrototypeMethods(JXG2.ForeignObject, CoordsElement, 'coordsConstructor');
 
-JXG.extend(
-    JXG.ForeignObject.prototype,
-    /** @lends JXG.ForeignObject.prototype */ {
+JXG2.extend(
+    JXG2.ForeignObject.prototype,
+    /** @lends JXG2.ForeignObject.prototype */ {
         /**
          * Checks whether (x,y) is over or near the image;
          * @param {Number} x Coordinate in x direction, screen coordinates.
@@ -174,7 +174,7 @@ JXG.extend(
         /**
          * Recalculate the coordinates of lower left corner and the width and height.
          *
-         * @returns {JXG.ForeignObject} A reference to the element
+         * @returns {JXG2.ForeignObject} A reference to the element
          * @private
          */
         update: function (fromParent) {
@@ -197,7 +197,7 @@ JXG.extend(
 
         /**
          * Updates the internal arrays containing size of the foreignObject.
-         * @returns {JXG.ForeignObject} A reference to the element
+         * @returns {JXG2.ForeignObject} A reference to the element
          * @private
          */
         updateSize: function () {
@@ -222,7 +222,7 @@ JXG.extend(
         /**
          * Update the anchor point of the foreignObject, i.e. the lower left corner
          * and the two vectors which span the rectangle.
-         * @returns {JXG.ForeignObject} A reference to the element
+         * @returns {JXG2.ForeignObject} A reference to the element
          * @private
          *
          */
@@ -302,7 +302,7 @@ JXG.extend(
          *                            that determines the new width of the foreignObject
          * @param  {number|function|string} height Number, function or string
          *                            that determines the new height of the foreignObject
-         * @returns {JXG.ForeignObject} A reference to the element
+         * @returns {JXG2.ForeignObject} A reference to the element
          *
          */
         setSize: function (width, height) {
@@ -341,9 +341,9 @@ JXG.extend(
  *
  * @pseudo
  * @name ForeignObject
- * @augments JXG.ForeignObject
+ * @augments JXG2.ForeignObject
  * @constructor
- * @type JXG.ForeignObject
+ * @type JXG2.ForeignObject
  *
  * @param {String} content HTML content of the foreignObject. May also be &lt;video&gt; or &lt;iframe&gt;
  * @param {Array} position Position of the foreignObject given by [x, y] in user coordinates. Same as for images.
@@ -363,7 +363,7 @@ JXG.extend(
  * </pre><div id="JXG0c122f2c-3671-4a28-80a9-f4c523eeda89" class="jxgbox" style="width: 500px; height: 500px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG0c122f2c-3671-4a28-80a9-f4c523eeda89',
+ *         var board = JXG2.JSXGraph.initBoard('JXG0c122f2c-3671-4a28-80a9-f4c523eeda89',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p = board.create('point', [1, 7], {size: 16});
  *     var fo = board.create('foreignobject', [
@@ -387,7 +387,7 @@ JXG.extend(
  * </pre><div id="JXG1759c868-1a4a-4767-802c-91f84902e3ec" class="jxgbox" style="width: 500px; height: 500px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG1759c868-1a4a-4767-802c-91f84902e3ec',
+ *         var board = JXG2.JSXGraph.initBoard('JXG1759c868-1a4a-4767-802c-91f84902e3ec',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p = board.create('point', [1, 7], {size: 16});
  *     var fo = board.create('foreignobject', [
@@ -419,7 +419,7 @@ JXG.extend(
  * </pre><div id="JXGc3fc5520-13aa-4f66-abaa-42e9dc3fbf3f" class="jxgbox" style="width: 500px; height: 500px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGc3fc5520-13aa-4f66-abaa-42e9dc3fbf3f',
+ *         var board = JXG2.JSXGraph.initBoard('JXGc3fc5520-13aa-4f66-abaa-42e9dc3fbf3f',
  *             {boundingbox: [-6,4,6,-4], axis: true, showcopyright: false, shownavigation: false});
  *     board.renderer.container.style.backgroundColor = 'lightblue';
  *     var points = [];
@@ -445,7 +445,7 @@ JXG.extend(
  * ©2016 Nuno Miguel Duarte.
  *
  */
-JXG.createForeignObject = function (board, parents, attributes) {
+JXG2.createForeignObject = function (board, parents, attributes) {
     var attr,
         fo,
         content = parents[0],
@@ -457,7 +457,7 @@ JXG.createForeignObject = function (board, parents, attributes) {
     }
 
     attr = Type.copyAttributes(attributes, board.options, 'foreignobject');
-    fo = CoordsElement.create(JXG.ForeignObject, board, coords, attr, content, size);
+    fo = CoordsElement.create(JXG2.ForeignObject, board, coords, attr, content, size);
     if (!fo) {
         throw new Error(
             "JSXGraph: Can't create foreignObject with parent types '" +
@@ -472,11 +472,11 @@ JXG.createForeignObject = function (board, parents, attributes) {
     return fo;
 };
 
-JXG.registerElement("foreignobject", JXG.createForeignObject);
-JXG.registerElement("fo", JXG.createForeignObject);
+JXG2.registerElement("foreignobject", JXG2.createForeignObject);
+JXG2.registerElement("fo", JXG2.createForeignObject);
 
-export default JXG.ForeignObject;
+export default JXG2.ForeignObject;
 // export default {
-//     ForeignObject: JXG.ForeignObject,
-//     createForeignobject: JXG.createForeignObject
+//     ForeignObject: JXG2.ForeignObject,
+//     createForeignobject: JXG2.createForeignObject
 // };

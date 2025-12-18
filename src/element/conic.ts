@@ -29,14 +29,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true*/
+/*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview In this file the conic sections defined.
  */
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
@@ -52,11 +52,11 @@ import { Type } from "../utils/type.js";
  * @name Ellipse
  * @augments Conic
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point,array_JXG.Point,array_JXG.Point,array} point1,point2,point3 Parent elements can be three elements either of type {@link JXG.Point} or array of
+ * @param {JXG2.Point,array_JXG.Point,array_JXG.Point,array} point1,point2,point3 Parent elements can be three elements either of type {@link JXG2.Point} or array of
  * numbers describing the coordinates of a point. In the latter case the point will be constructed automatically as a fixed invisible point.
- * @param {JXG.Point,array_JXG.Point,array_number,function} point1,point2,number Parent elements can be two elements either of type {@link JXG.Point} or array of
+ * @param {JXG2.Point,array_JXG.Point,array_number,function} point1,point2,number Parent elements can be two elements either of type {@link JXG2.Point} or array of
  * numbers describing the coordinates of a point. The third parameter is a number/function which defines the length of the major axis
  * @param {Number} start (Optional) parameter of the curve start, default: 0.
  * @param {Number} end (Optional) parameter for the curve end, default: 2&pi;.
@@ -69,7 +69,7 @@ import { Type } from "../utils/type.js";
  * </pre><div class="jxgbox" id="JXGa4d7fb6f-8708-4e45-87f2-2379ae2bd2c0" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *   (function() {
- *   var glex1_board = JXG.JSXGraph.initBoard('JXGa4d7fb6f-8708-4e45-87f2-2379ae2bd2c0', {boundingbox:[-6,6,6,-6], keepaspectratio:true, showcopyright: false, shownavigation: false});
+ *   var glex1_board = JXG2.JSXGraph.initBoard('JXGa4d7fb6f-8708-4e45-87f2-2379ae2bd2c0', {boundingbox:[-6,6,6,-6], keepaspectratio:true, showcopyright: false, shownavigation: false});
  *   var A = glex1_board.create('point', [-1,4]);
  *   var B = glex1_board.create('point', [-1,-4]);
  *   var C = glex1_board.create('point', [1,1]);
@@ -91,7 +91,7 @@ import { Type } from "../utils/type.js";
  * </pre><div id="JXG950f7c07-27a4-4c67-9505-c73c22ce9345" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG950f7c07-27a4-4c67-9505-c73c22ce9345',
+ *         var board = JXG2.JSXGraph.initBoard('JXG950f7c07-27a4-4c67-9505-c73c22ce9345',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [-1, 2]);
  *     var p2 = board.create('point', [ 1, 2]);
@@ -108,7 +108,7 @@ import { Type } from "../utils/type.js";
  *
  *
  */
-JXG.createEllipse = function (board, parents, attributes) {
+JXG2.createEllipse = function (board, parents, attributes) {
     var polarForm,
         curve,
         M,
@@ -290,7 +290,7 @@ JXG.createEllipse = function (board, parents, attributes) {
 
     /**
      * Checks whether (x,y) is near the ellipse line or inside of the ellipse
-     * (in case JXG.Options.conic#hasInnerPoints is true).
+     * (in case JXG2.Options.conic#hasInnerPoints is true).
      * @param {Number} x Coordinate in x direction, screen coordinates.
      * @param {Number} y Coordinate in y direction, screen coordinates.
      * @returns {Boolean} True if (x,y) is near the ellipse, False otherwise.
@@ -334,11 +334,11 @@ JXG.createEllipse = function (board, parents, attributes) {
  * @name Hyperbola
  * @augments Conic
  * @constructor
- * @type JXG.Curve
+ * @type JXG2.Curve
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point,array_JXG.Point,array_JXG.Point,array} point1,point2,point3 Parent elements can be three elements either of type {@link JXG.Point} or array of
+ * @param {JXG2.Point,array_JXG.Point,array_JXG.Point,array} point1,point2,point3 Parent elements can be three elements either of type {@link JXG2.Point} or array of
  * numbers describing the coordinates of a point. In the latter case the point will be constructed automatically as a fixed invisible point.
- * @param {JXG.Point,array_JXG.Point,array_number,function} point1,point2,number Parent elements can be two elements either of type {@link JXG.Point} or array of
+ * @param {JXG2.Point,array_JXG.Point,array_number,function} point1,point2,number Parent elements can be two elements either of type {@link JXG2.Point} or array of
  * numbers describing the coordinates of a point. The third parameter is a number/function which defines the length of the major axis
  * @param {Number} start (Optional) parameter of the curve start, default: -&pi;.
  * @param {Number} end (Optional) parameter for the curve end, default: &pi;.
@@ -351,7 +351,7 @@ JXG.createEllipse = function (board, parents, attributes) {
  * </pre><div class="jxgbox" id="JXGcf99049d-a3fe-407f-b936-27d76550f8c4" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *   (function(){
- *   var glex1_board = JXG.JSXGraph.initBoard('JXGcf99049d-a3fe-407f-b936-27d76550f8c4', {boundingbox:[-6,6,6,-6], keepaspectratio:true, showcopyright: false, shownavigation: false});
+ *   var glex1_board = JXG2.JSXGraph.initBoard('JXGcf99049d-a3fe-407f-b936-27d76550f8c4', {boundingbox:[-6,6,6,-6], keepaspectratio:true, showcopyright: false, shownavigation: false});
  *   var A = glex1_board.create('point', [-1,4]);
  *   var B = glex1_board.create('point', [-1,-4]);
  *   var C = glex1_board.create('point', [1,1]);
@@ -359,7 +359,7 @@ JXG.createEllipse = function (board, parents, attributes) {
  * })();
  * </script><pre>
  */
-JXG.createHyperbola = function (board, parents, attributes) {
+JXG2.createHyperbola = function (board, parents, attributes) {
     var polarForm,
         curve,
         M,
@@ -557,9 +557,9 @@ JXG.createHyperbola = function (board, parents, attributes) {
  * @augments Conic
  * @constructor
  * @type Object
- * @description JXG.Curve
+ * @description JXG2.Curve
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point,array_JXG.Line} point,line Parent elements are a point and a line or a pair of coordinates.
+ * @param {JXG2.Point,array_JXG.Line} point,line Parent elements are a point and a line or a pair of coordinates.
  * Optional parameters three and four are numbers which define the curve length (e.g. start/end). Default values are -pi and pi.
  * @example
  * // Create a parabola by a point C and a line l.
@@ -571,7 +571,7 @@ JXG.createHyperbola = function (board, parents, attributes) {
  * </pre><div class="jxgbox" id="JXG524d1aae-217d-44d4-ac58-a19c7ab1de36" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function() {
- *   var glex1_board = JXG.JSXGraph.initBoard('JXG524d1aae-217d-44d4-ac58-a19c7ab1de36', {boundingbox:[-6,6,6,-6], keepaspectratio:true, showcopyright: false, shownavigation: false});
+ *   var glex1_board = JXG2.JSXGraph.initBoard('JXG524d1aae-217d-44d4-ac58-a19c7ab1de36', {boundingbox:[-6,6,6,-6], keepaspectratio:true, showcopyright: false, shownavigation: false});
  *   var A = glex1_board.create('point', [-1,4]);
  *   var B = glex1_board.create('point', [-1,-4]);
  *   var l = glex1_board.create('line', [A,B]);
@@ -586,7 +586,7 @@ JXG.createHyperbola = function (board, parents, attributes) {
  * </pre><div id="JXG09252542-b77a-4990-a109-66ffb649a472" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG09252542-b77a-4990-a109-66ffb649a472',
+ *         var board = JXG2.JSXGraph.initBoard('JXG09252542-b77a-4990-a109-66ffb649a472',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var par = board.create('parabola',[[3.25, 0], [[0.25, 1],[0.25, 0]]]);
  *
@@ -595,7 +595,7 @@ JXG.createHyperbola = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG.createParabola = function (board, parents, attributes) {
+JXG2.createParabola = function (board, parents, attributes) {
     var polarForm,
         curve,
         M,
@@ -780,11 +780,11 @@ JXG.createParabola = function (board, parents, attributes) {
  * </pre>
  * @pseudo
  * @name Conic
- * @augments JXG.Curve
+ * @augments JXG2.Curve
  * @constructor
- * @type JXG.Conic
+ * @type JXG2.Conic
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG.Point,Array_JXG.Point,Array_JXG.Point,Array_JXG.Point,Array_JXG.Point,Array} a,b,c,d,e Parent elements are five points.
+ * @param {JXG2.Point,Array_JXG.Point,Array_JXG.Point,Array_JXG.Point,Array_JXG.Point,Array} a,b,c,d,e Parent elements are five points.
  * @param {Number_Number_Number_Number_Number_Number} a_00,a_11,a_22,a_01,a_02,a_12 6 numbers, i.e. A, C, F, B/2, D/2, E/2
  * @example
  * // Create a conic section through the points A, B, C, D, and E.
@@ -797,7 +797,7 @@ JXG.createParabola = function (board, parents, attributes) {
  * </pre><div class="jxgbox" id="JXG2d79bd6a-db9b-423c-9cba-2497f0b06320" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function(){
- *   var glex1_board = JXG.JSXGraph.initBoard('JXG2d79bd6a-db9b-423c-9cba-2497f0b06320', {boundingbox:[-6,6,6,-6], keepaspectratio:true, showcopyright: false, shownavigation: false});
+ *   var glex1_board = JXG2.JSXGraph.initBoard('JXG2d79bd6a-db9b-423c-9cba-2497f0b06320', {boundingbox:[-6,6,6,-6], keepaspectratio:true, showcopyright: false, shownavigation: false});
  *   var A = glex1_board.create('point', [1,5]);
  *   var B = glex1_board.create('point', [1,2]);
  *   var C = glex1_board.create('point', [2,0]);
@@ -814,7 +814,7 @@ JXG.createParabola = function (board, parents, attributes) {
  * </pre><div id="JXG8576a04a-52d8-4a7e-8d54-e32443910b97" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG8576a04a-52d8-4a7e-8d54-e32443910b97',
+ *         var board = JXG2.JSXGraph.initBoard('JXG8576a04a-52d8-4a7e-8d54-e32443910b97',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     // Parameters: A, C, F, B/2, D/2, E/2
  *     var conic = board.create('conic', [1, 2, -4, 0, 0, 0]);
@@ -823,7 +823,7 @@ JXG.createParabola = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG.createConic = function (board, parents, attributes) {
+JXG2.createConic = function (board, parents, attributes) {
     var polarForm,
         curve,
         fitConic,
@@ -1153,14 +1153,14 @@ JXG.createConic = function (board, parents, attributes) {
     return curve;
 };
 
-JXG.registerElement("ellipse", JXG.createEllipse);
-JXG.registerElement("hyperbola", JXG.createHyperbola);
-JXG.registerElement("parabola", JXG.createParabola);
-JXG.registerElement("conic", JXG.createConic);
+JXG2.registerElement("ellipse", JXG2.createEllipse);
+JXG2.registerElement("hyperbola", JXG2.createHyperbola);
+JXG2.registerElement("parabola", JXG2.createParabola);
+JXG2.registerElement("conic", JXG2.createConic);
 
 // export default {
-//     createEllipse: JXG.createEllipse,
-//     createHyperbola: JXG.createHyperbola,
-//     createParabola: JXG.createParabola,
-//     createConic: JXG.createConic
+//     createEllipse: JXG2.createEllipse,
+//     createHyperbola: JXG2.createHyperbola,
+//     createParabola: JXG2.createParabola,
+//     createConic: JXG2.createConic
 // };

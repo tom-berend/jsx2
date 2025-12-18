@@ -33,7 +33,7 @@ const dbugColor = `color:blue;background-color:#c0feac`;
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, window: true, document: true, navigator: true, module: true, global: true, self: true, require: true*/
+/*global JXG2: true, define: true, window: true, document: true, navigator: true, module: true, global: true, self: true, require: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -42,7 +42,7 @@ const dbugColor = `color:blue;background-color:#c0feac`;
  * the browser runs on is a tablet/cell or a desktop computer.
  */
 
-// import { JXG } from "../Env.js";
+// import { JXG2 } from "../Env.js";
 import  {Type}  from "./type.js";
 import { LooseObject } from "../interfaces.js";
 import GeometryElement  from "../base/element.js";

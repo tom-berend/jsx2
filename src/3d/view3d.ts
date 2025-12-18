@@ -37,9 +37,9 @@
         Laura Rinas
  */
 
-/*global JXG:true, define: true*/
+/*global JXG2:true, define: true*/
 
-import { JXG } from "../jxg.js";
+import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
@@ -54,15 +54,15 @@ import Composition from "../base/composition.js";
 /**
  * 3D view inside a JXGraph board.
  *
- * @class Creates a new 3D view. Do not use this constructor to create a 3D view. Use {@link JXG.Board#create} with
+ * @class Creates a new 3D view. Do not use this constructor to create a 3D view. Use {@link JXG2.Board#create} with
  * type {@link View3D} instead.
  *
- * @augments JXG.GeometryElement
+ * @augments JXG2.GeometryElement
  * @param {Array} parents Array consisting of lower left corner [x, y] of the view inside the board, [width, height] of the view
  * and box size [[x1, x2], [y1,y2], [z1,z2]]. If the view's azimuth=0 and elevation=0, the 3D view will cover a rectangle with lower left corner
  * [x,y] and side lengths [w, h] of the board.
  */
-JXG.View3D = function (board, parents, attributes) {
+JXG2.View3D = function (board, parents, attributes) {
     this.constructor(board, attributes, OBJECT_TYPE.VIEW3D, OBJECT_CLASS._3D);
 
     /**
@@ -161,7 +161,7 @@ JXG.View3D = function (board, parents, attributes) {
      * The <code>boxToCam</code> transformation is exposed to help 3D elements
      * manage their 2D representations in central projection mode. To map world
      * coordinates to focal coordinates, use the
-     * {@link JXG.View3D#worldToFocal} method.
+     * {@link JXG2.View3D#worldToFocal} method.
      * @type {Array}
      */
     this.boxToCam = [];
@@ -226,16 +226,16 @@ JXG.View3D = function (board, parents, attributes) {
         // TODO
     });
 };
-JXG.View3D.prototype = new GeometryElement();
+JXG2.View3D.prototype = new GeometryElement();
 
-JXG.extend(
-    JXG.View3D.prototype, /** @lends JXG.View3D.prototype */ {
+JXG2.extend(
+    JXG2.View3D.prototype, /** @lends JXG2.View3D.prototype */ {
 
     /**
      * Creates a new 3D element of type elementType.
      * @param {String} elementType Type of the element to be constructed given as a string e.g. 'point3d' or 'surface3d'.
      * @param {Array} parents Array of parent elements needed to construct the element e.g. coordinates for a 3D point or two
-     * 3D points to construct a line. This highly depends on the elementType that is constructed. See the corresponding JXG.create*
+     * 3D points to construct a line. This highly depends on the elementType that is constructed. See the corresponding JXG2.create*
      * methods for a list of possible parameters.
      * @param {Object} [attributes] An object containing the attributes to be set. This also depends on the elementType.
      * Common attributes are name, visible, strokeColor.
@@ -261,7 +261,7 @@ JXG.extend(
      * be used as a filter to return multiple elements at once filtered by the properties of the object.
      * @param {Boolean} onlyByIdOrName If true (default:false) elements are only filtered by their id, name or groupId.
      * The advanced filters consisting of objects or functions are ignored.
-     * @returns {JXG.GeometryElement3D|JXG.Composition}
+     * @returns {JXG2.GeometryElement3D|JXG2.Composition}
      * @example
      * // select the element with name A
      * view.select('A');
@@ -840,8 +840,8 @@ JXG.extend(
 
     /**
      * Compares 3D elements according to their z-Index.
-     * @param {JXG.GeometryElement3D} a
-     * @param {JXG.GeometryElement3D} b
+     * @param {JXG2.GeometryElement3D} a
+     * @param {JXG2.GeometryElement3D} b
      * @returns Number
      */
     compareDepth: function (a, b) {
@@ -1011,7 +1011,7 @@ JXG.extend(
 
             delete this.objects[object.id];
         } catch (e) {
-            JXG.debug('View3D ' + object.id + ': Could not be removed: ' + e);
+            JXG2.debug('View3D ' + object.id + ': Could not be removed: ' + e);
         }
 
         // this.update();
@@ -1023,7 +1023,7 @@ JXG.extend(
 
     /**
      * Map world coordinates to focal coordinates. These coordinate systems
-     * are explained in the {@link JXG.View3D#boxToCam} matrix
+     * are explained in the {@link JXG2.View3D#boxToCam} matrix
      * documentation.
      *
      * @param {Array} pWorld A world space point, in homogeneous coordinates.
@@ -1113,7 +1113,7 @@ JXG.extend(
      * Project a 2D coordinate to the plane defined by point "foot"
      * and the normal vector `normal`.
      *
-     * @param  {JXG.Point} point2d
+     * @param  {JXG2.Point} point2d
      * @param  {Array} normal Normal of plane
      * @param  {Array} foot Foot point of plane
      * @returns {Array} of length 4 containing the projected
@@ -1140,7 +1140,7 @@ JXG.extend(
                 if (mat[2][3] === 1.0) {
                     mat[2][1] = mat[2][2] = JSXMath.eps * 0.001;
                 }
-                sol = JXG.JSXMath.Numerics.Gauss(mat, rhs);
+                sol = JXG2.JSXMath.Numerics.Gauss(mat, rhs);
             } catch (e) {
                 sol = [0, NaN, NaN, NaN];
             }
@@ -1150,7 +1150,7 @@ JXG.extend(
             // 2D coordinates of point:
             rhs = point2d.coords.usrCoords.slice();
 
-            v2d = JXG.JSXMath.Numerics.Gauss(this.viewPortTransform, rhs);
+            v2d = JXG2.JSXMath.Numerics.Gauss(this.viewPortTransform, rhs);
             res = this._getW0(mat, v2d, d);
             w0 = res[0];
             rhs = [
@@ -1165,7 +1165,7 @@ JXG.extend(
                     mat[2][1] = mat[2][2] = JSXMath.eps * 0.001;
                 }
 
-                sol = JXG.JSXMath.Numerics.Gauss(mat, rhs);
+                sol = JXG2.JSXMath.Numerics.Gauss(mat, rhs);
                 sol[1] /= sol[0];
                 sol[2] /= sol[0];
                 sol[3] /= sol[0];
@@ -1254,7 +1254,7 @@ JXG.extend(
      * the 3D x, y coordinates and changing only the z coordinate.
      * All horizontal moves of the 2D point are ignored.
      *
-     * @param {JXG.Point} point2d
+     * @param {JXG2.Point} point2d
      * @param {Array} base_c3d
      * @returns {Array} of length 4 containing the projected
      * point in homogeneous coordinates.
@@ -1358,8 +1358,8 @@ JXG.extend(
 
     /**
      *
-     * @param {JXG.Plane3D} plane1
-     * @param {JXG.Plane3D} plane2
+     * @param {JXG2.Plane3D} plane1
+     * @param {JXG2.Plane3D} plane2
      * @param {Number} d Right hand side of Hesse normal for plane2 (it can be adjusted)
      * @returns {Array} of length 2 containing the coordinates of the defining points of
      * of the intersection segment, or false if there is no intersection
@@ -2090,7 +2090,7 @@ JXG.extend(
  * The start position of the camera can be adjusted by the attributes {@link View3D#az}, {@link View3D#el}, and {@link View3D#bank}.
  *
  * @name View3D
- * @augments JXG.View3D
+ * @augments JXG2.View3D
  * @constructor
  * @type Object
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
@@ -2122,7 +2122,7 @@ JXG.extend(
  * </pre><div id="JXG9b327a6c-1bd6-4e40-a502-59d024dbfd1b" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG9b327a6c-1bd6-4e40-a502-59d024dbfd1b',
+ *         var board = JXG2.JSXGraph.initBoard('JXG9b327a6c-1bd6-4e40-a502-59d024dbfd1b',
  *             {boundingbox: [-8, 8, 8,-8], pan: {enabled: false}, axis: false, showcopyright: false, shownavigation: false});
  *         var bound = [-4, 6];
  *         var view = board.create('view3d',
@@ -2168,7 +2168,7 @@ JXG.extend(
  * </pre><div id="JXG0dc2493d-fb2f-40d5-bdb8-762ba0ad2007" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG0dc2493d-fb2f-40d5-bdb8-762ba0ad2007',
+ *         var board = JXG2.JSXGraph.initBoard('JXG0dc2493d-fb2f-40d5-bdb8-762ba0ad2007',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, pan: {enabled: false}, showcopyright: false, shownavigation: false});
  *         var bound = [-4, 6];
  *         var view = board.create('view3d',
@@ -2230,7 +2230,7 @@ JXG.extend(
  * </pre><div id="JXG586f3551-335c-47e9-8d72-835409f6a103" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG586f3551-335c-47e9-8d72-835409f6a103',
+ *         var board = JXG2.JSXGraph.initBoard('JXG586f3551-335c-47e9-8d72-835409f6a103',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, pan: {enabled: false}, showcopyright: false, shownavigation: false});
  *         var bound = [-4, 6];
  *         var view = board.create('view3d',
@@ -2290,7 +2290,7 @@ JXG.extend(
  * </pre><div id="JXG9a9467e1-f189-4c8c-adb2-d4f49bc7fa26" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG9a9467e1-f189-4c8c-adb2-d4f49bc7fa26',
+ *         var board = JXG2.JSXGraph.initBoard('JXG9a9467e1-f189-4c8c-adb2-d4f49bc7fa26',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, pan: {enabled: false}, showcopyright: false, shownavigation: false});
  *         var bound = [-4, 6];
  *         var view = board.create('view3d',
@@ -2385,7 +2385,7 @@ JXG.extend(
  * </pre><div id="JXGbd41a4e3-1bf7-4764-b675-98b01667103b" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGbd41a4e3-1bf7-4764-b675-98b01667103b',
+ *         var board = JXG2.JSXGraph.initBoard('JXGbd41a4e3-1bf7-4764-b675-98b01667103b',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, pan: {enabled: false}, showcopyright: false, shownavigation: false});
  *         var bound = [-4, 6];
  *         var view = board.create('view3d',
@@ -2486,7 +2486,7 @@ JXG.extend(
  * </pre><div id="JXGdd06d90e-be5d-4531-8f0b-65fc30b1a7c7" class="jxgbox" style="width: 500px; height: 500px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGdd06d90e-be5d-4531-8f0b-65fc30b1a7c7',
+ *         var board = JXG2.JSXGraph.initBoard('JXGdd06d90e-be5d-4531-8f0b-65fc30b1a7c7',
  *             {boundingbox: [-8, 8, 8,-8], axis: false, pan: {enabled: false}, showcopyright: false, shownavigation: false});
  *         var bound = [-5, 5];
  *         var view = board.create('view3d',
@@ -2559,7 +2559,7 @@ JXG.extend(
  * </pre><div id="JXGe181cc55-271b-419b-84fd-622326fd1d1a" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGe181cc55-271b-419b-84fd-622326fd1d1a',
+ *         var board = JXG2.JSXGraph.initBoard('JXGe181cc55-271b-419b-84fd-622326fd1d1a',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var bound = [-5, 5];
  *     var view = board.create('view3d',
@@ -2612,7 +2612,7 @@ JXG.extend(
  *
  *
  */
-JXG.createView3D = function (board, parents, attributes) {
+JXG2.createView3D = function (board, parents, attributes) {
     var view, attr, attr_az, attr_el, attr_bank,
         x, y, w, h,
         p1, p2, v,
@@ -2620,7 +2620,7 @@ JXG.createView3D = function (board, parents, attributes) {
         size = parents[1]; // [w, h]
 
     attr = Type.copyAttributes(attributes, board.options, 'view3d');
-    view = new JXG.View3D(board, parents, attr);
+    view = new JXG2.View3D(board, parents, attr);
     view.defaultAxes = view.create('axes3d', [], attr);
 
     x = coords[0];
@@ -2654,7 +2654,7 @@ JXG.createView3D = function (board, parents, attributes) {
 
     /**
      * Slider to adapt azimuth angle
-     * @name JXG.View3D#az_slide
+     * @name JXG2.View3D#az_slide
      * @type {Slider}
      */
     view.az_slide = board.create(
@@ -2690,7 +2690,7 @@ JXG.createView3D = function (board, parents, attributes) {
     /**
      * Slider to adapt elevation angle
      *
-     * @name JXG.View3D#el_slide
+     * @name JXG2.View3D#el_slide
      * @type {Slider}
      */
     view.el_slide = board.create(
@@ -2725,7 +2725,7 @@ JXG.createView3D = function (board, parents, attributes) {
     /**
      * Slider to adjust bank angle
      *
-     * @name JXG.View3D#bank_slide
+     * @name JXG2.View3D#bank_slide
      * @type {Slider}
      */
     view.bank_slide = board.create(
@@ -2881,6 +2881,6 @@ JXG.createView3D = function (board, parents, attributes) {
     return view;
 };
 
-JXG.registerElement("view3d", JXG.createView3D);
+JXG2.registerElement("view3d", JXG2.createView3D);
 
-export default JXG.View3D;
+export default JXG2.View3D;

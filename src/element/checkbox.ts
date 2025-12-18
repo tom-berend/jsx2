@@ -29,14 +29,14 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, window: true*/
+/*global JXG2: true, define: true, window: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview In this file the Text element is defined.
  */
 
-import {JXG} from "../jxg.js";
+import {JXG2} from "../jxg.js";
 import { OBJECT_TYPE } from "../base/constants.js";
 import {Env} from "../utils/env.js";
 import {Type} from "../utils/type.js";
@@ -68,7 +68,7 @@ var priv = {
  * @name Checkbox
  * @augments Text
  * @constructor
- * @type JXG.Text
+ * @type JXG2.Text
  *
  * @param {number,function_number,function_String,function} x,y,label Parent elements for checkbox elements.
  *   <p>
@@ -96,7 +96,7 @@ var priv = {
  * </pre><div class="jxgbox" id="JXG0e835e0b-ed0c-4b85-b682-78158c0e6f5c" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function() {
- *   var t1_board = JXG.JSXGraph.initBoard('JXG0e835e0b-ed0c-4b85-b682-78158c0e6f5c', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
+ *   var t1_board = JXG2.JSXGraph.initBoard('JXG0e835e0b-ed0c-4b85-b682-78158c0e6f5c', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
  *   var checkbox = t1_board.create('checkbox', [0, 3, 'Change Y'], {});
  *   var p = t1_board.create('point', [
  *       function(){ return 0.5;}, // X-coordinate
@@ -115,7 +115,7 @@ var priv = {
  * var checkbox = board.create('checkbox', [0, 4, 'Click me']),
  *     p = board.create('point', [1, 1]);
  *
- * JXG.addEvent(checkbox.rendNodeCheckbox, 'change', function() {
+ * JXG2.addEvent(checkbox.rendNodeCheckbox, 'change', function() {
  *     if (this.Value()) {
  *         p.moveTo([4, 1]);
  *     } else {
@@ -125,11 +125,11 @@ var priv = {
  * </pre><div class="jxgbox" id="JXGb2f2345a-057d-44ce-bd7a-6aaff70bc810" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  * (function() {
- * var board = JXG.JSXGraph.initBoard('JXGb2f2345a-057d-44ce-bd7a-6aaff70bc810', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
+ * var board = JXG2.JSXGraph.initBoard('JXGb2f2345a-057d-44ce-bd7a-6aaff70bc810', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
  * var checkbox = board.create('checkbox', [0, 4, 'Click me']),
  *     p = board.create('point', [1, 1]);
  *
- * JXG.addEvent(checkbox.rendNodeCheckbox, 'change', function() {
+ * JXG2.addEvent(checkbox.rendNodeCheckbox, 'change', function() {
  *     if (this.Value()) {
  *         p.moveTo([4, 1]);
  *     } else {
@@ -152,7 +152,7 @@ var priv = {
  * </pre><div id="JXG31c6d070-354b-4f09-aab9-9aaa796f730c" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXG31c6d070-354b-4f09-aab9-9aaa796f730c',
+ *         var board = JXG2.JSXGraph.initBoard('JXG31c6d070-354b-4f09-aab9-9aaa796f730c',
  *             {boundingbox: [-1, 7, 7, -1], axis: true, showcopyright: false, shownavigation: false});
  *         var i1 = board.create('input', [1, 5, 'sin(x)', 'f(x)='], {cssStyle: 'width:4em', maxlength: 2});
  *             var c1 = board.create('checkbox', [1, 3, 'label 1'], {});
@@ -169,7 +169,7 @@ var priv = {
  * </script><pre>
  *
  */
-JXG.createCheckbox = function (board, parents, attributes) {
+JXG2.createCheckbox = function (board, parents, attributes) {
     var t,
         par,
         attr = Type.copyAttributes(attributes, board.options, 'checkbox');
@@ -231,7 +231,7 @@ JXG.createCheckbox = function (board, parents, attributes) {
      */
     t.update = function () {
         if (this.needsUpdate) {
-            JXG.Text.prototype.update.call(this);
+            JXG2.Text.prototype.update.call(this);
             this._value = this.rendNodeCheckbox.checked;
         }
         return this;
@@ -242,8 +242,8 @@ JXG.createCheckbox = function (board, parents, attributes) {
     return t;
 };
 
-JXG.registerElement("checkbox", JXG.createCheckbox);
+JXG2.registerElement("checkbox", JXG2.createCheckbox);
 
 // export default {
-//     createCheckbox: JXG.createCheckbox
+//     createCheckbox: JXG2.createCheckbox
 // };

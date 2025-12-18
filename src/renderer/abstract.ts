@@ -32,7 +32,7 @@ const dbugColor = `color:red;background-color:#00ff00`;
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG: true, define: true, AMprocessNode: true, MathJax: true, document: true, window: true */
+/*global JXG2: true, define: true, AMprocessNode: true, MathJax: true, document: true, window: true */
 
 /*
     nomen:    Allow underscores to indicate private class members. Might be replaced by local variables.
@@ -50,7 +50,7 @@ const dbugColor = `color:red;background-color:#00ff00`;
  * renderers is the class AbstractRenderer defined in this file.
  */
 
-import { JXG } from '../jxg.js'
+import { JXG2 } from '../jxg.js'
 import { LooseObject } from "../interfaces.js";
 import Options from "../options.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js'
@@ -68,16 +68,16 @@ import { SVGType } from "../interfaces.js";
 
 /**
  * <p>This class defines the interface to the graphics part of JSXGraph. This class is an abstract class, it
- * actually does not render anything. This is up to the {@link JXG.SVGRenderer}* and {@link JXG.CanvasRenderer}
+ * actually does not render anything. This is up to the {@link JXG2.SVGRenderer}* and {@link JXG2.CanvasRenderer}
  * classes. We strongly discourage you from using the methods in these classes
  * directly. Only the methods which are defined in this class and are not marked as private are guaranteed
- * to exist in any renderer instance you can access via {@link JXG.Board#renderer}. But not all methods may
+ * to exist in any renderer instance you can access via {@link JXG2.Board#renderer}. But not all methods may
  * work as expected.</p>
  * <p>The methods of this renderer can be divided into different categories:
  * <dl>
  *     <dt>Draw basic elements</dt>
- *     <dd>In this category we find methods to draw basic elements like {@link JXG.Point} {@link JXG.Line}
- *     and {@link JXG.Curve} as well as assisting methods tightly bound to these basic painters. You do not
+ *     <dd>In this category we find methods to draw basic elements like {@link JXG2.Point} {@link JXG2.Line}
+ *     and {@link JXG2.Curve} as well as assisting methods tightly bound to these basic painters. You do not
  *     need to implement these methods in a descendant renderer but instead implement the primitive drawing
  *     methods described below. This approach is encouraged when you're using a XML based rendering engine
  *     like VML and SVG. If you want to use a bitmap based rendering technique you are supposed to override
@@ -90,25 +90,25 @@ import { SVGType } from "../interfaces.js";
  *     <dd>In XML based renders you have to manipulate XML nodes and their attributes to change the graphics.
  *     For that purpose attribute manipulation methods are defined to set the color, opacity, and other things.
  *     Please note that some of these methods are required in bitmap based renderers, too, because some elements
- *     like {@link JXG.Text} can be HTML nodes floating over the construction.</dd>
+ *     like {@link JXG2.Text} can be HTML nodes floating over the construction.</dd>
  *     <dt>Renderer control</dt>
  *     <dd>Methods to clear the drawing board or to stop and to resume the rendering engine.</dd>
  * </dl></p>
- * @class JXG.AbstractRenderer
+ * @class JXG2.AbstractRenderer
  * @constructor
- * @see JXG.SVGRenderer
- * @see JXG.CanvasRenderer
+ * @see JXG2.SVGRenderer
+ * @see JXG2.CanvasRenderer
  */
 export abstract class AbstractRenderer {
     // WHY THIS IS A CLASS INSTEAD OF A SINGLETON OBJECT:
     //
     // The renderers need to keep track of some stuff which is not always the same on different boards,
     // like enhancedRendering, reference to the container object, and resolution in VML. Sure, those
-    // things could be stored in board. But they are rendering related and JXG.Board is already very
+    // things could be stored in board. But they are rendering related and JXG2.Board is already very
     // very big.
     //
     // And we can't save the rendering related data in {SVG,VML,Canvas}Renderer and make only the
-    // JXG.AbstractRenderer a singleton because of that:
+    // JXG2.AbstractRenderer a singleton because of that:
     //
     // Given an object o with property a set to true
     //     var o = {a: true};
@@ -151,7 +151,7 @@ export abstract class AbstractRenderer {
     /**
      * If this property is set to <tt>true</tt> the visual properties of the elements are updated
      * on every update. Visual properties means: All the stuff stored in the
-     * {@link JXG.GeometryElement#visProp} property won't be set if enhancedRendering is <tt>false</tt>
+     * {@link JXG2.GeometryElement#visProp} property won't be set if enhancedRendering is <tt>false</tt>
      * @type Boolean
      * @default true
      */
@@ -202,8 +202,8 @@ export abstract class AbstractRenderer {
      *
      * @type Array
      * @default [[2, 2], [5, 5], [10, 10], [20, 20], [20, 10, 10, 10], [20, 5, 10, 5], [0, 5]]
-     * @see JXG.GeometryElement#dash
-     * @see JXG.GeometryElement#dashScale
+     * @see JXG2.GeometryElement#dash
+     * @see JXG2.GeometryElement#dashScale
      */
     dashArray = [
         [2, 2],
@@ -218,11 +218,11 @@ export abstract class AbstractRenderer {
     /* ********* Private methods *********** */
 
     /**
-     * Update visual properties, but only if {@link JXG.AbstractRenderer#enhancedRendering} or <tt>enhanced</tt> is set to true.
-     * @param {JXG.GeometryElement} el The element to update
+     * Update visual properties, but only if {@link JXG2.AbstractRenderer#enhancedRendering} or <tt>enhanced</tt> is set to true.
+     * @param {JXG2.GeometryElement} el The element to update
      * @param {Object} [not={}] Select properties you don't want to be updated: <tt>{fill: true, dash: true}</tt> updates
      * everything except for fill and dash. Possible values are <tt>stroke, fill, dash, shadow, gradient</tt>.
-     * @param {Boolean} [enhanced=false] If true, {@link JXG.AbstractRenderer#enhancedRendering} is assumed to be true.
+     * @param {Boolean} [enhanced=false] If true, {@link JXG2.AbstractRenderer#enhancedRendering} is assumed to be true.
      * @private
      */
     _updateVisual(el/*: GeometryElement*/, not: LooseObject = {}, enhanced: boolean = false) {
@@ -302,7 +302,7 @@ export abstract class AbstractRenderer {
 
     /**
      * Get information if element is highlighted.
-     * @param {JXG.GeometryElement} el The element which is tested for being highlighted.
+     * @param {JXG2.GeometryElement} el The element which is tested for being highlighted.
      * @returns {String} 'highlight' if highlighted, otherwise the ampty string '' is returned.
      * @private
      */
@@ -327,12 +327,12 @@ export abstract class AbstractRenderer {
     /* ********* Point related stuff *********** */
 
     /**
-     * Draws a point on the {@link JXG.Board}.
-     * @param {JXG.Point} el Reference to a {@link JXG.Point} object that has to be drawn.
+     * Draws a point on the {@link JXG2.Board}.
+     * @param {JXG2.Point} el Reference to a {@link JXG2.Point} object that has to be drawn.
      * @see Point
-     * @see JXG.Point
-     * @see JXG.AbstractRenderer#updatePoint
-     * @see JXG.AbstractRenderer#changePointStyle
+     * @see JXG2.Point
+     * @see JXG2.AbstractRenderer#updatePoint
+     * @see JXG2.AbstractRenderer#changePointStyle
      */
     drawPoint(el) {
 
@@ -340,7 +340,7 @@ export abstract class AbstractRenderer {
 
 
         var prim: SVGType
-        // Sometimes el is not a real point and lacks the methods of a JXG.Point instance,
+        // Sometimes el is not a real point and lacks the methods of a JXG2.Point instance,
         // in these cases to not use el directly.
         let face = Options.normalizePointFace(el.evalVisProp('face'));
 
@@ -377,19 +377,19 @@ export abstract class AbstractRenderer {
     }
 
     /**
-     * Updates visual appearance of the renderer element assigned to the given {@link JXG.Point}.
-     * @param {JXG.Point} el Reference to a {@link JXG.Point} object, that has to be updated.
+     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Point}.
+     * @param {JXG2.Point} el Reference to a {@link JXG2.Point} object, that has to be updated.
      * @see Point
-     * @see JXG.Point
-     * @see JXG.AbstractRenderer#drawPoint
-     * @see JXG.AbstractRenderer#changePointStyle
+     * @see JXG2.Point
+     * @see JXG2.AbstractRenderer#drawPoint
+     * @see JXG2.AbstractRenderer#changePointStyle
      */
     updatePoint(el) {
 
         if (dbug(el)) console.warn(`%c abstract: updatePoint(${el.id})`, dbugColor, el.visprop)
 
         var size = el.evalVisProp('size'),
-            // sometimes el is not a real point and lacks the methods of a JXG.Point instance,
+            // sometimes el is not a real point and lacks the methods of a JXG2.Point instance,
             // in these cases to not use el directly.
             face = Options.normalizePointFace(el.evalVisProp('face')),
             unit = el.evalVisProp('sizeunit'),
@@ -435,15 +435,15 @@ export abstract class AbstractRenderer {
     }
 
     /**
-     * Changes the style of a {@link JXG.Point}. This is required because the point styles differ in what
+     * Changes the style of a {@link JXG2.Point}. This is required because the point styles differ in what
      * elements have to be drawn, e.g. if the point is marked by a "x" or a "+" two lines are drawn, if
      * it's marked by spot a circle is drawn. This method removes the old renderer element(s) and creates
      * the new one(s).
-     * @param {JXG.Point} el Reference to a {@link JXG.Point} object, that's style is changed.
+     * @param {JXG2.Point} el Reference to a {@link JXG2.Point} object, that's style is changed.
      * @see Point
-     * @see JXG.Point
-     * @see JXG.AbstractRenderer#updatePoint
-     * @see JXG.AbstractRenderer#drawPoint
+     * @see JXG2.Point
+     * @see JXG2.AbstractRenderer#updatePoint
+     * @see JXG2.AbstractRenderer#drawPoint
      */
     changePointStyle(el) {
         var node = this.getElementById(el.id);
@@ -469,11 +469,11 @@ export abstract class AbstractRenderer {
     /* ********* Line related stuff *********** */
 
     /**
-     * Draws a line on the {@link JXG.Board}.
-     * @param {JXG.Line} el Reference to a line object, that has to be drawn.
+     * Draws a line on the {@link JXG2.Board}.
+     * @param {JXG2.Line} el Reference to a line object, that has to be drawn.
      * @see Line
-     * @see JXG.Line
-     * @see JXG.AbstractRenderer#updateLine
+     * @see JXG2.Line
+     * @see JXG2.AbstractRenderer#updateLine
      */
     drawLine(el) {
         el.rendNode = this.appendChildPrim(
@@ -485,11 +485,11 @@ export abstract class AbstractRenderer {
     }
 
     /**
-     * Updates visual appearance of the renderer element assigned to the given {@link JXG.Line}.
-     * @param {JXG.Line} el Reference to the {@link JXG.Line} object that has to be updated.
+     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Line}.
+     * @param {JXG2.Line} el Reference to the {@link JXG2.Line} object that has to be updated.
      * @see Line
-     * @see JXG.Line
-     * @see JXG.AbstractRenderer#drawLine
+     * @see JXG2.Line
+     * @see JXG2.AbstractRenderer#drawLine
      */
     updateLine(el) {
         this._updateVisual(el);
@@ -500,11 +500,11 @@ export abstract class AbstractRenderer {
     /* ********* Curve related stuff *********** */
 
     /**
-     * Draws a {@link JXG.Curve} on the {@link JXG.Board}.
-     * @param {JXG.Curve} el Reference to a graph object, that has to be plotted.
+     * Draws a {@link JXG2.Curve} on the {@link JXG2.Board}.
+     * @param {JXG2.Curve} el Reference to a graph object, that has to be plotted.
      * @see Curve
-     * @see JXG.Curve
-     * @see JXG.AbstractRenderer#updateCurve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#updateCurve
      */
     drawCurve(el) {
         el.rendNode = this.appendChildPrim(
@@ -516,11 +516,11 @@ export abstract class AbstractRenderer {
     }
 
     /**
-     * Updates visual appearance of the renderer element assigned to the given {@link JXG.Curve}.
-     * @param {JXG.Curve} el Reference to a {@link JXG.Curve} object, that has to be updated.
+     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Curve}.
+     * @param {JXG2.Curve} el Reference to a {@link JXG2.Curve} object, that has to be updated.
      * @see Curve
-     * @see JXG.Curve
-     * @see JXG.AbstractRenderer#drawCurve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#drawCurve
      */
     updateCurve(el) {
         this._updateVisual(el);
@@ -533,18 +533,18 @@ export abstract class AbstractRenderer {
     /**
      * Handles arrow heads of a line or curve element and calls the renderer primitive.
      *
-     * @param {JXG.GeometryElement} el Reference to a line or curve object that has to be drawn.
+     * @param {JXG2.GeometryElement} el Reference to a line or curve object that has to be drawn.
      * @param {Boolean} doHighlight
      *
      * @private
      * @see Line
-     * @see JXG.Line
+     * @see JXG2.Line
      * @see Curve
-     * @see JXG.Curve
-     * @see JXG.AbstractRenderer#updateLine
-     * @see JXG.AbstractRenderer#updateCurve
-     * @see JXG.AbstractRenderer#makeArrows
-     * @see JXG.AbstractRenderer#getArrowHeadData
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#updateLine
+     * @see JXG2.AbstractRenderer#updateCurve
+     * @see JXG2.AbstractRenderer#makeArrows
+     * @see JXG2.AbstractRenderer#getArrowHeadData
      */
     updatePathWithArrowHeads(el, doHighlight?) {
         var hl = doHighlight ? 'highlight' : '',
@@ -583,7 +583,7 @@ export abstract class AbstractRenderer {
      * <p>
      * The returned object also contains the types of the arrow heads.
      *
-     * @param {JXG.GeometryElement} el JSXGraph line or curve element
+     * @param {JXG2.GeometryElement} el JSXGraph line or curve element
      * @param {Number} strokewidth strokewidth of the element
      * @param {String} hl Ither 'highlight' or empty string
      * @returns {Object} object containing the data
@@ -712,16 +712,16 @@ export abstract class AbstractRenderer {
      * the arrow ends exactly at the intended position.
      * Calls the renderer method to draw the line.
      *
-     * @param {JXG.Line} el Reference to a line object, that has to be drawn
+     * @param {JXG2.Line} el Reference to a line object, that has to be drawn
      * @param {Object} arrowData Data concerning possible arrow heads
      *
-     * @returns {JXG.AbstractRenderer} Reference to the renderer
+     * @returns {JXG2.AbstractRenderer} Reference to the renderer
      *
      * @private
      * @see Line
-     * @see JXG.Line
-     * @see JXG.AbstractRenderer#updateLine
-     * @see JXG.AbstractRenderer#getPositionArrowHead
+     * @see JXG2.Line
+     * @see JXG2.AbstractRenderer#updateLine
+     * @see JXG2.AbstractRenderer#getPositionArrowHead
      *
      */
     updateLineWithEndings(el, arrowData) {
@@ -754,13 +754,13 @@ export abstract class AbstractRenderer {
      *
      * Calls the renderer method to draw a curve.
      *
-     * @param {JXG.GeometryElement} el Reference to a line object, that has to be drawn.
-     * @returns {JXG.AbstractRenderer} Reference to the renderer
+     * @param {JXG2.GeometryElement} el Reference to a line object, that has to be drawn.
+     * @returns {JXG2.AbstractRenderer} Reference to the renderer
      *
      * @private
      * @see Curve
-     * @see JXG.Curve
-     * @see JXG.AbstractRenderer#updateCurve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#updateCurve
      *
      */
     updatePath(el) {
@@ -781,11 +781,11 @@ export abstract class AbstractRenderer {
      * The Coords objects c1 and c2 are changed in place. In object a, the Boolean properties
      * 'showFirst' and 'showLast' are set.
      *
-     * @param  {JXG.Line} el Reference to the line object that gets arrow heads.
-     * @param  {JXG.Coords} c1  Coords of the first point of the line (after {@link Geometry.Geometry#calcStraight}).
-     * @param  {JXG.Coords} c2  Coords of the second point of the line (after {@link Geometry.Geometry#calcStraight}).
+     * @param  {JXG2.Line} el Reference to the line object that gets arrow heads.
+     * @param  {JXG2.Coords} c1  Coords of the first point of the line (after {@link Geometry.Geometry#calcStraight}).
+     * @param  {JXG2.Coords} c2  Coords of the second point of the line (after {@link Geometry.Geometry#calcStraight}).
      * @param  {Object}  a Object { evFirst: Boolean, evLast: Boolean} containing information about arrow heads.
-     * @see JXG.AbstractRenderer#getArrowHeadData
+     * @see JXG2.AbstractRenderer#getArrowHeadData
      *
      */
     getPositionArrowHead(el, c1, c2, a) {
@@ -837,11 +837,11 @@ export abstract class AbstractRenderer {
     /**
      * Handle touchlastpoint / touchfirstpoint
      *
-     * @param {JXG.GeometryElement} el
-     * @param {JXG.Coords} c1 Coordinates of the start of the line. The coordinates are changed in place.
-     * @param {JXG.Coords} c2 Coordinates of the end of the line. The coordinates are changed in place.
+     * @param {JXG2.GeometryElement} el
+     * @param {JXG2.Coords} c1 Coordinates of the start of the line. The coordinates are changed in place.
+     * @param {JXG2.Coords} c2 Coordinates of the end of the line. The coordinates are changed in place.
      * @param {Object} a
-     * @see JXG.AbstractRenderer#getArrowHeadData
+     * @see JXG2.AbstractRenderer#getArrowHeadData
      */
     handleTouchpoints(el, c1, c2, a) {
         var s1, s2, d, d1x, d1y, d2x, d2y;
@@ -892,17 +892,17 @@ export abstract class AbstractRenderer {
     /**
      * Set the arrow head size.
      *
-     * @param {JXG.GeometryElement} el Reference to a line or curve object that has to be drawn.
+     * @param {JXG2.GeometryElement} el Reference to a line or curve object that has to be drawn.
      * @param {Object} arrowData Data concerning possible arrow heads
-     * @returns {JXG.AbstractRenderer} Reference to the renderer
+     * @returns {JXG2.AbstractRenderer} Reference to the renderer
      *
      * @private
      * @see Line
-     * @see JXG.Line
+     * @see JXG2.Line
      * @see Curve
-     * @see JXG.Curve
-     * @see JXG.AbstractRenderer#updatePathWithArrowHeads
-     * @see JXG.AbstractRenderer#getArrowHeadData
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#updatePathWithArrowHeads
+     * @see JXG2.AbstractRenderer#getArrowHeadData
      */
     setArrowSize(el, a) {
         if (a.evFirst) {
@@ -929,12 +929,12 @@ export abstract class AbstractRenderer {
 
     /**
      * Creates a rendering node for ticks added to a line.
-     * @param {JXG.Line} el A arbitrary line.
+     * @param {JXG2.Line} el A arbitrary line.
      * @see Line
      * @see Ticks
-     * @see JXG.Line
-     * @see JXG.Ticks
-     * @see JXG.AbstractRenderer#updateTicks
+     * @see JXG2.Line
+     * @see JXG2.Ticks
+     * @see JXG2.AbstractRenderer#updateTicks
      */
     drawTicks(el) {
         el.rendNode = this.appendChildPrim(
@@ -948,11 +948,11 @@ export abstract class AbstractRenderer {
     /* ********* Circle related stuff *********** */
 
     /**
-     * Draws a {@link JXG.Circle}
-     * @param {JXG.Circle} el Reference to a {@link JXG.Circle} object that has to be drawn.
+     * Draws a {@link JXG2.Circle}
+     * @param {JXG2.Circle} el Reference to a {@link JXG2.Circle} object that has to be drawn.
      * @see Circle
-     * @see JXG.Circle
-     * @see JXG.AbstractRenderer#updateEllipse
+     * @see JXG2.Circle
+     * @see JXG2.AbstractRenderer#updateEllipse
      */
     drawEllipse(el) {
         el.rendNode = this.appendChildPrim(
@@ -964,11 +964,11 @@ export abstract class AbstractRenderer {
     }
 
     /**
-     * Updates visual appearance of a given {@link JXG.Circle} on the {@link JXG.Board}.
-     * @param {JXG.Circle} el Reference to a {@link JXG.Circle} object, that has to be updated.
+     * Updates visual appearance of a given {@link JXG2.Circle} on the {@link JXG2.Board}.
+     * @param {JXG2.Circle} el Reference to a {@link JXG2.Circle} object, that has to be updated.
      * @see Circle
-     * @see JXG.Circle
-     * @see JXG.AbstractRenderer#drawEllipse
+     * @see JXG2.Circle
+     * @see JXG2.AbstractRenderer#drawEllipse
      */
     updateEllipse(el) {
         this._updateVisual(el);
@@ -995,11 +995,11 @@ export abstract class AbstractRenderer {
     /* ********* Polygon related stuff *********** */
 
     /**
-     * Draws a {@link JXG.Polygon} on the {@link JXG.Board}.
-     * @param {JXG.Polygon} el Reference to a Polygon object, that is to be drawn.
+     * Draws a {@link JXG2.Polygon} on the {@link JXG2.Board}.
+     * @param {JXG2.Polygon} el Reference to a Polygon object, that is to be drawn.
      * @see Polygon
-     * @see JXG.Polygon
-     * @see JXG.AbstractRenderer#updatePolygon
+     * @see JXG2.Polygon
+     * @see JXG2.AbstractRenderer#updatePolygon
      */
     drawPolygon(el) {
         el.rendNode = this.appendChildPrim(
@@ -1011,11 +1011,11 @@ export abstract class AbstractRenderer {
     }
 
     /**
-     * Updates properties of a {@link JXG.Polygon}'s rendering node.
-     * @param {JXG.Polygon} el Reference to a {@link JXG.Polygon} object, that has to be updated.
+     * Updates properties of a {@link JXG2.Polygon}'s rendering node.
+     * @param {JXG2.Polygon} el Reference to a {@link JXG2.Polygon} object, that has to be updated.
      * @see Polygon
-     * @see JXG.Polygon
-     * @see JXG.AbstractRenderer#drawPolygon
+     * @see JXG2.Polygon
+     * @see JXG2.AbstractRenderer#drawPolygon
      */
     updatePolygon(el) {
         // Here originally strokecolor wasn't updated but strokewidth was.
@@ -1028,14 +1028,14 @@ export abstract class AbstractRenderer {
 
 
     /**
-     * Displays a {@link JXG.Text} on the {@link JXG.Board} by putting a HTML div over it.
-     * @param {JXG.Text} el Reference to an {@link JXG.Text} object, that has to be displayed
+     * Displays a {@link JXG2.Text} on the {@link JXG2.Board} by putting a HTML div over it.
+     * @param {JXG2.Text} el Reference to an {@link JXG2.Text} object, that has to be displayed
      * @see Text
-     * @see JXG.Text
-     * @see JXG.AbstractRenderer#drawInternalText
-     * @see JXG.AbstractRenderer#updateText
-     * @see JXG.AbstractRenderer#updateInternalText
-     * @see JXG.AbstractRenderer#updateTextStyle
+     * @see JXG2.Text
+     * @see JXG2.AbstractRenderer#drawInternalText
+     * @see JXG2.AbstractRenderer#updateText
+     * @see JXG2.AbstractRenderer#updateInternalText
+     * @see JXG2.AbstractRenderer#updateTextStyle
      */
     drawText(el): HTMLElement {
         var node: HTMLElement, z, level, ev_visible;
@@ -1093,14 +1093,14 @@ export abstract class AbstractRenderer {
     }
 
     /**
-     * Updates visual properties of an already existing {@link JXG.Text} element.
-     * @param {JXG.Text} el Reference to an {@link JXG.Text} object, that has to be updated.
+     * Updates visual properties of an already existing {@link JXG2.Text} element.
+     * @param {JXG2.Text} el Reference to an {@link JXG2.Text} object, that has to be updated.
      * @see Text
-     * @see JXG.Text
-     * @see JXG.AbstractRenderer#drawText
-     * @see JXG.AbstractRenderer#drawInternalText
-     * @see JXG.AbstractRenderer#updateInternalText
-     * @see JXG.AbstractRenderer#updateTextStyle
+     * @see JXG2.Text
+     * @see JXG2.AbstractRenderer#drawText
+     * @see JXG2.AbstractRenderer#drawInternalText
+     * @see JXG2.AbstractRenderer#updateInternalText
+     * @see JXG2.AbstractRenderer#updateTextStyle
      */
     updateText(el) {
         var content = el.plaintext,
@@ -1248,7 +1248,7 @@ export abstract class AbstractRenderer {
                             //     );
                             // }
                         } catch (e) {
-                            JXG.debug("MathJax (not yet) loaded");
+                            JXG2.debug("MathJax (not yet) loaded");
                         }
                     } else if (el.evalVisProp('usekatex')) {
                         try {
@@ -1277,7 +1277,7 @@ export abstract class AbstractRenderer {
                                 /* eslint-enable no-undef */
                             }
                         } catch (e) {
-                            JXG.debug("KaTeX not loaded (yet)");
+                            JXG2.debug("KaTeX not loaded (yet)");
                         }
                     } else if (el.evalVisProp('useasciimathml')) {
                         // This is not a constructor.
@@ -1286,7 +1286,7 @@ export abstract class AbstractRenderer {
                         try {
                             (window as any).AMprocessNode(el.rendNode, false);
                         } catch (e) {
-                            JXG.debug("AsciiMathML not loaded (yet)");
+                            JXG2.debug("AsciiMathML not loaded (yet)");
                         }
                     }
                 }
@@ -1347,17 +1347,17 @@ export abstract class AbstractRenderer {
     }
 
     /**
-     * Updates font-size, color and opacity properties and CSS style properties of a {@link JXG.Text} node.
+     * Updates font-size, color and opacity properties and CSS style properties of a {@link JXG2.Text} node.
      * This function is also called by highlight() and nohighlight().
-     * @param {JXG.Text} el Reference to the {@link JXG.Text} object, that has to be updated.
+     * @param {JXG2.Text} el Reference to the {@link JXG2.Text} object, that has to be updated.
      * @param {Boolean} doHighlight
      * @see Text
-     * @see JXG.Text
-     * @see JXG.AbstractRenderer#drawText
-     * @see JXG.AbstractRenderer#drawInternalText
-     * @see JXG.AbstractRenderer#updateText
-     * @see JXG.AbstractRenderer#updateInternalText
-     * @see JXG.AbstractRenderer#updateInternalTextStyle
+     * @see JXG2.Text
+     * @see JXG2.AbstractRenderer#drawText
+     * @see JXG2.AbstractRenderer#drawInternalText
+     * @see JXG2.AbstractRenderer#updateText
+     * @see JXG2.AbstractRenderer#updateInternalText
+     * @see JXG2.AbstractRenderer#updateInternalTextStyle
      */
     updateTextStyle(el, doHighlight) {
         var fs,
@@ -1468,8 +1468,8 @@ export abstract class AbstractRenderer {
     //  * This method is used for Canvas and VML.
     //  * SVG needs its own version.
     //  * @private
-    //  * @see JXG.AbstractRenderer#updateTextStyle
-    //  * @see JXG.SVGRenderer#updateInternalTextStyle
+    //  * @see JXG2.AbstractRenderer#updateTextStyle
+    //  * @see JXG2.SVGRenderer#updateInternalTextStyle
     //  */
     // updateInternalTextStyle(el, strokeColor, strokeOpacity) {
     //     this.setObjectStrokeColor(el, strokeColor, strokeOpacity);
@@ -1479,11 +1479,11 @@ export abstract class AbstractRenderer {
 
 
     /**
-     * Updates the properties of an {@link JXG.Image} element.
-     * @param {JXG.Image} el Reference to an {@link JXG.Image} object, that has to be updated.
+     * Updates the properties of an {@link JXG2.Image} element.
+     * @param {JXG2.Image} el Reference to an {@link JXG2.Image} object, that has to be updated.
      * @see Image
-     * @see JXG.Image
-     * @see JXG.AbstractRenderer#drawImage
+     * @see JXG2.Image
+     * @see JXG2.AbstractRenderer#drawImage
      */
     updateImage(el) {
         this.updateRectPrim(
@@ -1505,10 +1505,10 @@ export abstract class AbstractRenderer {
      * coords. Then, the stretch factors are divided out. After the transformations in user coords, the stretch
      * factors are multiplied in again, and the origin in user coords is translated back to its position. This
      * method does not have to be implemented in a new renderer.
-     * @param {JXG.GeometryElement} el A JSXGraph element. We only need its board property.
-     * @param {Array} transformations An array of JXG.Transformations.
+     * @param {JXG2.GeometryElement} el A JSXGraph element. We only need its board property.
+     * @param {Array} transformations An array of JXG2.Transformations.
      * @returns {Array} A matrix represented by a two dimensional array of numbers.
-     * @see JXG.AbstractRenderer#transformRect
+     * @see JXG2.AbstractRenderer#transformRect
      */
     joinTransforms(el, transformations) {
         var i,
@@ -1543,18 +1543,18 @@ export abstract class AbstractRenderer {
 
 
     /**
-     * Updates CSS style properties of a {@link JXG.Image} node.
+     * Updates CSS style properties of a {@link JXG2.Image} node.
      * In SVGRenderer opacity is the only available style element.
      * This function is called by highlight() and nohighlight().
      * This function works for VML.
      * It does not work for Canvas.
      * SVGRenderer overwrites this method.
-     * @param {JXG.Text} el Reference to the {@link JXG.Image} object, that has to be updated.
+     * @param {JXG2.Text} el Reference to the {@link JXG2.Image} object, that has to be updated.
      * @param {Boolean} doHighlight
      * @see Image
-     * @see JXG.Image
-     * @see JXG.AbstractRenderer#highlight
-     * @see JXG.AbstractRenderer#noHighlight
+     * @see JXG2.Image
+     * @see JXG2.AbstractRenderer#highlight
+     * @see JXG2.AbstractRenderer#noHighlight
      */
     updateImageStyle(el, doHighlight) {
         el.rendNode.className = el.evalVisProp(
@@ -1585,12 +1585,12 @@ export abstract class AbstractRenderer {
     /**
      * Highlights an object, i.e. changes the current colors of the object to its highlighting colors
      * and highlighting strokewidth.
-     * @param {JXG.GeometryElement} el Reference of the object that will be highlighted.
+     * @param {JXG2.GeometryElement} el Reference of the object that will be highlighted.
      * @param {Boolean} [suppressHighlightStrokeWidth=undefined] If undefined or false, highlighting also changes strokeWidth. This might not be
      * the cases for polygon borders. Thus, if a polygon is highlighted, its polygon borders change strokeWidth only if the polygon attribute
      * highlightByStrokeWidth == true.
-     * @returns {JXG.AbstractRenderer} Reference to the renderer
-     * @see JXG.AbstractRenderer#updateTextStyle
+     * @returns {JXG2.AbstractRenderer} Reference to the renderer
+     * @see JXG2.AbstractRenderer#updateTextStyle
      */
     highlight(el/*: GeometryElement*/, suppressHighlightStrokeWidth: boolean = false) {
         var i, do_hl, sw;
@@ -1651,10 +1651,10 @@ export abstract class AbstractRenderer {
     }
 
     /**
-     * Uses the normal colors of an object, i.e. the opposite of {@link JXG.AbstractRenderer#highlight}.
-     * @param {JXG.GeometryElement} el Reference of the object that will get its normal colors.
-     * @returns {JXG.AbstractRenderer} Reference to the renderer
-     * @see JXG.AbstractRenderer#updateTextStyle
+     * Uses the normal colors of an object, i.e. the opposite of {@link JXG2.AbstractRenderer#highlight}.
+     * @param {JXG2.GeometryElement} el Reference of the object that will get its normal colors.
+     * @returns {JXG2.AbstractRenderer} Reference to the renderer
+     * @see JXG2.AbstractRenderer#updateTextStyle
      */
     noHighlight(el) {
         var i, sw;
@@ -1696,7 +1696,7 @@ export abstract class AbstractRenderer {
 
     /**
      * Puts an object from draft mode back into normal mode.
-     * @param {JXG.GeometryElement} el Reference of the object that no longer is in draft mode.
+     * @param {JXG2.GeometryElement} el Reference of the object that no longer is in draft mode.
      */
     removeDraft(el) {
         this.setObjectTransition(el);
@@ -1715,7 +1715,7 @@ export abstract class AbstractRenderer {
     /**
      * Puts an object into draft mode, i.e. it's visual appearance will be changed. For GEONE<sub>x</sub>T backwards
      * compatibility.
-     * @param {JXG.GeometryElement} el Reference of the object that is in draft mode.
+     * @param {JXG2.GeometryElement} el Reference of the object that is in draft mode.
      */
     setDraft(el) {
         if (!el.evalVisProp('draft')) {
@@ -1747,7 +1747,7 @@ export abstract class AbstractRenderer {
      * <p>
      * The symbols for zoom, navigation and reload are hard-coded.
      *
-     * @param {JXG.Board} board Reference to a JSXGraph board.
+     * @param {JXG2.Board} board Reference to a JSXGraph board.
      * @param {Object} attr Attributes of the navigation bar
      * @private
      */

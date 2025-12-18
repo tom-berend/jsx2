@@ -1,6 +1,6 @@
 from JXGServerModule import JXGServerModule
 from rpy import r
-import JXG
+import JXG2
 import io, gzip
 import datetime, math, random
 
