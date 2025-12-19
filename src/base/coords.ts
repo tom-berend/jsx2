@@ -43,7 +43,7 @@ import type { Board } from './board.js'
 import {Events} from '../utils/event.js'
 import  {JSXMath}  from "../math/math.js";
 import { COORDS_BY, OBJECT_TYPE, OBJECT_CLASS } from "./constants.js";
-import GeometryElement  from "./element.js";
+import {GeometryElement}  from "./element.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js";
 
 /**

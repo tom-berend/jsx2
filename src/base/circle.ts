@@ -39,7 +39,7 @@
  */
 
 import {JXG2} from "../jxg.js";
-import GeometryElement from "./element.js";
+import {GeometryElement} from "./element.js";
 import {Coords} from "../base/coords.js";
 import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
 import {JSXMath} from "../math/math.js";
@@ -200,7 +200,7 @@ JXG2.Circle = function (board, method, par1, par2, attributes) {
     });
 };
 
-JXG2.Circle.prototype = new GeometryElement();
+// JXG2.Circle.prototype = new GeometryElement();
 
 JXG2.extend(
     JXG2.Circle.prototype,

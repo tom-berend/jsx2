@@ -38,7 +38,7 @@ import {Coords} from "../base/coords.js";
 import {Statistics} from "../math/statistics.js";
 import {Geometry} from "../math/geometry.js";
 import {Type} from "../utils/type.js";
-import GeometryElement from "./element.js";
+import {GeometryElement} from "./element.js";
 
 /**
  * Creates a new instance of JXG2.Polygon.

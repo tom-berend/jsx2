@@ -38,12 +38,12 @@
 
 import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
-import Text from "../base/text.js";
-import {JSXMath} from "../math/math.js";
+import { Text } from "../base/text.js";
+import { JSXMath } from "../math/math.js";
 import Interval from "../math/ia.js";
-import {Geometry} from "../math/geometry.js";
-import {Statistics} from "../math/statistics.js";
-import {Type} from "../utils/type.js";
+import { Geometry } from "../math/geometry.js";
+import { Statistics } from "../math/statistics.js";
+import { Type } from "../utils/type.js";
 import { Env } from "../utils/env.js";
 
 // IE 6-8 compatibility

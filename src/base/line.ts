@@ -54,7 +54,7 @@ import { Numerics } from "../math/numerics.js";
 import { Statistics } from "../math/statistics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
-import GeometryElement from "./element.js";
+import {GeometryElement} from "./element.js";
 import { Type } from "../utils/type.js";
 
 /**
@@ -159,7 +159,7 @@ JXG2.Line = function (board, p1, p2, attributes) {
     });
 };
 
-JXG2.Line.prototype = new GeometryElement();
+// JXG2.Line.prototype = new GeometryElement();
 
 JXG2.extend(
     JXG2.Line.prototype,

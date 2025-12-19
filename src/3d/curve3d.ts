@@ -122,7 +122,7 @@ JXG2.Curve3D = function (view, F, X, Y, Z, range, attributes) {
         // TODO
     });
 };
-JXG2.Curve3D.prototype = new JXG2.GeometryElement();
+// JXG2.Curve3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Curve3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(

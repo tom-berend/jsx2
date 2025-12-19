@@ -41,7 +41,7 @@ import Clip from "../math/clip.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 import { Geometry } from "../math/geometry.js";
-import GeometryElement from "./element.js";
+import {GeometryElement} from "./element.js";
 import GeonextParser from "../parser/geonext.js";
 import ImplicitPlot from "../math/implicitplot.js";
 import { JSXMath } from "../math/math.js";
@@ -149,7 +149,7 @@ JXG2.Curve = function (board, parents, attributes) {
     });
 };
 
-JXG2.Curve.prototype = new GeometryElement();
+// JXG2.Curve.prototype = new GeometryElement();
 
 JXG2.extend(
     JXG2.Curve.prototype,

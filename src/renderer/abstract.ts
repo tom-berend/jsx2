@@ -1,5 +1,5 @@
-const dbug = (elem?/*:GeometryElement*/) => false// elem && elem.id === 'jxgBoard1P1';
-const dbugColor = `color:red;background-color:#00ff00`;
+const dbug = (elem?/*:GeometryElement*/) =>  elem && elem.id === 'jxgBoard1P1';
+const dbugColor = `color:red;background-color:#00ffc0`;
 
 /*
     Copyright 2008-2025
@@ -52,17 +52,17 @@ const dbugColor = `color:red;background-color:#00ff00`;
 
 import { JXG2 } from '../jxg.js'
 import { LooseObject } from "../interfaces.js";
-import Options from "../options.js";
+import  Options  from "../options.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js'
 import { Coords } from "../base/coords.js";
 
 // import { Constants } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
-import {Geometry} from "../math/geometry.js";
+import { Geometry } from "../math/geometry.js";
 import { Type } from "../utils/type.js";
 import { Env } from "../utils/env.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
-import GeometryElement from "../base/element.js";
+import { GeometryElement } from "../base/element.js";
 import { SVGType } from "../interfaces.js";
 
 

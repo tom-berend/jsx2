@@ -105,7 +105,7 @@ JXG2.Face3D = function (view, polyhedron, faceNumber, attributes) {
         // TODO
     });
 };
-JXG2.Face3D.prototype = new JXG2.GeometryElement();
+// JXG2.Face3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Face3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(

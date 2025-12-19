@@ -141,7 +141,7 @@ JXG2.Sphere3D = function (view, method, par1, par2, attributes) {
         Radius: "Radius"
     });
 };
-JXG2.Sphere3D.prototype = new JXG2.GeometryElement();
+// JXG2.Sphere3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Sphere3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(

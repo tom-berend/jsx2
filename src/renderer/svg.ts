@@ -1,5 +1,5 @@
-const dbug = (elem?/*: GeometryElement*/) => false // elem && elem.id === 'jxgBoard1P1Label';
-const dbugColor = `color:blue;background-color:#ff0000`;
+const dbug = (elem?/*: GeometryElement*/) =>  elem && elem.id === 'jxgBoard1P1Label';
+const dbugColor = `color:blue;background-color:#ffc0c0`;
 
 /*
     Copyright 2008-2025
@@ -36,7 +36,7 @@ const dbugColor = `color:blue;background-color:#ff0000`;
 /*jslint nomen: true, plusplus: true, newcap:true*/
 
 // import { JXG2 } from "../jxg.js";
-import Options from "../options.js";
+import  Options  from "../options.js";
 import { AbstractRenderer } from "./abstract.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Type } from "../utils/type.js";
@@ -44,7 +44,7 @@ import { Color } from "../utils/color.js";
 import { Base64 } from "../utils/base64.js";
 import { Numerics } from "../math/numerics.js";
 // import { LayerOptions } from "../optionInterfaces.js";
-// import GeometryElement from "../base/element.js";
+// import {GeometryElement} from "../base/element.js";
 import { Board } from "../base/board.js";
 import { Env } from "../utils/env.js"
 
@@ -1156,7 +1156,7 @@ export class SVGRenderer extends AbstractRenderer {
     updateEllipsePrim(node: HTMLElement, x: number, y: number, rx: number, ry: number) {
         var huge = 1000000;
 
-        if (dbug()) console.log(`%c svg: updateEllipsePrim(node, x:${x}, y:${y}, rx:${rx}, ry:${ry} )`, dbugColor)
+        if (dbug()) console.log(`%c svg: updateEllipsePrim(node, x:${x}, y:${y}, rx:${rx}, ry:${ry} )`, dbugColor,node)
 
         huge = 200000; // IE
         // webkit does not like huge values if the object is dashed

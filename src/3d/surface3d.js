@@ -136,7 +136,7 @@ JXG2.Surface3D = function (view, F, X, Y, Z, range_u, range_v, attributes) {
         // TODO
     });
 };
-JXG2.Surface3D.prototype = new JXG2.GeometryElement();
+// JXG2.Surface3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Surface3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(

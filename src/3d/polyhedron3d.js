@@ -118,7 +118,7 @@ JXG2.Polyhedron3D = function (view, polyhedron, faces, attributes) {
         addTransform: "addTransform"
     });
 };
-JXG2.Polyhedron3D.prototype = new JXG2.GeometryElement();
+// JXG2.Polyhedron3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Polyhedron3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(

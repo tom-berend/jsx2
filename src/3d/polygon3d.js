@@ -75,7 +75,7 @@ JXG2.Polygon3D = function (view, vertices, attributes) {
         }
     }
 };
-JXG2.Polygon3D.prototype = new JXG2.GeometryElement();
+// JXG2.Polygon3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Polygon3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(

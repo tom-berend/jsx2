@@ -153,7 +153,7 @@ JXG2.Circle3D = function (view, center, normal, radius, attributes) {
         attributes
     );
 };
-JXG2.Circle3D.prototype = new JXG2.GeometryElement();
+// JXG2.Circle3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Circle3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(

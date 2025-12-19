@@ -36,13 +36,13 @@
  * @fileoverview In this file the ForeignObject element is defined.
  */
 
-import {JXG2} from "../jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import {Coords} from "../base/coords.js";
-import GeometryElement from "./element.js";
-import {JSXMath} from "../math/math.js";
-import {Type} from "../utils/type.js";
-import CoordsElement from "./coordselement.js";
+import { JXG2 } from "../jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
+import { Coords } from "../base/coords.js";
+import { GeometryElement } from "./element.js";
+import { JSXMath } from "../math/math.js";
+import { Type } from "../utils/type.js";
+import { CoordsElement } from "./coordselement.js";
 
 /**
  * Construct and handle SVG foreignObjects.
@@ -119,7 +119,7 @@ JXG2.ForeignObject = function (board, coords, attributes, content, size) {
     });
 };
 
-JXG2.ForeignObject.prototype = new GeometryElement();
+// JXG2.ForeignObject.prototype = new GeometryElement();
 Type.copyPrototypeMethods(JXG2.ForeignObject, CoordsElement, 'coordsConstructor');
 
 JXG2.extend(
@@ -318,13 +318,13 @@ JXG2.extend(
          * Returns the width of the foreignObject in user coordinates.
          * @returns {number} width of the image in user coordinates
          */
-        W: function () {}, // Needed for docs, defined in constructor
+        W: function () { }, // Needed for docs, defined in constructor
 
         /**
          * Returns the height of the foreignObject in user coordinates.
          * @returns {number} height of the image in user coordinates
          */
-        H: function () {} // Needed for docs, defined in constructor
+        H: function () { } // Needed for docs, defined in constructor
     }
 );
 
@@ -461,11 +461,11 @@ JXG2.createForeignObject = function (board, parents, attributes) {
     if (!fo) {
         throw new Error(
             "JSXGraph: Can't create foreignObject with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [string, [x, y], [w, h]], [string, [x, y]], [element,transformation]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [string, [x, y], [w, h]], [string, [x, y]], [element,transformation]"
         );
     }
 

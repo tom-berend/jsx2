@@ -151,7 +151,7 @@ JXG2.Text3D = function (view, F, text, slide, attributes) {
         // TODO
     });
 };
-JXG2.Text3D.prototype = new JXG2.GeometryElement();
+// JXG2.Text3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Text3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(

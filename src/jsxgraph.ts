@@ -29,13 +29,13 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG2: true, document:true, jQuery:true, define: true, window: true*/
+/*global JXG: true, document:true, jQuery:true, define: true, window: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
- * @fileoverview The JSXGraph object is defined in this file. JXG2.JSXGraph controls all boards.
+ * @fileoverview The JSXGraph object is defined in this file. JXG.JSXGraph controls all boards.
  * It has methods to create, save, load and free boards. Additionally some helper functions are
- * defined in this file directly in the JXG2 namespace.
+ * defined in this file directly in the JXG namespace.
  *
  */
 
@@ -45,7 +45,7 @@ import { Type } from "./utils/type.js";
 // import {JSXMath} from "./math/math.js";
 import { Board } from "./base/board.js";
 import FileReader from "./reader/file.js";
-import Options from "./options.js";
+import  Options  from "./options.js";
 import { SVGRenderer } from "./renderer/svg.js";
 import VMLRenderer from "./renderer/vml.js";
 import CanvasRenderer from "./renderer/canvas.js";
@@ -55,7 +55,7 @@ import './index.js'
 
 /**
  * Constructs a new JSXGraph singleton object.
- * @class The JXG2.JSXGraph singleton stores all properties required
+ * @class The JXG.JSXGraph singleton stores all properties required
  * to load, save, create and free a board.
  */
 export class JSXGraph {
@@ -80,7 +80,7 @@ export class JSXGraph {
             Options.board.renderer = 'canvas';
         }
 
-        if (Env.isNode() || Options.renderer === 'no') {
+        if (Env.isNode() || Options['renderer'] === 'no') {
             Options.text.display = 'internal';
             Options.infobox.display = 'internal';
         }
@@ -181,7 +181,7 @@ export class JSXGraph {
     /**
      * Further initialization of the board. Set some properties from attribute values.
      *
-     * @param {JXG2.Board} board
+     * @param {JXG.Board} board
      * @param {Object} attr attributes object
      * @param {Object} dimensions Object containing dimensions of the canvas
      *
@@ -232,7 +232,7 @@ export class JSXGraph {
     /**
      * Remove the two corresponding ARIA divs when freeing a board
      *
-     * @param {JXG2.Board} board
+     * @param {JXG.Board} board
      *
      * @private
      */
@@ -261,14 +261,14 @@ export class JSXGraph {
      *
      * @param {String|Object} box id of or reference to the HTML element in which the board is painted.
      * @param {Object} attributes An object that sets some of the board properties.
-     * See {@link JXG2.Board} for a list of available attributes of the board.
-     * Most of these attributes can also be set via {@link JXG2.Options},
+     * See {@link JXG.Board} for a list of available attributes of the board.
+     * Most of these attributes can also be set via {@link JXG.Options},
      *
-     * @returns {JXG2.Board} Reference to the created board.
+     * @returns {JXG.Board} Reference to the created board.
      *
-     * @see JXG2.AbstractRenderer#drawNavigationBar
+     * @see JXG.AbstractRenderer#drawNavigationBar
      * @example
-     * var board = JXG2.JSXGraph.initBoard('jxgbox', {
+     * var board = JXG.JSXGraph.initBoard('jxgbox', {
      *     boundingbox: [-10, 5, 10, -5],
      *     keepaspectratio: false,
      *     axis: true
@@ -277,7 +277,7 @@ export class JSXGraph {
      * </pre><div id="JXGc0f76e98-20bc-4224-9016-7ffa10770dff" class="jxgbox" style="width: 600px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG2.JSXGraph.initBoard('JXGc0f76e98-20bc-4224-9016-7ffa10770dff', {
+     *         var board = JXG.JSXGraph.initBoard('JXGc0f76e98-20bc-4224-9016-7ffa10770dff', {
      *         boundingbox: [-10, 5, 10, -5],
      *         keepaspectratio: false,
      *         axis: true
@@ -289,7 +289,7 @@ export class JSXGraph {
      *
      *
      * @example
-     * const board = JXG2.JSXGraph.initBoard('jxgbox', {
+     * const board = JXG.JSXGraph.initBoard('jxgbox', {
      *   boundingbox: [-10, 10, 10, -10],
      *   axis: true,
      *   showCopyright: true,
@@ -328,7 +328,7 @@ export class JSXGraph {
      * </pre><div id="JXG4ced167d-3235-48bc-84e9-1a28fce00f6a" class="jxgbox" style="width: 300px; height: 300px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG2.JSXGraph.initBoard('JXG4ced167d-3235-48bc-84e9-1a28fce00f6a', {
+     *         var board = JXG.JSXGraph.initBoard('JXG4ced167d-3235-48bc-84e9-1a28fce00f6a', {
      *       boundingbox: [-10, 10, 10, -10],
      *       axis: true,
      *       showCopyright: true,
@@ -368,7 +368,7 @@ export class JSXGraph {
      *
      * </script><pre>
      * @example
-     * const board = JXG2.JSXGraph.initBoard('jxgbox', {
+     * const board = JXG.JSXGraph.initBoard('jxgbox', {
      *     boundingbox: [-5, 5, 5, -5],
      *     intl: {
      *         enabled: false,
@@ -409,7 +409,7 @@ export class JSXGraph {
      * </pre><div id="JXGdac54e59-f1e8-4fa6-bbcc-7486f7f6f960" class="jxgbox" style="width: 600px; height: 600px;"></div>
      * <script type="text/javascript">
      *     (function() {
-     *         var board = JXG2.JSXGraph.initBoard('JXGdac54e59-f1e8-4fa6-bbcc-7486f7f6f960', {
+     *         var board = JXG.JSXGraph.initBoard('JXGdac54e59-f1e8-4fa6-bbcc-7486f7f6f960', {
      *         boundingbox: [-5, 5, 5, -5],
      *         intl: {
      *             enabled: false,
@@ -601,21 +601,21 @@ export class JSXGraph {
      * @param {Object} attributes Attributes for the board and 'encoding'.
      *  Compressed files need encoding 'iso-8859-1'. Otherwise it probably is 'utf-8'.
      * @param {Function} callback
-     * @returns {JXG2.Board} Reference to the created board.
-     * @see JXG2.FileReader
-     * @see JXG2.GeonextReader
-     * @see JXG2.GeogebraReader
-     * @see JXG2.IntergeoReader
-     * @see JXG2.CinderellaReader
+     * @returns {JXG.Board} Reference to the created board.
+     * @see JXG.FileReader
+     * @see JXG.GeonextReader
+     * @see JXG.GeogebraReader
+     * @see JXG.IntergeoReader
+     * @see JXG.CinderellaReader
      *
      * @example
      * // Uncompressed file
-     * var board = JXG2.JSXGraph.loadBoardFromFile('jxgbox', 'filename', 'geonext',
+     * var board = JXG.JSXGraph.loadBoardFromFile('jxgbox', 'filename', 'geonext',
      *      {encoding: 'utf-8'},
      *      function (board) { console.log("Done loading"); }
      * );
      * // Compressed file
-     * var board = JXG2.JSXGraph.loadBoardFromFile('jxgbox', 'filename', 'geonext',
+     * var board = JXG.JSXGraph.loadBoardFromFile('jxgbox', 'filename', 'geonext',
      *      {encoding: 'iso-8859-1'},
      *      function (board) { console.log("Done loading"); }
      * );
@@ -623,7 +623,7 @@ export class JSXGraph {
      * @example
      * // From <input type="file" id="localfile" />
      * var file = document.getElementById('localfile').files[0];
-     * JXG2.JSXGraph.loadBoardFromFile('jxgbox', file, 'geonext',
+     * JXG.JSXGraph.loadBoardFromFile('jxgbox', file, 'geonext',
      *      {encoding: 'utf-8'},
      *      function (board) { console.log("Done loading"); }
      * );
@@ -668,12 +668,12 @@ export class JSXGraph {
      * @param {Object} attributes Attributes for the board and 'encoding'.
      *  Compressed files need encoding 'iso-8859-1'. Otherwise it probably is 'utf-8'.
      * @param {Function} callback
-     * @returns {JXG2.Board} Reference to the created board.
-     * @see JXG2.FileReader
-     * @see JXG2.GeonextReader
-     * @see JXG2.GeogebraReader
-     * @see JXG2.IntergeoReader
-     * @see JXG2.CinderellaReader
+     * @returns {JXG.Board} Reference to the created board.
+     * @see JXG.FileReader
+     * @see JXG.GeonextReader
+     * @see JXG.GeogebraReader
+     * @see JXG.IntergeoReader
+     * @see JXG.CinderellaReader
      */
     static loadBoardFromString(box, string, format, attributes, callback) {
         var attr, renderer, board, dimensions;
@@ -707,7 +707,7 @@ export class JSXGraph {
 
     /**
      * Delete a board and all its contents.
-     * @param {JXG2.Board|String} board id of or reference to the DOM element in which the board is drawn.
+     * @param {JXG.Board|String} board id of or reference to the DOM element in which the board is drawn.
      *
      */
     static freeBoard(board: Board) {
@@ -753,13 +753,13 @@ export class JSXGraph {
     }
 
     /**
-     * @deprecated Use JXG2#registerElement
+     * @deprecated Use JXG#registerElement
      * @param element
      * @param creator
      */
     static registerElement(element, creator) {
-        Env.deprecated("JXG2.JSXGraph.registerElement()", "JXG2.registerElement()");
-        // JXG2.registerElement(element, creator);
+        Env.deprecated("JXG.JSXGraph.registerElement()", "JXG.registerElement()");
+        // JXG.registerElement(element, creator);
     }
 }
 
@@ -775,7 +775,7 @@ export class JSXGraph {
 
 //                 scripts = document.getElementsByTagName('script'),
 //                 init = function (code, type, bbox) {
-//                     var board = JXG2.JSXGraph.initBoard(id, {
+//                     var board = JXG.JSXGraph.initBoard(id, {
 //                         boundingbox: bbox,
 //                         keepaspectratio: true,
 //                         grid: grid,
@@ -789,7 +789,7 @@ export class JSXGraph {
 //                         try {
 //                             board.jc.parse(code);
 //                         } catch (e2) {
-//                             JXG2.debug(e2);
+//                             JXG.debug(e2);
 //                         }
 //                     }
 
@@ -799,7 +799,7 @@ export class JSXGraph {
 //                     return function () {
 //                         var newBoard;
 
-//                         JXG2.JSXGraph.freeBoard(board);
+//                         JXG.JSXGraph.freeBoard(board);
 //                         newBoard = init(code, type, bbox);
 //                         newBoard.reload = makeReload(newBoard, code, type, bbox);
 //                     };
@@ -897,7 +897,7 @@ export class JSXGraph {
 //                             board.reload = makeReload(board, code, type, bbox);
 //                         }
 //                     } else {
-//                         JXG2.debug(
+//                         JXG.debug(
 //                             "JSXGraph: Apparently the div injection failed. Can't create a board, sorry."
 //                         );
 //                     }

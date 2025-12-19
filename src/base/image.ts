@@ -38,11 +38,11 @@
 
 import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
-import {Coords} from "../base/coords.js";
-import GeometryElement from "./element.js";
-import {JSXMath} from "../math/math.js";
-import {Type} from "../utils/type.js";
-import CoordsElement from "./coordselement.js";
+import { Coords } from "../base/coords.js";
+import { GeometryElement } from "./element.js";
+import { JSXMath } from "../math/math.js";
+import { Type } from "../utils/type.js";
+import { CoordsElement } from "./coordselement.js";
 
 /**
  * Construct and handle images
@@ -115,7 +115,7 @@ JXG2.Image = function (board, coords, attributes, url, size) {
     });
 };
 
-JXG2.Image.prototype = new GeometryElement();
+// JXG2.Image.prototype = new GeometryElement();
 Type.copyPrototypeMethods(JXG2.Image, CoordsElement, 'coordsConstructor');
 
 JXG2.extend(
@@ -406,7 +406,7 @@ JXG2.createImage = function (board, parents, attributes) {
         size = parents[2];
 
     attr = Type.copyAttributes(attributes, board.options, 'image');
-    im = CoordsElement.create(JXG2.Image, board, coords, attr, url, size);
+    // tbtb ?? im = CoordsElement.create(JXG2.Image, board, coords, attr, url, size);
     if (!im) {
         throw new Error(
             "JSXGraph: Can't create image with parent types '" +

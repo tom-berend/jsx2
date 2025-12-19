@@ -121,7 +121,7 @@ JXG2.Line3D = function (view, point, direction, range, attributes) {
         // TODO
     });
 };
-JXG2.Line3D.prototype = new JXG2.GeometryElement();
+// JXG2.Line3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Line3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(
@@ -903,7 +903,7 @@ JXG2.Plane3D = function (view, point, dir1, range_u, dir2, range_v, attributes) 
         // TODO
     });
 };
-JXG2.Plane3D.prototype = new JXG2.GeometryElement();
+// JXG2.Plane3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Plane3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(

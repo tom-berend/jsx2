@@ -62,8 +62,10 @@ import { AbstractRenderer } from '../renderer/abstract.js';
 import { Dim } from '../interfaces.js'
 // import { Infobox } from './infobox.js';
 
-// import GeometryElement from './element.js';
-// import createText from '../base/text.js'
+// import {GeometryElement} from './element.js';
+import { Text } from '../base/text.js'
+import { Point } from '../base/point.js'
+// import { Segment} from '../base/line.js'
 // import createPoint from '../base/point.js'
 
 
@@ -666,6 +668,7 @@ export class Board extends Events {
 
 
 
+
     constructor(
         containerName: string = '',
         rendererType: 'svg' | 'canvas' | 'no' | 'auto' = 'svg',
@@ -860,7 +863,7 @@ export class Board extends Events {
 
         // since this.infobox should never be null
         // this.infobox = new Text(this, [0, 0], {}, '[0,0]')
-        this.infobox = JXG2.createText(this, [0, 0, '[0,0]'], {})
+        this.infobox = new Text(this, [0, 0, '[0,0]'], {})
 
         this.displayInfobox(false)
 
@@ -6313,6 +6316,9 @@ export class Board extends Events {
      */
     create(elementType: string, parents: any[] = [], attributes: LooseObject = {}) {
         var el, i;
+        // if (dbug)
+        console.warn(`%c board: creating elementType '${elementType}', ${JSON.stringify(parents).substring(0, 100)}`, dbugColor)
+
 
         elementType = elementType.toLowerCase();
 
@@ -6347,12 +6353,14 @@ export class Board extends Events {
             }
         }
 
-        // tbtb - really JXG2.elements, not JXG_elements?
-        if (Type.isFunction(JXG2.elements[elementType])) {
-            el = JXG2.elements[elementType](this, parents, attributes);
-            if (dbug) console.warn(`%c board: creating elementType '${elementType}', el.id = '${el.id}'`, dbugColor)
-        } else {
-            throw new Error('JSXGraph: create: Unknown element type given: ' + elementType);
+
+        let attr
+        switch (elementType) {
+            case 'text': el = new Text(this, parents, attributes); break;
+            case 'point': el = new Point(this, parents, attributes); break;
+            default:
+                if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)
+                throw new Error('JSXGraph: create: Unknown element type given: ' + elementType);
         }
 
         if (!Type.exists(el)) {

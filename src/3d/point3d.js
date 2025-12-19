@@ -126,7 +126,7 @@ JXG2.Point3D = function (view, F, slide, attributes) {
     });
 };
 
-JXG2.Point3D.prototype = new JXG2.GeometryElement();
+// JXG2.Point3D.prototype = new JXG2.GeometryElement();
 Type.copyPrototypeMethods(JXG2.Point3D, JXG2.GeometryElement3D, 'constructor3D');
 
 JXG2.extend(

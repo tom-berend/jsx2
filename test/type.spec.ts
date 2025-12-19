@@ -78,6 +78,17 @@ describe("isObject, isArray, etc", function () {
         expect(Type.isArray(5)).toBe(false);
         expect(Type.isArray('hello')).toBe(false);
     });
+
+    it('tests isFunction', () => {
+        expect(Type.isFunction({})).toBe(false);
+        expect(Type.isFunction([])).toBe(false);
+        expect(Type.isFunction(null)).toBe(false);
+        expect(Type.isFunction(() => { })).toBe(true);   //  <===
+        expect(Type.isFunction(new Number(5))).toBe(false);
+        expect(Type.isFunction(new String('hello'))).toBe(false);
+        expect(Type.isFunction(5)).toBe(false);
+        expect(Type.isFunction('hello')).toBe(false);
+    });
 });
 
 

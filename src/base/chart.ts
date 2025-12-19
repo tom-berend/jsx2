@@ -36,7 +36,7 @@ import { JXG2 } from "../jxg.js";
 import { Numerics } from "../math/numerics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
-import GeometryElement from "./element.js";
+import {GeometryElement} from "./element.js";
 import DataSource from "../parser/datasource.js";
 import { Color } from "../utils/color.js";
 import { Type } from "../utils/type.js";
@@ -142,7 +142,7 @@ JXG2.Chart = function (board, parents, attributes) {
     return this.elements;
 };
 
-JXG2.Chart.prototype = new GeometryElement();
+// JXG2.Chart.prototype = new GeometryElement();
 
 JXG2.extend(
     JXG2.Chart.prototype,
@@ -1367,7 +1367,7 @@ JXG2.Legend = function (board, coords, attributes) {
 
 };
 
-JXG2.Legend.prototype = new GeometryElement();
+// JXG2.Legend.prototype = new GeometryElement();
 
 /**
  * Draw a vertical legend.

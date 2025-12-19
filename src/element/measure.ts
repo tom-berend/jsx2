@@ -40,7 +40,7 @@
 
 import { JXG2 } from "../jxg.js";
 import {Type} from "../utils/type.js";
-import GeometryElement from "../base/element.js";
+import {GeometryElement} from "../base/element.js";
 import Prefix from "../parser/prefix.js";
 import { OBJECT_TYPE } from "../base/constants.js";
 

@@ -48,7 +48,7 @@ import { JSXMath } from "../math/math.js";
 import { Geometry } from "../math/geometry.js";
 import { Numerics } from "../math/numerics.js";
 import { Env } from "../utils/env.js";
-import GeometryElement from "../base/element.js";
+import {GeometryElement} from "../base/element.js";
 import Composition from "../base/composition.js";
 
 /**
@@ -226,7 +226,7 @@ JXG2.View3D = function (board, parents, attributes) {
         // TODO
     });
 };
-JXG2.View3D.prototype = new GeometryElement();
+// JXG2.View3D.prototype = new GeometryElement();
 
 JXG2.extend(
     JXG2.View3D.prototype, /** @lends JXG2.View3D.prototype */ {
