@@ -1,4 +1,4 @@
-let dbug = (elem) =>  elem && elem.id === 'jxgBoard1P1Label'
+let dbug = (elem) => elem && elem.id === 'jxgBoard1P3'
 const dbugColor = `color:yellow;background-color:#803030`;
 
 /*
@@ -223,6 +223,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         if (Type.exists(this.element)) {
             this.addAnchor(coordinates, attributes['isLabel']);
         }
+
         this.isDraggable = true;
     };
 
@@ -231,14 +232,31 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      * @private
      */
     updateConstraint(): CoordsElement {
+
+        if (dbug(this))
+            console.warn(`%c update constraint ${this.id}`, dbugColor, this.X(), this.Y(), this.XEval(), this.YEval())
+
+        // this gets called for unconstrained elements, means something else
+
+        this.coords.setCoordinates(COORDS_BY.USER, [
+            // this.ZEval(),
+            this.XEval(),
+
+            this.YEval()
+        ]);
+
         return this;
     }
 
     /**
      * Updates the coordinates of the element.
      * @private
-     */
+    */
     updateCoords(fromParent = false) {
+        if (dbug(this))
+            console.warn(`%c coordselements: updateCoords( ${fromParent}, ${this.id} scr [${this.scrCoords[1]},${this.scrCoords[2]}] )`, dbugColor)
+
+            this.updateConstraint();
 
         if (!this.needsUpdate) {
             return this;
@@ -250,13 +268,13 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         }
 
         /*
-         * We need to calculate the new coordinates no matter of the elements visibility because
-         * a child could be visible and depend on the coordinates of the element/point (e.g. perpendicular).
-         *
-         * Check if the element is a glider and calculate new coords in dependency of this.slideObject.
-         * This function is called with fromParent==true in case it is a glider element for example if
-         * the defining elements of the line or circle have been changed.
-         */
+        * We need to calculate the new coordinates no matter of the elements visibility because
+     * a child could be visible and depend on the coordinates of the element/point (e.g. perpendicular).
+     *
+     * Check if the element is a glider and calculate new coords in dependency of this.slideObject.
+     * This function is called with fromParent==true in case it is a glider element for example if
+     * the defining elements of the line or circle have been changed.
+        */
         if (this.otype === OBJECT_TYPE.GLIDER) {
             if (this.isConstrained) {
                 fromParent = false;
@@ -273,7 +291,6 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
             this._initialized = true;
         }
 
-        if (dbug(this)) console.warn(`%c coordselements: updateCoords(fromParent: ${fromParent}, ${this.id} scr [${this.scrCoords[1]},${this.scrCoords[2]}] )`, dbugColor)
 
         return this;
     }
@@ -831,9 +848,9 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         if (dbug(this))
             console.warn(`%c coordselements: updateRendererGeneric(${rendererMethod}), ${this.id}`, dbugColor)
 
-        if (!this.needsUpdate || !this.board.renderer) {
-            return this;
-        }
+        // if (!this.needsUpdate || !this.board.renderer) {
+        //     return this;
+        // }
 
         if (this.visPropCalc.visible) {
             //wasReal = this.isReal;
@@ -1195,8 +1212,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
             oldCoords = this.coords,
             newCoords;
 
-        if (dbug(this)) console.warn(`%c coordselements: setPositionDirectly, ${this.id}`, dbugColor)
-        if (dbug(this)) console.warn(`%c coordselements: setPositionDirectly, ${this.id}`, 'background-color:red;')
+        if (dbug(this)) console.warn(`%c coordselements: setPositionDirectly, ${this.id} ${JSON.stringify(this.coords.usrCoords)}}`, dbugColor)
 
         if (this.relativeCoords) {
             c = new Coords(method, coords, this.board);
@@ -1551,7 +1567,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                 newfuncs[i] = makeSliderFunction(v);
             }
 
-            // newfuncs[i].origin = v;  tbtb - what?
+            // newfuncs[i].origin = v;  tbtb - what??
 
         }
 
@@ -1576,13 +1592,13 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
             // tbtb - what is .origin ????  where does it belong??
             // this.addParents([newfuncs[0].origin, newfuncs[1].origin]);
 
-            this.updateConstraint = function () {
-                this.coords.setCoordinates(COORDS_BY.USER, [
-                    this.XEval(),
-                    this.YEval()
-                ]);
-                return this;
-            };
+            // this.updateConstraint = function () {
+            //     this.coords.setCoordinates(COORDS_BY.USER, [
+            //         this.XEval(),
+            //         this.YEval()
+            //     ]);
+            //     return this;
+            // };
         } else {
             // Homogeneous coordinates
             this.ZEval = newfuncs[0];
@@ -1591,14 +1607,14 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
 
             // this.addParents([newfuncs[0].origin, newfuncs[1].origin, newfuncs[2].origin]);
 
-            this.updateConstraint = function () {
-                this.coords.setCoordinates(COORDS_BY.USER, [
-                    this.ZEval(),
-                    this.XEval(),
-                    this.YEval()
-                ]);
-                return this;
-            };
+            // this.updateConstraint = function () {
+            //     this.coords.setCoordinates(COORDS_BY.USER, [
+            //         this.ZEval(),
+            //         this.XEval(),
+            //         this.YEval()
+            //     ]);
+            //     return this;
+            // };
         }
         this.isConstrained = true;
 
@@ -1627,7 +1643,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      * @private
      */
     addAnchor(coordinates, isLabel) {
-        console.log(`%c coordsElements addAnchor(${JSON.stringify(coordinates)},${isLabel})`,dbugColor)
+        console.log(`%c coordsElements addAnchor(${JSON.stringify(coordinates)},${isLabel})`, dbugColor)
 
         if (isLabel) {
             this.relativeCoords = new Coords(
@@ -1691,6 +1707,8 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                 this.XEval(),
                 this.YEval()
             ]);
+
+            console.log(`cooords update constraint anon function`)
             return this;
         };
         this.isConstrained = true;
@@ -2500,7 +2518,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      * @returns{Object} returns the created object or false.
      */
 
-    // old version
+    // old version  THIS SHOULD BE MOVED TO CONSTRUCTOR, BUT VISPROPS NOT YET SET IN CONSTRUCTOR ?!?
     public create(Callback, board, coords, attr, arg1, arg2) {
         if (dbug(this)) console.warn(`%c coordselements: create ${JSON.stringify(coords)}`, dbugColor)
 

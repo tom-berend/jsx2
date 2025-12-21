@@ -1,3 +1,5 @@
+let dbug = (elem) => elem && elem.id === 'jxgBoard1P3'
+const dbugColor = `color:red;background-color:blue`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -39,7 +41,7 @@
  */
 
 import { JXG2 } from "../jxg.js";
-import  Options from "../options.js";
+import Options from "../options.js";
 import { JSXMath } from "../math/math.js";
 import { Geometry } from "../math/geometry.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
@@ -93,16 +95,22 @@ export class Point extends CoordsElement {
 
         /* Register point on board. */
         this.id = this.board.setId(this, 'P');
+
         this.board.renderer.drawPoint(this);
 
         this.element = this.board.select(attributes['anchor']);
         this.coordsElementInit(parents, this.visProp)
 
+        if (!this.isDraggable)
+            this.addConstraint(parents)
+        console.log(this.XEval, this.YEval)
 
         this.board.finalizeAdding(this);
 
         this.createGradient();
         this.createLabel();
+
+        this.needsUpdate = true;
 
     }
 
@@ -143,10 +151,14 @@ export class Point extends CoordsElement {
     /**
      * Updates the position of the point.
      */
-    update(fromParent?) {
-        if (!this.needsUpdate) {
-            return this;
-        }
+    update(fromParent?:boolean) {
+        if (dbug(this)) console.warn(`%c Point: pointUpdate ${this.id} ${fromParent}`, dbugColor)
+
+        // if (!this.needsUpdate) {
+        //     console.log(`%c Point doesn't need update`, dbugColor)
+    //     return this
+        // }
+
 
         this.updateCoords(fromParent);
 

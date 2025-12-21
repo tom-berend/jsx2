@@ -3370,12 +3370,7 @@ export class Board extends Events {
 
         if (this.hasPointerUp) {
             Env.removeEvent(this.document, 'pointerup', this.pointerUpListener, this);
-            Env.removeEvent(
-                this.document,
-                'pointercancel',
-                this.pointerUpListener,
-                this
-            )
+            Env.removeEvent(this.document, 'pointercancel', this.pointerUpListener, this)
             this.hasPointerUp = false;
         }
 
@@ -5941,6 +5936,7 @@ export class Board extends Events {
             }
         }
         */
+        console.log(`%c updateElements(${this.id})`, dbugColor, this.objectsList)
         for (el = 0; el < this.objectsList.length; el++) {
             pEl = this.objectsList[el];
             if (this.needsFullUpdate && pEl.elementClass === OBJECT_CLASS.TEXT) {
@@ -5950,6 +5946,7 @@ export class Board extends Events {
             // For updates of an element we distinguish if the dragged element is updated or
             // other elements are updated.
             // The difference lies in the treatment of gliders and points based on transformations.
+            pEl.update()
             pEl.update(!Type.exists(drag) || pEl.id !== drag.id).updateVisibility();
         }
 
@@ -6242,7 +6239,7 @@ export class Board extends Events {
         if (insert) {
             insert();
             storeActiveEl.focus(); // Restore focus element
-        }
+        };
 
         // To resolve dependencies between boards
         // for (var board in JXG2.boards) {
@@ -6316,8 +6313,9 @@ export class Board extends Events {
      */
     create(elementType: string, parents: any[] = [], attributes: LooseObject = {}) {
         var el, i;
-        // if (dbug)
-        console.warn(`%c board: creating elementType '${elementType}', ${JSON.stringify(parents).substring(0, 100)}`, dbugColor)
+
+        if (dbug)
+            console.warn(`%c board: creating elementType '${elementType}', ${JSON.stringify(parents).substring(0, 100)}`, dbugColor)
 
 
         elementType = elementType.toLowerCase();

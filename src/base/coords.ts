@@ -201,6 +201,8 @@ export class Coords extends Events{   // tbtb - should NOT extend event!!
      * @returns {JXG2.Coords} Reference to the coords object.
      */
     setCoordinates(coord_type: COORDS_BY, coordinates: number[], doRound: boolean = true, noevent: boolean = false) {
+        // console.log(`setCoordinates(${JSON.stringify(coordinates)})`)
+
         var uc = this.usrCoords,
             sc = this.scrCoords,
             // Original values

@@ -1,4 +1,4 @@
-const dbug = (elem?/*:GeometryElement*/) =>  elem && elem.id === 'jxgBoard1P1';
+const dbug = (elem?/*:GeometryElement*/) => elem && elem.id === 'jxgBoard1P3';
 const dbugColor = `color:red;background-color:#00ffc0`;
 
 /*
@@ -52,7 +52,7 @@ const dbugColor = `color:red;background-color:#00ffc0`;
 
 import { JXG2 } from '../jxg.js'
 import { LooseObject } from "../interfaces.js";
-import  Options  from "../options.js";
+import Options from "../options.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js'
 import { Coords } from "../base/coords.js";
 
@@ -386,7 +386,9 @@ export abstract class AbstractRenderer {
      */
     updatePoint(el) {
 
-        if (dbug(el)) console.warn(`%c abstract: updatePoint(${el.id})`, dbugColor, el.visprop)
+        if (dbug(el))
+            console.warn(`%c abstract: updatePoint(${el.id})`, dbugColor, el.coords.scrCoords)
+
 
         var size = el.evalVisProp('size'),
             // sometimes el is not a real point and lacks the methods of a JXG2.Point instance,

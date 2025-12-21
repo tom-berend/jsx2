@@ -1,4 +1,4 @@
-const dbug = (elem) => elem.id === 'jxgBoard1P1Label';
+const dbug = (elem) => elem.id === 'jxgBoard1P3';
 const dbugColor = `color:yellow;background-color:#8080f0`;
 /*
     Copyright 2008-2025
@@ -121,7 +121,7 @@ export class Text extends CoordsElement {
         super(board, COORDS_BY.USER, [parents[0], parents[1]], attributes, OBJECT_TYPE.TEXT, OBJECT_CLASS.TEXT)
 
         if (dbug(this))
-            console.warn(`%c text constructor(${JSON.stringify(parents)},${JSON.stringify(attributes)} )`, dbugColor)
+            console.warn(`%c text constructor(${JSON.stringify(parents).substring(0,100)},${JSON.stringify(attributes).substring(0,100)} )`, dbugColor)
 
         this.elType = "text";
         this.visProp = Type.initVisProps(Options.board, Options.elements, Options.text, attributes)
@@ -140,7 +140,7 @@ export class Text extends CoordsElement {
         this.rendNode = this.board.renderer.drawText(this);
         this.coordsElementInit(parents, this.visProp)
 
-        // this.coordsConstructor(coords, this.evalVisProp('islabel'));
+        // this.coordsConstructor(coords, this.evalVisProp('islabel'));  // now in constructor
 
 
         this.needsSizeUpdate = false;

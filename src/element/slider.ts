@@ -44,7 +44,7 @@ import { COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
 import { Type } from "../utils/type.js";
-import Point from "../base/point.js";
+import { Point } from "../base/point.js";
 
 /**
  * @class A slider can be used to choose values from a given range of numbers.
