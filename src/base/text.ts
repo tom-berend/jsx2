@@ -49,7 +49,7 @@ const dbugColor = `color:yellow;background-color:#8080f0`;
  * @fileoverview In this file the Text element is defined.
  */
 
-import { JXG2 } from "../jxg.js";
+// import { JXG2 } from "../jxg.js";
 import { COORDS_BY, OBJECT_CLASS, OBJECT_TYPE } from "./constants.js";
 import { Geometry } from "../math/geometry.js"
 import { GeometryElement } from "./element.js";
@@ -91,12 +91,12 @@ var priv = {
 
 export class Text extends CoordsElement {
 
-    content: string | number | Function = "";
+    content: string | number | Function = "";    // this is the current value to evaluate
 
     plaintext = "";
     plaintextOld = '';
     htmlStr = ""
-    orgText: string | number | Function = "";
+    orgText: string | number | Function = "";    // not sure what this is
 
     // relativeCoords: Coords
 
@@ -136,16 +136,18 @@ export class Text extends CoordsElement {
 
         this.id = this.board.setId(this, "T");
 
-        // this.coords = new Coords(COORDS_BY.USER, parents.slice(0, -1), board)
+        this.coords = new Coords(COORDS_BY.USER, parents.slice(0, -1), board)
+        this.relativeCoords = new Coords(COORDS_BY.USER, parents.slice(0, -1), board)
 
         this.content = parents[parents.length - 1];
+
         this.orgText = this.content; // tbtb - recalculate content from orgText in updateText()
 
 
         this.element = this.board.select(attributes['anchor']);
 
         this.rendNode = this.board.renderer.drawText(this);
-        this.coordsElementInit(parents, this.visProp)
+        // this.coordsElementInit(parents, this.visProp)
 
         // this.coordsConstructor(coords, this.evalVisProp('islabel'));  // now in constructor
 
@@ -157,9 +159,9 @@ export class Text extends CoordsElement {
 
         // this.visProp = Type.merge(this.visProp, Type.keysToLowerCase(Options.text))
 
-        let coords = [parents[0], parents[1]]
-        let content = parents[2]
-        this.relativeCoords = new Coords(COORDS_BY.USER, coords, board)
+        // let coords = [parents[0], parents[1]]
+        // let content = parents[2]
+
         /* Register point at board. */
 
         // this.setCoordinates(this.method, coordinates, false, true);
@@ -173,10 +175,10 @@ export class Text extends CoordsElement {
         this.element = this.board.select(this.visProp['anchor']);
         // this.coordsConstructor(coords, this.evalVisProp('islabel'));
 
-        this.content = "";
-        this.plaintext = "";
-        this.plaintextOld = "";
-        this.orgText = "";
+        // // this.content = "";
+        // this.plaintext = "";
+        // this.plaintextOld = "";
+        // this.orgText = "";
 
         this.needsSizeUpdate = false;
         // Only used by infobox anymore
@@ -201,14 +203,16 @@ export class Text extends CoordsElement {
         // create all sub-elements for button, input and checkbox
         tmp = this.visProp['visible'];
         this.visProp['visible'] = true;
-        this.setText(content);
+        this.setText(this.content);
         // Restore the correct attribute visible.
         this.visProp['visible'] = tmp;
 
         if (Type.isString(this.content)) {
             this.notifyParents(this.content);
         }
-        this.elType = "text";
+
+        this.needsUpdate = true;
+        this.updateRenderer();
 
         this.methodMap = Type.deepCopy(this.methodMap, {
             setText: "setTextJessieCode",
@@ -769,6 +773,8 @@ export class Text extends CoordsElement {
      * @private
      */
     updateRenderer() {
+        console.warn(`%c text updateRenderer ${this.id}`, dbugColor)
+
         if (
             // this.board.updateQuality === this.board.BOARD_QUALITY_HIGH &&
             this.evalVisProp('autoposition')
@@ -1853,12 +1859,12 @@ export class Text extends CoordsElement {
     // }
 
     /**
- * This sets the updateText function of this element depending on the type of text content passed.
- * Used by {@link JXG.Text#_setText}.
- * @param {String|Function|Number} text
- * @private
- * @see JXG.Text#_setText
- */
+     * This sets the updateText function of this element depending on the type of text content passed.
+     * Used by {@link JXG.Text#_setText}.
+     * @param {String|Function|Number} text
+     * @private
+     * @see JXG.Text#_setText
+     */
     updateText(): string {
 
         if (dbug(this))

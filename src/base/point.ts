@@ -98,6 +98,7 @@ export class Point extends CoordsElement {
 
         this.board.renderer.drawPoint(this);
 
+        
         this.element = this.board.select(attributes['anchor']);
         this.coordsElementInit(parents, this.visProp)
 

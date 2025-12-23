@@ -1,4 +1,4 @@
-const dbug = (elem/*:GeometryElement*/) => elem && elem.id === "box_jxgBoard1T5";
+const dbug = (elem/*:GeometryElement*/) => elem && elem.id === "box_jxgBoard1P1";
 const dbugColor = `color:red;background-color:#00ffc0`;
 
 /*
@@ -64,7 +64,7 @@ import { Env } from "../utils/env.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { GeometryElement } from "../base/element.js";
 import { SVGType } from "../interfaces.js";
-import {Text} from "../base/text.js"
+import { Text } from "../base/text.js"
 
 
 /**
@@ -307,7 +307,7 @@ export abstract class AbstractRenderer {
      * @returns {String} 'highlight' if highlighted, otherwise the ampty string '' is returned.
      * @private
      */
-    _getHighlighted(el:GeometryElement) {
+    _getHighlighted(el: GeometryElement) {
         var isTrace = false,
             hl;
 
@@ -1105,7 +1105,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateInternalText
      * @see JXG2.AbstractRenderer#updateTextStyle
      */
-    updateText(el:Text) {
+    updateText(el: Text) {
         var content = el.plaintext,
             v, c,
             parentNode, node,
@@ -1114,7 +1114,8 @@ export abstract class AbstractRenderer {
             ax, ay, angle, co, si,
             to_h, to_v;
 
-        if (dbug(el)) console.warn(`%c abstract: updateText(${el.id} ${JSON.stringify(el.coords.usrCoords)})`, dbugColor)
+        if (dbug(el))
+            console.warn(`%c abstract: updateText(${el.id} ${JSON.stringify(el.coords.usrCoords)})`, dbugColor)
 
         if (el.visPropCalc.visible) {
             this.updateTextStyle(el, false);
@@ -1222,7 +1223,8 @@ export abstract class AbstractRenderer {
                         el.rendNode.innerHTML = content;
                         parentNode.appendChild(el.rendNode);
                     }
-                    el.htmlStr = content;
+
+                    el.htmlStr = content;   // cache, so can minimize updates
 
                     if (el.evalVisProp('usemathjax')) {
                         // Typesetting directly might not work because MathJax was not loaded completely
