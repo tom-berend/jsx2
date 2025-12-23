@@ -47,7 +47,8 @@ import { Numerics } from "../math/numerics.js";
 // import {GeometryElement} from "../base/element.js";
 import { Board } from "../base/board.js";
 import { Env } from "../utils/env.js"
-
+import { GeometryElement } from "../base/element.js";
+import {Text} from "../base/text.js"
 import { Dim, SVGType } from "../interfaces.js"
 
 
@@ -207,7 +208,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @returns DOM node to be added to this.defs.
      * @private
      */
-    createShadowFilter(id, rgb, opacity, blend, blur, offset) {
+    createShadowFilter(id:string, rgb, opacity:number, blend:number, blur:number, offset:number[]=[5,5]) {
         var feOffset, feColor, feGaussianBlur, feBlend, mat;
 
         this.assertNonNullish(this.container, 'expected container')
@@ -706,7 +707,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.AbstractRenderer#displayCopyright
      * @see Text#fontSize
      */
-    displayLogo(str, fontsize) {
+    displayLogo(str:string, fontsize:number) {
         var node,
             s = 1.5 * fontsize,
             alpha = 0.2;
@@ -736,7 +737,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateText
      * @see JXG2.AbstractRenderer#updateTextStyle
      */
-    drawInternalText(el/*: GeometryElement*/) {
+    drawInternalText(el: GeometryElement) {
         // console.log('drawInternalText', el)
         var node = this.createPrim("text", el.id);
 
@@ -765,7 +766,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateText
      * @see JXG2.AbstractRenderer#updateTextStyle
      */
-    updateInternalText(el) {
+    updateInternalText(el:Text) {
         var content = el.plaintext,
             v, css,
             ev_ax = el.getAnchorX(),
@@ -841,7 +842,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateTextStyle
      * @see JXG2.AbstractRenderer#updateInternalTextStyle
      */
-    updateInternalTextStyle(el/*: GeometryElement*/, strokeColor: string, strokeOpacity: number) {
+    updateInternalTextStyle(el: GeometryElement, strokeColor: string, strokeOpacity: number) {
         this.setObjectFillColor(el, strokeColor, strokeOpacity);
     }
 
@@ -855,7 +856,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.Image
      * @see JXG2.AbstractRenderer#updateImage
      */
-    drawImage(el) {
+    drawImage(el:GeometryElement) {
         var node = this.createPrim("image", el.id);
 
         node.setAttributeNS(null, "preserveAspectRatio", "none");

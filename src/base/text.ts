@@ -1,4 +1,4 @@
-const dbug = (elem) => elem.id === 'jxgBoard1P3';
+const dbug = (elem) => elem.id === 'jxgBoard1T1';
 const dbugColor = `color:yellow;background-color:#8080f0`;
 /*
     Copyright 2008-2025
@@ -91,10 +91,12 @@ var priv = {
 
 export class Text extends CoordsElement {
 
-    content: string = "";
+    content: string | number | Function = "";
+
     plaintext = "";
     plaintextOld = '';
-    orgText = "";
+    htmlStr = ""
+    orgText: string | number | Function = "";
 
     // relativeCoords: Coords
 
@@ -103,7 +105,10 @@ export class Text extends CoordsElement {
     // hiddenByParent: boolean
     size: number[] = [1.0, 1.0]
 
-    updateText: Function = () => console.warn('updateText not set')
+    // updateText is now a method
+    // updateText: Function = () => console.warn('updateText not set')
+
+
     // rendNode: HTMLElement;
 
 
@@ -114,14 +119,15 @@ export class Text extends CoordsElement {
     rendNodeLabel
     _val
     Value
+    _value   // used by CheckBox
     HTMLSliderInputEventHandler = () => { }
 
 
-    constructor(board, parents: any[], attributes = {}) {
+    constructor(board: Board, parents: any[], attributes = {}) {
         super(board, COORDS_BY.USER, [parents[0], parents[1]], attributes, OBJECT_TYPE.TEXT, OBJECT_CLASS.TEXT)
 
         if (dbug(this))
-            console.warn(`%c text constructor(${JSON.stringify(parents).substring(0,100)},${JSON.stringify(attributes).substring(0,100)} )`, dbugColor)
+            console.warn(`%c text constructor(${JSON.stringify(parents).substring(0, 100)},${JSON.stringify(attributes).substring(0, 100)} )`, dbugColor)
 
         this.elType = "text";
         this.visProp = Type.initVisProps(Options.board, Options.elements, Options.text, attributes)
@@ -133,6 +139,7 @@ export class Text extends CoordsElement {
         // this.coords = new Coords(COORDS_BY.USER, parents.slice(0, -1), board)
 
         this.content = parents[parents.length - 1];
+        this.orgText = this.content; // tbtb - recalculate content from orgText in updateText()
 
 
         this.element = this.board.select(attributes['anchor']);
@@ -187,7 +194,7 @@ export class Text extends CoordsElement {
         this.board.finalizeAdding(this);
 
         // Set text before drawing
-        this._createFctUpdateText(content);
+        // this._createFctUpdateText(content);
         this.updateText();
 
         // Set attribute visible to true. This is necessary to
@@ -280,169 +287,169 @@ export class Text extends CoordsElement {
         return ret;
     }
 
-    /**
-     * This sets the updateText function of this element depending on the type of text content passed.
-     * Used by {@link JXG.Text#_setText}.
-     * @param {String|Function|Number} text
-     * @private
-     * @see JXG.Text#_setText
-     */
-    _createFctUpdateText(text) {
+    // /**
+    //  * This sets the updateText function of this element depending on the type of text content passed.
+    //  * Used by {@link JXG.Text#_setText}.
+    //  * @param {String|Function|Number} text
+    //  * @private
+    //  * @see JXG.Text#_setText
+    //  */
+    // _createFctUpdateText(text: string | Function) {
 
-        if (dbug(this)) console.warn(`%c text: _createFctUpdateText(text: ${text()}) ${this.id})`, dbugColor)
+    //     if (dbug(this)) console.warn(`%c text: _createFctUpdateText(text: ${this.id}, ${text})`, dbugColor)
 
-        var updateText, e, digits,
-            resolvedText,
-            i, that,
-            ev_p = this.evalVisProp('parse'),
-            ev_um = this.evalVisProp('usemathjax'),
-            ev_uk = this.evalVisProp('usekatex'),
-            convertJessieCode = false;
+    //     var updateText, e, digits,
+    //         resolvedText,
+    //         i, that,
+    //         ev_p = this.evalVisProp('parse'),
+    //         ev_um = this.evalVisProp('usemathjax'),
+    //         ev_uk = this.evalVisProp('usekatex'),
+    //         convertJessieCode = false;
 
-        this.orgText = text;
+    //     this.orgText = text;
 
-        if (Type.isFunction(text)) {
-            /**
-             * Dynamically created function to update the content
-             * of a text. Can not be overwritten.
-             * <p>
-             * &lt;value&gt; tags will not be evaluated if text is provided by a function
-             * <p>
-             * Sets the property <tt>plaintext</tt> of the text element.
-             *
-             * @private
-             */
-            this.updateText = () => {
-                resolvedText = text().toString(); // Evaluate function
-                if (ev_p && !ev_um && !ev_uk) {
-                    this.plaintext = this.replaceSub(
-                        this.replaceSup(
-                            this.convertGeonextAndSketchometry2CSS(resolvedText, false)
-                        )
-                    );
-                } else {
-                    this.plaintext = resolvedText;
-                }
-            };
-        } else {
-            if (Type.isNumber(text) && this.evalVisProp('formatnumber')) {
-                if (this.evalVisProp('tofraction')) {
-                    if (ev_um) {
-                        this.content = '\\(' + Type.toFraction(text, true) + '\\)';
-                    } else {
-                        this.content = Type.toFraction(text, ev_uk);
-                    }
-                } else {
-                    digits = this.evalVisProp('digits');
-                    if (this.useLocale()) {
-                        this.content = this.formatNumberLocale(text, Number(digits));
-                    } else {
-                        this.content = Type.toFixed(text, digits);
-                    }
-                }
-            } else if (Type.isString(text) && ev_p) {
-                if (this.evalVisProp('useasciimathml')) {
-                    // ASCIIMathML
-                    // value-tags are not supported
-                    this.content = "'`" + text + "`'";
-                } else if (ev_um || ev_uk) {
-                    // MathJax or KaTeX
-                    // Replace value-tags by functions
-                    // sketchofont is ignored
-
-
-                    // TODO:jessiecode returns an ARRY ???
-                    console.error('should not be here, ', text, this.valueTagToJessieCode(text))
-                    // this.content = this.valueTagToJessieCode(text);
+    //     if (typeof text == 'function') { //(Type.isFunction(text)) {
+    //         /**
+    //          * Dynamically created function to update the content
+    //          * of a text. Can not be overwritten.
+    //          * <p>
+    //          * &lt;value&gt; tags will not be evaluated if text is provided by a function
+    //          * <p>
+    //          * Sets the property <tt>plaintext</tt> of the text element.
+    //          *
+    //          * @private
+    //          */
+    //         this.updateText = () => {
+    //             resolvedText = text().toString(); // Evaluate function
+    //             if (ev_p && !ev_um && !ev_uk) {
+    //                 this.plaintext = this.replaceSub(
+    //                     this.replaceSup(
+    //                         this.convertGeonextAndSketchometry2CSS(resolvedText, false)
+    //                     )
+    //                 );
+    //             } else {
+    //                 this.plaintext = resolvedText;
+    //             }
+    //         };
+    //     } else {
+    //         if (Type.isNumber(text) && this.evalVisProp('formatnumber')) {
+    //             if (this.evalVisProp('tofraction')) {
+    //                 if (ev_um) {
+    //                     this.content = '\\(' + Type.toFraction(text, true) + '\\)';
+    //                 } else {
+    //                     this.content = Type.toFraction(text, ev_uk);
+    //                 }
+    //             } else {
+    //                 digits = this.evalVisProp('digits');
+    //                 if (this.useLocale()) {
+    //                     this.content = this.formatNumberLocale(text, Number(digits));
+    //                 } else {
+    //                     this.content = Type.toFixed(text, digits);
+    //                 }
+    //             }
+    //         } else if (Type.isString(text) && ev_p) {
+    //             if (this.evalVisProp('useasciimathml')) {
+    //                 // ASCIIMathML
+    //                 // value-tags are not supported
+    //                 this.content = "'`" + text + "`'";
+    //             } else if (ev_um || ev_uk) {
+    //                 // MathJax or KaTeX
+    //                 // Replace value-tags by functions
+    //                 // sketchofont is ignored
 
 
-                    if (!Array.isArray(this.content)) {
-                        // For some reason we don't have to mask backslashes in an array of strings
-                        // anymore.
-                        //
-                        // for (i = 0; i < this.content.length; i++) {
-                        //     this.content[i] = this.content[i].replace(/\\/g, "\\\\"); // Replace single backslash by double
-                        // }
-                        // } else {
-                        this.content = this.content.replace(/\\/g, "\\\\"); // Replace single backslash by double
-                    }
-                } else {
-                    // No TeX involved.
-                    // Converts GEONExT syntax into JavaScript string
-                    // Short math is allowed
-                    // Replace value-tags by functions
-                    // Avoid geonext2JS calls
-                    this.content = this.poorMansTeX(this.valueTagToJessieCode(text));
-                }
-                convertJessieCode = true;
-            } else {
-                this.content = text;
-            }
+    //                 // TODO:jessiecode returns an ARRY ???
+    //                 console.error('should not be here, ', text, this.valueTagToJessieCode(text))
+    //                 // this.content = this.valueTagToJessieCode(text);
 
-            // Generate function which returns the text to be displayed
-            if (convertJessieCode) {
-                // Convert JessieCode to JS function
-                if (Array.isArray(this.content)) {
-                    // This is the case if the text contained value-tags.
-                    // These value-tags consist of JessieCode snippets
-                    // which are now replaced by JavaScript functions
-                    that = this;
-                    for (i = 0; i < this.content.length; i++) {
-                        if (this.content[i][0] !== '"') {
-                            this.content[i] = this.snippet(this.content[i], true, "", false);
-                            for (e in this.content[i].deps) {
-                                this.addParents(this.content[i].deps[e]);
-                                this.content[i].deps[e].addChild(this);
-                            }
-                        }
-                    }
 
-                    updateText = () => {
-                        var i, t,
-                            digits = that.evalVisProp('digits'),
-                            txt = '';
+    //                 if (!Array.isArray(this.content)) {
+    //                     // For some reason we don't have to mask backslashes in an array of strings
+    //                     // anymore.
+    //                     //
+    //                     // for (i = 0; i < this.content.length; i++) {
+    //                     //     this.content[i] = this.content[i].replace(/\\/g, "\\\\"); // Replace single backslash by double
+    //                     // }
+    //                     // } else {
+    //                     this.content = this.content.replace(/\\/g, "\\\\"); // Replace single backslash by double
+    //                 }
+    //             } else {
+    //                 // No TeX involved.
+    //                 // Converts GEONExT syntax into JavaScript string
+    //                 // Short math is allowed
+    //                 // Replace value-tags by functions
+    //                 // Avoid geonext2JS calls
+    //                 this.content = this.poorMansTeX(this.valueTagToJessieCode(text));
+    //             }
+    //             convertJessieCode = true;
+    //         } else {
+    //             this.content = text;
+    //         }
 
-                        for (i = 0; i < that.content.length; i++) {
-                            if (Type.isFunction(that.content[i])) {
-                                t = that.content[i]();
-                                if (that.useLocale()) {
-                                    t = that.formatNumberLocale(t, digits);
-                                } else {
-                                    t = Type.toFixed(t, digits);
-                                }
-                            } else {
-                                t = that.content[i];
-                                // Instead of 't.at(t.length - 1)' also 't.(-1)' should work.
-                                // However in Moodle 4.2 't.(-1)' returns an empty string.
-                                // In plain HTML pages it works.
-                                if (t[0] === '"' && t[t.length - 1] === '"') {
-                                    t = t.slice(1, -1);
-                                }
-                            }
+    //         // Generate function which returns the text to be displayed
+    //         if (convertJessieCode) {
+    //             // Convert JessieCode to JS function
+    //             if (Array.isArray(this.content)) {
+    //                 // This is the case if the text contained value-tags.
+    //                 // These value-tags consist of JessieCode snippets
+    //                 // which are now replaced by JavaScript functions
+    //                 that = this;
+    //                 for (i = 0; i < this.content.length; i++) {
+    //                     if (this.content[i][0] !== '"') {
+    //                         this.content[i] = this.snippet(this.content[i], true, "", false);
+    //                         for (e in this.content[i].deps) {
+    //                             this.addParents(this.content[i].deps[e]);
+    //                             this.content[i].deps[e].addChild(this);
+    //                         }
+    //                     }
+    //                 }
 
-                            txt += t;
-                        }
-                        return txt;
-                    };
-                } else {
-                    updateText = this.snippet(this.content, true, "", false);
-                    for (e in updateText.deps) {
-                        this.addParents(updateText.deps[e]);
-                        updateText.deps[e].addChild(this);
-                    }
-                }
+    //                 updateText = () => {
+    //                     var i, t,
+    //                         digits = that.evalVisProp('digits'),
+    //                         txt = '';
 
-                // Ticks have been escaped in valueTagToJessieCode
-                this.updateText = function () {
-                    this.plaintext = this.unescapeTicks(updateText());
-                };
-            } else {
-                this.updateText = () => {
-                    this.plaintext = this.content; // text;
-                };
-            }
-        }
-    }
+    //                     for (i = 0; i < that.content.length; i++) {
+    //                         if (Type.isFunction(that.content[i])) {
+    //                             t = that.content[i]();
+    //                             if (that.useLocale()) {
+    //                                 t = that.formatNumberLocale(t, digits);
+    //                             } else {
+    //                                 t = Type.toFixed(t, digits);
+    //                             }
+    //                         } else {
+    //                             t = that.content[i];
+    //                             // Instead of 't.at(t.length - 1)' also 't.(-1)' should work.
+    //                             // However in Moodle 4.2 't.(-1)' returns an empty string.
+    //                             // In plain HTML pages it works.
+    //                             if (t[0] === '"' && t[t.length - 1] === '"') {
+    //                                 t = t.slice(1, -1);
+    //                             }
+    //                         }
+
+    //                         txt += t;
+    //                     }
+    //                     return txt;
+    //                 };
+    //             } else {
+    //                 updateText = this.snippet(this.content, true, "", false);
+    //                 for (e in updateText.deps) {
+    //                     this.addParents(updateText.deps[e]);
+    //                     updateText.deps[e].addChild(this);
+    //                 }
+    //             }
+
+    //             // Ticks have been escaped in valueTagToJessieCode
+    //             this.updateText = function () {
+    //                 this.plaintext = this.unescapeTicks(updateText());
+    //             };
+    //         } else {
+    //             this.updateText = () => {
+    //                 this.plaintext = this.content; // text;
+    //             };
+    //         }
+    //     }
+    // }
 
     /**
      * Defines new content. This is used by {@link JXG.Text#setTextJessieCode} and {@link JXG.Text#setText}. This is required because
@@ -451,8 +458,9 @@ export class Text extends CoordsElement {
      * @returns {JXG.Text}
      * @private
      */
-    _setText(text) {
-        this._createFctUpdateText(text);
+    _setText(text: string | number | Function) {
+        // this._createFctUpdateText(text);
+        this.orgText = text
 
         // First evaluation of the string.
         // We need this for display='internal' and Canvas
@@ -1844,9 +1852,181 @@ export class Text extends CoordsElement {
     //     this.board.update();
     // }
 
+    /**
+ * This sets the updateText function of this element depending on the type of text content passed.
+ * Used by {@link JXG.Text#_setText}.
+ * @param {String|Function|Number} text
+ * @private
+ * @see JXG.Text#_setText
+ */
+    updateText(): string {
+
+        if (dbug(this))
+            console.warn(`%c text: updateText(${this.content})`, dbugColor)
+
+        let e, digits,
+            resolvedText,
+            ev_p = this.evalVisProp('parse'),
+            ev_um = this.evalVisProp('usemathjax'),
+            ev_uk = this.evalVisProp('usekatex'),
+            convertJessieCode = false;
 
 
+
+        if (typeof this.content === 'function') { //(Type.isFunction(text)) {
+            /**
+             * Dynamically created function to update the content
+             * of a text. Can not be overwritten.
+             * <p>
+             * &lt;value&gt; tags will not be evaluated if text is provided by a function
+             * <p>
+             * Sets the property <tt>plaintext</tt> of the text element.
+             *
+             * @private
+             */
+            resolvedText = this.content().toString(); // Evaluate function
+            if (ev_p && !ev_um && !ev_uk) {
+                this.plaintext = this.replaceSub(
+                    this.replaceSup(
+                        this.convertGeonextAndSketchometry2CSS(resolvedText, false)
+                    )
+                );
+            } else {
+                this.plaintext = resolvedText;
+            }
+
+        } else if (Type.isNumber(this.content) && this.evalVisProp('formatnumber')) {
+            if (this.evalVisProp('tofraction')) {
+                if (ev_um) {
+                    this.plaintext = '\\(' + Type.toFraction(this.content, true) + '\\)';
+                } else {
+                    this.plaintext = Type.toFraction(this.content, ev_uk);
+                }
+            } else {
+                digits = this.evalVisProp('digits');
+                if (this.useLocale()) {
+                    this.plaintext = this.formatNumberLocale(this.content, Number(digits));
+                } else {
+                    this.plaintext = Type.toFixed(this.content, digits);
+                }
+            }
+
+        } else if ((typeof this.content == "string") && ev_p) {
+
+            if (this.evalVisProp('useasciimathml')) {
+                // ASCIIMathML
+                // value-tags are not supported
+                this.plaintext = "'`" + this.content + "`'";
+            } else if (ev_um || ev_uk) {
+                // MathJax or KaTeX
+                // Replace value-tags by functions
+                // sketchofont is ignored
+
+
+                // TODO:jessiecode returns an ARRY ???
+                console.error('should not be here, ', this.content, this.valueTagToJessieCode(this.content))
+                // this.content = this.valueTagToJessieCode(text);
+
+
+                if (!Array.isArray(this.content)) {
+                    // For some reason we don't have to mask backslashes in an array of strings
+                    // anymore.
+                    //
+                    // for (i = 0; i < this.content.length; i++) {
+                    //     this.content[i] = this.content[i].replace(/\\/g, "\\\\"); // Replace single backslash by double
+                    // }
+                    // } else {
+
+                    // tbtb- when can this ever be an array?
+                    // this.content = this.content.replace(/\\/g, "\\\\"); // Replace single backslash by double
+                }
+            } else {
+                // basic string but with parse=true
+
+                // No TeX involved.
+                // Converts GEONExT syntax into JavaScript string
+                // Short math is allowed
+                // Replace value-tags by functions
+                // Avoid geonext2JS calls
+                // tbtb -  was:  this.plaintext = this.poorMansTeX(this.valueTagToJessieCode(this.content));
+                this.plaintext = this.poorMansTeX(this.content);
+            }
+            convertJessieCode = true;
+
+        } else if (typeof this.content == "string") {   // typeguard, can't be anything but string
+            // parse has been set to false
+            this.plaintext = this.content;
+        }
+        return this.plaintext
+    }
+
+
+    // // Generate function which returns the text to be displayed
+    // if (convertJessieCode) {
+    //     // Convert JessieCode to JS function
+    //     if (Array.isArray(this.content)) {
+    //         // This is the case if the text contained value-tags.
+    //         // These value-tags consist of JessieCode snippets
+    //         // which are now replaced by JavaScript functions
+    //         that = this;
+    //         for (i = 0; i < this.content.length; i++) {
+    //             if (this.content[i][0] !== '"') {
+    //                 this.content[i] = this.snippet(this.content[i], true, "", false);
+    //                 for (e in this.content[i].deps) {
+    //                     this.addParents(this.content[i].deps[e]);
+    //                     this.content[i].deps[e].addChild(this);
+    //                 }
+    //             }
+    //         }
+
+    //         updateText = () => {
+    //             var i, t,
+    //                 digits = that.evalVisProp('digits'),
+    //                 txt = '';
+
+    //             for (i = 0; i < that.content.length; i++) {
+    //                 if (Type.isFunction(that.content[i])) {
+    //                     t = that.content[i]();
+    //                     if (that.useLocale()) {
+    //                         t = that.formatNumberLocale(t, digits);
+    //                     } else {
+    //                         t = Type.toFixed(t, digits);
+    //                     }
+    //                 } else {
+    //                     t = that.content[i];
+    //                     // Instead of 't.at(t.length - 1)' also 't.(-1)' should work.
+    //                     // However in Moodle 4.2 't.(-1)' returns an empty string.
+    //                     // In plain HTML pages it works.
+    //                     if (t[0] === '"' && t[t.length - 1] === '"') {
+    //                         t = t.slice(1, -1);
+    //                     }
+    //                 }
+
+    //                 txt += t;
+    //             }
+    //             return txt;
+    //         };
+    //     } else {
+    //         updateText = this.snippet(this.content, true, "", false);
+    //         for (e in updateText.deps) {
+    //             this.addParents(updateText.deps[e]);
+    //             updateText.deps[e].addChild(this);
+    //         }
+    //     }
+
+    //     // Ticks have been escaped in valueTagToJessieCode
+    //     this.updateText = function () {
+    //         this.plaintext = this.unescapeTicks(this.updateText());
+    //     };
+    // } else {
+    //     this.updateText = () => {
+    //         this.plaintext = this.content; // text;
+    //     };
+    // }
 }
+
+
+
 
 /**
  * @class Constructs a text element.
@@ -1958,6 +2138,7 @@ export function createText(board: Board, parents: any[], attributes: LooseObject
     }
 
     return t;
+
 };
 
 
@@ -2074,6 +2255,7 @@ export class HTMLSlider extends Text {
 
         return t;
     };
+
 
 }
 

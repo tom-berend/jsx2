@@ -65,6 +65,7 @@ import { Dim } from '../interfaces.js'
 // import {GeometryElement} from './element.js';
 import { Text } from '../base/text.js'
 import { Point } from '../base/point.js'
+import { Checkbox } from "../element/checkbox.js"
 // import { Segment} from '../base/line.js'
 // import createPoint from '../base/point.js'
 
@@ -6356,6 +6357,7 @@ export class Board extends Events {
         switch (elementType) {
             case 'text': el = new Text(this, parents, attributes); break;
             case 'point': el = new Point(this, parents, attributes); break;
+            case 'checkbox': el = new Checkbox(this, parents, attributes); break;
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)
                 throw new Error('JSXGraph: create: Unknown element type given: ' + elementType);

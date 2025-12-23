@@ -51,6 +51,7 @@ import {GeometryElement}  from "./element.js";
  * properties and methods coordinates usually have.
  */
 
+
 export class Coords extends Events{   // tbtb - should NOT extend event!!
       /**
      * Stores the board the object is used on.
@@ -234,6 +235,8 @@ export class Coords extends Events{   // tbtb - should NOT extend event!!
                 sc[2] = coordinates[2];
             }
             this.screen2usr();
+
+            console.warn(`%c Coords: usrCoords set to ${JSON.stringify(this.usrCoords)}`,dbugColor)
         }
 
         if (this.emitter && !noevent && (os[1] !== sc[1] || os[2] !== sc[2])) {

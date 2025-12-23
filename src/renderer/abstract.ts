@@ -1,4 +1,4 @@
-const dbug = (elem?/*:GeometryElement*/) => elem && elem.id === 'jxgBoard1P3';
+const dbug = (elem/*:GeometryElement*/) => elem && elem.id === "box_jxgBoard1T5";
 const dbugColor = `color:red;background-color:#00ffc0`;
 
 /*
@@ -50,7 +50,7 @@ const dbugColor = `color:red;background-color:#00ffc0`;
  * renderers is the class AbstractRenderer defined in this file.
  */
 
-import { JXG2 } from '../jxg.js'
+// import { JXG2 } from '../jxg.js'
 import { LooseObject } from "../interfaces.js";
 import Options from "../options.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js'
@@ -64,6 +64,7 @@ import { Env } from "../utils/env.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { GeometryElement } from "../base/element.js";
 import { SVGType } from "../interfaces.js";
+import {Text} from "../base/text.js"
 
 
 /**
@@ -225,7 +226,7 @@ export abstract class AbstractRenderer {
      * @param {Boolean} [enhanced=false] If true, {@link JXG2.AbstractRenderer#enhancedRendering} is assumed to be true.
      * @private
      */
-    _updateVisual(el/*: GeometryElement*/, not: LooseObject = {}, enhanced: boolean = false) {
+    _updateVisual(el: GeometryElement, not: LooseObject = {}, enhanced: boolean = false) {
 
         if (dbug(el)) console.warn(`%c abstract: updateVisual(el)`, dbugColor, 'el.visProp = ', el.visProp, not)
 
@@ -306,7 +307,7 @@ export abstract class AbstractRenderer {
      * @returns {String} 'highlight' if highlighted, otherwise the ampty string '' is returned.
      * @private
      */
-    _getHighlighted(el) {
+    _getHighlighted(el:GeometryElement) {
         var isTrace = false,
             hl;
 
@@ -336,7 +337,7 @@ export abstract class AbstractRenderer {
      */
     drawPoint(el) {
 
-        if (dbug()) console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visprop)
+        if (dbug(el)) console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visprop)
 
 
         var prim: SVGType
@@ -355,7 +356,7 @@ export abstract class AbstractRenderer {
             prim = "path";
         }
 
-        if (dbug()) console.log(`%c abstract: drawPoint(el)`, dbugColor)
+        if (dbug(el)) console.log(`%c abstract: drawPoint(el)`, dbugColor)
 
         // el.rendNode = this.appendChildPrim(
         //     this.createPrim(prim, el.id),
@@ -1104,7 +1105,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateInternalText
      * @see JXG2.AbstractRenderer#updateTextStyle
      */
-    updateText(el) {
+    updateText(el:Text) {
         var content = el.plaintext,
             v, c,
             parentNode, node,
@@ -1113,7 +1114,7 @@ export abstract class AbstractRenderer {
             ax, ay, angle, co, si,
             to_h, to_v;
 
-        if (dbug(el)) console.warn(`%c abstract: updateText(${el.id})`, dbugColor)
+        if (dbug(el)) console.warn(`%c abstract: updateText(${el.id} ${JSON.stringify(el.coords.usrCoords)})`, dbugColor)
 
         if (el.visPropCalc.visible) {
             this.updateTextStyle(el, false);
@@ -1201,11 +1202,11 @@ export abstract class AbstractRenderer {
                 // Set the content
                 if (el.htmlStr !== content) {
                     try {
-                        if (el.type === OBJECT_TYPE.BUTTON) {
+                        if (el.otype === OBJECT_TYPE.BUTTON) {
                             el.rendNodeButton.innerHTML = content;
                         } else if (
-                            el.type === OBJECT_TYPE.CHECKBOX ||
-                            el.type === OBJECT_TYPE.INPUT
+                            el.otype === OBJECT_TYPE.CHECKBOX ||
+                            el.otype === OBJECT_TYPE.INPUT
                         ) {
                             el.rendNodeLabel.innerHTML = content;
                         } else {
@@ -1250,7 +1251,7 @@ export abstract class AbstractRenderer {
                             //     );
                             // }
                         } catch (e) {
-                            JXG2.debug("MathJax (not yet) loaded");
+                            Env.debug("MathJax (not yet) loaded");
                         }
                     } else if (el.evalVisProp('usekatex')) {
                         try {
@@ -1279,7 +1280,7 @@ export abstract class AbstractRenderer {
                                 /* eslint-enable no-undef */
                             }
                         } catch (e) {
-                            JXG2.debug("KaTeX not loaded (yet)");
+                            Env.debug("KaTeX not loaded (yet)");
                         }
                     } else if (el.evalVisProp('useasciimathml')) {
                         // This is not a constructor.
@@ -1288,7 +1289,7 @@ export abstract class AbstractRenderer {
                         try {
                             (window as any).AMprocessNode(el.rendNode, false);
                         } catch (e) {
-                            JXG2.debug("AsciiMathML not loaded (yet)");
+                            Env.debug("AsciiMathML not loaded (yet)");
                         }
                     }
                 }

@@ -1,4 +1,4 @@
-let dbug = (elem) => elem && elem.id === 'jxgBoard1P3'
+let dbug = (elem) => false //elem && elem.id === 'jxgBoard1P3'
 const dbugColor = `color:red;background-color:blue`;
 /*
     Copyright 2008-2025
@@ -103,7 +103,6 @@ export class Point extends CoordsElement {
 
         if (!this.isDraggable)
             this.addConstraint(parents)
-        console.log(this.XEval, this.YEval)
 
         this.board.finalizeAdding(this);
 

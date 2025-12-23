@@ -17,9 +17,11 @@ export class IndexTests {
         this.old = true
 
         this.initBoard()
-        this.point()
+
+        // this.point()
         this.text()
         // this.line()
+        // this.widgets()
     }
 
     initBoard() {
@@ -46,7 +48,7 @@ export class IndexTests {
     }
     text() {
         this.boards.map((board) => {
-            board.create('text', [2, 3, "test"], { name: 'foo', strokecolor: 'red' })
+            board.create('text', [2, 7, "test"], {  strokecolor: 'red' })
         })
     }
     line() {
@@ -60,5 +62,10 @@ export class IndexTests {
             board.create('circle', [[-1, -1], [-2, -1]], { strokecolor: 'green' })
         })
     }
+    widgets() {
+        this.boards.map((board) => {
+             board.create('checkbox', [-8, 8, 'Checkbox'], {});
+        })
+    }
 
-}
+    }

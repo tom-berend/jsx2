@@ -1,4 +1,4 @@
-let dbug = (elem) =>  elem && elem.id === 'jxgBoard1P1Label'
+let dbug = (elem) => elem && elem.id === "box_jxgBoard1T5"
 let dbugColor = 'color:black;background-color:#FF8FFF;'
 /*
     Copyright 2008-2025
@@ -355,6 +355,8 @@ export class GeometryElement extends Events {
     hiddenByParent
     rendNodeTag
     rendNodeCheckbox
+    rendNodeText
+    rendNodeButton
     generateLabelValue
     infoboxText
     onPolygon
@@ -1646,7 +1648,7 @@ export class GeometryElement extends Events {
     evalVisProp(key) {
 
         var val, arr, i, le,
-        e, o, found;
+            e, o, found;
 
         key = key.toLowerCase();
         if (key.indexOf('.') === -1) {
@@ -1837,13 +1839,16 @@ export class GeometryElement extends Events {
     createLabel() {
         var attr
 
+
+
         attr = Type.deepCopy(this.visProp['label'], null);
         attr['id'] = this.id + 'Label';
         attr['isLabel'] = true;
         attr['anchor'] = this;
         attr['priv'] = this.visProp['priv'];
 
-        console.log('createLabel', attr)
+        if (dbug(this))
+            console.warn(`%c geometryElement: creating label for ${this.id})`, dbugColor)
 
         if (this.visProp['withlabel']) {
             this.label = new Text(
@@ -1863,7 +1868,9 @@ export class GeometryElement extends Events {
             this.label.fullUpdate();
 
             this.hasLabel = true;
-            console.log(this.label)
+
+            if (dbug(this.label))
+                console.warn(`%c geometryElement: new label ${this.label.id} for  ${this.id})`, dbugColor)
         }
 
         return this;

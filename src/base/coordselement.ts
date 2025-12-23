@@ -1,4 +1,4 @@
-let dbug = (elem) => elem && elem.id === 'jxgBoard1P3'
+let dbug = (elem) => elem && elem.id === 'jxgBoard1T1'
 const dbugColor = `color:yellow;background-color:#803030`;
 
 /*
@@ -238,12 +238,8 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
 
         // this gets called for unconstrained elements, means something else
 
-        this.coords.setCoordinates(COORDS_BY.USER, [
-            // this.ZEval(),
-            this.XEval(),
-
-            this.YEval()
-        ]);
+        let newCoords = [this.ZEval(), this.XEval(), this.YEval()]
+        this.coords.setCoordinates(COORDS_BY.USER, newCoords);
 
         return this;
     }
@@ -252,11 +248,11 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      * Updates the coordinates of the element.
      * @private
     */
-    updateCoords(fromParent = false) {
+    updateCoords(fromParent = false): CoordsElement {
         if (dbug(this))
             console.warn(`%c coordselements: updateCoords( ${fromParent}, ${this.id} scr [${this.scrCoords[1]},${this.scrCoords[2]}] )`, dbugColor)
 
-            this.updateConstraint();
+        this.updateConstraint();
 
         if (!this.needsUpdate) {
             return this;
@@ -848,6 +844,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         if (dbug(this))
             console.warn(`%c coordselements: updateRendererGeneric(${rendererMethod}), ${this.id}`, dbugColor)
 
+        // tbtb - how does needUpdate get set FALSE?? this was a huge problem!!
         // if (!this.needsUpdate || !this.board.renderer) {
         //     return this;
         // }
@@ -872,10 +869,6 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         if (this.visPropCalc.visible) {
             this.board.renderer[rendererMethod](this);
         }
-
-        // Update the label if visible.
-        if (dbug(this))
-            console.log(this, this.label, this.hasLabel)
 
         if (
             this.hasLabel &&
@@ -2520,7 +2513,9 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
 
     // old version  THIS SHOULD BE MOVED TO CONSTRUCTOR, BUT VISPROPS NOT YET SET IN CONSTRUCTOR ?!?
     public create(Callback, board, coords, attr, arg1, arg2) {
+
         if (dbug(this)) console.warn(`%c coordselements: create ${JSON.stringify(coords)}`, dbugColor)
+        console.warn(`%c this should be in the coordselements constructor`)
 
         var el,
             isConstrained = false,

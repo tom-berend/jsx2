@@ -30,8 +30,8 @@
 /*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG2} from "../jxg.js"
-import {JSXMath} from "./math.js";
+import { JXG2 } from "../jxg.js"
+import { JSXMath } from "./math.js";
 
 /**
  * Functions for extrapolation of sequences. Used for finding limits of sequences which is used for curve plotting.
@@ -39,12 +39,10 @@ import {JSXMath} from "./math.js";
  * @exports JXG2.JSXMath.Extrapolate as Geometry.Extrapolate
  * @namespace
  */
-if(JXG2.JSXMath == undefined)
-    JXG2.JSXMath = {}
 
-JXG2.JSXMath.Extrapolate = {
-    upper: 15,
-    infty: 1e4,
+export class Extrapolate {
+    upper = 15
+    infty = 1e4
 
     /**
      * Wynn's epsilon algorithm. Ported from the FORTRAN version in
@@ -58,7 +56,7 @@ JXG2.JSXMath.Extrapolate = {
      *
      * @memberof Geometry.Extrapolate
      */
-    wynnEps: function (s_n, n, e) {
+    static wynnEps(s_n, n, e) {
         var HUGE = 1e20,
             TINY = 1e-15,
             f0 = 1, // f0 may be changed to other values, see vanden Broeck, Schwartz (1979)
@@ -89,7 +87,7 @@ JXG2.JSXMath.Extrapolate = {
         }
 
         return estlim;
-    },
+    }
 
     // wynnRho: function(s_n, n, e) {
     //     var HUGE = 1.e+20,
@@ -131,7 +129,7 @@ JXG2.JSXMath.Extrapolate = {
      *
      * @memberof Geometry.Extrapolate
      */
-    aitken: function (s_n, n, a) {
+    static aitken(s_n, n, a) {
         var estlim,
             HUGE = 1e20,
             TINY = 1e-15,
@@ -159,7 +157,7 @@ JXG2.JSXMath.Extrapolate = {
             estlim = a[n % 2];
         }
         return estlim;
-    },
+    }
 
     /**
      * Iterated Brezinski transformation. Ported from the FORTRAN version in
@@ -173,7 +171,7 @@ JXG2.JSXMath.Extrapolate = {
      *
      * @memberof Geometry.Extrapolate
      */
-    brezinski: function (s_n, n, a) {
+    static brezinski(s_n, n, a) {
         var estlim,
             HUGE = 1e20,
             TINY = 1e-15,
@@ -206,7 +204,7 @@ JXG2.JSXMath.Extrapolate = {
             estlim = a[n % 3];
         }
         return estlim;
-    },
+    }
 
     /**
      * Extrapolated iteration to approximate the value f(x_0).
@@ -226,7 +224,7 @@ JXG2.JSXMath.Extrapolate = {
      * @see Geometry.Extrapolate.aitken
      * @see Geometry.Extrapolate.brezinski
      */
-    iteration: function (x0, h0, f, method, step_type) {
+    static iteration(x0, h0, f, method, step_type) {
         var n,
             v,
             w,
@@ -261,7 +259,7 @@ JXG2.JSXMath.Extrapolate = {
             estlim = w;
         }
         return [estlim, result, 1 - (n - 1) / this.upper];
-    },
+    }
 
     /**
      * Levin transformation. See Numerical Recipes, ed. 3.
@@ -274,7 +272,7 @@ JXG2.JSXMath.Extrapolate = {
      *
      * @memberof Geometry.Extrapolate
      */
-    levin: function (s_n, n, omega, beta, numer, denom) {
+    static levin(s_n, n, omega, beta, numer, denom) {
         var HUGE = 1e20,
             TINY = 1e-15,
             j,
@@ -305,9 +303,9 @@ JXG2.JSXMath.Extrapolate = {
             estlim = numer[0] / denom[0];
         }
         return estlim;
-    },
+    }
 
-    iteration_levin: function (x0, h0, f, step_type) {
+    static iteration_levin(x0, h0, f, step_type) {
         var n,
             v,
             w,
@@ -362,7 +360,7 @@ JXG2.JSXMath.Extrapolate = {
             estlim = w;
         }
         return [estlim, result, 1 - (n - 1) / this.upper];
-    },
+    }
 
     /**
      *
@@ -410,7 +408,7 @@ JXG2.JSXMath.Extrapolate = {
      * @see Geometry.Extrapolate.iteration
      * @memberof Geometry.Extrapolate
      */
-    limit: function (x0, h0, f) {
+    static limit(x0, h0, f) {
         return this.iteration_levin(x0, h0, f, 0);
         //return this.iteration(x0, h0, f, 'wynnEps', 1);
 
@@ -434,4 +432,3 @@ JXG2.JSXMath.Extrapolate = {
     }
 };
 
-export default JXG2.JSXMath.Extrapolate;
