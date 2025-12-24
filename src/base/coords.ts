@@ -40,10 +40,10 @@ const dbugColor = `color:black;background-color:white`;
 /*jslint nomen: true, plusplus: true*/
 
 import type { Board } from './board.js'
-import {Events} from '../utils/event.js'
-import  {JSXMath}  from "../math/math.js";
+import { Events } from '../utils/event.js'
+import { JSXMath } from "../math/math.js";
 import { COORDS_BY, OBJECT_TYPE, OBJECT_CLASS } from "./constants.js";
-import {GeometryElement}  from "./element.js";
+import { GeometryElement } from "./element.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js";
 
 /**
@@ -52,10 +52,10 @@ import {GeometryElement}  from "./element.js";
  */
 
 
-export class Coords extends Events{   // tbtb - should NOT extend event!!
-      /**
-     * Stores the board the object is used on.
-     */
+export class Coords extends Events {   // tbtb - should NOT extend event!!
+    /**
+   * Stores the board the object is used on.
+   */
     public board: Board
     /**
      * Stores coordinates for user view as homogeneous coordinates.
@@ -96,7 +96,7 @@ export class Coords extends Events{   // tbtb - should NOT extend event!!
         if (!Array.isArray(coordinates))
             throw new Error('who did not send number[] to coordinates??')
 
-            if (dbug()) console.warn(`%c coords constructor [${coordinates[0]},${coordinates[1]}]`,dbugColor)
+        if (dbug()) console.warn(`%c coords constructor [${coordinates[0]},${coordinates[1]}]`, dbugColor)
 
         this.board = board
         this.method = method
@@ -236,7 +236,8 @@ export class Coords extends Events{   // tbtb - should NOT extend event!!
             }
             this.screen2usr();
 
-            console.warn(`%c Coords: usrCoords set to ${JSON.stringify(this.usrCoords)}`,dbugColor)
+            if (dbug())
+                console.warn(`%c Coords: usrCoords set to ${JSON.stringify(this.usrCoords)}`, dbugColor)
         }
 
         if (this.emitter && !noevent && (os[1] !== sc[1] || os[2] !== sc[2])) {

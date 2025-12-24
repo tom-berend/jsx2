@@ -44,6 +44,7 @@ const dbugColor = `color:black;background-color:aliceblue`;
 import { JXG2 } from '../jxg.js';
 import { LooseObject } from '../interfaces.js';
 import { BOARD_MODE, BOARD_QUALITY, OBJECT_CLASS, OBJECT_TYPE, COORDS_BY, Version } from './constants.js';
+import { GeometryElement } from './element.js';
 import { Coords } from './coords.js';
 import Options from '../options.js';
 import { Numerics } from '../math/numerics.js'
@@ -991,7 +992,7 @@ export class Board extends Events {
      * @param {Number} type Type of the object.
      * @returns {String} Unique id for an element.
      */
-    setId(obj/*: GeometryElement*/, type: string) {
+    setId(obj: GeometryElement, type: string) {
         var randomNumber,
             num = this.numObjects,
             elId = obj.id;
@@ -6358,6 +6359,7 @@ export class Board extends Events {
             case 'text': el = new Text(this, parents, attributes); break;
             case 'point': el = new Point(this, parents, attributes); break;
             case 'checkbox': el = new Checkbox(this, parents, attributes); break;
+            case 'segment': el = new Checkbox(this, parents, attributes); break;
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)
                 throw new Error('JSXGraph: create: Unknown element type given: ' + elementType);

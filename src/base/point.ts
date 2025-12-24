@@ -49,6 +49,7 @@ import { GeometryElement } from "./element.js";
 import { Type } from "../utils/type.js";
 import { CoordsElement } from "./coordselement.js";
 import { COORDS_BY_USER } from "../index.js";
+import { Text } from "../base/text.js"
 
 /**
  * A point is the basic geometric element. Based on points lines and circles can be constructed which can be intersected
@@ -98,7 +99,6 @@ export class Point extends CoordsElement {
 
         this.board.renderer.drawPoint(this);
 
-        
         this.element = this.board.select(attributes['anchor']);
         this.coordsElementInit(parents, this.visProp)
 
@@ -112,6 +112,8 @@ export class Point extends CoordsElement {
 
         this.needsUpdate = true;
 
+    // if(dbug(this))
+        console.warn(`%c new Point(${JSON.stringify(parents)},${JSON.stringify(attributes)})`,dbugColor, this)
     }
 
     /**
@@ -151,12 +153,12 @@ export class Point extends CoordsElement {
     /**
      * Updates the position of the point.
      */
-    update(fromParent?:boolean) {
+    update(fromParent?: boolean) {
         if (dbug(this)) console.warn(`%c Point: pointUpdate ${this.id} ${fromParent}`, dbugColor)
 
         // if (!this.needsUpdate) {
         //     console.log(`%c Point doesn't need update`, dbugColor)
-    //     return this
+        //     return this
         // }
 
 
@@ -466,8 +468,54 @@ export class Point extends CoordsElement {
 
         return this;
     }
-}
 
+    /**
+        * Creates a label element for this geometry element.
+        * @see JXG2.GeometryElement#addLabelToElement
+        */
+    createLabel() {
+        var attr
+
+        //tbtb - this should be in each of the coordsElements
+
+
+        attr = Options.label;
+        attr['id'] = this.id + 'Label';
+        attr['isLabel'] = true;
+        attr['anchor'] = this;
+        attr['priv'] = this.visProp['priv'];
+
+        if (dbug(this))
+            console.warn(`%c geometryElement: creating label for ${this.id})`, dbugColor)
+
+        if (this.visProp['withlabel']) {
+
+            let plainName: string;
+
+            if (typeof this.name == 'function') {       // typeguard doesn't seem to work in ternary operator
+                plainName = this.name();
+            } else {
+                plainName = this.name;
+            }
+
+            console.log('createLabel ',this.X(),this.Y(), plainName)
+
+            this.label = new Text(this.board, [() => this.X(), () => this.Y(), plainName], attr);
+            this.label.addConstraint([1,() => this.X(), () => this.Y()])
+            this.label.needsUpdate = true;
+            this.label.dump = false;
+            this.label.fullUpdate();
+
+            this.hasLabel = true;
+
+            if (dbug(this.label))
+                console.warn(`%c geometryElement: new label ${this.label.id} for  ${this.id})`, dbugColor)
+
+            return this;
+        }
+
+    }
+}
 
 /**
  * @class Construct a free or a fixed point. A free point is created if the given parent elements are all numbers

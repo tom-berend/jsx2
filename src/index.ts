@@ -2,19 +2,20 @@
 import './jxg.js';
 import { JXG2 } from './jxg.js';
 
-import { Env } from './utils/env.js'; // Needed below
-import './base/constants.js';
-import './utils/type.js';
-import './utils/xml.js';
-import './utils/event.js';
-import './utils/expect.js';
-import './math/math.js';
+import { Env } from './utils/env.js'; 
+
+// import './base/constants.js';
+// import './utils/type.js';
+// import './utils/xml.js';
+// import './utils/event.js';
+// import './utils/expect.js';
+// import './math/math.js';
 // import './math/probfuncs.js';
 // import './math/ia.js';
 // import './math/extrapolate.js';
 // import './math/qdt.js';
 // import './math/bqdt.js';
-import './math/numerics.js';
+// import './math/numerics.js';
 // import './math/nlp.js';
 // import './math/plot.js';
 // import './math/implicitplot.js';
@@ -25,7 +26,7 @@ import './math/numerics.js';
 // import './math/poly.js';
 // import './math/complex.js';
 // import './renderer/abstract.js';
-// import './reader/file.js';
+// import './reader/file.jps';
 // import './parser/geonext.js';
 // import './base/board.js';
 // import './options.js';

@@ -1,4 +1,4 @@
-const dbug = (elem/*:GeometryElement*/) => elem && elem.id === "box_jxgBoard1P1";
+const dbug = (elem/*:GeometryElement*/) => elem && elem.id === "jxgBoard1P3Label";
 const dbugColor = `color:red;background-color:#00ffc0`;
 
 /*
@@ -1043,7 +1043,8 @@ export abstract class AbstractRenderer {
     drawText(el): HTMLElement {
         var node: HTMLElement, z, level, ev_visible;
 
-        if (dbug(el)) console.log(`%c abstract: drawText(${el.id})`, dbugColor)
+        if (dbug(el))
+             console.log(`%c abstract: drawText(${el.id})`, dbugColor)
 
         if (this.container !== null) {
             if (
@@ -1196,7 +1197,7 @@ export abstract class AbstractRenderer {
                             el.rendNode.style.top = v + "px";
                         }
                         el.visPropOld.top = ay + v;
-                        if (dbug(el)) console.log(`%c abstract: updateText:top/bottom ${v + 'px'}`, dbugColor, el)
+                        if (dbug(el)) console.log(`%c abstract: updateText:top/bottom ${v + 'px'}`, dbugColor)
                     }
                 }
 

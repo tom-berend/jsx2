@@ -1,4 +1,4 @@
-let dbug = (elem) => elem && elem.id === 'jxgBoard1T1'
+let dbug = (elem) => elem && elem.id === 'jxgBoard1P3Label'
 const dbugColor = `color:yellow;background-color:#803030`;
 
 /*
@@ -220,6 +220,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         /*
          * this.element may have been set by the object constructor.
          */
+        // tbtb - should be renamed as parent or something, and moved to point, text, etc
         if (Type.exists(this.element)) {
             this.addAnchor(coordinates, attributes['isLabel']);
         }
@@ -2515,7 +2516,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     public create(Callback, board, coords, attr, arg1, arg2) {
 
         if (dbug(this)) console.warn(`%c coordselements: create ${JSON.stringify(coords)}`, dbugColor)
-        console.warn(`%c this should be in the coordselements constructor`)
+        console.error(`%c this should be in the coordselements constructor`)
 
         var el,
             isConstrained = false,
@@ -2561,9 +2562,9 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     }
 
     // new version
-    public coordsElementInit(coords, attr) {
-        if (dbug(this))
-            console.warn(`%c coordselements: create ${JSON.stringify(coords)}`, dbugColor)
+    public coordsElementInit(coords: any[] /*coords part of parents */, attr1?,attr2?) {
+        // if (dbug(this))
+        console.warn(`%c coordselements: INIT ${JSON.stringify(coords)}`, dbugColor, attr1,attr2)
 
         let isConstrained = false
 
@@ -2576,8 +2577,8 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         if (!isConstrained) {
             if (Type.isNumber(coords[0]) && Type.isNumber(coords[1])) {
 
-                if (Type.exists(attr.slideobject)) {
-                    this.makeGlider(attr.slideobject);
+                if (Type.exists(attr1.slideobject)) {
+                    this.makeGlider(attr1.slideobject);
                 } else {
                     // Free element
                     this.baseElement = this;

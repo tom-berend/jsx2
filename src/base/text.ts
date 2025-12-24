@@ -1,5 +1,5 @@
-const dbug = (elem) => elem.id === 'jxgBoard1T1';
-const dbugColor = `color:yellow;background-color:#8080f0`;
+const dbug = (elem) => elem.id === 'jxgBoard1P3Label';
+const dbugColor = `color:yellow;background-color:#4040f0`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -127,29 +127,36 @@ export class Text extends CoordsElement {
         super(board, COORDS_BY.USER, [parents[0], parents[1]], attributes, OBJECT_TYPE.TEXT, OBJECT_CLASS.TEXT)
 
         if (dbug(this))
-            console.warn(`%c text constructor(${JSON.stringify(parents).substring(0, 100)},${JSON.stringify(attributes).substring(0, 100)} )`, dbugColor)
+            console.warn(`%c text constructor(${JSON.stringify(parents).substring(0, 100)})`, dbugColor)
 
         this.elType = "text";
         this.visProp = Type.initVisProps(Options.board, Options.elements, Options.text, attributes)
 
         /* Register text on board. */
-
         this.id = this.board.setId(this, "T");
-
-        this.coords = new Coords(COORDS_BY.USER, parents.slice(0, -1), board)
-        this.relativeCoords = new Coords(COORDS_BY.USER, parents.slice(0, -1), board)
-
-        this.content = parents[parents.length - 1];
-
-        this.orgText = this.content; // tbtb - recalculate content from orgText in updateText()
 
 
         this.element = this.board.select(attributes['anchor']);
 
-        this.rendNode = this.board.renderer.drawText(this);
-        // this.coordsElementInit(parents, this.visProp)
+
+        let coordinates = parents.slice(0, -1)
+        this.content = parents[parents.length - 1];
+
+        //tbtb
+        if (this.evalVisProp('islabel')) {
+            this.visProp['autoposition'] = true;    // always lower case
+            console.assert(this.evalVisProp['autoPosition'] === true,this.evalVisProp['autoPosition'])
+        }
 
         // this.coordsConstructor(coords, this.evalVisProp('islabel'));  // now in constructor
+        this.coordsElementInit(coordinates, this.evalVisProp('islabel'));
+
+        this.orgText = this.content; // tbtb - recalculate content from orgText in updateText()
+
+
+
+        this.rendNode = this.board.renderer.drawText(this);
+
 
 
         this.needsSizeUpdate = false;
@@ -545,12 +552,14 @@ export class Text extends CoordsElement {
 
         // offsetWidth and offsetHeight seem to be supported for internal vml elements by IE10+ in IE8 mode.
         if (ev_d === "html") {
-            if (Type.exists(node.offsetWidth)) {
-                window.setTimeout(() => {
-                    this.size = [node.offsetWidth, node.offsetHeight];
-                    this.needsUpdate = true;
-                    this.updateRenderer();
-                }, 0);
+            //tbtb//if (Type.exists(node.offsetWidth)) {
+                //tbtb// window.setTimeout(() => {
+                //tbtb//     this.size = [node.offsetWidth, node.offsetHeight];
+                //tbtb//     this.needsUpdate = true;
+                //tbtb//     this.updateRenderer();
+                //tbtb// }, 0);
+
+
                 // In case, there is non-zero padding or borders
                 // the following approach does not longer work.
                 // s = [node.offsetWidth, node.offsetHeight];
@@ -564,9 +573,9 @@ export class Text extends CoordsElement {
                 // } else {
                 //     this.size = s;
                 // }
-            } else {
+            // } else {
                 this.size = this.crudeSizeEstimate();
-            }
+            // }
         } else if (ev_d === "internal") {
             if (this.board.renderer.type === "svg") {
                 window.setTimeout(() => {
@@ -773,7 +782,8 @@ export class Text extends CoordsElement {
      * @private
      */
     updateRenderer() {
-        console.warn(`%c text updateRenderer ${this.id}`, dbugColor)
+        if (dbug(this))
+            console.warn(`%c text updateRenderer ${this.id} ${JSON.stringify(this.coords.usrCoords)}`, dbugColor)
 
         if (
             // this.board.updateQuality === this.board.BOARD_QUALITY_HIGH &&
@@ -1438,6 +1448,10 @@ export class Text extends CoordsElement {
      * @returns {JXG.Text} Reference to the text object.
      */
     setAutoPosition() {
+
+        if (dbug(this))
+            console.warn(`%c text: setAutoPosition(${this.plaintext})`, dbugColor)
+
         var radius, angle, radiusStep,
             i,
             bestScore = -Infinity, bestRadius, bestAngle,
@@ -1452,9 +1466,9 @@ export class Text extends CoordsElement {
             numRadius = 4;
 
         if (
-            // tbtb ??? this === this.board.infobox ||
+            this === this.board.infobox ||
             !this.element ||
-            !this.visProp['alc'].visible ||
+            !this.visPropCalc.visible ||   // tbtb visPropCalc??
             !this.evalVisProp('islabel')
         ) {
             return this;
