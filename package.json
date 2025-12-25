@@ -6,9 +6,9 @@
     "main": "./build/jxg.js",
     "type": "module",
     "scripts": {
-        "comment1":"it is convenient to use 'npm run build' with debug breakpoints in VSCode",
+        "comment1": "it is convenient to use 'npm run build' with debug breakpoints in VSCode",
         "build": "rimraf ./build && tsc -w",
-        "comment2" : "to run a single test (eg: coords):  npx jest coords",
+        "comment2": "to run a single test (eg: coords):  npx jest coords",
         "test": "jest",
         "docs": "typedoc",
         "dist": "vite build --base=/jsx3d/dist/",
@@ -31,6 +31,7 @@
         "vite": "^6.4.1"
     },
     "dependencies": {
-        "structured-clone-es": "^1.0.0"
+        "structured-clone-es": "^1.0.0",
+        "three": "^0.182.0"
     }
 }

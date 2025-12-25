@@ -47,22 +47,27 @@ const dbugColor = `color:white;background-color:black`;
  * a board.
  */
 
-import { JXG2 } from "../jxg.js";
+// import { JXG2 } from "../jxg.js";
+import Options from "../options.js";
+
 import { JSXMath } from "../math/math.js";
 import { Geometry } from "../math/geometry.js";
 import { Numerics } from "../math/numerics.js";
 import { Statistics } from "../math/statistics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
-import {GeometryElement} from "./element.js";
+import { GeometryElement } from "./element.js";
+import { Point, createPoint } from "../base/point.js";
+import { Text } from "../base/text.js";
 import { Type } from "../utils/type.js";
+import { CoordsElement } from "../base/coordselement.js";
 
 /**
  * The Line class is a basic class for all kind of line objects, e.g. line, arrow, and axis. It is usually defined by two points and can
  * be intersected with some other geometry elements.
  * @class Creates a new basic line object. Do not use this constructor to create a line.
  * Use {@link JXG2.Board#create} with
- * type {@link Line}, {@link Arrow}, or {@link Axis} instead.
+ * type {@link Line} {@link Arrow} or {@link Axis} instead.
  * @constructor
  * @augments JXG2.GeometryElement
  * @param {String|JXG2.Board} board The board the new line is drawn on.
@@ -70,21 +75,20 @@ import { Type } from "../utils/type.js";
  * @param {Point} p2 Endpoint of the line.
  * @param {Object} attributes Javascript object containing attributes like name, id and colors.
  */
-JXG2.Line = function (board, p1, p2, attributes) {
-    this.constructor(board, attributes, OBJECT_TYPE.LINE, OBJECT_CLASS.LINE);
+export class Line extends GeometryElement {
 
     /**
      * Startpoint of the line. You really should not set this field directly as it may break JSXGraph's
      * update system so your construction won't be updated properly.
      * @type JXG2.Point
      */
-    this.point1 = this.board.select(p1);
+    //point1    // already in GeometryElement
 
     /**
      * Endpoint of the line. Just like {@link JXG2.Line.point1} you shouldn't write this field directly.
      * @type JXG2.Point
      */
-    this.point2 = this.board.select(p2);
+    //point2    // already in GeometryElement
 
     /**
      * Array of ticks storing all the ticks on this line. Do not set this field directly and use
@@ -92,14 +96,14 @@ JXG2.Line = function (board, p1, p2, attributes) {
      * @type Array
      * @see JXG2.Ticks
      */
-    this.ticks = [];
+    ticks = [];
 
     /**
      * Reference of the ticks created automatically when constructing an axis.
      * @type JXG2.Ticks
      * @see JXG2.Ticks
      */
-    this.defaultTicks = null;
+    defaultTicks = null;
 
     /**
      * If the line is the border of a polygon, the polygon object is stored, otherwise null.
@@ -107,1028 +111,1094 @@ JXG2.Line = function (board, p1, p2, attributes) {
      * @default null
      * @private
      */
-    this.parentPolygon = null;
+    parentPolygon = null;
 
-    /* Register line at board */
-    this.id = this.board.setId(this, 'L');
-    this.board.renderer.drawLine(this);
-    this.board.finalizeAdding(this);
 
-    this.elType = 'line';
+    fixedLength: Function
+    hasFixedLength: boolean = false
+    fixedLengthOldCoords: Coords[] = []
+    funps: Function
+    funp1: Function
+    funp2: Function
+    constrained         // only used by Line.
 
-    /* Add line as child to defining points */
-    if (this.point1._is_new) {
-        this.addChild(this.point1);
-        delete this.point1._is_new;
-    } else {
-        this.point1.addChild(this);
-    }
-    if (this.point2._is_new) {
-        this.addChild(this.point2);
-        delete this.point2._is_new;
-    } else {
-        this.point2.addChild(this);
-    }
 
-    this.inherits.push(this.point1, this.point2);
 
-    this.updateStdform(); // This is needed in the following situation:
-    // * the line is defined by three coordinates
-    // * and it will have a glider
-    // * and board.suspendUpdate() has been called.
+    constructor(board, parents, attributes) {
+        super(board, attributes, OBJECT_TYPE.LINE, OBJECT_CLASS.LINE);
 
-    // create Label
-    this.createLabel();
 
-    this.methodMap = Type.deepCopy(this.methodMap, {
-        point1: "point1",
-        point2: "point2",
-        getSlope: "Slope",
-        Slope: "Slope",
-        Direction: "Direction",
-        getRise: "getRise",
-        Rise: "getRise",
-        getYIntersect: "getRise",
-        YIntersect: "getRise",
-        getAngle: "getAngle",
-        Angle: "getAngle",
-        L: "L",
-        length: "L",
-        setFixedLength: "setFixedLength",
-        setStraight: "setStraight"
-    });
-};
+        this.point1 = this.board.select(parents[0])
+        this.point2 = this.board.select(parents[1]);
 
-// JXG2.Line.prototype = new GeometryElement();
 
-JXG2.extend(
-    JXG2.Line.prototype,
-    /** @lends JXG2.Line.prototype */ {
-        /**
-         * Checks whether (x,y) is near the line.
-         * @param {Number} x Coordinate in x direction, screen coordinates.
-         * @param {Number} y Coordinate in y direction, screen coordinates.
-         * @returns {Boolean} True if (x,y) is near the line, False otherwise.
-         */
-        hasPoint: function (x, y) {
-            // Compute the stdform of the line in screen coordinates.
-            var c = [],
-                v = [1, x, y],
-                s, vnew, p1c, p2c, d, pos, i, prec, type,
-                sw = this.evalVisProp('strokewidth');
+        /* Register line at board */
+        this.id = this.board.setId(this, 'L');
+        this.board.renderer.drawLine(this);
+        this.board.finalizeAdding(this);
 
-            if (Type.isObject(this.evalVisProp('precision'))) {
-                type = this.board._inputDevice;
-                prec = this.evalVisProp('precision.' + type);
-            } else {
-                // 'inherit'
-                prec = this.board.options.precision.hasPoint;
-            }
-            prec += sw * 0.5;
+        this.elType = 'line';
 
-            c[0] =
-                this.stdform[0] -
-                (this.stdform[1] * this.board.origin.scrCoords[1]) / this.board.unitX +
-                (this.stdform[2] * this.board.origin.scrCoords[2]) / this.board.unitY;
-            c[1] = this.stdform[1] / this.board.unitX;
-            c[2] = this.stdform[2] / -this.board.unitY;
-
-            s = Geometry.distPointLine(v, c);
-            if (isNaN(s) || s > prec) {
-                return false;
-            }
-
-            if (
-                this.evalVisProp('straightfirst') &&
-                this.evalVisProp('straightlast')
-            ) {
-                return true;
-            }
-
-            // If the line is a ray or segment we have to check if the projected point is between P1 and P2.
-            p1c = this.point1.coords;
-            p2c = this.point2.coords;
-
-            // Project the point orthogonally onto the line
-            vnew = [0, c[1], c[2]];
-            // Orthogonal line to c through v
-            vnew = JSXMath.crossProduct(vnew, v);
-            // Intersect orthogonal line with line
-            vnew = JSXMath.crossProduct(vnew, c);
-
-            // Normalize the projected point
-            vnew[1] /= vnew[0];
-            vnew[2] /= vnew[0];
-            vnew[0] = 1;
-
-            vnew = new Coords(COORDS_BY.SCREEN, vnew.slice(1), this.board).usrCoords;
-            d = p1c.distance(COORDS_BY.USER, p2c);
-            p1c = p1c.usrCoords.slice(0);
-            p2c = p2c.usrCoords.slice(0);
-
-            // The defining points are identical
-            if (d < JSXMath.eps) {
-                pos = 0;
-            } else {
-                /*
-                 * Handle the cases, where one of the defining points is an ideal point.
-                 * d is set to something close to infinity, namely 1/eps.
-                 * The ideal point is (temporarily) replaced by a finite point which has
-                 * distance d from the other point.
-                 * This is accomplished by extracting the x- and y-coordinates (x,y)=:v of the ideal point.
-                 * v determines the direction of the line. v is normalized, i.e. set to length 1 by dividing through its length.
-                 * Finally, the new point is the sum of the other point and v*d.
-                 *
-                 */
-
-                // At least one point is an ideal point
-                if (d === Number.POSITIVE_INFINITY) {
-                    d = 1 / JSXMath.eps;
-
-                    // The second point is an ideal point
-                    if (Math.abs(p2c[0]) < JSXMath.eps) {
-                        d /= Geometry.distance([0, 0, 0], p2c);
-                        p2c = [1, p1c[1] + p2c[1] * d, p1c[2] + p2c[2] * d];
-                        // The first point is an ideal point
-                    } else {
-                        d /= Geometry.distance([0, 0, 0], p1c);
-                        p1c = [1, p2c[1] + p1c[1] * d, p2c[2] + p1c[2] * d];
-                    }
-                }
-                i = 1;
-                d = p2c[i] - p1c[i];
-
-                if (Math.abs(d) < JSXMath.eps) {
-                    i = 2;
-                    d = p2c[i] - p1c[i];
-                }
-                pos = (vnew[i] - p1c[i]) / d;
-            }
-
-            if (!this.evalVisProp('straightfirst') && pos < 0) {
-                return false;
-            }
-
-            return !(!this.evalVisProp('straightlast') && pos > 1);
-        },
-
-        // documented in base/element
-        update: function () {
-            var funps;
-
-            if (!this.needsUpdate) {
-                return this;
-            }
-
-            if (this.constrained) {
-                if (Type.isFunction(this.funps)) {
-                    funps = this.funps();
-                    if (funps && funps.length && funps.length === 2) {
-                        this.point1 = funps[0];
-                        this.point2 = funps[1];
-                    }
-                } else {
-                    if (Type.isFunction(this.funp1)) {
-                        funps = this.funp1();
-                        if (Type.isPoint(funps)) {
-                            this.point1 = funps;
-                        } else if (funps && funps.length && funps.length === 2) {
-                            this.point1.setPositionDirectly(COORDS_BY.USER, funps);
-                        }
-                    }
-
-                    if (Type.isFunction(this.funp2)) {
-                        funps = this.funp2();
-                        if (Type.isPoint(funps)) {
-                            this.point2 = funps;
-                        } else if (funps && funps.length && funps.length === 2) {
-                            this.point2.setPositionDirectly(COORDS_BY.USER, funps);
-                        }
-                    }
-                }
-            }
-
-            this.updateSegmentFixedLength();
-            this.updateStdform();
-
-            if (this.evalVisProp('trace')) {
-                this.cloneToBackground(true);
-            }
-
-            return this;
-        },
-
-        /**
-         * Update segments with fixed length and at least one movable point.
-         * @private
-         */
-        updateSegmentFixedLength: function () {
-            var d, d_new, d1, d2, drag1, drag2, x, y;
-
-            if (!this.hasFixedLength) {
-                return this;
-            }
-
-            // Compute the actual length of the segment
-            d = this.point1.Dist(this.point2);
-            // Determine the length the segment ought to have
-            d_new = (this.evalVisProp('nonnegativeonly')) ?
-                Math.max(0.0, this.fixedLength()) :
-                Math.abs(this.fixedLength());
-
-            // Distances between the two points and their respective
-            // position before the update
-            d1 = this.fixedLengthOldCoords[0].distance(
-                COORDS_BY.USER,
-                this.point1.coords
-            );
-            d2 = this.fixedLengthOldCoords[1].distance(
-                COORDS_BY.USER,
-                this.point2.coords
-            );
-
-            // If the position of the points or the fixed length function has been changed we have to work.
-            if (d1 > JSXMath.eps || d2 > JSXMath.eps || d !== d_new) {
-                drag1 =
-                    this.point1.isDraggable &&
-                    this.point1.type !== OBJECT_TYPE.GLIDER &&
-                    !this.point1.evalVisProp('fixed');
-                drag2 =
-                    this.point2.isDraggable &&
-                    this.point2.type !== OBJECT_TYPE.GLIDER &&
-                    !this.point2.evalVisProp('fixed');
-
-                // First case: the two points are different
-                // Then we try to adapt the point that was not dragged
-                // If this point can not be moved (e.g. because it is a glider)
-                // we try move the other point
-                if (d > JSXMath.eps) {
-                    if ((d1 > d2 && drag2) || (d1 <= d2 && drag2 && !drag1)) {
-                        this.point2.setPositionDirectly(COORDS_BY.USER, [
-                            this.point1.X() + ((this.point2.X() - this.point1.X()) * d_new) / d,
-                            this.point1.Y() + ((this.point2.Y() - this.point1.Y()) * d_new) / d
-                        ]);
-                        this.point2.fullUpdate();
-                    } else if ((d1 <= d2 && drag1) || (d1 > d2 && drag1 && !drag2)) {
-                        this.point1.setPositionDirectly(COORDS_BY.USER, [
-                            this.point2.X() + ((this.point1.X() - this.point2.X()) * d_new) / d,
-                            this.point2.Y() + ((this.point1.Y() - this.point2.Y()) * d_new) / d
-                        ]);
-                        this.point1.fullUpdate();
-                    }
-                    // Second case: the two points are identical. In this situation
-                    // we choose a random direction.
-                } else {
-                    x = Math.random() - 0.5;
-                    y = Math.random() - 0.5;
-                    d = Math.hypot(x, y);
-
-                    if (drag2) {
-                        this.point2.setPositionDirectly(COORDS_BY.USER, [
-                            this.point1.X() + (x * d_new) / d,
-                            this.point1.Y() + (y * d_new) / d
-                        ]);
-                        this.point2.fullUpdate();
-                    } else if (drag1) {
-                        this.point1.setPositionDirectly(COORDS_BY.USER, [
-                            this.point2.X() + (x * d_new) / d,
-                            this.point2.Y() + (y * d_new) / d
-                        ]);
-                        this.point1.fullUpdate();
-                    }
-                }
-                // Finally, we save the position of the two points.
-                this.fixedLengthOldCoords[0].setCoordinates(
-                    COORDS_BY.USER,
-                    this.point1.coords.usrCoords
-                );
-                this.fixedLengthOldCoords[1].setCoordinates(
-                    COORDS_BY.USER,
-                    this.point2.coords.usrCoords
-                );
-            }
-
-            return this;
-        },
-
-        /**
-         * Updates the stdform derived from the parent point positions.
-         * @private
-         */
-        updateStdform: function () {
-            var v = JSXMath.crossProduct(
-                this.point1.coords.usrCoords,
-                this.point2.coords.usrCoords
-            );
-
-            this.stdform[0] = v[0];
-            this.stdform[1] = v[1];
-            this.stdform[2] = v[2];
-            this.stdform[3] = 0;
-
-            this.normalize();
-        },
-
-        /**
-         * Uses the boards renderer to update the line.
-         * @private
-         */
-        updateRenderer: function () {
-            //var wasReal;
-
-            if (!this.needsUpdate) {
-                return this;
-            }
-
-            if (this.visPropCalc.visible) {
-                // wasReal = this.isReal;
-                this.isReal =
-                    !isNaN(
-                        this.point1.coords.usrCoords[1] +
-                        this.point1.coords.usrCoords[2] +
-                        this.point2.coords.usrCoords[1] +
-                        this.point2.coords.usrCoords[2]
-                    ) && JSXMath.innerProduct(this.stdform, this.stdform, 3) >= JSXMath.eps * JSXMath.eps;
-
-                if (
-                    //wasReal &&
-                    !this.isReal
-                ) {
-                    this.updateVisibility(false);
-                }
-            }
-
-            if (this.visPropCalc.visible) {
-                this.board.renderer.updateLine(this);
-            }
-
-            /* Update the label if visible. */
-            if (
-                this.hasLabel &&
-                this.visPropCalc.visible &&
-                this.label &&
-                this.label.visPropCalc.visible &&
-                this.isReal
-            ) {
-                this.label.update();
-                this.board.renderer.updateText(this.label);
-            }
-
-            // Update rendNode display
-            this.setDisplayRendNode();
-
-            this.needsUpdate = false;
-            return this;
-        },
-
-        // /**
-        //  * Used to generate a polynomial for a point p that lies on this line, i.e. p is collinear to
-        //  * {@link JXG2.Line#point1} and {@link JXG2.Line#point2}.
-        //  *
-        //  * @param {JXG2.Point} p The point for that the polynomial is generated.
-        //  * @returns {Array} An array containing the generated polynomial.
-        //  * @private
-        //  */
-        generatePolynomial: function (p) {
-            var u1 = this.point1.symbolic.x,
-                u2 = this.point1.symbolic.y,
-                v1 = this.point2.symbolic.x,
-                v2 = this.point2.symbolic.y,
-                w1 = p.symbolic.x,
-                w2 = p.symbolic.y;
-
-            /*
-             * The polynomial in this case is determined by three points being collinear:
-             *
-             *      U (u1,u2)      W (w1,w2)                V (v1,v2)
-             *  ----x--------------x------------------------x----------------
-             *
-             *  The collinearity condition is
-             *
-             *      u2-w2       w2-v2
-             *     -------  =  -------           (1)
-             *      u1-w1       w1-v1
-             *
-             * Multiplying (1) with denominators and simplifying is
-             *
-             *    u2w1 - u2v1 + w2v1 - u1w2 + u1v2 - w1v2 = 0
-             */
-
-            return [
-                [
-                    "(", u2, ")*(", w1, ")-(", u2, ")*(", v1, ")+(", w2, ")*(", v1, ")-(", u1, ")*(", w2, ")+(", u1, ")*(", v2, ")-(", w1, ")*(", v2, ")"
-                ].join("")
-            ];
-        },
-
-        /**
-         * Calculates the y intersect of the line.
-         * @returns {Number} The y intersect.
-         */
-        getRise: function () {
-            if (Math.abs(this.stdform[2]) >= JSXMath.eps) {
-                return -this.stdform[0] / this.stdform[2];
-            }
-
-            return Infinity;
-        },
-
-        /**
-         * Calculates the slope of the line.
-         * @returns {Number} The slope of the line or Infinity if the line is parallel to the y-axis.
-         */
-        Slope: function () {
-            if (Math.abs(this.stdform[2]) >= JSXMath.eps) {
-                return -this.stdform[1] / this.stdform[2];
-            }
-
-            return Infinity;
-        },
-
-        /**
-         * Alias for line.Slope
-         * @returns {Number} The slope of the line or Infinity if the line is parallel to the y-axis.
-         * @deprecated
-         * @see Line#Slope
-         */
-        getSlope: function () {
-            return this.Slope();
-        },
-
-        /**
-         * Determines the angle between the positive x axis and the line.
-         * @returns {Number}
-         */
-        getAngle: function () {
-            return Math.atan2(-this.stdform[1], this.stdform[2]);
-        },
-
-        /**
-         * Returns the direction vector of the line. This is an array of length two
-         * containing the direction vector as [x, y]. It is defined as
-         *  <li> the difference of the x- and y-coordinate of the second and first point, in case both points are finite or both points are infinite.
-         *  <li> [x, y] coordinates of point2, in case only point2 is infinite.
-         *  <li> [-x, -y] coordinates of point1, in case only point1 is infinite.
-         * @function
-         * @returns {Array} of length 2.
-         */
-        Direction: function () {
-            var coords1 = this.point1.coords.usrCoords,
-                coords2 = this.point2.coords.usrCoords;
-
-            if (coords2[0] === 0 && coords1[0] !== 0) {
-                return coords2.slice(1);
-            }
-
-            if (coords1[0] === 0 && coords2[0] !== 0) {
-                return [-coords1[1], -coords1[2]];
-            }
-
-            return [
-                coords2[1] - coords1[1],
-                coords2[2] - coords1[2]
-            ];
-        },
-
-        /**
-         * Returns true, if the line is vertical (if the x coordinate of the direction vector is 0).
-         * @function
-         * @returns {Boolean}
-         */
-        isVertical: function () {
-            var dir = this.Direction();
-            return dir[0] === 0 && dir[1] !== 0;
-        },
-
-        /**
-         * Returns true, if the line is horizontal (if the y coordinate of the direction vector is 0).
-         * @function
-         * @returns {Boolean}
-         */
-        isHorizontal: function () {
-            var dir = this.Direction();
-            return dir[1] === 0 && dir[0] !== 0;
-        },
-
-        /**
-         * Determines whether the line is drawn beyond {@link JXG2.Line#point1} and
-         * {@link JXG2.Line#point2} and updates the line.
-         * @param {Boolean} straightFirst True if the Line shall be drawn beyond
-         * {@link JXG2.Line#point1}, false otherwise.
-         * @param {Boolean} straightLast True if the Line shall be drawn beyond
-         * {@link JXG2.Line#point2}, false otherwise.
-         * @see Line#straightFirst
-         * @see Line#straightLast
-         * @private
-         */
-        setStraight: function (straightFirst, straightLast) {
-            this.visProp.straightfirst = straightFirst;
-            this.visProp.straightlast = straightLast;
-
-            this.board.renderer.updateLine(this);
-            return this;
-        },
-
-        // documented in geometry element
-        getTextAnchor: function () {
-            return new Coords(
-                COORDS_BY.USER,
-                [
-                    0.5 * (this.point2.X() + this.point1.X()),
-                    0.5 * (this.point2.Y() + this.point1.Y())
-                ],
-                this.board
-            );
-        },
-
-        /**
-         * Adjusts Label coords relative to Anchor. DESCRIPTION
-         * @private
-         */
-        setLabelRelativeCoords: function (relCoords) {
-            if (Type.exists(this.label)) {
-                this.label.relativeCoords = new Coords(
-                    COORDS_BY.SCREEN,
-                    [relCoords[0], -relCoords[1]],
-                    this.board
-                );
-            }
-        },
-
-        // documented in geometry element
-        getLabelAnchor: function () {
-            var x, y, pos,
-                xy, lbda, dx, dy, d,
-                dist = 1.5,
-                fs = 0,
-                c1 = new Coords(COORDS_BY.USER, this.point1.coords.usrCoords, this.board),
-                c2 = new Coords(COORDS_BY.USER, this.point2.coords.usrCoords, this.board),
-                ev_sf = this.evalVisProp('straightfirst'),
-                ev_sl = this.evalVisProp('straightlast');
-
-            console.warn('%c line getLabelAnchor', 'color:red;')
-
-            if (ev_sf || ev_sl) {
-                Geometry.calcStraight(this, c1, c2, 0);
-            }
-
-            let c1n = c1.scrCoords;
-            let c2n = c2.scrCoords;
-
-            if (!Type.exists(this.label)) {
-                return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
-            }
-
-            pos = this.label.evalVisProp('position');
-            if (!Type.isString(pos)) {
-                return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
-            }
-
-            if (pos.indexOf('right') < 0 && pos.indexOf('left') < 0) {
-                // Old positioning commands
-                switch (pos) {
-                    case 'last':
-                        x = c2n[1];
-                        y = c2n[2];
-                        break;
-                    case 'first':
-                        x = c1n[1];
-                        y = c1n[2];
-                        break;
-                    case "lft":
-                    case "llft":
-                    case "ulft":
-                        if (c1[1] < c2[1] + JSXMath.eps) {
-                            x = c1n[1];
-                            y = c1n[2];
-                        } else {
-                            x = c2n[1];
-                            y = c2n[2];
-                        }
-                        break;
-                    case "rt":
-                    case "lrt":
-                    case "urt":
-                        if (c1[1] > c2[1] + JSXMath.eps) {
-                            x = c1[1];
-                            y = c1[2];
-                        } else {
-                            x = c2[1];
-                            y = c2[2];
-                        }
-                        break;
-                    default:
-                        x = 0.5 * (c1[1] + c2[1]);
-                        y = 0.5 * (c1[2] + c2[2]);
-                }
-            } else {
-                // New positioning
-                xy = Type.parsePosition(pos);
-                lbda = Type.parseNumber(xy.pos, 1, 1);
-
-                dx = c2[1] - c1[1];
-                dy = c2[2] - c1[2];
-                d = Math.hypot(dx, dy);
-
-                if (xy.pos.indexOf('px') >= 0 ||
-                    xy.pos.indexOf('fr') >= 0 ||
-                    xy.pos.indexOf('%') >= 0) {
-                    // lbda is interpreted in screen coords
-
-                    if (xy.pos.indexOf('px') >= 0) {
-                        // Pixel values are supported
-                        lbda /= d;
-                    }
-
-                    // Position along the line
-                    x = c1[1] + lbda * dx;
-                    y = c1[2] + lbda * dy;
-                } else {
-                    // lbda is given as number or as a number string
-                    // Then, lbda is interpreted in user coords
-                    x = c1[1] + lbda * this.board.unitX * dx / d;
-                    y = c1[2] + lbda * this.board.unitY * dy / d;
-                }
-
-                // Position left or right
-                if (xy.side === 'left') {
-                    dx *= -1;
-                } else {
-                    dy *= -1;
-                }
-                if (Type.exists(this.label)) {
-                    dist = 0.5 * this.label.evalVisProp('distance') / d;
-                }
-                x += dy * this.label.size[0] * dist;
-                y += dx * this.label.size[1] * dist;
-            }
-
-            // Correct coordinates if the label seems to be outside of canvas.
-            if (ev_sf || ev_sl) {
-                if (Type.exists(this.label)) {
-                    // Does not exist during createLabel
-                    fs = this.label.evalVisProp('fontsize');
-                }
-
-                if (Math.abs(x) < JSXMath.eps) {
-                    x = fs;
-                } else if (
-                    this.board.canvasWidth + JSXMath.eps > x &&
-                    x > this.board.canvasWidth - fs - JSXMath.eps
-                ) {
-                    x = this.board.canvasWidth - fs;
-                }
-
-                if (JSXMath.eps + fs > y && y > -JSXMath.eps) {
-                    y = fs;
-                } else if (
-                    this.board.canvasHeight + JSXMath.eps > y &&
-                    y > this.board.canvasHeight - fs - JSXMath.eps
-                ) {
-                    y = this.board.canvasHeight - fs;
-                }
-            }
-
-            return new Coords(COORDS_BY.SCREEN, [x, y], this.board);
-        },
-
-        // documented in geometry element
-        cloneToBackground: function () {
-            var copy = Type.getCloneObject(this),
-                r, s,
-                er;
-
-            copy.point1 = this.point1;
-            copy.point2 = this.point2;
-            copy.stdform = this.stdform;
-
-            s = this.getSlope();
-            r = this.getRise();
-            copy.getSlope = function () {
-                return s;
-            };
-            copy.getRise = function () {
-                return r;
-            };
-
-            er = this.board.renderer.enhancedRendering;
-            this.board.renderer.enhancedRendering = true;
-            this.board.renderer.drawLine(copy);
-            this.board.renderer.enhancedRendering = er;
-            this.traces[copy.id] = copy.rendNode;
-
-            return this;
-        },
-
-        /**
-         * Add transformations to this line.
-         * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation} or an array of
-         * {@link JXG2.Transformation}s.
-         * @returns {JXG2.Line} Reference to this line object.
-         */
-        addTransform: function (transform) {
-            var i,
-                list = Type.isArray(transform) ? transform : [transform],
-                len = list.length;
-
-            for (i = 0; i < len; i++) {
-                this.point1.transformations.push(list[i]);
-                this.point2.transformations.push(list[i]);
-            }
-
-            // Why not like this?
-            // The difference is in setting baseElement
-            // var list = Type.isArray(transform) ? transform : [transform];
-            // this.point1.addTransform(this, list);
-            // this.point2.addTransform(this, list);
-
-            return this;
-        },
-
-        // see GeometryElement.js
-        snapToGrid: function (pos) {
-            var c1, c2, dc, t, ticks, x, y, sX, sY;
-
-            if (this.evalVisProp('snaptogrid')) {
-                if (this.parents.length < 3) {
-                    // Line through two points
-                    this.point1.handleSnapToGrid(true, true);
-                    this.point2.handleSnapToGrid(true, true);
-                } else if (Type.exists(pos)) {
-                    // Free line
-                    sX = this.evalVisProp('snapsizex');
-                    sY = this.evalVisProp('snapsizey');
-
-                    c1 = new Coords(COORDS_BY.SCREEN, [pos.Xprev, pos.Yprev], this.board);
-
-                    x = c1.usrCoords[1];
-                    y = c1.usrCoords[2];
-
-                    if (
-                        sX <= 0 &&
-                        this.board.defaultAxes &&
-                        this.board.defaultAxes.x.defaultTicks
-                    ) {
-                        ticks = this.board.defaultAxes.x.defaultTicks;
-                        sX = ticks.ticksDelta * (ticks.evalVisProp('minorticks') + 1);
-                    }
-                    if (
-                        sY <= 0 &&
-                        this.board.defaultAxes &&
-                        this.board.defaultAxes.y.defaultTicks
-                    ) {
-                        ticks = this.board.defaultAxes.y.defaultTicks;
-                        sY = ticks.ticksDelta * (ticks.evalVisProp('minorticks') + 1);
-                    }
-
-                    // if no valid snap sizes are available, don't change the coords.
-                    if (sX > 0 && sY > 0) {
-                        // projectCoordsToLine
-                        /*
-                        v = [0, this.stdform[1], this.stdform[2]];
-                        v = JSXMath.crossProduct(v, c1.usrCoords);
-                        c2 = Geometry.meetLineLine(v, this.stdform, 0, this.board);
-                        */
-                        c2 = Geometry.projectPointToLine({ coords: c1 }, this, this.board);
-
-                        dc = Statistics.subtract(
-                            [1, Math.round(x / sX) * sX, Math.round(y / sY) * sY],
-                            c2.usrCoords
-                        );
-                        t = this.board.create("transform", dc.slice(1), {
-                            type: "translate"
-                        });
-                        t.applyOnce([this.point1, this.point2]);
-                    }
-                }
-            } else {
-                this.point1.handleSnapToGrid(false, true);
-                this.point2.handleSnapToGrid(false, true);
-            }
-
-            return this;
-        },
-
-        // see element.js
-        snapToPoints: function () {
-            var forceIt = this.evalVisProp('snaptopoints');
-
-            if (this.parents.length < 3) {
-                // Line through two points
-                this.point1.handleSnapToPoints(forceIt);
-                this.point2.handleSnapToPoints(forceIt);
-            }
-
-            return this;
-        },
-
-        /**
-         * Treat the line as parametric curve in homogeneous coordinates, where the parameter t runs from 0 to 1.
-         * First we transform the interval [0,1] to [-1,1].
-         * If the line has homogeneous coordinates [c, a, b] = stdform[] then the direction of the line is [b, -a].
-         * Now, we take one finite point that defines the line, i.e. we take either point1 or point2
-         * (in case the line is not the ideal line).
-         * Let the coordinates of that point be [z, x, y].
-         * Then, the curve runs linearly from
-         * [0, b, -a] (t=-1) to [z, x, y] (t=0)
-         * and
-         * [z, x, y] (t=0) to [0, -b, a] (t=1)
-         *
-         * @param {Number} t Parameter running from 0 to 1.
-         * @returns {Number} X(t) x-coordinate of the line treated as parametric curve.
-         * */
-        X: function (t) {
-            // var x,
-            //     c = this.point1.coords.usrCoords,
-            //     b = this.stdform[2];
-
-            // x = (Math.abs(c[0]) > JSXMath.eps) ? c[1] : c[1];
-            // t = (t - 0.5) * 2;
-
-            // return (1 - Math.abs(t)) * x - t * b;
-
-            var c1 = this.point1.coords.usrCoords,
-                c2 = this.point2.coords.usrCoords,
-                b = this.stdform[2];
-
-            if (c1[0] !== 0) {
-                if (c2[0] !== 0) {
-                    return c1[1] + (c2[1] - c1[1]) * t;
-                } else {
-                    return c1[1] + b * 1.e5 * t;
-                }
-            } else {
-                if (c1[0] !== 0) {
-                    return c2[1] - (c1[1] - c2[1]) * t;
-                } else {
-                    return c2[1] + b * 1.e5 * t;
-                }
-            }
-        },
-
-        /**
-         * Treat the line as parametric curve in homogeneous coordinates.
-         * See {@link JXG2.Line#X} for a detailed description.
-         * @param {Number} t Parameter running from 0 to 1.
-         * @returns {Number} Y(t) y-coordinate of the line treated as parametric curve.
-         * @see Line#X
-         */
-        Y: function (t) {
-            // var y,
-            //     c = this.point1.coords.usrCoords,
-            //     a = this.stdform[1];
-
-            // y = (Math.abs(c[0]) > JSXMath.eps) ? c[2] : c[2];
-            // t = (t - 0.5) * 2;
-
-            // return (1 - Math.abs(t)) * y + t * a;
-
-            var c1 = this.point1.coords.usrCoords,
-                c2 = this.point2.coords.usrCoords,
-                a = this.stdform[1];
-
-            if (c1[0] !== 0) {
-                if (c2[0] !== 0) {
-                    return c1[2] + (c2[2] - c1[2]) * t;
-                } else {
-                    return c1[2] - a * 1.e5 * t;
-                }
-            } else {
-                if (c1[0] !== 0) {
-                    return c2[2] - (c1[2] - c2[2]) * t;
-                } else {
-                    return c2[2] - a * 1.e5 * t;
-                }
-            }
-        },
-
-        /**
-         * Treat the line as parametric curve in homogeneous coordinates.
-         * See {@link JXG2.Line#X} for a detailed description.
-         *
-         * @param {Number} t Parameter running from 0 to 1.
-         * @returns {Number} Z(t) z-coordinate of the line treated as parametric curve.
-         * @see Line#Z
-         */
-        Z: function (t) {
-            // var z,
-            //     c = this.point1.coords.usrCoords;
-
-            // z = (Math.abs(c[0]) > JSXMath.eps) ? c[0] : c[0];
-            // t = (t - 0.5) * 2;
-
-            // return (1 - Math.abs(t)) * z;
-
-            var c1 = this.point1.coords.usrCoords,
-                c2 = this.point2.coords.usrCoords;
-
-            if (t === 1 && c1[0] * c2[0] === 0) {
-                return 0;
-            }
-            return 1;
-        },
-
-        /**
-         * Return the homogeneous coordinates of the line treated as curve at t - including all transformations
-         * applied to the curve.
-         * @param {Number} t A number
-         * @returns {Array} [Z(t), X(t), Y(t)]
-         * @see Line#X
-         */
-        Ft: function (t) {
-            var c = [this.Z(t), this.X(t), this.Y(t)];
-            c[1] /= c[0];
-            c[2] /= c[0];
-            c[0] /= c[0];
-            // c[0] = 1;
-            // c[1] = t;
-            // c[2] = 3;
-
-            return c;
-        },
-
-        /**
-         * The distance between the two points defining the line.
-         * @returns {Number}
-         */
-        L: function () {
-            return this.point1.Dist(this.point2);
-        },
-
-        /**
-         * Set a new fixed length, then update the board.
-         * @param {String|Number|function} l A string, function or number describing the new length.
-         * @returns {JXG2.Line} Reference to this line
-         */
-        setFixedLength: function (l) {
-            if (!this.hasFixedLength) {
-                return this;
-            }
-
-            this.fixedLength = Type.createFunction(l, this.board);
-            this.hasFixedLength = true;
-            this.addParentsFromJCFunctions([this.fixedLength]);
-            this.board.update();
-
-            return this;
-        },
-
-        /**
-         * Treat the element  as a parametric curve
-         * @private
-         */
-        minX: function () {
-            return 0.0;
-        },
-
-        /**
-         * Treat the element as parametric curve
-         * @private
-         */
-        maxX: function () {
-            return 1.0;
-        },
-
-        // documented in geometry element
-        bounds: function () {
-            var p1c = this.point1.coords.usrCoords,
-                p2c = this.point2.coords.usrCoords;
-
-            return [
-                Math.min(p1c[1], p2c[1]),
-                Math.max(p1c[2], p2c[2]),
-                Math.max(p1c[1], p2c[1]),
-                Math.min(p1c[2], p2c[2])
-            ];
-        },
-
-        // documented in GeometryElement.js
-        remove: function () {
-            this.removeAllTicks();
-            GeometryElement.prototype.remove.call(this);
+        /* Add line as child to defining points */
+        if (this.point1._is_new) {
+            this.addChild(this.point1);
+            delete this.point1._is_new;
+        } else {
+            this.point1.addChild(this);
+        }
+        if (this.point2._is_new) {
+            this.addChild(this.point2);
+            delete this.point2._is_new;
+        } else {
+            this.point2.addChild(this);
         }
 
-        // hideElement: function () {
-        //     var i;
-        //
-        //     GeometryElement.prototype.hideElement.call(this);
-        //
-        //     for (i = 0; i < this.ticks.length; i++) {
-        //         this.ticks[i].hideElement();
-        //     }
-        // },
-        //
-        // showElement: function () {
-        //     var i;
-        //     GeometryElement.prototype.showElement.call(this);
-        //
-        //     for (i = 0; i < this.ticks.length; i++) {
-        //         this.ticks[i].showElement();
-        //     }
-        // }
+        this.inherits.push(this.point1, this.point2);
+
+        this.updateStdform(); // This is needed in the following situation:
+        // * the line is defined by three coordinates
+        // * and it will have a glider
+        // * and board.suspendUpdate() has been called.
+
+        // create Label
+        this.createLabel();
+
+        this.methodMap = Type.deepCopy(this.methodMap, {
+            point1: "point1",
+            point2: "point2",
+            getSlope: "Slope",
+            Slope: "Slope",
+            Direction: "Direction",
+            getRise: "getRise",
+            Rise: "getRise",
+            getYIntersect: "getRise",
+            YIntersect: "getRise",
+            getAngle: "getAngle",
+            Angle: "getAngle",
+            L: "L",
+            length: "L",
+            setFixedLength: "setFixedLength",
+            setStraight: "setStraight"
+        });
+    }
+
+    /**
+     * Checks whether (x,y) is near the line.
+     * @param {Number} x Coordinate in x direction, screen coordinates.
+     * @param {Number} y Coordinate in y direction, screen coordinates.
+     * @returns {Boolean} True if (x,y) is near the line, False otherwise.
+     */
+    hasPoint(x, y) {
+        // Compute the stdform of the line in screen coordinates.
+        var c = [],
+            v = [1, x, y],
+            s, vnew, p1c, p2c, d, pos, i, prec, type,
+            sw = this.evalVisProp('strokewidth');
+
+        if (Type.isObject(this.evalVisProp('precision'))) {
+            type = this.board._inputDevice;
+            prec = this.evalVisProp('precision.' + type);
+        } else {
+            // 'inherit'
+            prec = this.board.options.precision.hasPoint;
+        }
+        prec += sw * 0.5;
+
+        c[0] =
+            this.stdform[0] -
+            (this.stdform[1] * this.board.origin.scrCoords[1]) / this.board.unitX +
+            (this.stdform[2] * this.board.origin.scrCoords[2]) / this.board.unitY;
+        c[1] = this.stdform[1] / this.board.unitX;
+        c[2] = this.stdform[2] / -this.board.unitY;
+
+        s = Geometry.distPointLine(v, c);
+        if (isNaN(s) || s > prec) {
+            return false;
+        }
+
+        if (
+            this.evalVisProp('straightfirst') &&
+            this.evalVisProp('straightlast')
+        ) {
+            return true;
+        }
+
+        // If the line is a ray or segment we have to check if the projected point is between P1 and P2.
+        p1c = this.point1.coords;
+        p2c = this.point2.coords;
+
+        // Project the point orthogonally onto the line
+        vnew = [0, c[1], c[2]];
+        // Orthogonal line to c through v
+        vnew = JSXMath.crossProduct(vnew, v);
+        // Intersect orthogonal line with line
+        vnew = JSXMath.crossProduct(vnew, c);
+
+        // Normalize the projected point
+        vnew[1] /= vnew[0];
+        vnew[2] /= vnew[0];
+        vnew[0] = 1;
+
+        vnew = new Coords(COORDS_BY.SCREEN, vnew.slice(1), this.board).usrCoords;
+        d = p1c.distance(COORDS_BY.USER, p2c);
+        p1c = p1c.usrCoords.slice(0);
+        p2c = p2c.usrCoords.slice(0);
+
+        // The defining points are identical
+        if (d < JSXMath.eps) {
+            pos = 0;
+        } else {
+            /*
+             * Handle the cases, where one of the defining points is an ideal point.
+             * d is set to something close to infinity, namely 1/eps.
+             * The ideal point is (temporarily) replaced by a finite point which has
+             * distance d from the other point.
+             * This is accomplished by extracting the x- and y-coordinates (x,y)=:v of the ideal point.
+             * v determines the direction of the line. v is normalized, i.e. set to length 1 by dividing through its length.
+             * Finally, the new point is the sum of the other point and v*d.
+             *
+             */
+
+            // At least one point is an ideal point
+            if (d === Number.POSITIVE_INFINITY) {
+                d = 1 / JSXMath.eps;
+
+                // The second point is an ideal point
+                if (Math.abs(p2c[0]) < JSXMath.eps) {
+                    d /= Geometry.distance([0, 0, 0], p2c);
+                    p2c = [1, p1c[1] + p2c[1] * d, p1c[2] + p2c[2] * d];
+                    // The first point is an ideal point
+                } else {
+                    d /= Geometry.distance([0, 0, 0], p1c);
+                    p1c = [1, p2c[1] + p1c[1] * d, p2c[2] + p1c[2] * d];
+                }
+            }
+            i = 1;
+            d = p2c[i] - p1c[i];
+
+            if (Math.abs(d) < JSXMath.eps) {
+                i = 2;
+                d = p2c[i] - p1c[i];
+            }
+            pos = (vnew[i] - p1c[i]) / d;
+        }
+
+        if (!this.evalVisProp('straightfirst') && pos < 0) {
+            return false;
+        }
+
+        return !(!this.evalVisProp('straightlast') && pos > 1);
+    }
+
+    // documented in base/element
+    update() {
+        var funps;
+
+        if (!this.needsUpdate) {
+            return this;
+        }
+
+        if (this.constrained) {
+            if (Type.isFunction(this.funps)) {
+                funps = this.funps();
+                if (funps && funps.length && funps.length === 2) {
+                    this.point1 = funps[0];
+                    this.point2 = funps[1];
+                }
+            } else {
+                if (Type.isFunction(this.funp1)) {
+                    funps = this.funp1();
+                    if (Type.isPoint(funps)) {
+                        this.point1 = funps;
+                    } else if (funps && funps.length && funps.length === 2) {
+                        this.point1.setPositionDirectly(COORDS_BY.USER, funps);
+                    }
+                }
+
+                if (Type.isFunction(this.funp2)) {
+                    funps = this.funp2();
+                    if (Type.isPoint(funps)) {
+                        this.point2 = funps;
+                    } else if (funps && funps.length && funps.length === 2) {
+                        this.point2.setPositionDirectly(COORDS_BY.USER, funps);
+                    }
+                }
+            }
+        }
+
+        this.updateSegmentFixedLength();
+        this.updateStdform();
+
+        if (this.evalVisProp('trace')) {
+            this.cloneToBackground();
+        }
+
+        return this;
+    }
+
+    /**
+     * Update segments with fixed length and at least one movable point.
+     * @private
+     */
+    updateSegmentFixedLength() {
+        var d, d_new, d1, d2, drag1, drag2, x, y;
+
+        if (!this.hasFixedLength) {
+            return this;
+        }
+
+        // Compute the actual length of the segment
+        d = this.point1.Dist(this.point2);
+        // Determine the length the segment ought to have
+        d_new = (this.evalVisProp('nonnegativeonly')) ?
+            Math.max(0.0, this.fixedLength()) :
+            Math.abs(this.fixedLength());
+
+        // Distances between the two points and their respective
+        // position before the update
+        d1 = this.fixedLengthOldCoords[0].distance(
+            COORDS_BY.USER,
+            this.point1.coords
+        );
+        d2 = this.fixedLengthOldCoords[1].distance(
+            COORDS_BY.USER,
+            this.point2.coords
+        );
+
+        // If the position of the points or the fixed length function has been changed we have to work.
+        if (d1 > JSXMath.eps || d2 > JSXMath.eps || d !== d_new) {
+            drag1 =
+                this.point1.isDraggable &&
+                this.point1.type !== OBJECT_TYPE.GLIDER &&
+                !this.point1.evalVisProp('fixed');
+            drag2 =
+                this.point2.isDraggable &&
+                this.point2.type !== OBJECT_TYPE.GLIDER &&
+                !this.point2.evalVisProp('fixed');
+
+            // First case: the two points are different
+            // Then we try to adapt the point that was not dragged
+            // If this point can not be moved (e.g. because it is a glider)
+            // we try move the other point
+            if (d > JSXMath.eps) {
+                if ((d1 > d2 && drag2) || (d1 <= d2 && drag2 && !drag1)) {
+                    this.point2.setPositionDirectly(COORDS_BY.USER, [
+                        this.point1.X() + ((this.point2.X() - this.point1.X()) * d_new) / d,
+                        this.point1.Y() + ((this.point2.Y() - this.point1.Y()) * d_new) / d
+                    ]);
+                    this.point2.fullUpdate();
+                } else if ((d1 <= d2 && drag1) || (d1 > d2 && drag1 && !drag2)) {
+                    this.point1.setPositionDirectly(COORDS_BY.USER, [
+                        this.point2.X() + ((this.point1.X() - this.point2.X()) * d_new) / d,
+                        this.point2.Y() + ((this.point1.Y() - this.point2.Y()) * d_new) / d
+                    ]);
+                    this.point1.fullUpdate();
+                }
+                // Second case: the two points are identical. In this situation
+                // we choose a random direction.
+            } else {
+                x = Math.random() - 0.5;
+                y = Math.random() - 0.5;
+                d = Math.hypot(x, y);
+
+                if (drag2) {
+                    this.point2.setPositionDirectly(COORDS_BY.USER, [
+                        this.point1.X() + (x * d_new) / d,
+                        this.point1.Y() + (y * d_new) / d
+                    ]);
+                    this.point2.fullUpdate();
+                } else if (drag1) {
+                    this.point1.setPositionDirectly(COORDS_BY.USER, [
+                        this.point2.X() + (x * d_new) / d,
+                        this.point2.Y() + (y * d_new) / d
+                    ]);
+                    this.point1.fullUpdate();
+                }
+            }
+            // Finally, we save the position of the two points.
+            this.fixedLengthOldCoords[0].setCoordinates(
+                COORDS_BY.USER,
+                this.point1.coords.usrCoords
+            );
+            this.fixedLengthOldCoords[1].setCoordinates(
+                COORDS_BY.USER,
+                this.point2.coords.usrCoords
+            );
+        }
+
+        return this;
+    }
+
+    /**
+     * Updates the stdform derived from the parent point positions.
+     * @private
+     */
+    updateStdform() {
+        var v = JSXMath.crossProduct(
+            this.point1.coords.usrCoords,
+            this.point2.coords.usrCoords
+        );
+
+        this.stdform[0] = v[0];
+        this.stdform[1] = v[1];
+        this.stdform[2] = v[2];
+        this.stdform[3] = 0;
+
+        this.normalize();
+    }
+
+    /**
+     * Uses the boards renderer to update the line.
+     * @private
+     */
+    updateRenderer() {
+        //var wasReal;
+
+        if (!this.needsUpdate) {
+            return this;
+        }
+
+        if (this.visPropCalc.visible) {
+            // wasReal = this.isReal;
+            this.isReal =
+                !isNaN(
+                    this.point1.coords.usrCoords[1] +
+                    this.point1.coords.usrCoords[2] +
+                    this.point2.coords.usrCoords[1] +
+                    this.point2.coords.usrCoords[2]
+                ) && JSXMath.innerProduct(this.stdform, this.stdform, 3) >= JSXMath.eps * JSXMath.eps;
+
+            if (
+                //wasReal &&
+                !this.isReal
+            ) {
+                this.updateVisibility(false);
+            }
+        }
+
+        if (this.visPropCalc.visible) {
+            this.board.renderer.updateLine(this);
+        }
+
+        /* Update the label if visible. */
+        if (
+            this.hasLabel &&
+            this.visPropCalc.visible &&
+            this.label &&
+            this.label.visPropCalc.visible &&
+            this.isReal
+        ) {
+            this.label.update();
+            this.board.renderer.updateText(this.label);
+        }
+
+        // Update rendNode display
+        this.setDisplayRendNode();
+
+        this.needsUpdate = false;
+        return this;
+    }
+
+    // /**
+    //  * Used to generate a polynomial for a point p that lies on this line, i.e. p is collinear to
+    //  * {@link JXG2.Line#point1} and {@link JXG2.Line#point2}.
+    //  *
+    //  * @param {JXG2.Point} p The point for that the polynomial is generated.
+    //  * @returns {Array} An array containing the generated polynomial.
+    //  * @private
+    //  */
+    generatePolynomial(p: Point) {
+        var u1 = this.point1.symbolic.x,
+            u2 = this.point1.symbolic.y,
+            v1 = this.point2.symbolic.x,
+            v2 = this.point2.symbolic.y,
+            w1 = p.symbolic.x,
+            w2 = p.symbolic.y;
+
+        /*
+         * The polynomial in this case is determined by three points being collinear:
+         *
+         *      U (u1,u2)      W (w1,w2)                V (v1,v2)
+         *  ----x--------------x------------------------x----------------
+         *
+         *  The collinearity condition is
+         *
+         *      u2-w2       w2-v2
+         *     -------  =  -------           (1)
+         *      u1-w1       w1-v1
+         *
+         * Multiplying (1) with denominators and simplifying is
+         *
+         *    u2w1 - u2v1 + w2v1 - u1w2 + u1v2 - w1v2 = 0
+         */
+
+        return [
+            [
+                "(", u2, ")*(", w1, ")-(", u2, ")*(", v1, ")+(", w2, ")*(", v1, ")-(", u1, ")*(", w2, ")+(", u1, ")*(", v2, ")-(", w1, ")*(", v2, ")"
+            ].join("")
+        ];
+    }
+
+    /**
+     * Calculates the y intersect of the line.
+     * @returns {Number} The y intersect.
+     */
+    getRise() {
+        if (Math.abs(this.stdform[2]) >= JSXMath.eps) {
+            return -this.stdform[0] / this.stdform[2];
+        }
+
+        return Infinity;
+    }
+
+    /**
+     * Calculates the slope of the line.
+     * @returns {Number} The slope of the line or Infinity if the line is parallel to the y-axis.
+     */
+    Slope() {
+        if (Math.abs(this.stdform[2]) >= JSXMath.eps) {
+            return -this.stdform[1] / this.stdform[2];
+        }
+
+        return Infinity;
+    }
+
+    /**
+     * Alias for line.Slope
+     * @returns {Number} The slope of the line or Infinity if the line is parallel to the y-axis.
+     * @deprecated
+     * @see Line#Slope
+     */
+    getSlope() {
+        return this.Slope();
+    }
+
+    /**
+     * Determines the angle between the positive x axis and the line.
+     * @returns {Number}
+     */
+    getAngle() {
+        return Math.atan2(-this.stdform[1], this.stdform[2]);
+    }
+
+    /**
+     * Returns the direction vector of the line. This is an array of length two
+     * containing the direction vector as [x, y]. It is defined as
+     *  <li> the difference of the x- and y-coordinate of the second and first point, in case both points are finite or both points are infinite.
+     *  <li> [x, y] coordinates of point2, in case only point2 is infinite.
+     *  <li> [-x, -y] coordinates of point1, in case only point1 is infinite.
+     * @function
+     * @returns {Array} of length 2.
+     */
+    Direction() {
+        var coords1 = this.point1.coords.usrCoords,
+            coords2 = this.point2.coords.usrCoords;
+
+        if (coords2[0] === 0 && coords1[0] !== 0) {
+            return coords2.slice(1);
+        }
+
+        if (coords1[0] === 0 && coords2[0] !== 0) {
+            return [-coords1[1], -coords1[2]];
+        }
+
+        return [
+            coords2[1] - coords1[1],
+            coords2[2] - coords1[2]
+        ];
+    }
+
+    /**
+     * Returns true, if the line is vertical (if the x coordinate of the direction vector is 0).
+     * @function
+     * @returns {Boolean}
+     */
+    isVertical() {
+        var dir = this.Direction();
+        return dir[0] === 0 && dir[1] !== 0;
+    }
+
+    /**
+     * Returns true, if the line is horizontal (if the y coordinate of the direction vector is 0).
+     * @function
+     * @returns {Boolean}
+     */
+    isHorizontal() {
+        var dir = this.Direction();
+        return dir[1] === 0 && dir[0] !== 0;
+    }
+
+    /**
+     * Determines whether the line is drawn beyond {@link JXG2.Line#point1} and
+     * {@link JXG2.Line#point2} and updates the line.
+     * @param {Boolean} straightFirst True if the Line shall be drawn beyond
+     * {@link JXG2.Line#point1} false otherwise.
+     * @param {Boolean} straightLast True if the Line shall be drawn beyond
+     * {@link JXG2.Line#point2} false otherwise.
+     * @see Line#straightFirst
+     * @see Line#straightLast
+     * @private
+     */
+    setStraight(straightFirst, straightLast) {
+        this.visProp['straightfirst'] = straightFirst;
+        this.visProp['straightlast'] = straightLast;
+
+        this.board.renderer.updateLine(this);
+        return this;
+    }
+
+    // documented in geometry element
+    getTextAnchor() {
+        return new Coords(
+            COORDS_BY.USER,
+            [
+                0.5 * (this.point2.X() + this.point1.X()),
+                0.5 * (this.point2.Y() + this.point1.Y())
+            ],
+            this.board
+        );
+    }
+
+    /**
+     * Adjusts Label coords relative to Anchor. DESCRIPTION
+     * @private
+     */
+    setLabelRelativeCoords(relCoords) {
+        if (Type.exists(this.label)) {
+            this.label.relativeCoords = new Coords(
+                COORDS_BY.SCREEN,
+                [relCoords[0], -relCoords[1]],
+                this.board
+            );
+        }
+    }
+
+    // documented in geometry element
+    getLabelAnchor() {
+        var x, y, pos,
+            xy, lbda, dx, dy, d,
+            dist = 1.5,
+            fs = 0,
+            c1 = new Coords(COORDS_BY.USER, this.point1.coords.usrCoords, this.board),
+            c2 = new Coords(COORDS_BY.USER, this.point2.coords.usrCoords, this.board),
+            ev_sf = this.evalVisProp('straightfirst'),
+            ev_sl = this.evalVisProp('straightlast');
+
+        console.warn('%c line getLabelAnchor', 'color:red;')
+
+        if (ev_sf || ev_sl) {
+            Geometry.calcStraight(this, c1, c2, 0);
+        }
+
+        let c1n = c1.scrCoords;
+        let c2n = c2.scrCoords;
+
+        if (!Type.exists(this.label)) {
+            return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
+        }
+
+        pos = this.label.evalVisProp('position');
+        if (!Type.isString(pos)) {
+            return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
+        }
+
+        if (pos.indexOf('right') < 0 && pos.indexOf('left') < 0) {
+            // Old positioning commands
+            switch (pos) {
+                case 'last':
+                    x = c2n[1];
+                    y = c2n[2];
+                    break;
+                case 'first':
+                    x = c1n[1];
+                    y = c1n[2];
+                    break;
+                case "lft":
+                case "llft":
+                case "ulft":
+                    if (c1[1] < c2[1] + JSXMath.eps) {
+                        x = c1n[1];
+                        y = c1n[2];
+                    } else {
+                        x = c2n[1];
+                        y = c2n[2];
+                    }
+                    break;
+                case "rt":
+                case "lrt":
+                case "urt":
+                    if (c1[1] > c2[1] + JSXMath.eps) {
+                        x = c1[1];
+                        y = c1[2];
+                    } else {
+                        x = c2[1];
+                        y = c2[2];
+                    }
+                    break;
+                default:
+                    x = 0.5 * (c1[1] + c2[1]);
+                    y = 0.5 * (c1[2] + c2[2]);
+            }
+        } else {
+            // New positioning
+            xy = Type.parsePosition(pos);
+            lbda = Type.parseNumber(xy.pos, 1, 1);
+
+            dx = c2[1] - c1[1];
+            dy = c2[2] - c1[2];
+            d = Math.hypot(dx, dy);
+
+            if (xy.pos.indexOf('px') >= 0 ||
+                xy.pos.indexOf('fr') >= 0 ||
+                xy.pos.indexOf('%') >= 0) {
+                // lbda is interpreted in screen coords
+
+                if (xy.pos.indexOf('px') >= 0) {
+                    // Pixel values are supported
+                    lbda /= d;
+                }
+
+                // Position along the line
+                x = c1[1] + lbda * dx;
+                y = c1[2] + lbda * dy;
+            } else {
+                // lbda is given as number or as a number string
+                // Then, lbda is interpreted in user coords
+                x = c1[1] + lbda * this.board.unitX * dx / d;
+                y = c1[2] + lbda * this.board.unitY * dy / d;
+            }
+
+            // Position left or right
+            if (xy.side === 'left') {
+                dx *= -1;
+            } else {
+                dy *= -1;
+            }
+            if (Type.exists(this.label)) {
+                dist = 0.5 * this.label.evalVisProp('distance') / d;
+            }
+            x += dy * this.label.size[0] * dist;
+            y += dx * this.label.size[1] * dist;
+        }
+
+        // Correct coordinates if the label seems to be outside of canvas.
+        if (ev_sf || ev_sl) {
+            if (Type.exists(this.label)) {
+                // Does not exist during createLabel
+                fs = this.label.evalVisProp('fontsize');
+            }
+
+            if (Math.abs(x) < JSXMath.eps) {
+                x = fs;
+            } else if (
+                this.board.canvasWidth + JSXMath.eps > x &&
+                x > this.board.canvasWidth - fs - JSXMath.eps
+            ) {
+                x = this.board.canvasWidth - fs;
+            }
+
+            if (JSXMath.eps + fs > y && y > -JSXMath.eps) {
+                y = fs;
+            } else if (
+                this.board.canvasHeight + JSXMath.eps > y &&
+                y > this.board.canvasHeight - fs - JSXMath.eps
+            ) {
+                y = this.board.canvasHeight - fs;
+            }
+        }
+
+        return new Coords(COORDS_BY.SCREEN, [x, y], this.board);
+    }
+
+    // documented in geometry element
+    cloneToBackground() {
+        var copy = Type.getCloneObject(this),
+            r, s,
+            er;
+
+        copy.point1 = this.point1;
+        copy.point2 = this.point2;
+        copy.stdform = this.stdform;
+
+        s = this.getSlope();
+        r = this.getRise();
+        copy.getSlope = function () {
+            return s;
+        };
+        copy.getRise = function () {
+            return r;
+        };
+
+        er = this.board.renderer.enhancedRendering;
+        this.board.renderer.enhancedRendering = true;
+        this.board.renderer.drawLine(copy);
+        this.board.renderer.enhancedRendering = er;
+        this.traces[copy.id] = copy.rendNode;
+
+        return this;
+    }
+
+    /**
+     * Add transformations to this line.
+     * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation} or an array of
+     * {@link JXG2.Transformation}s.
+     * @returns {JXG2.Line} Reference to this line object.
+     */
+    addTransform(transform) {
+        var i,
+            list = Type.isArray(transform) ? transform : [transform],
+            len = list.length;
+
+        for (i = 0; i < len; i++) {
+            this.point1.transformations.push(list[i]);
+            this.point2.transformations.push(list[i]);
+        }
+
+        // Why not like this?
+        // The difference is in setting baseElement
+        // var list = Type.isArray(transform) ? transform : [transform];
+        // this.point1.addTransform(this, list);
+        // this.point2.addTransform(this, list);
+
+        return this;
+    }
+
+    // see GeometryElement.js
+    snapToGrid(pos) {
+        var c1, c2, dc, t, ticks, x, y, sX, sY;
+
+        if (this.evalVisProp('snaptogrid')) {
+            if (this.parents.length < 3) {
+                // Line through two points
+                this.point1.handleSnapToGrid(true, true);
+                this.point2.handleSnapToGrid(true, true);
+            } else if (Type.exists(pos)) {
+                // Free line
+                sX = this.evalVisProp('snapsizex');
+                sY = this.evalVisProp('snapsizey');
+
+                c1 = new Coords(COORDS_BY.SCREEN, [pos.Xprev, pos.Yprev], this.board);
+
+                x = c1.usrCoords[1];
+                y = c1.usrCoords[2];
+
+                if (
+                    sX <= 0 &&
+                    this.board.defaultAxes &&
+                    this.board.defaultAxes.x.defaultTicks
+                ) {
+                    ticks = this.board.defaultAxes.x.defaultTicks;
+                    sX = ticks.ticksDelta * (ticks.evalVisProp('minorticks') + 1);
+                }
+                if (
+                    sY <= 0 &&
+                    this.board.defaultAxes &&
+                    this.board.defaultAxes.y.defaultTicks
+                ) {
+                    ticks = this.board.defaultAxes.y.defaultTicks;
+                    sY = ticks.ticksDelta * (ticks.evalVisProp('minorticks') + 1);
+                }
+
+                // if no valid snap sizes are available, don't change the coords.
+                if (sX > 0 && sY > 0) {
+                    // projectCoordsToLine
+                    /*
+                    v = [0, this.stdform[1], this.stdform[2]];
+                    v = JSXMath.crossProduct(v, c1.usrCoords);
+                    c2 = Geometry.meetLineLine(v, this.stdform, 0, this.board);
+                    */
+                    c2 = Geometry.projectPointToLine({ coords: c1 }, this, this.board);
+
+                    dc = Statistics.subtract(
+                        [1, Math.round(x / sX) * sX, Math.round(y / sY) * sY],
+                        c2.usrCoords
+                    );
+                    t = this.board.create("transform", dc.slice(1), {
+                        type: "translate"
+                    });
+                    t.applyOnce([this.point1, this.point2]);
+                }
+            }
+        } else {
+            this.point1.handleSnapToGrid(false, true);
+            this.point2.handleSnapToGrid(false, true);
+        }
+
+        return this;
+    }
+
+    // see element.js
+    snapToPoints() {
+        var forceIt = this.evalVisProp('snaptopoints');
+
+        if (this.parents.length < 3) {
+            // Line through two points
+            this.point1.handleSnapToPoints(forceIt);
+            this.point2.handleSnapToPoints(forceIt);
+        }
+
+        return this;
+    }
+
+    /**
+     * Treat the line as parametric curve in homogeneous coordinates, where the parameter t runs from 0 to 1.
+     * First we transform the interval [0,1] to [-1,1].
+     * If the line has homogeneous coordinates [c, a, b] = stdform[] then the direction of the line is [b, -a].
+     * Now, we take one finite point that defines the line, i.e. we take either point1 or point2
+     * (in case the line is not the ideal line).
+     * Let the coordinates of that point be [z, x, y].
+     * Then, the curve runs linearly from
+     * [0, b, -a] (t=-1) to [z, x, y] (t=0)
+     * and
+     * [z, x, y] (t=0) to [0, -b, a] (t=1)
+     *
+     * @param {Number} t Parameter running from 0 to 1.
+     * @returns {Number} X(t) x-coordinate of the line treated as parametric curve.
+     * */
+    X(t) {
+        // var x,
+        //     c = this.point1.coords.usrCoords,
+        //     b = this.stdform[2];
+
+        // x = (Math.abs(c[0]) > JSXMath.eps) ? c[1] : c[1];
+        // t = (t - 0.5) * 2;
+
+        // return (1 - Math.abs(t)) * x - t * b;
+
+        var c1 = this.point1.coords.usrCoords,
+            c2 = this.point2.coords.usrCoords,
+            b = this.stdform[2];
+
+        if (c1[0] !== 0) {
+            if (c2[0] !== 0) {
+                return c1[1] + (c2[1] - c1[1]) * t;
+            } else {
+                return c1[1] + b * 1.e5 * t;
+            }
+        } else {
+            if (c1[0] !== 0) {
+                return c2[1] - (c1[1] - c2[1]) * t;
+            } else {
+                return c2[1] + b * 1.e5 * t;
+            }
+        }
+    }
+
+    /**
+     * Treat the line as parametric curve in homogeneous coordinates.
+     * See {@link JXG2.Line#X} for a detailed description.
+     * @param {Number} t Parameter running from 0 to 1.
+     * @returns {Number} Y(t) y-coordinate of the line treated as parametric curve.
+     * @see Line#X
+     */
+    Y(t) {
+        // var y,
+        //     c = this.point1.coords.usrCoords,
+        //     a = this.stdform[1];
+
+        // y = (Math.abs(c[0]) > JSXMath.eps) ? c[2] : c[2];
+        // t = (t - 0.5) * 2;
+
+        // return (1 - Math.abs(t)) * y + t * a;
+
+        var c1 = this.point1.coords.usrCoords,
+            c2 = this.point2.coords.usrCoords,
+            a = this.stdform[1];
+
+        if (c1[0] !== 0) {
+            if (c2[0] !== 0) {
+                return c1[2] + (c2[2] - c1[2]) * t;
+            } else {
+                return c1[2] - a * 1.e5 * t;
+            }
+        } else {
+            if (c1[0] !== 0) {
+                return c2[2] - (c1[2] - c2[2]) * t;
+            } else {
+                return c2[2] - a * 1.e5 * t;
+            }
+        }
+    }
+
+    /**
+     * Treat the line as parametric curve in homogeneous coordinates.
+     * See {@link JXG2.Line#X} for a detailed description.
+     *
+     * @param {Number} t Parameter running from 0 to 1.
+     * @returns {Number} Z(t) z-coordinate of the line treated as parametric curve.
+     * @see Line#Z
+     */
+    Z(t) {
+        // var z,
+        //     c = this.point1.coords.usrCoords;
+
+        // z = (Math.abs(c[0]) > JSXMath.eps) ? c[0] : c[0];
+        // t = (t - 0.5) * 2;
+
+        // return (1 - Math.abs(t)) * z;
+
+        var c1 = this.point1.coords.usrCoords,
+            c2 = this.point2.coords.usrCoords;
+
+        if (t === 1 && c1[0] * c2[0] === 0) {
+            return 0;
+        }
+        return 1;
+    }
+
+    /**
+     * Return the homogeneous coordinates of the line treated as curve at t - including all transformations
+     * applied to the curve.
+     * @param {Number} t A number
+     * @returns {Array} [Z(t), X(t), Y(t)]
+     * @see Line#X
+     */
+    Ft(t) {
+        var c = [this.Z(t), this.X(t), this.Y(t)];
+        c[1] /= c[0];
+        c[2] /= c[0];
+        c[0] /= c[0];
+        // c[0] = 1;
+        // c[1] = t;
+        // c[2] = 3;
+
+        return c;
+    }
+
+    /**
+     * The distance between the two points defining the line.
+     * @returns {Number}
+     */
+    L() {
+        return this.point1.Dist(this.point2);
+    }
+
+    /**
+     * Set a new fixed length, then update the board.
+     * @param {String|Number|function} l A string, function or number describing the new length.
+     * @returns {JXG2.Line} Reference to this line
+     */
+    setFixedLength(l) {
+        if (!this.hasFixedLength) {
+            return this;
+        }
+
+        this.fixedLength = Type.createFunction(l, this.board);
+        this.hasFixedLength = true;
+        this.addParentsFromJCFunctions([this.fixedLength]);
+        this.board.update();
+
+        return this;
+    }
+
+    /**
+     * Treat the element  as a parametric curve
+     * @private
+     */
+    minX() {
+        return 0.0;
+    }
+
+    /**
+     * Treat the element as parametric curve
+     * @private
+     */
+    maxX() {
+        return 1.0;
+    }
+
+    // documented in geometry element
+    bounds() {
+        var p1c = this.point1.coords.usrCoords,
+            p2c = this.point2.coords.usrCoords;
+
+        return [
+            Math.min(p1c[1], p2c[1]),
+            Math.max(p1c[2], p2c[2]),
+            Math.max(p1c[1], p2c[1]),
+            Math.min(p1c[2], p2c[2])
+        ];
+    }
+
+    // documented in GeometryElement.js
+    remove() {
+        this.removeAllTicks();
+        GeometryElement.prototype.remove.call(this);
+        return this
+    }
+
+    // hideElement: function () {
+    //     var i;
+    //
+    //     GeometryElement.prototype.hideElement.call(this);
+    //
+    //     for (i = 0; i < this.ticks.length; i++) {
+    //         this.ticks[i].hideElement();
+    //     }
+    // }
+    //
+    // showElement: function () {
+    //     var i;
+    //     GeometryElement.prototype.showElement.call(this);
+    //
+    //     for (i = 0; i < this.ticks.length; i++) {
+    //         this.ticks[i].showElement();
+    //     }
+    // }
+
+
+    /**
+    * Creates a label element for this geometry element.
+    * @see JXG2.GeometryElement#addLabelToElement
+    */
+    createLabel() {
+        var attr
+
+        //tbtb - this should be in each of the coordsElements
+
+
+        attr = Options.label;
+        attr['id'] = this.id + 'Label';
+        attr['isLabel'] = true;
+        attr['anchor'] = this;
+        attr['priv'] = this.visProp['priv'];
+
+        if (dbug(this))
+            console.warn(`%c geometryElement: creating label for ${this.id})`, dbugColor)
+
+        if (this.visProp['withlabel']) {
+
+            let plainName: string;
+
+            if (typeof this.name == 'function') {       // typeguard doesn't seem to work in ternary operator
+                plainName = this.name();
+            } else {
+                plainName = this.name;
+            }
+
+            // want the label offset from the midpoint of the line.
+            // currently at one of the points...
+            console.log('LINE createLabel ', this.point1.X(), this.point1.Y(), plainName)
+
+            this.label = new Text(this.board, [() => this.point1.X(), () => this.point1.Y(), plainName], attr);
+            this.label.addConstraint([1, () => this.point1.X(), () => this.point1.Y()])
+            this.label.needsUpdate = true;
+            this.label.dump = false;
+            this.label.fullUpdate();
+
+            this.hasLabel = true;
+
+            if (dbug(this.label))
+                console.warn(`%c geometryElement: new label ${this.label.id} for  ${this.id})`, dbugColor)
+
+            return this;
+        }
 
     }
-);
+}
+
+
+
 
 /**
  * @class A general line is given by two points or three coordinates.
@@ -1227,7 +1297,7 @@ JXG2.extend(
  *
  * </script><pre>
  */
-JXG2.createLine = function (board, parents, attributes) {
+export function createLine(board, parents, attributes) {
     var ps, el, p1, p2, i, attr,
         c = [],
         doTransform = false,
@@ -1235,7 +1305,7 @@ JXG2.createLine = function (board, parents, attributes) {
         isDraggable;
 
     if (dbug())
-        console.warn(`%c line createLine(board,${JSON.stringify(parents).substring(0,200)})`, dbugColor)
+        console.warn(`%c line createLine(board,${JSON.stringify(parents).substring(0, 200)})`, dbugColor)
 
     if (parents.length === 2) {
         // The line is defined by two points or coordinates of two points.
@@ -1254,7 +1324,7 @@ JXG2.createLine = function (board, parents, attributes) {
             parents[0]().length &&
             parents[0]().length >= 2
         ) {
-            p1 = JXG2.createPoint(board, parents[0](), attr);
+            p1 = createPoint(board, parents[0](), attr);
             constrained = true;
         } else if (Type.isObject(parents[0]) && Type.isTransformationOrArray(parents[1])) {
             doTransform = true;
@@ -1286,7 +1356,7 @@ JXG2.createLine = function (board, parents, attributes) {
             parents[1]().length &&
             parents[1]().length >= 2
         ) {
-            p2 = JXG2.createPoint(board, parents[1](), attr);
+            p2 = createPoint(board, parents[1](), attr);
             constrained = true;
         } else {
             throw new Error(
@@ -1300,7 +1370,7 @@ JXG2.createLine = function (board, parents, attributes) {
         }
 
         attr = Type.copyAttributes(attributes, board.options, 'line');
-        el = new JXG2.Line(board, p1, p2, attr);
+        el = new Line(board, [p1, p2], attr);
 
         if (constrained) {
             el.constrained = true;
@@ -1359,7 +1429,7 @@ JXG2.createLine = function (board, parents, attributes) {
                 },
                 function () {
                     return (-c[1]() - c[2]() * c[0]() - c[1]()) * 0.5;
-                }
+                },
             ], attr);
         }
 
@@ -1381,7 +1451,7 @@ JXG2.createLine = function (board, parents, attributes) {
                 },
                 function () {
                     return -c[2]() * c[0]() - c[1]();
-                }
+                },
             ], attr);
         }
 
@@ -1390,7 +1460,7 @@ JXG2.createLine = function (board, parents, attributes) {
         p1.prepareUpdate().update();
         p2.prepareUpdate().update();
         attr = Type.copyAttributes(attributes, board.options, 'line');
-        el = new JXG2.Line(board, p1, p2, attr);
+        el = new Line(board, [p1, p2], attr);
         // Not yet working, because the points are not draggable.
         el.isDraggable = isDraggable;
         el.setParents([p1, p2]);
@@ -1405,7 +1475,7 @@ JXG2.createLine = function (board, parents, attributes) {
     ) {
         ps = parents[0]();
         attr = Type.copyAttributes(attributes, board.options, 'line');
-        el = new JXG2.Line(board, ps[0], ps[1], attr);
+        el = new Line(board, [ps[0], ps[1]], attr);
         el.constrained = true;
         el.funps = parents[0];
         el.setParents(ps);
@@ -1446,7 +1516,7 @@ JXG2.createLine = function (board, parents, attributes) {
         ], attr);
 
         attr = Type.copyAttributes(attributes, board.options, 'line');
-        el = new JXG2.Line(board, p1, p2, attr);
+        el = new Line(board, [p1, p2], attr);
 
         el.constrained = true;
         el.funps = parents[0];
@@ -1465,7 +1535,6 @@ JXG2.createLine = function (board, parents, attributes) {
     return el;
 };
 
-JXG2.registerElement("line", JXG2.createLine);
 
 /**
  * @class A (line) segment defined by two points.
@@ -1527,66 +1596,68 @@ JXG2.registerElement("line", JXG2.createLine);
  * </script><pre>
  *
  */
-JXG2.createSegment = function (board, parents, attributes) {
-    var el, attr;
+export class Segment extends Line {
 
-    attributes.straightFirst = false;
-    attributes.straightLast = false;
-    attr = Type.copyAttributes(attributes, board.options, 'segment');
+    constructor(board, parents, attributes) {
+        attributes.straightLast = false;
+        attributes.straightFirst = false;
+        super(board, parents, attributes)
 
-    el = board.create("line", parents.slice(0, 2), attr);
+        var attr;
 
-    if (parents.length === 3) {
-        try {
-            el.hasFixedLength = true;
-            el.fixedLengthOldCoords = [];
-            el.fixedLengthOldCoords[0] = new Coords(
-                COORDS_BY.USER,
-                el.point1.coords.usrCoords.slice(1, 3),
-                board
-            );
-            el.fixedLengthOldCoords[1] = new Coords(
-                COORDS_BY.USER,
-                el.point2.coords.usrCoords.slice(1, 3),
-                board
-            );
+        attr = Type.copyAttributes(attributes, board.options, 'segment');
 
-            el.setFixedLength(parents[2]);
-        } catch (err) {
-            throw new Error(
-                "JSXGraph: Can't create segment with third parent type '" +
-                typeof parents[2] +
-                "'." +
-                "\nPossible third parent types: number or function"
-            );
+        // el = board.create("line", parents.slice(0, 2), attr);
+
+        if (parents.length === 3) {
+            try {
+                this.hasFixedLength = true;
+                this.fixedLengthOldCoords = [];
+                this.fixedLengthOldCoords[0] = new Coords(
+                    COORDS_BY.USER,
+                    this.point1.coords.usrCoords.slice(1, 3),
+                    board
+                );
+                this.fixedLengthOldCoords[1] = new Coords(
+                    COORDS_BY.USER,
+                    this.point2.coords.usrCoords.slice(1, 3),
+                    board
+                );
+
+                this.setFixedLength(parents[2]);
+            } catch (err) {
+                throw new Error(
+                    "JSXGraph: Can't create segment with third parent type '" +
+                    typeof parents[2] +
+                    "'." +
+                    "\nPossible third parent types: number or function"
+                );
+            }
+            // if (Type.isNumber(parents[2])) {
+            //     el.fixedLength = function () {
+            //         return parents[2];
+            //     };
+            // } else if (Type.isFunction(parents[2])) {
+            //     el.fixedLength = Type.createFunction(parents[2], this.board);
+            // } else {
+            //     throw new Error(
+            //         "JSXGraph: Can't create segment with third parent type '" +
+            //             typeof parents[2] +
+            //             "'." +
+            //             "\nPossible third parent types: number or function"
+            //     );
+            // }
+
+            this.getParents = function () {
+                return this.parents.concat(this.fixedLength());
+            };
+
         }
-        // if (Type.isNumber(parents[2])) {
-        //     el.fixedLength = function () {
-        //         return parents[2];
-        //     };
-        // } else if (Type.isFunction(parents[2])) {
-        //     el.fixedLength = Type.createFunction(parents[2], this.board);
-        // } else {
-        //     throw new Error(
-        //         "JSXGraph: Can't create segment with third parent type '" +
-        //             typeof parents[2] +
-        //             "'." +
-        //             "\nPossible third parent types: number or function"
-        //     );
-        // }
 
-        el.getParents = function () {
-            return this.parents.concat(this.fixedLength());
-        };
+        this.elType = 'segment';
 
     }
-
-    el.elType = 'segment';
-
-    return el;
-};
-
-JXG2.registerElement("segment", JXG2.createSegment);
+}
 
 /**
  * @class A segment with an arrow head.
@@ -1617,21 +1688,23 @@ JXG2.registerElement("segment", JXG2.createSegment);
  *   var alex1_l1 = alex1_board.create('arrow', [alex1_p1, alex1_p2]);
  * </script><pre>
  */
-JXG2.createArrow = function (board, parents, attributes) {
-    var el, attr;
+export class Arrow extends Line {
+    constructor(board, parents, attributes) {
+        attributes.straightFirst = false;
+        attributes.straightLast = false;
+        super(board, parents, attributes)
 
-    attributes.straightFirst = false;
-    attributes.straightLast = false;
-    attr = Type.copyAttributes(attributes, board.options, 'arrow');
-    el = board.create("line", parents, attr);
-    //el.setArrow(false, true);
-    el.type = OBJECT_TYPE.VECTOR;
-    el.elType = 'arrow';
+        var el, attr;
 
-    return el;
-};
+        attr = Type.copyAttributes(attributes, board.options, 'arrow');
+        el = board.create("line", parents, attr);
+        //el.setArrow(false, true);
+        el.type = OBJECT_TYPE.VECTOR;
+        el.elType = 'arrow';
 
-JXG2.registerElement("arrow", JXG2.createArrow);
+        return el;
+    };
+}
 
 /**
  * @class Axis is a line with optional ticks and labels.
@@ -1692,311 +1765,315 @@ JXG2.registerElement("arrow", JXG2.createArrow);
  * </script><pre>
  *
  */
-JXG2.createAxis = function (board, parents, attributes) {
-    var axis, attr,
-        ancestor, ticksDist;
+export class Axis extends Line {
+    constructor(board, parents, attributes) {
+        super(board, parents, attributes)
+
+        var axis, attr,
+            ancestor, ticksDist;
 
 
-    // Create line
-    attr = Type.copyAttributes(attributes, board.options, 'axis');
-    try {
-        axis = board.create("line", parents, attr);
-    } catch (err) {
-        throw new Error(
-            "JSXGraph: Can't create axis with parent types '" +
-            typeof parents[0] +
-            "' and '" +
-            typeof parents[1] +
-            "'." +
-            "\nPossible parent types: [point,point], [[x1,y1],[x2,y2]]"
-        );
-    }
-
-    axis.type = OBJECT_TYPE.AXIS;
-    axis.isDraggable = false;
-    axis.point1.isDraggable = false;
-    axis.point2.isDraggable = false;
-
-    // Save usrCoords of points
-    axis._point1UsrCoordsOrg = axis.point1.coords.usrCoords.slice();
-    axis._point2UsrCoordsOrg = axis.point2.coords.usrCoords.slice();
-
-    for (ancestor in axis.ancestors) {
-        if (axis.ancestors.hasOwnProperty(ancestor)) {
-            axis.ancestors[ancestor].type = OBJECT_TYPE.AXISPOINT;
-        }
-    }
-
-    // Create ticks
-    // attrTicks = attr.ticks;
-    if (Type.exists(attr.ticks.ticksdistance)) {
-        ticksDist = attr.ticks.ticksdistance;
-    } else if (Type.isArray(attr.ticks.ticks)) {
-        ticksDist = attr.ticks.ticks;
-    } else {
-        ticksDist = 1.0;
-    }
-
-    /**
-     * The ticks attached to the axis.
-     * @memberOf Axis.prototype
-     * @name defaultTicks
-     * @type JXG2.Ticks
-     */
-    axis.defaultTicks = board.create("ticks", [axis, ticksDist], attr.ticks);
-    axis.defaultTicks.dump = false;
-    axis.elType = 'axis';
-    axis.subs = {
-        ticks: axis.defaultTicks
-    };
-    axis.inherits.push(axis.defaultTicks);
-
-    axis.update = function () {
-        var bbox,
-            position, i,
-            direction, horizontal, vertical,
-            ticksAutoPos, ticksAutoPosThres, dist,
-            anchor, left, right,
-            distUsr,
-            newPosP1, newPosP2,
-            locationOrg,
-            visLabel, anchr, off;
-
-        if (!this.needsUpdate) {
-            return this;
+        // Create line
+        attr = Type.copyAttributes(attributes, board.options, 'axis');
+        try {
+            axis = board.create("line", parents, attr);
+        } catch (err) {
+            throw new Error(
+                "JSXGraph: Can't create axis with parent types '" +
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "'." +
+                "\nPossible parent types: [point,point], [[x1,y1],[x2,y2]]"
+            );
         }
 
-        bbox = this.board.getBoundingBox();
-        position = this.evalVisProp('position');
-        direction = this.Direction();
-        horizontal = this.isHorizontal();
-        vertical = this.isVertical();
-        ticksAutoPos = this.evalVisProp('ticksautopos');
-        ticksAutoPosThres = this.evalVisProp('ticksautoposthreshold');
+        axis.type = OBJECT_TYPE.AXIS;
+        axis.isDraggable = false;
+        axis.point1.isDraggable = false;
+        axis.point2.isDraggable = false;
 
-        if (horizontal) {
-            ticksAutoPosThres = Type.parseNumber(ticksAutoPosThres, Math.abs(bbox[1] - bbox[3]), 1 / this.board.unitX) * this.board.unitX;
-        } else if (vertical) {
-            ticksAutoPosThres = Type.parseNumber(ticksAutoPosThres, Math.abs(bbox[1] - bbox[3]), 1 / this.board.unitY) * this.board.unitY;
+        // Save usrCoords of points
+        axis._point1UsrCoordsOrg = axis.point1.coords.usrCoords.slice();
+        axis._point2UsrCoordsOrg = axis.point2.coords.usrCoords.slice();
+
+        for (ancestor in axis.ancestors) {
+            if (axis.ancestors.hasOwnProperty(ancestor)) {
+                axis.ancestors[ancestor].type = OBJECT_TYPE.AXISPOINT;
+            }
+        }
+
+        // Create ticks
+        // attrTicks = attr.ticks;
+        if (Type.exists(attr.ticks.ticksdistance)) {
+            ticksDist = attr.ticks.ticksdistance;
+        } else if (Type.isArray(attr.ticks.ticks)) {
+            ticksDist = attr.ticks.ticks;
         } else {
-            ticksAutoPosThres = Type.parseNumber(ticksAutoPosThres, 1, 1);
+            ticksDist = 1.0;
         }
 
-        anchor = this.evalVisProp('anchor');
-        left = anchor.indexOf('left') > -1;
-        right = anchor.indexOf('right') > -1;
+        /**
+         * The ticks attached to the axis.
+         * @memberOf Axis.prototype
+         * @name defaultTicks
+         * @type JXG2.Ticks
+         */
+        axis.defaultTicks = board.create("ticks", [axis, ticksDist], attr.ticks);
+        axis.defaultTicks.dump = false;
+        axis.elType = 'axis';
+        axis.subs = {
+            ticks: axis.defaultTicks
+        };
+        axis.inherits.push(axis.defaultTicks);
 
-        distUsr = this.evalVisProp('anchordist');
-        if (horizontal) {
-            distUsr = Type.parseNumber(distUsr, Math.abs(bbox[1] - bbox[3]), 1 / this.board.unitX);
-        } else if (vertical) {
-            distUsr = Type.parseNumber(distUsr, Math.abs(bbox[0] - bbox[2]), 1 / this.board.unitY);
-        } else {
-            distUsr = 0;
-        }
+        axis.update = function () {
+            var bbox,
+                position, i,
+                direction, horizontal, vertical,
+                ticksAutoPos, ticksAutoPosThres, dist,
+                anchor, left, right,
+                distUsr,
+                newPosP1, newPosP2,
+                locationOrg,
+                visLabel, anchr, off;
 
-        locationOrg = this.board.getPointLoc(this._point1UsrCoordsOrg, distUsr);
-
-        // Set position of axis
-        newPosP1 = this.point1.coords.usrCoords.slice();
-        newPosP2 = this.point2.coords.usrCoords.slice();
-
-        if (position === 'static' || (!vertical && !horizontal)) {
-            // Do nothing
-
-        } else if (position === 'fixed') {
-            if (horizontal) { // direction[1] === 0
-                if ((direction[0] > 0 && right) || (direction[0] < 0 && left)) {
-                    newPosP1[2] = bbox[3] + distUsr;
-                    newPosP2[2] = bbox[3] + distUsr;
-                } else if ((direction[0] > 0 && left) || (direction[0] < 0 && right)) {
-                    newPosP1[2] = bbox[1] - distUsr;
-                    newPosP2[2] = bbox[1] - distUsr;
-
-                } else {
-                    newPosP1 = this._point1UsrCoordsOrg.slice();
-                    newPosP2 = this._point2UsrCoordsOrg.slice();
-                }
-            }
-            if (vertical) { // direction[0] === 0
-                if ((direction[1] > 0 && left) || (direction[1] < 0 && right)) {
-                    newPosP1[1] = bbox[0] + distUsr;
-                    newPosP2[1] = bbox[0] + distUsr;
-
-                } else if ((direction[1] > 0 && right) || (direction[1] < 0 && left)) {
-                    newPosP1[1] = bbox[2] - distUsr;
-                    newPosP2[1] = bbox[2] - distUsr;
-
-                } else {
-                    newPosP1 = this._point1UsrCoordsOrg.slice();
-                    newPosP2 = this._point2UsrCoordsOrg.slice();
-                }
+            if (!this.needsUpdate) {
+                return this;
             }
 
-        } else if (position === 'sticky') {
-            if (horizontal) { // direction[1] === 0
-                if (locationOrg[1] < 0 && ((direction[0] > 0 && right) || (direction[0] < 0 && left))) {
-                    newPosP1[2] = bbox[3] + distUsr;
-                    newPosP2[2] = bbox[3] + distUsr;
+            bbox = this.board.getBoundingBox();
+            position = this.evalVisProp('position');
+            direction = this.Direction();
+            horizontal = this.isHorizontal();
+            vertical = this.isVertical();
+            ticksAutoPos = this.evalVisProp('ticksautopos');
+            ticksAutoPosThres = this.evalVisProp('ticksautoposthreshold');
 
-                } else if (locationOrg[1] > 0 && ((direction[0] > 0 && left) || (direction[0] < 0 && right))) {
-                    newPosP1[2] = bbox[1] - distUsr;
-                    newPosP2[2] = bbox[1] - distUsr;
-
-                } else {
-                    newPosP1 = this._point1UsrCoordsOrg.slice();
-                    newPosP2 = this._point2UsrCoordsOrg.slice();
-                }
-            }
-            if (vertical) { // direction[0] === 0
-                if (locationOrg[0] < 0 && ((direction[1] > 0 && left) || (direction[1] < 0 && right))) {
-                    newPosP1[1] = bbox[0] + distUsr;
-                    newPosP2[1] = bbox[0] + distUsr;
-
-                } else if (locationOrg[0] > 0 && ((direction[1] > 0 && right) || (direction[1] < 0 && left))) {
-                    newPosP1[1] = bbox[2] - distUsr;
-                    newPosP2[1] = bbox[2] - distUsr;
-
-                } else {
-                    newPosP1 = this._point1UsrCoordsOrg.slice();
-                    newPosP2 = this._point2UsrCoordsOrg.slice();
-                }
-            }
-        }
-
-        this.point1.setPositionDirectly(COORDS_BY.USER, newPosP1);
-        this.point2.setPositionDirectly(COORDS_BY.USER, newPosP2);
-
-        // Set position of tick labels
-        if (Type.exists(this.defaultTicks)) {
-            visLabel = this.defaultTicks.visProp.label;
-            if (ticksAutoPos && (horizontal || vertical)) {
-
-                if (!Type.exists(visLabel._anchorx_org)) {
-                    visLabel._anchorx_org = Type.def(visLabel.anchorx, this.board.options.text.anchorX);
-                }
-                if (!Type.exists(visLabel._anchory_org)) {
-                    visLabel._anchory_org = Type.def(visLabel.anchory, this.board.options.text.anchorY);
-                }
-                if (!Type.exists(visLabel._offset_org)) {
-                    visLabel._offset_org = visLabel.offset.slice();
-                }
-
-                off = visLabel.offset;
-                if (horizontal) {
-                    dist = axis.point1.coords.scrCoords[2] - (this.board.canvasHeight * 0.5);
-
-                    anchr = visLabel.anchory;
-
-                    // The last position of the labels is stored in visLabel._side
-                    if (dist < 0 && Math.abs(dist) > ticksAutoPosThres) {
-                        // Put labels on top of the line
-                        if (visLabel._side === 'bottom') {
-                            // Switch position
-                            if (visLabel.anchory === 'top') {
-                                anchr = 'bottom';
-                            }
-                            off[1] *= -1;
-                            visLabel._side = 'top';
-                        }
-
-                    } else if (dist > 0 && Math.abs(dist) > ticksAutoPosThres) {
-                        // Put labels below the line
-                        if (visLabel._side === 'top') {
-                            // Switch position
-                            if (visLabel.anchory === 'bottom') {
-                                anchr = 'top';
-                            }
-                            off[1] *= -1;
-                            visLabel._side = 'bottom';
-                        }
-
-                    } else {
-                        // Put to original position
-                        anchr = visLabel._anchory_org;
-                        off = visLabel._offset_org.slice();
-
-                        if (anchr === 'top') {
-                            visLabel._side = 'bottom';
-                        } else if (anchr === 'bottom') {
-                            visLabel._side = 'top';
-                        } else if (off[1] < 0) {
-                            visLabel._side = 'bottom';
-                        } else {
-                            visLabel._side = 'top';
-                        }
-                    }
-
-                    for (i = 0; i < axis.defaultTicks.labels.length; i++) {
-                        this.defaultTicks.labels[i].visProp.anchory = anchr;
-                    }
-                    visLabel.anchory = anchr;
-
-                } else if (vertical) {
-                    dist = axis.point1.coords.scrCoords[1] - (this.board.canvasWidth * 0.5);
-
-                    if (dist < 0 && Math.abs(dist) > ticksAutoPosThres) {
-                        // Put labels to the left of the line
-                        if (visLabel._side === 'right') {
-                            // Switch position
-                            if (visLabel.anchorx === 'left') {
-                                anchr = 'right';
-                            }
-                            off[0] *= -1;
-                            visLabel._side = 'left';
-                        }
-
-                    } else if (dist > 0 && Math.abs(dist) > ticksAutoPosThres) {
-                        // Put labels to the right of the line
-                        if (visLabel._side === 'left') {
-                            // Switch position
-                            if (visLabel.anchorx === 'right') {
-                                anchr = 'left';
-                            }
-                            off[0] *= -1;
-                            visLabel._side = 'right';
-                        }
-
-                    } else {
-                        // Put to original position
-                        anchr = visLabel._anchorx_org;
-                        off = visLabel._offset_org.slice();
-
-                        if (anchr === 'left') {
-                            visLabel._side = 'right';
-                        } else if (anchr === 'right') {
-                            visLabel._side = 'left';
-                        } else if (off[0] < 0) {
-                            visLabel._side = 'left';
-                        } else {
-                            visLabel._side = 'right';
-                        }
-                    }
-
-                    for (i = 0; i < axis.defaultTicks.labels.length; i++) {
-                        this.defaultTicks.labels[i].visProp.anchorx = anchr;
-                    }
-                    visLabel.anchorx = anchr;
-                }
-                visLabel.offset = off;
-
+            if (horizontal) {
+                ticksAutoPosThres = Type.parseNumber(ticksAutoPosThres, Math.abs(bbox[1] - bbox[3]), 1 / this.board.unitX) * this.board.unitX;
+            } else if (vertical) {
+                ticksAutoPosThres = Type.parseNumber(ticksAutoPosThres, Math.abs(bbox[1] - bbox[3]), 1 / this.board.unitY) * this.board.unitY;
             } else {
-                delete visLabel._anchorx_org;
-                delete visLabel._anchory_org;
-                delete visLabel._offset_org;
+                ticksAutoPosThres = Type.parseNumber(ticksAutoPosThres, 1, 1);
             }
-            this.defaultTicks.needsUpdate = true;
-        }
 
-        JXG2.Line.prototype.update.call(this);
+            anchor = this.evalVisProp('anchor');
+            left = anchor.indexOf('left') > -1;
+            right = anchor.indexOf('right') > -1;
 
-        return this;
+            distUsr = this.evalVisProp('anchordist');
+            if (horizontal) {
+                distUsr = Type.parseNumber(distUsr, Math.abs(bbox[1] - bbox[3]), 1 / this.board.unitX);
+            } else if (vertical) {
+                distUsr = Type.parseNumber(distUsr, Math.abs(bbox[0] - bbox[2]), 1 / this.board.unitY);
+            } else {
+                distUsr = 0;
+            }
+
+            locationOrg = this.board.getPointLoc(this._point1UsrCoordsOrg, distUsr);
+
+            // Set position of axis
+            newPosP1 = this.point1.coords.usrCoords.slice();
+            newPosP2 = this.point2.coords.usrCoords.slice();
+
+            if (position === 'static' || (!vertical && !horizontal)) {
+                // Do nothing
+
+            } else if (position === 'fixed') {
+                if (horizontal) { // direction[1] === 0
+                    if ((direction[0] > 0 && right) || (direction[0] < 0 && left)) {
+                        newPosP1[2] = bbox[3] + distUsr;
+                        newPosP2[2] = bbox[3] + distUsr;
+                    } else if ((direction[0] > 0 && left) || (direction[0] < 0 && right)) {
+                        newPosP1[2] = bbox[1] - distUsr;
+                        newPosP2[2] = bbox[1] - distUsr;
+
+                    } else {
+                        newPosP1 = this._point1UsrCoordsOrg.slice();
+                        newPosP2 = this._point2UsrCoordsOrg.slice();
+                    }
+                }
+                if (vertical) { // direction[0] === 0
+                    if ((direction[1] > 0 && left) || (direction[1] < 0 && right)) {
+                        newPosP1[1] = bbox[0] + distUsr;
+                        newPosP2[1] = bbox[0] + distUsr;
+
+                    } else if ((direction[1] > 0 && right) || (direction[1] < 0 && left)) {
+                        newPosP1[1] = bbox[2] - distUsr;
+                        newPosP2[1] = bbox[2] - distUsr;
+
+                    } else {
+                        newPosP1 = this._point1UsrCoordsOrg.slice();
+                        newPosP2 = this._point2UsrCoordsOrg.slice();
+                    }
+                }
+
+            } else if (position === 'sticky') {
+                if (horizontal) { // direction[1] === 0
+                    if (locationOrg[1] < 0 && ((direction[0] > 0 && right) || (direction[0] < 0 && left))) {
+                        newPosP1[2] = bbox[3] + distUsr;
+                        newPosP2[2] = bbox[3] + distUsr;
+
+                    } else if (locationOrg[1] > 0 && ((direction[0] > 0 && left) || (direction[0] < 0 && right))) {
+                        newPosP1[2] = bbox[1] - distUsr;
+                        newPosP2[2] = bbox[1] - distUsr;
+
+                    } else {
+                        newPosP1 = this._point1UsrCoordsOrg.slice();
+                        newPosP2 = this._point2UsrCoordsOrg.slice();
+                    }
+                }
+                if (vertical) { // direction[0] === 0
+                    if (locationOrg[0] < 0 && ((direction[1] > 0 && left) || (direction[1] < 0 && right))) {
+                        newPosP1[1] = bbox[0] + distUsr;
+                        newPosP2[1] = bbox[0] + distUsr;
+
+                    } else if (locationOrg[0] > 0 && ((direction[1] > 0 && right) || (direction[1] < 0 && left))) {
+                        newPosP1[1] = bbox[2] - distUsr;
+                        newPosP2[1] = bbox[2] - distUsr;
+
+                    } else {
+                        newPosP1 = this._point1UsrCoordsOrg.slice();
+                        newPosP2 = this._point2UsrCoordsOrg.slice();
+                    }
+                }
+            }
+
+            this.point1.setPositionDirectly(COORDS_BY.USER, newPosP1);
+            this.point2.setPositionDirectly(COORDS_BY.USER, newPosP2);
+
+            // Set position of tick labels
+            if (Type.exists(this.defaultTicks)) {
+                visLabel = this.defaultTicks.visProp.label;
+                if (ticksAutoPos && (horizontal || vertical)) {
+
+                    if (!Type.exists(visLabel._anchorx_org)) {
+                        visLabel._anchorx_org = Type.def(visLabel.anchorx, this.board.options.text.anchorX);
+                    }
+                    if (!Type.exists(visLabel._anchory_org)) {
+                        visLabel._anchory_org = Type.def(visLabel.anchory, this.board.options.text.anchorY);
+                    }
+                    if (!Type.exists(visLabel._offset_org)) {
+                        visLabel._offset_org = visLabel.offset.slice();
+                    }
+
+                    off = visLabel.offset;
+                    if (horizontal) {
+                        dist = axis.point1.coords.scrCoords[2] - (this.board.canvasHeight * 0.5);
+
+                        anchr = visLabel.anchory;
+
+                        // The last position of the labels is stored in visLabel._side
+                        if (dist < 0 && Math.abs(dist) > ticksAutoPosThres) {
+                            // Put labels on top of the line
+                            if (visLabel._side === 'bottom') {
+                                // Switch position
+                                if (visLabel.anchory === 'top') {
+                                    anchr = 'bottom';
+                                }
+                                off[1] *= -1;
+                                visLabel._side = 'top';
+                            }
+
+                        } else if (dist > 0 && Math.abs(dist) > ticksAutoPosThres) {
+                            // Put labels below the line
+                            if (visLabel._side === 'top') {
+                                // Switch position
+                                if (visLabel.anchory === 'bottom') {
+                                    anchr = 'top';
+                                }
+                                off[1] *= -1;
+                                visLabel._side = 'bottom';
+                            }
+
+                        } else {
+                            // Put to original position
+                            anchr = visLabel._anchory_org;
+                            off = visLabel._offset_org.slice();
+
+                            if (anchr === 'top') {
+                                visLabel._side = 'bottom';
+                            } else if (anchr === 'bottom') {
+                                visLabel._side = 'top';
+                            } else if (off[1] < 0) {
+                                visLabel._side = 'bottom';
+                            } else {
+                                visLabel._side = 'top';
+                            }
+                        }
+
+                        for (i = 0; i < axis.defaultTicks.labels.length; i++) {
+                            this.defaultTicks.labels[i].visProp.anchory = anchr;
+                        }
+                        visLabel.anchory = anchr;
+
+                    } else if (vertical) {
+                        dist = axis.point1.coords.scrCoords[1] - (this.board.canvasWidth * 0.5);
+
+                        if (dist < 0 && Math.abs(dist) > ticksAutoPosThres) {
+                            // Put labels to the left of the line
+                            if (visLabel._side === 'right') {
+                                // Switch position
+                                if (visLabel.anchorx === 'left') {
+                                    anchr = 'right';
+                                }
+                                off[0] *= -1;
+                                visLabel._side = 'left';
+                            }
+
+                        } else if (dist > 0 && Math.abs(dist) > ticksAutoPosThres) {
+                            // Put labels to the right of the line
+                            if (visLabel._side === 'left') {
+                                // Switch position
+                                if (visLabel.anchorx === 'right') {
+                                    anchr = 'left';
+                                }
+                                off[0] *= -1;
+                                visLabel._side = 'right';
+                            }
+
+                        } else {
+                            // Put to original position
+                            anchr = visLabel._anchorx_org;
+                            off = visLabel._offset_org.slice();
+
+                            if (anchr === 'left') {
+                                visLabel._side = 'right';
+                            } else if (anchr === 'right') {
+                                visLabel._side = 'left';
+                            } else if (off[0] < 0) {
+                                visLabel._side = 'left';
+                            } else {
+                                visLabel._side = 'right';
+                            }
+                        }
+
+                        for (i = 0; i < axis.defaultTicks.labels.length; i++) {
+                            this.defaultTicks.labels[i].visProp.anchorx = anchr;
+                        }
+                        visLabel.anchorx = anchr;
+                    }
+                    visLabel.offset = off;
+
+                } else {
+                    delete visLabel._anchorx_org;
+                    delete visLabel._anchory_org;
+                    delete visLabel._offset_org;
+                }
+                this.defaultTicks.needsUpdate = true;
+            }
+
+            // tbtb -JXG2.Line.prototype.update.call(this);
+            this.update()   // tbtb
+
+            return this;
+        };
+
+        return axis;
     };
+}
 
-    return axis;
-};
-
-JXG2.registerElement("axis", JXG2.createAxis);
 
 /**
  * @class The tangent line at a point on a line, circle, conic, turtle, or curve.
@@ -2017,37 +2094,50 @@ JXG2.registerElement("axis", JXG2.createAxis);
  * @param {JXG2.GeometryElement} [c] Optional element for which the tangent is constructed
  * @example
  * // Create a tangent providing a glider on a function graph
- *   var c1 = board.create('curve', [function(t){return t},function(t){return t*t*t;}]);
+ *   var c1 = board.create('curve', [function(t){return t}function(t){return t*t*t;}]);
  *   var g1 = board.create('glider', [0.6, 1.2, c1]);
  *   var t1 = board.create('tangent', [g1]);
  * </pre><div class="jxgbox" id="JXG7b7233a0-f363-47dd-9df5-4018d0d17a98" style="width: 400px; height: 400px;"></div>
  * <script type="text/javascript">
  *   var tlex1_board = JXG2.JSXGraph.initBoard('JXG7b7233a0-f363-47dd-9df5-4018d0d17a98', {boundingbox: [-6, 6, 6, -6], axis: true, showcopyright: false, shownavigation: false});
- *   var tlex1_c1 = tlex1_board.create('curve', [function(t){return t},function(t){return t*t*t;}]);
+ *   var tlex1_c1 = tlex1_board.create('curve', [function(t){return t}function(t){return t*t*t;}]);
  *   var tlex1_g1 = tlex1_board.create('glider', [0.6, 1.2, tlex1_c1]);
  *   var tlex1_t1 = tlex1_board.create('tangent', [tlex1_g1]);
  * </script><pre>
  */
-JXG2.createTangent = function (board, parents, attributes) {
-    var p, c, j, el, tangent, attr,
-        getCurveTangentDir,
-        res, isTransformed,
-        slides = [];
+export class Tangent extends Line {
+    constructor(board, parents, attributes) {
+        super(board, parents, attributes);
 
-    if (parents.length === 1) {
-        // One argument: glider on line, circle or curve
-        p = parents[0];
-        c = p.slideObject;
+        var p, c, j, el, tangent, attr,
+            getCurveTangentDir,
+            res, isTransformed,
+            slides = [];
 
-    } else if (parents.length === 2) {
-        // Two arguments: (point,line|curve|circle|conic) or (line|curve|circle|conic,point).
-        // In fact, for circles and conics it is the polar
-        if (Type.isPoint(parents[0])) {
+        if (parents.length === 1) {
+            // One argument: glider on line, circle or curve
             p = parents[0];
-            c = parents[1];
-        } else if (Type.isPoint(parents[1])) {
-            c = parents[0];
-            p = parents[1];
+            c = p.slideObject;
+
+        } else if (parents.length === 2) {
+            // Two arguments: (point,line|curve|circle|conic) or (line|curve|circle|conic,point).
+            // In fact, for circles and conics it is the polar
+            if (Type.isPoint(parents[0])) {
+                p = parents[0];
+                c = parents[1];
+            } else if (Type.isPoint(parents[1])) {
+                c = parents[0];
+                p = parents[1];
+            } else {
+                throw new Error(
+                    "JSXGraph: Can't create tangent with parent types '" +
+                    typeof parents[0] +
+                    "' and '" +
+                    typeof parents[1] +
+                    "'." +
+                    "\nPossible parent types: [glider|point], [point,line|curve|circle|conic]"
+                );
+            }
         } else {
             throw new Error(
                 "JSXGraph: Can't create tangent with parent types '" +
@@ -2058,298 +2148,289 @@ JXG2.createTangent = function (board, parents, attributes) {
                 "\nPossible parent types: [glider|point], [point,line|curve|circle|conic]"
             );
         }
-    } else {
-        throw new Error(
-            "JSXGraph: Can't create tangent with parent types '" +
-            typeof parents[0] +
-            "' and '" +
-            typeof parents[1] +
-            "'." +
-            "\nPossible parent types: [glider|point], [point,line|curve|circle|conic]"
-        );
-    }
 
-    attr = Type.copyAttributes(attributes, board.options, 'tangent');
-    if (c.elementClass === OBJECT_CLASS.LINE) {
-        tangent = board.create("line", [c.point1, c.point2], attr);
-        tangent.glider = p;
-    } else if (
-        c.elementClass === OBJECT_CLASS.CURVE &&
-        c.type !== OBJECT_TYPE.CONIC
-    ) {
-        res = c.getTransformationSource();
-        isTransformed = res[0];
-        if (isTransformed) {
-            // Curve is result of a transformation
-            // We recursively collect all curves from which
-            // the curve is transformed.
-            slides.push(c);
-            while (res[0] && Type.exists(res[1]._transformationSource)) {
-                slides.push(res[1]);
-                res = res[1].getTransformationSource();
+        attr = Type.copyAttributes(attributes, board.options, 'tangent');
+        if (c.elementClass === OBJECT_CLASS.LINE) {
+            tangent = board.create("line", [c.point1, c.point2], attr);
+            tangent.glider = p;
+        } else if (
+            c.elementClass === OBJECT_CLASS.CURVE &&
+            c.type !== OBJECT_TYPE.CONIC
+        ) {
+            res = c.getTransformationSource();
+            isTransformed = res[0];
+            if (isTransformed) {
+                // Curve is result of a transformation
+                // We recursively collect all curves from which
+                // the curve is transformed.
+                slides.push(c);
+                while (res[0] && Type.exists(res[1]._transformationSource)) {
+                    slides.push(res[1]);
+                    res = res[1].getTransformationSource();
+                }
             }
-        }
 
-        if (c.evalVisProp('curvetype') !== "plot" || isTransformed) {
-            // Functiongraph or parametric curve or
-            // transformed curve thereof.
-            tangent = board.create(
-                "line",
-                [
-                    function () {
-                        var g = c.X,
-                            f = c.Y,
-                            df, dg,
-                            li, i, c_org, invMat, po,
-                            t;
+            if (c.evalVisProp('curvetype') !== "plot" || isTransformed) {
+                // Functiongraph or parametric curve or
+                // transformed curve thereof.
+                tangent = board.create(
+                    "line",
+                    [
+                        function () {
+                            var g = c.X,
+                                f = c.Y,
+                                df, dg,
+                                li, i, c_org, invMat, po,
+                                t;
 
-                        if (p.type === OBJECT_TYPE.GLIDER) {
-                            t = p.position;
-                        } else if (c.evalVisProp('curvetype') === 'functiongraph') {
-                            t = p.X();
+                            if (p.type === OBJECT_TYPE.GLIDER) {
+                                t = p.position;
+                            } else if (c.evalVisProp('curvetype') === 'functiongraph') {
+                                t = p.X();
+                            } else {
+                                t = Geometry.projectPointToCurve(p, c, board)[1];
+                            }
+
+                            // po are the coordinates of the point
+                            // on the "original" curve. That is the curve or
+                            // the original curve which is transformed (maybe multiple times)
+                            // to this curve.
+                            // t is the position of the point on the "original" curve
+                            po = p.Coords(true);
+                            if (isTransformed) {
+                                c_org = slides[slides.length - 1]._transformationSource;
+                                g = c_org.X;
+                                f = c_org.Y;
+                                for (i = 0; i < slides.length; i++) {
+                                    slides[i].updateTransformMatrix();
+                                    invMat = JSXMath.inverse(slides[i].transformMat);
+                                    po = JSXMath.matVecMult(invMat, po);
+                                }
+
+                                if (p.type !== OBJECT_TYPE.GLIDER) {
+                                    po[1] /= po[0];
+                                    po[2] /= po[0];
+                                    po[0] /= po[0];
+                                    t = Geometry.projectCoordsToCurve(po[1], po[2], 0, c_org, board)[1];
+                                }
+                            }
+
+                            // li are the coordinates of the line on the "original" curve
+                            df = Numerics.D(f)(t);
+                            dg = Numerics.D(g)(t);
+                            li = [
+                                -po[1] * df + po[2] * dg,
+                                po[0] * df,
+                                -po[0] * dg
+                            ];
+
+                            if (isTransformed) {
+                                // Transform the line to the transformed curve
+                                for (i = slides.length - 1; i >= 0; i--) {
+                                    invMat = JSXMath.transpose(JSXMath.inverse(slides[i].transformMat));
+                                    li = JSXMath.matVecMult(invMat, li);
+                                }
+                            }
+
+                            return li;
+                        }
+                    ],
+                    attr
+                );
+
+                p.addChild(tangent);
+                // this is required for the geogebra reader to display a slope
+                tangent.glider = p;
+            } else {
+                // curveType 'plot': discrete data
+                /**
+                 * @ignore
+                 *
+                 * In case of bezierDegree == 1:
+                 * Find two points p1, p2 enclosing the glider.
+                 * Then the equation of the line segment is: 0 = y*(x1-x2) + x*(y2-y1) + y1*x2-x1*y2,
+                 * which is the cross product of p1 and p2.
+                 *
+                 * In case of bezierDegree === 3:
+                 * The slope dy / dx of the tangent is determined. Then the
+                 * tangent is computed as cross product between
+                 * the glider p and [1, p.X() + dx, p.Y() + dy]
+                 *
+                 */
+                getCurveTangentDir = function (position, c, num) {
+                    var i = Math.floor(position),
+                        p1, p2, t, A, B, C, D, dx, dy, d,
+                        points, le;
+
+                    if (c.bezierDegree === 1) {
+                        if (i === c.numberPoints - 1) {
+                            i--;
+                        }
+                    } else if (c.bezierDegree === 3) {
+                        // i is start of the Bezier segment
+                        // t is the position in the Bezier segment
+                        if (c.elType === 'sector') {
+                            points = c.points.slice(3, c.numberPoints - 3);
+                            le = points.length;
                         } else {
-                            t = Geometry.projectPointToCurve(p, c, board)[1];
+                            points = c.points;
+                            le = points.length;
                         }
-
-                        // po are the coordinates of the point
-                        // on the "original" curve. That is the curve or
-                        // the original curve which is transformed (maybe multiple times)
-                        // to this curve.
-                        // t is the position of the point on the "original" curve
-                        po = p.Coords(true);
-                        if (isTransformed) {
-                            c_org = slides[slides.length - 1]._transformationSource;
-                            g = c_org.X;
-                            f = c_org.Y;
-                            for (i = 0; i < slides.length; i++) {
-                                slides[i].updateTransformMatrix();
-                                invMat = JSXMath.inverse(slides[i].transformMat);
-                                po = JSXMath.matVecMult(invMat, po);
-                            }
-
-                            if (p.type !== OBJECT_TYPE.GLIDER) {
-                                po[1] /= po[0];
-                                po[2] /= po[0];
-                                po[0] /= po[0];
-                                t = Geometry.projectCoordsToCurve(po[1], po[2], 0, c_org, board)[1];
-                            }
+                        i = Math.floor((position * (le - 1)) / 3) * 3;
+                        t = (position * (le - 1) - i) / 3;
+                        if (i >= le - 1) {
+                            i = le - 4;
+                            t = 1;
                         }
-
-                        // li are the coordinates of the line on the "original" curve
-                        df = Numerics.D(f)(t);
-                        dg = Numerics.D(g)(t);
-                        li = [
-                            -po[1] * df + po[2] * dg,
-                            po[0] * df,
-                            -po[0] * dg
-                        ];
-
-                        if (isTransformed) {
-                            // Transform the line to the transformed curve
-                            for (i = slides.length - 1; i >= 0; i--) {
-                                invMat = JSXMath.transpose(JSXMath.inverse(slides[i].transformMat));
-                                li = JSXMath.matVecMult(invMat, li);
-                            }
-                        }
-
-                        return li;
-                    }
-                ],
-                attr
-            );
-
-            p.addChild(tangent);
-            // this is required for the geogebra reader to display a slope
-            tangent.glider = p;
-        } else {
-            // curveType 'plot': discrete data
-            /**
-             * @ignore
-             *
-             * In case of bezierDegree == 1:
-             * Find two points p1, p2 enclosing the glider.
-             * Then the equation of the line segment is: 0 = y*(x1-x2) + x*(y2-y1) + y1*x2-x1*y2,
-             * which is the cross product of p1 and p2.
-             *
-             * In case of bezierDegree === 3:
-             * The slope dy / dx of the tangent is determined. Then the
-             * tangent is computed as cross product between
-             * the glider p and [1, p.X() + dx, p.Y() + dy]
-             *
-             */
-            getCurveTangentDir = function (position, c, num) {
-                var i = Math.floor(position),
-                    p1, p2, t, A, B, C, D, dx, dy, d,
-                    points, le;
-
-                if (c.bezierDegree === 1) {
-                    if (i === c.numberPoints - 1) {
-                        i--;
-                    }
-                } else if (c.bezierDegree === 3) {
-                    // i is start of the Bezier segment
-                    // t is the position in the Bezier segment
-                    if (c.elType === 'sector') {
-                        points = c.points.slice(3, c.numberPoints - 3);
-                        le = points.length;
                     } else {
-                        points = c.points;
-                        le = points.length;
-                    }
-                    i = Math.floor((position * (le - 1)) / 3) * 3;
-                    t = (position * (le - 1) - i) / 3;
-                    if (i >= le - 1) {
-                        i = le - 4;
-                        t = 1;
-                    }
-                } else {
-                    return 0;
-                }
-
-                if (i < 0) {
-                    return 1;
-                }
-
-                // The curve points are transformed (if there is a transformation)
-                // c.X(i) is not transformed.
-                if (c.bezierDegree === 1) {
-                    p1 = c.points[i].usrCoords;
-                    p2 = c.points[i + 1].usrCoords;
-                } else {
-                    A = points[i].usrCoords;
-                    B = points[i + 1].usrCoords;
-                    C = points[i + 2].usrCoords;
-                    D = points[i + 3].usrCoords;
-                    dx = (1 - t) * (1 - t) * (B[1] - A[1]) +
-                        2 * (1 - t) * t * (C[1] - B[1]) +
-                        t * t * (D[1] - C[1]);
-                    dy = (1 - t) * (1 - t) * (B[2] - A[2]) +
-                        2 * (1 - t) * t * (C[2] - B[2]) +
-                        t * t * (D[2] - C[2]);
-                    d = Math.hypot(dx, dy);
-                    dx /= d;
-                    dy /= d;
-                    p1 = p.coords.usrCoords;
-                    p2 = [1, p1[1] + dx, p1[2] + dy];
-                }
-
-                switch (num) {
-                    case 0:
-                        return p1[2] * p2[1] - p1[1] * p2[2];
-                    case 1:
-                        return p2[2] - p1[2];
-                    case 2:
-                        return p1[1] - p2[1];
-                    default:
-                        return [
-                            p1[2] * p2[1] - p1[1] * p2[2],
-                            p2[2] - p1[2],
-                            p1[1] - p2[1]
-                        ];
-                }
-            };
-
-            tangent = board.create(
-                "line",
-                [
-                    function () {
-                        var t;
-
-                        if (p.type === OBJECT_TYPE.GLIDER) {
-                            t = p.position;
-                        } else {
-                            t = Geometry.projectPointToCurve(p, c, board)[1];
-                        }
-
-                        return getCurveTangentDir(t, c);
-                    }
-                ],
-                attr
-            );
-
-            p.addChild(tangent);
-            // this is required for the geogebra reader to display a slope
-            tangent.glider = p;
-        }
-    } else if (c.type === OBJECT_TYPE.TURTLE) {
-        tangent = board.create(
-            "line",
-            [
-                function () {
-                    var i, t;
-                    if (p.type === OBJECT_TYPE.GLIDER) {
-                        t = p.position;
-                    } else {
-                        t = Geometry.projectPointToTurtle(p, c, board)[1];
-                    }
-
-                    i = Math.floor(t);
-
-                    // run through all curves of this turtle
-                    for (j = 0; j < c.objects.length; j++) {
-                        el = c.objects[j];
-
-                        if (el.type === OBJECT_TYPE.CURVE) {
-                            if (i < el.numberPoints) {
-                                break;
-                            }
-
-                            i -= el.numberPoints;
-                        }
-                    }
-
-                    if (i === el.numberPoints - 1) {
-                        i--;
+                        return 0;
                     }
 
                     if (i < 0) {
-                        return [1, 0, 0];
+                        return 1;
                     }
 
-                    return [
-                        el.Y(i) * el.X(i + 1) - el.X(i) * el.Y(i + 1),
-                        el.Y(i + 1) - el.Y(i),
-                        el.X(i) - el.X(i + 1)
-                    ];
-                }
-            ],
-            attr
-        );
-        p.addChild(tangent);
+                    // The curve points are transformed (if there is a transformation)
+                    // c.X(i) is not transformed.
+                    if (c.bezierDegree === 1) {
+                        p1 = c.points[i].usrCoords;
+                        p2 = c.points[i + 1].usrCoords;
+                    } else {
+                        A = points[i].usrCoords;
+                        B = points[i + 1].usrCoords;
+                        C = points[i + 2].usrCoords;
+                        D = points[i + 3].usrCoords;
+                        dx = (1 - t) * (1 - t) * (B[1] - A[1]) +
+                            2 * (1 - t) * t * (C[1] - B[1]) +
+                            t * t * (D[1] - C[1]);
+                        dy = (1 - t) * (1 - t) * (B[2] - A[2]) +
+                            2 * (1 - t) * t * (C[2] - B[2]) +
+                            t * t * (D[2] - C[2]);
+                        d = Math.hypot(dx, dy);
+                        dx /= d;
+                        dy /= d;
+                        p1 = p.coords.usrCoords;
+                        p2 = [1, p1[1] + dx, p1[2] + dy];
+                    }
 
-        // this is required for the geogebra reader to display a slope
-        tangent.glider = p;
-    } else if (
-        c.elementClass === OBJECT_CLASS.CIRCLE ||
-        c.type === OBJECT_TYPE.CONIC
-    ) {
-        // If p is not on c, the tangent is the polar.
-        // This construction should work on conics, too. p has to lie on c.
-        tangent = board.create(
-            "line",
-            [
-                function () {
-                    return JSXMath.matVecMult(c.quadraticform, p.coords.usrCoords);
-                }
-            ],
-            attr
-        );
+                    switch (num) {
+                        case 0:
+                            return p1[2] * p2[1] - p1[1] * p2[2];
+                        case 1:
+                            return p2[2] - p1[2];
+                        case 2:
+                            return p1[1] - p2[1];
+                        default:
+                            return [
+                                p1[2] * p2[1] - p1[1] * p2[2],
+                                p2[2] - p1[2],
+                                p1[1] - p2[1]
+                            ];
+                    }
+                };
 
-        p.addChild(tangent);
-        // this is required for the geogebra reader to display a slope
-        tangent.glider = p;
-    }
+                tangent = board.create(
+                    "line",
+                    [
+                        function () {
+                            var t;
 
-    if (!Type.exists(tangent)) {
-        throw new Error("JSXGraph: Couldn't create tangent with the given parents.");
-    }
+                            if (p.type === OBJECT_TYPE.GLIDER) {
+                                t = p.position;
+                            } else {
+                                t = Geometry.projectPointToCurve(p, c, board)[1];
+                            }
 
-    tangent.elType = 'tangent';
-    tangent.type = OBJECT_TYPE.TANGENT;
-    tangent.setParents(parents);
+                            return getCurveTangentDir(t, c);
+                        }
+                    ],
+                    attr
+                );
 
-    return tangent;
-};
+                p.addChild(tangent);
+                // this is required for the geogebra reader to display a slope
+                tangent.glider = p;
+            }
+        } else if (c.type === OBJECT_TYPE.TURTLE) {
+            tangent = board.create(
+                "line",
+                [
+                    function () {
+                        var i, t;
+                        if (p.type === OBJECT_TYPE.GLIDER) {
+                            t = p.position;
+                        } else {
+                            t = Geometry.projectPointToTurtle(p, c, board)[1];
+                        }
+
+                        i = Math.floor(t);
+
+                        // run through all curves of this turtle
+                        for (j = 0; j < c.objects.length; j++) {
+                            el = c.objects[j];
+
+                            if (el.type === OBJECT_TYPE.CURVE) {
+                                if (i < el.numberPoints) {
+                                    break;
+                                }
+
+                                i -= el.numberPoints;
+                            }
+                        }
+
+                        if (i === el.numberPoints - 1) {
+                            i--;
+                        }
+
+                        if (i < 0) {
+                            return [1, 0, 0];
+                        }
+
+                        return [
+                            el.Y(i) * el.X(i + 1) - el.X(i) * el.Y(i + 1),
+                            el.Y(i + 1) - el.Y(i),
+                            el.X(i) - el.X(i + 1)
+                        ];
+                    }
+                ],
+                attr
+            );
+            p.addChild(tangent);
+
+            // this is required for the geogebra reader to display a slope
+            tangent.glider = p;
+        } else if (
+            c.elementClass === OBJECT_CLASS.CIRCLE ||
+            c.type === OBJECT_TYPE.CONIC
+        ) {
+            // If p is not on c, the tangent is the polar.
+            // This construction should work on conics, too. p has to lie on c.
+            tangent = board.create(
+                "line",
+                [
+                    function () {
+                        return JSXMath.matVecMult(c.quadraticform, p.coords.usrCoords);
+                    }
+                ],
+                attr
+            );
+
+            p.addChild(tangent);
+            // this is required for the geogebra reader to display a slope
+            tangent.glider = p;
+        }
+
+        if (!Type.exists(tangent)) {
+            throw new Error("JSXGraph: Couldn't create tangent with the given parents.");
+        }
+
+        tangent.elType = 'tangent';
+        tangent.type = OBJECT_TYPE.TANGENT;
+        tangent.setParents(parents);
+
+        return tangent;
+    };
+}
 
 /**
  * @class A normal is the line perpendicular to a line or to a tangent of a circle or curve.
@@ -2381,27 +2462,40 @@ JXG2.createTangent = function (board, parents, attributes) {
  *   var nlex1_norm1 = nlex1_board.create('normal', [nlex1_c1, nlex1_p2]);
  * </script><pre>
  */
-JXG2.createNormal = function (board, parents, attributes) {
-    var p, c, l, i, attr, pp, attrp,
-        getCurveNormalDir,
-        res, isTransformed,
-        slides = [];
+export class Normal extends Line {
+    constructor(board, parents, attributes) {
+        super(board, parents, attributes);
 
-    for (i = 0; i < parents.length; ++i) {
-        parents[i] = board.select(parents[i]);
-    }
-    // One arguments: glider on line, circle or curve
-    if (parents.length === 1) {
-        p = parents[0];
-        c = p.slideObject;
-        // Two arguments: (point,line), (point,circle), (line,point) or (circle,point)
-    } else if (parents.length === 2) {
-        if (Type.isPointType(board, parents[0])) {
-            p = Type.providePoints(board, [parents[0]], attributes, 'point')[0];
-            c = parents[1];
-        } else if (Type.isPointType(board, parents[1])) {
-            c = parents[0];
-            p = Type.providePoints(board, [parents[1]], attributes, 'point')[0];
+        var p, c, l, i, attr, pp, attrp,
+            getCurveNormalDir,
+            res, isTransformed,
+            slides = [];
+
+        for (i = 0; i < parents.length; ++i) {
+            parents[i] = board.select(parents[i]);
+        }
+        // One arguments: glider on line, circle or curve
+        if (parents.length === 1) {
+            p = parents[0];
+            c = p.slideObject;
+            // Two arguments: (point,line), (point,circle), (line,point) or (circle,point)
+        } else if (parents.length === 2) {
+            if (Type.isPointType(board, parents[0])) {
+                p = Type.providePoints(board, [parents[0]], attributes, 'point')[0];
+                c = parents[1];
+            } else if (Type.isPointType(board, parents[1])) {
+                c = parents[0];
+                p = Type.providePoints(board, [parents[1]], attributes, 'point')[0];
+            } else {
+                throw new Error(
+                    "JSXGraph: Can't create normal with parent types '" +
+                    typeof parents[0] +
+                    "' and '" +
+                    typeof parents[1] +
+                    "'." +
+                    "\nPossible parent types: [point,line], [point,circle], [glider]"
+                );
+            }
         } else {
             throw new Error(
                 "JSXGraph: Can't create normal with parent types '" +
@@ -2412,358 +2506,349 @@ JXG2.createNormal = function (board, parents, attributes) {
                 "\nPossible parent types: [point,line], [point,circle], [glider]"
             );
         }
-    } else {
-        throw new Error(
-            "JSXGraph: Can't create normal with parent types '" +
-            typeof parents[0] +
-            "' and '" +
-            typeof parents[1] +
-            "'." +
-            "\nPossible parent types: [point,line], [point,circle], [glider]"
-        );
-    }
 
-    attr = Type.copyAttributes(attributes, board.options, 'normal');
-    if (c.elementClass === OBJECT_CLASS.LINE) {
-        // Private point
-        attrp = Type.copyAttributes(attributes, board.options, "normal", 'point');
-        pp = board.create(
-            "point",
-            [
-                function () {
-                    var p = JSXMath.crossProduct([1, 0, 0], c.stdform);
-                    return [p[0], -p[2], p[1]];
-                }
-            ],
-            attrp
-        );
-        pp.isDraggable = true;
-
-        l = board.create("line", [p, pp], attr);
-
-        /**
-         * A helper point used to create a normal to a {@link JXG2.Line} object. For normals to circles or curves this
-         * element is <tt>undefined</tt>.
-         * @type JXG2.Point
-         * @name point
-         * @memberOf Normal.prototype
-         */
-        l.point = pp;
-        l.subs = {
-            point: pp
-        };
-        l.inherits.push(pp);
-    } else if (c.elementClass === OBJECT_CLASS.CIRCLE) {
-        l = board.create("line", [c.midpoint, p], attr);
-    } else if (c.elementClass === OBJECT_CLASS.CURVE) {
-        res = c.getTransformationSource();
-        isTransformed = res[0];
-        if (isTransformed) {
-            // Curve is result of a transformation
-            // We recursively collect all curves from which
-            // the curve is transformed.
-            slides.push(c);
-            while (res[0] && Type.exists(res[1]._transformationSource)) {
-                slides.push(res[1]);
-                res = res[1].getTransformationSource();
-            }
-        }
-
-        if (c.evalVisProp('curvetype') !== "plot" || isTransformed) {
-            // Functiongraph or parametric curve or
-            // transformed curve thereof.
-            l = board.create(
-                "line",
+        attr = Type.copyAttributes(attributes, board.options, 'normal');
+        if (c.elementClass === OBJECT_CLASS.LINE) {
+            // Private point
+            attrp = Type.copyAttributes(attributes, board.options, "normal", 'point');
+            pp = board.create(
+                "point",
                 [
                     function () {
-                        var g = c.X,
-                            f = c.Y,
-                            df, dg,
-                            li, i, c_org, invMat, po,
-                            t;
-
-                        if (p.type === OBJECT_TYPE.GLIDER) {
-                            t = p.position;
-                        } else if (c.evalVisProp('curvetype') === 'functiongraph') {
-                            t = p.X();
-                        } else {
-                            t = Geometry.projectPointToCurve(p, c, board)[1];
-                        }
-
-                        // po are the coordinates of the point
-                        // on the "original" curve. That is the curve or
-                        // the original curve which is transformed (maybe multiple times)
-                        // to this curve.
-                        // t is the position of the point on the "original" curve
-                        po = p.Coords(true);
-                        if (isTransformed) {
-                            c_org = slides[slides.length - 1]._transformationSource;
-                            g = c_org.X;
-                            f = c_org.Y;
-                            for (i = 0; i < slides.length; i++) {
-                                slides[i].updateTransformMatrix();
-                                invMat = JSXMath.inverse(slides[i].transformMat);
-                                po = JSXMath.matVecMult(invMat, po);
-                            }
-
-                            if (p.type !== OBJECT_TYPE.GLIDER) {
-                                po[1] /= po[0];
-                                po[2] /= po[0];
-                                po[0] /= po[0];
-                                t = Geometry.projectCoordsToCurve(po[1], po[2], 0, c_org, board)[1];
-                            }
-                        }
-
-                        df = Numerics.D(f)(t);
-                        dg = Numerics.D(g)(t);
-                        li = [
-                            -po[1] * dg - po[2] * df,
-                            po[0] * dg,
-                            po[0] * df
-                        ];
-
-                        if (isTransformed) {
-                            // Transform the line to the transformed curve
-                            for (i = slides.length - 1; i >= 0; i--) {
-                                invMat = JSXMath.transpose(JSXMath.inverse(slides[i].transformMat));
-                                li = JSXMath.matVecMult(invMat, li);
-                            }
-                        }
-
-                        return li;
+                        var p = JSXMath.crossProduct([1, 0, 0], c.stdform);
+                        return [p[0], -p[2], p[1]];
                     }
                 ],
-                attr
+                attrp
             );
-        } else {
-            // curveType 'plot': discrete data
-            getCurveNormalDir = function (position, c, num) {
-                var i = Math.floor(position),
-                    lbda,
-                    p1, p2, t, A, B, C, D, dx, dy, d,
-                    li, p_org, pp,
-                    points, le;
+            pp.isDraggable = true;
 
+            l = board.create("line", [p, pp], attr);
 
-                if (c.bezierDegree === 1) {
-                    if (i === c.numberPoints - 1) {
-                        i--;
-                    }
-                    t = position;
-                } else if (c.bezierDegree === 3) {
-                    // i is start of the Bezier segment
-                    // t is the position in the Bezier segment
-                    if (c.elType === 'sector') {
-                        points = c.points.slice(3, c.numberPoints - 3);
-                        le = points.length;
-                    } else {
-                        points = c.points;
-                        le = points.length;
-                    }
-                    i = Math.floor((position * (le - 1)) / 3) * 3;
-                    t = (position * (le - 1) - i) / 3;
-                    if (i >= le - 1) {
-                        i = le - 4;
-                        t = 1;
-                    }
-                } else {
-                    return 0;
-                }
-
-                if (i < 0) {
-                    return 1;
-                }
-
-                lbda = t - i;
-                if (c.bezierDegree === 1) {
-                    p1 = c.points[i].usrCoords;
-                    p2 = c.points[i + 1].usrCoords;
-                    p_org = [
-                        p1[0] + lbda * (p2[0] - p1[0]),
-                        p1[1] + lbda * (p2[1] - p1[1]),
-                        p1[2] + lbda * (p2[2] - p1[2])
-                    ];
-                    li = JSXMath.crossProduct(p1, p2);
-                    pp = JSXMath.crossProduct([1, 0, 0], li);
-                    pp = [pp[0], -pp[2], pp[1]];
-                    li = JSXMath.crossProduct(p_org, pp);
-
-                } else {
-                    A = points[i].usrCoords;
-                    B = points[i + 1].usrCoords;
-                    C = points[i + 2].usrCoords;
-                    D = points[i + 3].usrCoords;
-                    dx =
-                        (1 - t) * (1 - t) * (B[1] - A[1]) +
-                        2 * (1 - t) * t * (C[1] - B[1]) +
-                        t * t * (D[1] - C[1]);
-                    dy =
-                        (1 - t) * (1 - t) * (B[2] - A[2]) +
-                        2 * (1 - t) * t * (C[2] - B[2]) +
-                        t * t * (D[2] - C[2]);
-                    d = Math.hypot(dx, dy);
-                    dx /= d;
-                    dy /= d;
-                    p1 = p.coords.usrCoords;
-                    p2 = [1, p1[1] - dy, p1[2] + dx];
-
-                    li = [
-                        p1[2] * p2[1] - p1[1] * p2[2],
-                        p2[2] - p1[2],
-                        p1[1] - p2[1]
-                    ];
-                }
-
-                switch (num) {
-                    case 0:
-                        return li[0];
-                    case 1:
-                        return li[1];
-                    case 2:
-                        return li[2];
-                    default:
-                        return li;
-                }
+            /**
+             * A helper point used to create a normal to a {@link JXG2.Line} object. For normals to circles or curves this
+             * element is <tt>undefined</tt>.
+             * @type JXG2.Point
+             * @name point
+             * @memberOf Normal.prototype
+             */
+            l.point = pp;
+            l.subs = {
+                point: pp
             };
+            l.inherits.push(pp);
+        } else if (c.elementClass === OBJECT_CLASS.CIRCLE) {
+            l = board.create("line", [c.midpoint, p], attr);
+        } else if (c.elementClass === OBJECT_CLASS.CURVE) {
+            res = c.getTransformationSource();
+            isTransformed = res[0];
+            if (isTransformed) {
+                // Curve is result of a transformation
+                // We recursively collect all curves from which
+                // the curve is transformed.
+                slides.push(c);
+                while (res[0] && Type.exists(res[1]._transformationSource)) {
+                    slides.push(res[1]);
+                    res = res[1].getTransformationSource();
+                }
+            }
 
-            l = board.create(
-                "line",
-                [
-                    function () {
-                        var t;
+            if (c.evalVisProp('curvetype') !== "plot" || isTransformed) {
+                // Functiongraph or parametric curve or
+                // transformed curve thereof.
+                l = board.create(
+                    "line",
+                    [
+                        function () {
+                            var g = c.X,
+                                f = c.Y,
+                                df, dg,
+                                li, i, c_org, invMat, po,
+                                t;
 
-                        if (p.type === OBJECT_TYPE.GLIDER) {
-                            t = p.position;
-                        } else {
-                            t = Geometry.projectPointToCurve(p, c, board)[1];
-                        }
-
-                        return getCurveNormalDir(t, c);
-                    }
-                ],
-                attr
-            );
-            p.addChild(l);
-            l.glider = p;
-        }
-    } else if (c.type === OBJECT_TYPE.TURTLE) {
-        l = board.create(
-            "line",
-            [
-                function () {
-                    var el,
-                        j,
-                        i = Math.floor(p.position),
-                        lbda = p.position - i;
-
-                    // run through all curves of this turtle
-                    for (j = 0; j < c.objects.length; j++) {
-                        el = c.objects[j];
-
-                        if (el.type === OBJECT_TYPE.CURVE) {
-                            if (i < el.numberPoints) {
-                                break;
+                            if (p.type === OBJECT_TYPE.GLIDER) {
+                                t = p.position;
+                            } else if (c.evalVisProp('curvetype') === 'functiongraph') {
+                                t = p.X();
+                            } else {
+                                t = Geometry.projectPointToCurve(p, c, board)[1];
                             }
 
-                            i -= el.numberPoints;
-                        }
-                    }
+                            // po are the coordinates of the point
+                            // on the "original" curve. That is the curve or
+                            // the original curve which is transformed (maybe multiple times)
+                            // to this curve.
+                            // t is the position of the point on the "original" curve
+                            po = p.Coords(true);
+                            if (isTransformed) {
+                                c_org = slides[slides.length - 1]._transformationSource;
+                                g = c_org.X;
+                                f = c_org.Y;
+                                for (i = 0; i < slides.length; i++) {
+                                    slides[i].updateTransformMatrix();
+                                    invMat = JSXMath.inverse(slides[i].transformMat);
+                                    po = JSXMath.matVecMult(invMat, po);
+                                }
 
-                    if (i === el.numberPoints - 1) {
-                        i -= 1;
-                        lbda = 1;
+                                if (p.type !== OBJECT_TYPE.GLIDER) {
+                                    po[1] /= po[0];
+                                    po[2] /= po[0];
+                                    po[0] /= po[0];
+                                    t = Geometry.projectCoordsToCurve(po[1], po[2], 0, c_org, board)[1];
+                                }
+                            }
+
+                            df = Numerics.D(f)(t);
+                            dg = Numerics.D(g)(t);
+                            li = [
+                                -po[1] * dg - po[2] * df,
+                                po[0] * dg,
+                                po[0] * df
+                            ];
+
+                            if (isTransformed) {
+                                // Transform the line to the transformed curve
+                                for (i = slides.length - 1; i >= 0; i--) {
+                                    invMat = JSXMath.transpose(JSXMath.inverse(slides[i].transformMat));
+                                    li = JSXMath.matVecMult(invMat, li);
+                                }
+                            }
+
+                            return li;
+                        }
+                    ],
+                    attr
+                );
+            } else {
+                // curveType 'plot': discrete data
+                getCurveNormalDir = function (position, c, num) {
+                    var i = Math.floor(position),
+                        lbda,
+                        p1, p2, t, A, B, C, D, dx, dy, d,
+                        li, p_org, pp,
+                        points, le;
+
+
+                    if (c.bezierDegree === 1) {
+                        if (i === c.numberPoints - 1) {
+                            i--;
+                        }
+                        t = position;
+                    } else if (c.bezierDegree === 3) {
+                        // i is start of the Bezier segment
+                        // t is the position in the Bezier segment
+                        if (c.elType === 'sector') {
+                            points = c.points.slice(3, c.numberPoints - 3);
+                            le = points.length;
+                        } else {
+                            points = c.points;
+                            le = points.length;
+                        }
+                        i = Math.floor((position * (le - 1)) / 3) * 3;
+                        t = (position * (le - 1) - i) / 3;
+                        if (i >= le - 1) {
+                            i = le - 4;
+                            t = 1;
+                        }
+                    } else {
+                        return 0;
                     }
 
                     if (i < 0) {
                         return 1;
                     }
 
-                    return (
-                        (el.Y(i) + lbda * (el.Y(i + 1) - el.Y(i))) * (el.Y(i) - el.Y(i + 1)) -
-                        (el.X(i) + lbda * (el.X(i + 1) - el.X(i))) * (el.X(i + 1) - el.X(i))
-                    );
-                },
-                function () {
-                    var el,
-                        j,
-                        i = Math.floor(p.position);
+                    lbda = t - i;
+                    if (c.bezierDegree === 1) {
+                        p1 = c.points[i].usrCoords;
+                        p2 = c.points[i + 1].usrCoords;
+                        p_org = [
+                            p1[0] + lbda * (p2[0] - p1[0]),
+                            p1[1] + lbda * (p2[1] - p1[1]),
+                            p1[2] + lbda * (p2[2] - p1[2])
+                        ];
+                        li = JSXMath.crossProduct(p1, p2);
+                        pp = JSXMath.crossProduct([1, 0, 0], li);
+                        pp = [pp[0], -pp[2], pp[1]];
+                        li = JSXMath.crossProduct(p_org, pp);
 
-                    // run through all curves of this turtle
-                    for (j = 0; j < c.objects.length; j++) {
-                        el = c.objects[j];
-                        if (el.type === OBJECT_TYPE.CURVE) {
-                            if (i < el.numberPoints) {
-                                break;
+                    } else {
+                        A = points[i].usrCoords;
+                        B = points[i + 1].usrCoords;
+                        C = points[i + 2].usrCoords;
+                        D = points[i + 3].usrCoords;
+                        dx =
+                            (1 - t) * (1 - t) * (B[1] - A[1]) +
+                            2 * (1 - t) * t * (C[1] - B[1]) +
+                            t * t * (D[1] - C[1]);
+                        dy =
+                            (1 - t) * (1 - t) * (B[2] - A[2]) +
+                            2 * (1 - t) * t * (C[2] - B[2]) +
+                            t * t * (D[2] - C[2]);
+                        d = Math.hypot(dx, dy);
+                        dx /= d;
+                        dy /= d;
+                        p1 = p.coords.usrCoords;
+                        p2 = [1, p1[1] - dy, p1[2] + dx];
+
+                        li = [
+                            p1[2] * p2[1] - p1[1] * p2[2],
+                            p2[2] - p1[2],
+                            p1[1] - p2[1]
+                        ];
+                    }
+
+                    switch (num) {
+                        case 0:
+                            return li[0];
+                        case 1:
+                            return li[1];
+                        case 2:
+                            return li[2];
+                        default:
+                            return li;
+                    }
+                };
+
+                l = board.create(
+                    "line",
+                    [
+                        function () {
+                            var t;
+
+                            if (p.type === OBJECT_TYPE.GLIDER) {
+                                t = p.position;
+                            } else {
+                                t = Geometry.projectPointToCurve(p, c, board)[1];
                             }
 
-                            i -= el.numberPoints;
+                            return getCurveNormalDir(t, c);
                         }
-                    }
+                    ],
+                    attr
+                );
+                p.addChild(l);
+                l.glider = p;
+            }
+        } else if (c.type === OBJECT_TYPE.TURTLE) {
+            l = board.create(
+                "line",
+                [
+                    function () {
+                        var el,
+                            j,
+                            i = Math.floor(p.position),
+                            lbda = p.position - i;
 
-                    if (i === el.numberPoints - 1) {
-                        i -= 1;
-                    }
+                        // run through all curves of this turtle
+                        for (j = 0; j < c.objects.length; j++) {
+                            el = c.objects[j];
 
-                    if (i < 0) {
-                        return 0;
-                    }
+                            if (el.type === OBJECT_TYPE.CURVE) {
+                                if (i < el.numberPoints) {
+                                    break;
+                                }
 
-                    return el.X(i + 1) - el.X(i);
-                },
-                function () {
-                    var el,
-                        j,
-                        i = Math.floor(p.position);
-
-                    // run through all curves of this turtle
-                    for (j = 0; j < c.objects.length; j++) {
-                        el = c.objects[j];
-                        if (el.type === OBJECT_TYPE.CURVE) {
-                            if (i < el.numberPoints) {
-                                break;
+                                i -= el.numberPoints;
                             }
-
-                            i -= el.numberPoints;
                         }
+
+                        if (i === el.numberPoints - 1) {
+                            i -= 1;
+                            lbda = 1;
+                        }
+
+                        if (i < 0) {
+                            return 1;
+                        }
+
+                        return (
+                            (el.Y(i) + lbda * (el.Y(i + 1) - el.Y(i))) * (el.Y(i) - el.Y(i + 1)) -
+                            (el.X(i) + lbda * (el.X(i + 1) - el.X(i))) * (el.X(i + 1) - el.X(i))
+                        );
+                    },
+                    function () {
+                        var el,
+                            j,
+                            i = Math.floor(p.position);
+
+                        // run through all curves of this turtle
+                        for (j = 0; j < c.objects.length; j++) {
+                            el = c.objects[j];
+                            if (el.type === OBJECT_TYPE.CURVE) {
+                                if (i < el.numberPoints) {
+                                    break;
+                                }
+
+                                i -= el.numberPoints;
+                            }
+                        }
+
+                        if (i === el.numberPoints - 1) {
+                            i -= 1;
+                        }
+
+                        if (i < 0) {
+                            return 0;
+                        }
+
+                        return el.X(i + 1) - el.X(i);
+                    },
+                    function () {
+                        var el,
+                            j,
+                            i = Math.floor(p.position);
+
+                        // run through all curves of this turtle
+                        for (j = 0; j < c.objects.length; j++) {
+                            el = c.objects[j];
+                            if (el.type === OBJECT_TYPE.CURVE) {
+                                if (i < el.numberPoints) {
+                                    break;
+                                }
+
+                                i -= el.numberPoints;
+                            }
+                        }
+
+                        if (i === el.numberPoints - 1) {
+                            i -= 1;
+                        }
+
+                        if (i < 0) {
+                            return 0;
+                        }
+
+                        return el.Y(i + 1) - el.Y(i);
                     }
+                ],
+                attr
+            );
+        } else {
+            throw new Error(
+                "JSXGraph: Can't create normal with parent types '" +
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "'." +
+                "\nPossible parent types: [point,line], [point,circle], [glider]"
+            );
+        }
 
-                    if (i === el.numberPoints - 1) {
-                        i -= 1;
-                    }
+        l.elType = 'normal';
+        l.setParents(parents);
 
-                    if (i < 0) {
-                        return 0;
-                    }
+        if (Type.exists(p._is_new)) {
+            l.addChild(p);
+            delete p._is_new;
+        } else {
+            p.addChild(l);
+        }
+        c.addChild(l);
 
-                    return el.Y(i + 1) - el.Y(i);
-                }
-            ],
-            attr
-        );
-    } else {
-        throw new Error(
-            "JSXGraph: Can't create normal with parent types '" +
-            typeof parents[0] +
-            "' and '" +
-            typeof parents[1] +
-            "'." +
-            "\nPossible parent types: [point,line], [point,circle], [glider]"
-        );
-    }
-
-    l.elType = 'normal';
-    l.setParents(parents);
-
-    if (Type.exists(p._is_new)) {
-        l.addChild(p);
-        delete p._is_new;
-    } else {
-        p.addChild(l);
-    }
-    c.addChild(l);
-
-    return l;
-};
+        return l;
+    };
+}
 
 /**
  * @class The radical axis is the line connecting the two interstion points of two circles with distinct centers.
@@ -2800,52 +2885,55 @@ JXG2.createNormal = function (board, parents, attributes) {
  *   var rlex1_r1 = rlex1_board.create('radicalaxis', [rlex1_c1, rlex1_c2]);
  * </script><pre>
  */
-JXG2.createRadicalAxis = function (board, parents, attributes) {
-    var el, el1, el2;
+export class RadicalAxis extends Line {
+    constructor(board, parents, attributes) {
+        super(board, parents, attributes);
+        var el, el1, el2;
 
-    if (
-        parents.length !== 2 ||
-        parents[0].elementClass !== OBJECT_CLASS.CIRCLE ||
-        parents[1].elementClass !== OBJECT_CLASS.CIRCLE
-    ) {
-        // Failure
-        throw new Error(
-            "JSXGraph: Can't create 'radical axis' with parent types '" +
-            typeof parents[0] +
-            "' and '" +
-            typeof parents[1] +
-            "'." +
-            "\nPossible parent type: [circle,circle]"
+        if (
+            parents.length !== 2 ||
+            parents[0].elementClass !== OBJECT_CLASS.CIRCLE ||
+            parents[1].elementClass !== OBJECT_CLASS.CIRCLE
+        ) {
+            // Failure
+            throw new Error(
+                "JSXGraph: Can't create 'radical axis' with parent types '" +
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "'." +
+                "\nPossible parent type: [circle,circle]"
+            );
+        }
+
+        el1 = board.select(parents[0]);
+        el2 = board.select(parents[1]);
+
+        el = board.create(
+            "line",
+            [
+                function () {
+                    var a = el1.stdform,
+                        b = el2.stdform;
+
+                    return JSXMath.matVecMult(JSXMath.transpose([a.slice(0, 3), b.slice(0, 3)]), [
+                        b[3],
+                        -a[3]
+                    ]);
+                }
+            ],
+            attributes
         );
-    }
 
-    el1 = board.select(parents[0]);
-    el2 = board.select(parents[1]);
+        el.elType = 'radicalaxis';
+        el.setParents([el1.id, el2.id]);
 
-    el = board.create(
-        "line",
-        [
-            function () {
-                var a = el1.stdform,
-                    b = el2.stdform;
+        el1.addChild(el);
+        el2.addChild(el);
 
-                return JSXMath.matVecMult(JSXMath.transpose([a.slice(0, 3), b.slice(0, 3)]), [
-                    b[3],
-                    -a[3]
-                ]);
-            }
-        ],
-        attributes
-    );
-
-    el.elType = 'radicalaxis';
-    el.setParents([el1.id, el2.id]);
-
-    el1.addChild(el);
-    el2.addChild(el);
-
-    return el;
-};
+        return el;
+    };
+}
 
 /**
  * @class The polar line of a point with respect to a conic or a circle.
@@ -2902,59 +2990,63 @@ JXG2.createRadicalAxis = function (board, parents, attributes) {
  * var plex2_l1 = plex2_board.create('polarline', [plex2_c1, plex2_p3]);
  * </script><pre>
  */
-JXG2.createPolarLine = function (board, parents, attributes) {
-    var el,
-        el1,
-        el2,
-        firstParentIsConic,
-        secondParentIsConic,
-        firstParentIsPoint,
-        secondParentIsPoint;
+export class PolarLine extends Line {
+    constructor(board, parents, attributes) {
+        super(board, parents, attributes);
 
-    if (parents.length > 1) {
-        firstParentIsConic =
-            parents[0].type === OBJECT_TYPE.CONIC ||
-            parents[0].elementClass === OBJECT_CLASS.CIRCLE;
-        secondParentIsConic =
-            parents[1].type === OBJECT_TYPE.CONIC ||
-            parents[1].elementClass === OBJECT_CLASS.CIRCLE;
+        var el,
+            el1,
+            el2,
+            firstParentIsConic,
+            secondParentIsConic,
+            firstParentIsPoint,
+            secondParentIsPoint;
 
-        firstParentIsPoint = Type.isPoint(parents[0]);
-        secondParentIsPoint = Type.isPoint(parents[1]);
-    }
+        if (parents.length > 1) {
+            firstParentIsConic =
+                parents[0].type === OBJECT_TYPE.CONIC ||
+                parents[0].elementClass === OBJECT_CLASS.CIRCLE;
+            secondParentIsConic =
+                parents[1].type === OBJECT_TYPE.CONIC ||
+                parents[1].elementClass === OBJECT_CLASS.CIRCLE;
 
-    if (
-        parents.length !== 2 ||
-        !(
-            (firstParentIsConic && secondParentIsPoint) ||
-            (firstParentIsPoint && secondParentIsConic)
-        )
-    ) {
-        // Failure
-        throw new Error(
-            "JSXGraph: Can't create 'polar line' with parent types '" +
-            typeof parents[0] +
-            "' and '" +
-            typeof parents[1] +
-            "'." +
-            "\nPossible parent type: [conic|circle,point], [point,conic|circle]"
-        );
-    }
+            firstParentIsPoint = Type.isPoint(parents[0]);
+            secondParentIsPoint = Type.isPoint(parents[1]);
+        }
 
-    if (secondParentIsPoint) {
-        el1 = board.select(parents[0]);
-        el2 = board.select(parents[1]);
-    } else {
-        el1 = board.select(parents[1]);
-        el2 = board.select(parents[0]);
-    }
+        if (
+            parents.length !== 2 ||
+            !(
+                (firstParentIsConic && secondParentIsPoint) ||
+                (firstParentIsPoint && secondParentIsConic)
+            )
+        ) {
+            // Failure
+            throw new Error(
+                "JSXGraph: Can't create 'polar line' with parent types '" +
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "'." +
+                "\nPossible parent type: [conic|circle,point], [point,conic|circle]"
+            );
+        }
 
-    // Polar lines have been already provided in the tangent element.
-    el = board.create("tangent", [el1, el2], attributes);
+        if (secondParentIsPoint) {
+            el1 = board.select(parents[0]);
+            el2 = board.select(parents[1]);
+        } else {
+            el1 = board.select(parents[1]);
+            el2 = board.select(parents[0]);
+        }
 
-    el.elType = 'polarline';
-    return el;
-};
+        // Polar lines have been already provided in the tangent element.
+        el = board.create("tangent", [el1, el2], attributes);
+
+        el.elType = 'polarline';
+        return el;
+    };
+}
 
 /**
  *
@@ -2978,7 +3070,7 @@ JXG2.createPolarLine = function (board, parents, attributes) {
  * @example
  *  var c = board.create('circle', [[3, 0], [3, 4]]);
  *  var p = board.create('point', [0, 6]);
- *  var t0 = board.create('tangentto', [c, p, 0], { color: 'black', polar: {visible: true}, point: {visible: true} });
+ *  var t0 = board.create('tangentto', [c, p, 0], { color: 'black', polar: {visible: true} point: {visible: true} });
  *  var t1 = board.create('tangentto', [c, p, 1], { color: 'black' });
  *
  * </pre><div id="JXGd4b359c7-3a29-44c3-a19d-d51b42a00c8b" class="jxgbox" style="width: 300px; height: 300px;"></div>
@@ -2988,7 +3080,7 @@ JXG2.createPolarLine = function (board, parents, attributes) {
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var c = board.create('circle', [[3, 0], [3, 4]]);
  *             var p = board.create('point', [0, 6]);
- *             var t0 = board.create('tangentto', [c, p, 0], { color: 'black', polar: {visible: true}, point: {visible: true} });
+ *             var t0 = board.create('tangentto', [c, p, 0], { color: 'black', polar: {visible: true} point: {visible: true} });
  *             var t1 = board.create('tangentto', [c, p, 1], { color: 'black' });
  *
  *     })();
@@ -3016,72 +3108,76 @@ JXG2.createPolarLine = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG2.createTangentTo = function (board, parents, attributes) {
-    var el, attr,
-        conic, pointFrom, num,
-        intersect, polar;
+export class TangentTo extends Line {
+    constructor(board, parents, attributes) {
+        super(board, parents, attributes);
 
-    conic = board.select(parents[0]);
-    pointFrom = Type.providePoints(board, parents[1], attributes, 'point')[0];
-    num = Type.def(parents[2], 0);
+        var el, attr,
+            conic, pointFrom, num,
+            intersect, polar;
 
-    if (
-        (conic.type !== OBJECT_TYPE.CIRCLE && conic.type !== OBJECT_TYPE.CONIC) ||
-        (pointFrom.elementClass !== OBJECT_CLASS.POINT)
-    ) {
-        throw new Error(
-            "JSXGraph: Can't create tangentto with parent types '" +
-            typeof parents[0] +
-            "' and '" +
-            typeof parents[1] +
-            "' and '" +
-            typeof parents[2] +
-            "'." +
-            "\nPossible parent types: [circle|conic,point,number]"
-        );
-    }
+        conic = board.select(parents[0]);
+        pointFrom = Type.providePoints(board, parents[1], attributes, 'point')[0];
+        num = Type.def(parents[2], 0);
 
-    attr = Type.copyAttributes(attributes, board.options, 'tangentto');
-    // A direct analytic geometry approach would be in
-    // Richter-Gebert: Perspectives on projective geometry, 11.3
-    polar = board.create('polar', [conic, pointFrom], attr.polar);
-    intersect = board.create('intersection', [polar, conic, num], attr.point);
+        if (
+            (conic.type !== OBJECT_TYPE.CIRCLE && conic.type !== OBJECT_TYPE.CONIC) ||
+            (pointFrom.elementClass !== OBJECT_CLASS.POINT)
+        ) {
+            throw new Error(
+                "JSXGraph: Can't create tangentto with parent types '" +
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "' and '" +
+                typeof parents[2] +
+                "'." +
+                "\nPossible parent types: [circle|conic,point,number]"
+            );
+        }
 
-    el = board.create('tangent', [conic, intersect], attr);
+        attr = Type.copyAttributes(attributes, board.options, 'tangentto');
+        // A direct analytic geometry approach would be in
+        // Richter-Gebert: Perspectives on projective geometry, 11.3
+        polar = board.create('polar', [conic, pointFrom], attr.polar);
+        intersect = board.create('intersection', [polar, conic, num], attr.point);
 
-    /**
-     * The intersection point of the conic/circle with the polar line of the tangentto construction.
-     * @memberOf TangentTo.prototype
-     * @name point
-     * @type JXG2.Point
-     */
-    el.point = intersect;
+        el = board.create('tangent', [conic, intersect], attr);
 
-    /**
-     * The polar line of the tangentto construction.
-     * @memberOf TangentTo.prototype
-     * @name polar
-     * @type JXG2.Line
-     */
-    el.polar = polar;
+        /**
+         * The intersection point of the conic/circle with the polar line of the tangentto construction.
+         * @memberOf TangentTo.prototype
+         * @name point
+         * @type JXG2.Point
+         */
+        el.point = intersect;
 
-    el.elType = 'tangentto';
+        /**
+         * The polar line of the tangentto construction.
+         * @memberOf TangentTo.prototype
+         * @name polar
+         * @type JXG2.Line
+         */
+        el.polar = polar;
 
-    return el;
-};
+        el.elType = 'tangentto';
+
+        return el;
+    };
+}
 
 /**
  * Register the element type tangent at JSXGraph
  * @private
  */
-JXG2.registerElement("tangent", JXG2.createTangent);
-JXG2.registerElement("normal", JXG2.createNormal);
-JXG2.registerElement('tangentto', JXG2.createTangentTo);
-JXG2.registerElement("polar", JXG2.createTangent);
-JXG2.registerElement("radicalaxis", JXG2.createRadicalAxis);
-JXG2.registerElement("polarline", JXG2.createPolarLine);
+// JXG2.registerElement("tangent", JXG2.createTangent);
+// JXG2.registerElement("normal", JXG2.createNormal);
+// JXG2.registerElement('tangentto', JXG2.createTangentTo);
+// JXG2.registerElement("polar", JXG2.createTangent);
+// JXG2.registerElement("radicalaxis", JXG2.createRadicalAxis);
+// JXG2.registerElement("polarline", JXG2.createPolarLine);
 
-export default JXG2.Line;
+// export default JXG2.Line;
 // export default {
 //     Line: JXG2.Line,
 //     createLine: JXG2.createLine,

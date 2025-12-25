@@ -145,10 +145,8 @@ export class Text extends CoordsElement {
         //tbtb
         if (this.evalVisProp('islabel')) {
             this.visProp['autoposition'] = true;    // always lower case
-            console.assert(this.evalVisProp['autoPosition'] === true,this.evalVisProp['autoPosition'])
         }
 
-        // this.coordsConstructor(coords, this.evalVisProp('islabel'));  // now in constructor
         this.coordsElementInit(coordinates, this.evalVisProp('islabel'));
 
         this.orgText = this.content; // tbtb - recalculate content from orgText in updateText()
@@ -156,7 +154,9 @@ export class Text extends CoordsElement {
 
 
         this.rendNode = this.board.renderer.drawText(this);
+        // this.coordsElementInit(parents, this.visProp)
 
+        // this.coordsConstructor(coords, this.evalVisProp('islabel'));  // now in constructor
 
 
         this.needsSizeUpdate = false;

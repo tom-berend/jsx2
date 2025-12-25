@@ -549,7 +549,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#makeArrows
      * @see JXG2.AbstractRenderer#getArrowHeadData
      */
-    updatePathWithArrowHeads(el, doHighlight?) {
+    updatePathWithArrowHeads(el:GeometryElement, doHighlight?) {
         var hl = doHighlight ? 'highlight' : '',
             w,
             arrowData;
@@ -727,7 +727,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#getPositionArrowHead
      *
      */
-    updateLineWithEndings(el, arrowData) {
+    updateLineWithEndings(el:GeometryElement, arrowData) {
         var c1,
             c2,
             // useTotalLength = true,

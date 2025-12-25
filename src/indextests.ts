@@ -1,6 +1,10 @@
 import { Board } from "./base/board.js";
 import { JSXGraph } from "./jsxgraph.js"
 
+import * as THREE from 'three';
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
 
 export class IndexTests {
     newBoard: Board
@@ -8,6 +12,8 @@ export class IndexTests {
 
     old = true  // turn on and off boards
     new = true
+    three = true
+    webgl = true
 
     boards = []
 
@@ -15,13 +21,15 @@ export class IndexTests {
 
         this.new = true
         this.old = true
+        this.three = true
+        this.webgl = true
 
         this.initBoard()
 
         this.point()
         this.text()
-        // this.line()
-        this.widgets()
+        this.line()
+        // this.widgets()
     }
 
     initBoard() {
@@ -38,6 +46,36 @@ export class IndexTests {
                 boundingBox: [-10, 10, 10, -10],
                 // axis: true
             }));
+
+        if (this.three) {
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            let canvasRef = document.getElementById("canvas3") as HTMLCanvasElement;
+            const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef });
+            renderer.setSize(canvasRef.width,canvasRef.height) //window.innerWidth, window.innerHeight);
+
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+
+            camera.position.z = 3;
+
+            let animate = () => {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            renderer.setAnimationLoop(animate);
+        }
+
+        if (this.webgl) {
+            const gl = (document.getElementById('canvas4') as HTMLCanvasElement).getContext('webgl');
+            gl.clearColor(1, 0, 0, 1);  // red
+            gl.clear(gl.COLOR_BUFFER_BIT);
+        }
     }
 
     point() {
@@ -48,24 +86,24 @@ export class IndexTests {
     }
     text() {
         this.boards.map((board) => {
-            board.create('text', [2, 7, "test"], {  strokecolor: 'red' })
+            board.create('text', [2, 7, "test"], { strokecolor: 'red' })
         })
     }
     line() {
         this.boards.map((board) => {
             let p1 = board.create('point', [-3, -3])
             let p2 = board.create('point', [-4, -3])
-            board.create('segment', [p1, p2], { strokecolor: 'blue' })
+            board.create('line', [p1, p2], { strokecolor: 'blue' })
 
             // circle and radius
-            board.create('segment', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
-            board.create('circle', [[-1, -1], [-2, -1]], { strokecolor: 'green' })
+            board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
+            // board.create('circle', [[-1, -1], [-2, -1]], { strokecolor: 'green' })
         })
     }
     widgets() {
         this.boards.map((board) => {
-             board.create('checkbox', [-8, 8, 'Checkbox'], {});
+            board.create('checkbox', [-8, 8, 'Checkbox'], {});
         })
     }
 
-    }
+}

@@ -49,6 +49,7 @@ import { Type } from "../utils/type.js";
 import { LooseObject } from "../interfaces.js";
 import Transformation from "./transformation.js";
 import { Text } from "./text.js";
+import { Point } from "./point.js";
 
 /**
  * Constructs a new GeometryElement object.
@@ -166,7 +167,7 @@ export class GeometryElement extends Events {
      * Stores variables for symbolic computations
      * @type Object
      */
-    symbolic = {};
+    symbolic : {x:number,y:number} = {x:0,y:0}
 
     /**
      * Stores the SVG (or VML) rendering node for the element. This enables low-level
@@ -830,7 +831,9 @@ export class GeometryElement extends Events {
      * @returns {Array} An array containing polynomials describing the locus of the current object.
      * @public
      */
-    generatePolynomial() {
+
+    generatePolynomial(p:Point) {
+        throw new Error('should not be here')
         return [];
     }
 

@@ -354,7 +354,7 @@ JXG2.extend(
 
             if (this.needsUpdate) {
                 if (this.evalVisProp('trace')) {
-                    this.cloneToBackground(true);
+                    this.cloneToBackground();
                 }
 
                 if (this.method === 'pointLine') {
