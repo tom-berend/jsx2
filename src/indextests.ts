@@ -29,7 +29,7 @@ export class IndexTests {
         this.point()
         this.text()
         this.line()
-        // this.widgets()
+        this.widgets()
     }
 
     initBoard() {
@@ -54,7 +54,7 @@ export class IndexTests {
 
             let canvasRef = document.getElementById("canvas3") as HTMLCanvasElement;
             const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef });
-            renderer.setSize(canvasRef.width,canvasRef.height) //window.innerWidth, window.innerHeight);
+            renderer.setSize(canvasRef.width, canvasRef.height) //window.innerWidth, window.innerHeight);
 
             const geometry = new THREE.BoxGeometry(1, 1, 1);
             const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -93,7 +93,7 @@ export class IndexTests {
         this.boards.map((board) => {
             let p1 = board.create('point', [-3, -3])
             let p2 = board.create('point', [-4, -3])
-            board.create('line', [p1, p2], { strokecolor: 'blue' })
+            board.create('segment', [p1, p2], { strokecolor: 'blue' })
 
             // circle and radius
             board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
@@ -102,7 +102,8 @@ export class IndexTests {
     }
     widgets() {
         this.boards.map((board) => {
-            board.create('checkbox', [-8, 8, 'Checkbox'], {});
+            let a = board.create('checkbox', [-8, 8, 'Checkbox'], {});
+            let b = board.create('point', [-8.3, 8.3], { name: 'is checked',fillcolor: () => a.Value() ? 'red' : 'green' })
         })
     }
 
