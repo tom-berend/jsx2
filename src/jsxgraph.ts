@@ -45,7 +45,7 @@ import { Type } from "./utils/type.js";
 // import {JSXMath} from "./math/math.js";
 import { Board } from "./base/board.js";
 import FileReader from "./reader/file.js";
-import  Options  from "./options.js";
+import { Options } from "./options.js";
 import { SVGRenderer } from "./renderer/svg.js";
 import VMLRenderer from "./renderer/vml.js";
 import CanvasRenderer from "./renderer/canvas.js";
@@ -206,6 +206,7 @@ export class JSXGraph {
     static _setARIA(container, attr) {
         var doc = attr.document,
             node_jsx;
+
         // Unused variables, made obsolete in db3e50f4dfa8b86b1ff619b578e243a97b41151c
         // doc_glob,
         // newNode,
@@ -540,7 +541,7 @@ export class JSXGraph {
 
         // tbtb - move the renderer to Board, so that different boards have different renderers
         // renderer = this.initRenderer(box, dimensions, attr.document, attr.renderer);
-        this._setARIA(box, attr);
+        // tbtb ---  this._setARIA(box, attr);
 
         // Create the board.
         // board.options will contain the user supplied board attributes
