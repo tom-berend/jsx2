@@ -70,7 +70,12 @@ import { Checkbox } from "../element/checkbox.js"
 import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis, createPolarLine, createTangentTo } from '../base/line.js'
 import { createCircle } from './circle.js';
 import { createTicks, createHatchmark } from "./ticks.js";
-import { createTransform, createTransform3D} from "./transformation.js";
+import { createTransform, createTransform3D } from "./transformation.js";
+import {
+    createCurve, createFunctiongraph, createSpline, createCardinalSpline, createMetapostSpline, createRiemannsum, createTracecurve, createStepfunction, createDerivative,
+    createCurveIntersection, createCurveUnion, createCurveDifference, createBoxPlot, createImplicitCurve
+} from "./curve.js";
+
 
 /**
  * Constructs a new Board object.
@@ -6378,6 +6383,24 @@ export class Board extends Events {
 
             case 'transform': el = createTransform(this, parents, attributes); break;
 
+            case 'curve': el = createCurve(this, parents, attributes); break;
+            case 'functiongraph': el = createFunctiongraph(this, parents, attributes); break;
+            case 'spline': el = createSpline(this, parents, attributes); break;
+            case 'cardinalSpline': el = createCardinalSpline(this, parents, attributes); break;
+            case 'metapostSpline': el = createMetapostSpline(this, parents, attributes); break;
+            case 'riemannsum': el = createRiemannsum(this, parents, attributes); break;
+            case 'tracecurve': el = createTracecurve(this, parents, attributes); break;
+            case 'stepfunction': el = createStepfunction(this, parents, attributes); break;
+            case 'derivative': el = createDerivative(this, parents, attributes); break;
+            case 'curveIntersection': el = createCurveIntersection(this, parents, attributes); break;
+            case 'curveUnion': el = createCurveUnion(this, parents, attributes); break;
+            case 'curveDifference': el = createCurveDifference(this, parents, attributes); break;
+            case 'boxPlot': el = createBoxPlot(this, parents, attributes); break;
+            case 'implicitCurve': el = createImplicitCurve(this, parents, attributes); break;
+
+
+
+
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)
                 throw new Error('JSXGraph: create: Unknown element type given: ' + elementType);
@@ -8230,6 +8253,9 @@ export class Board extends Events {
     * @private
     */
     _setARIA(container, attr) {
+
+        // why isn't this JSXGraph._setARIA ??
+
         var doc = attr.document,
             node_jsx;
         // Unused variables, made obsolete in db3e50f4dfa8b86b1ff619b578e243a97b41151c

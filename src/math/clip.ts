@@ -38,13 +38,13 @@
  * * Check if input polygons are closed. If not, handle this case.
  */
 
-import {JXG2} from "../jxg.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
-import {Coords} from "../base/coords.js";
+import { JXG2 } from "../jxg.js";
+import { OBJECT_CLASS, OBJECT_TYPE,COORDS_BY } from "../base/constants.js";
+import { Coords } from "../base/coords.js";
 
-import {JSXMath} from "./math.js";
-import {Geometry} from "./geometry.js";
-import {Type} from "../utils/type.js";
+import { JSXMath } from "./math.js";
+import { Geometry } from "./geometry.js";
+import { Type } from "../utils/type.js";
 
 /**
  * Math.Clip namespace definition. This namespace contains algorithms for Boolean operations on paths, i.e.
@@ -53,10 +53,26 @@ import {Type} from "../utils/type.js";
  * @exports JXG2.JSXMath.Clip as Geometry.Clip
  * @namespace
  */
-JXG2.JSXMath.Clip = {
-    _isSeparator: function (node) {
+export class Clip {
+    static intersection = true
+    static pos = 0
+    static neighbour = false
+    static entry_exit = false
+    static elementClass
+    static data
+    static coords
+
+
+
+
+
+
+
+    constructor() { /* nothing */ }
+
+    static _isSeparator(node) {
         return isNaN(node.coords.usrCoords[1]) && isNaN(node.coords.usrCoords[2]);
-    },
+    }
 
     /**
      * Add pointers to an array S such that it is a circular doubly-linked list.
@@ -65,7 +81,7 @@ JXG2.JSXMath.Clip = {
      * @param  {Array} S Array
      * @return {Array} return containing the starter indices of each component.
      */
-    makeDoublyLinkedList: function (S) {
+    static makeDoublyLinkedList(S) {
         var i,
             first = null,
             components = [],
@@ -108,7 +124,7 @@ JXG2.JSXMath.Clip = {
             }
         }
         return components;
-    },
+    }
 
     /**
      * JavaScript object containing the intersection of two paths. Every intersection point is on one path, but
@@ -124,13 +140,13 @@ JXG2.JSXMath.Clip = {
      * @param  {Array} path      Pointer to the path containing the intersection point
      * @param  {String} pathname Name of the path: 'S' or 'C'.
      */
-    Vertex: function (coords, i, alpha, path, pathname, type) {
-        this.pos = i;
-        this.intersection = true;
-        this.coords = coords;
-        this.elementClass = OBJECT_CLASS.POINT;
+    static Vertex(coords, i, alpha, path, pathname, type) {
+        Clip.pos = i;
+        Clip.intersection = true;
+        Clip.coords = coords;
+        Clip.elementClass = OBJECT_CLASS.POINT;
 
-        this.data = {
+        Clip.data = {
             alpha: alpha,
             path: path,
             pathname: pathname,
@@ -140,11 +156,11 @@ JXG2.JSXMath.Clip = {
         };
 
         // Set after initialisation
-        this.neighbour = null;
-        this.entry_exit = false;
-    },
+        Clip.neighbour = null;
+        Clip.entry_exit = false;
+    }
 
-    _addToList: function (list, coords, pos) {
+    static _addToList(list, coords, pos) {
         var len = list.length,
             eps = JSXMath.eps * JSXMath.eps;
 
@@ -163,7 +179,7 @@ JXG2.JSXMath.Clip = {
             coords: coords,
             elementClass: OBJECT_CLASS.POINT
         });
-    },
+    }
 
     /**
      * Sort the intersection points into their path.
@@ -172,7 +188,7 @@ JXG2.JSXMath.Clip = {
      *      with one segment of the other path.
      * @return {Array}  Array of intersection points ordered by first occurrence in the path.
      */
-    sortIntersections: function (P_crossings) {
+    static sortIntersections(P_crossings) {
         var i,
             j,
             P,
@@ -235,9 +251,9 @@ JXG2.JSXMath.Clip = {
             }
         }
         return P_intersect;
-    },
+    }
 
-    _inbetween: function (q, p1, p2) {
+    static _inbetween(q, p1, p2) {
         var alpha,
             eps = JSXMath.eps * JSXMath.eps,
             px = p2[1] - p1[1],
@@ -258,9 +274,9 @@ JXG2.JSXMath.Clip = {
             alpha = 0.0;
         }
         return alpha;
-    },
+    }
 
-    _print_array: function (arr) {
+    static _print_array(arr) {
         var i, end;
         for (i = 0; i < arr.length; i++) {
             //console.log(i, arr[i].coords.usrCoords,  arr[i].data.type);
@@ -283,9 +299,9 @@ JXG2.JSXMath.Clip = {
                 console.log(i, arr[i].coords.usrCoords);
             }
         }
-    },
+    }
 
-    _print_list: function (P) {
+    static _print_list(P) {
         var cnt = 0,
             alpha;
         while (cnt < 100) {
@@ -315,9 +331,9 @@ JXG2.JSXMath.Clip = {
             P = P._next;
             cnt++;
         }
-    },
+    }
 
-    _noOverlap: function (p1, p2, q1, q2) {
+    static _noOverlap(p1, p2, q1, q2) {
         var k,
             eps = Math.sqrt(JSXMath.eps),
             minp,
@@ -337,7 +353,7 @@ JXG2.JSXMath.Clip = {
             }
         }
         return no_overlap;
-    },
+    }
 
     /**
      * Find all intersections between two paths.
@@ -350,7 +366,7 @@ JXG2.JSXMath.Clip = {
      * of the subject path and the second array contains the intersection vertices of the clip path.
      * @see JXG2.JSXMath.Clip.ClipVertex
      */
-    findIntersections: function (S, C, board) {
+    static findIntersections(S, C, board) {
         var res = [], eps = JSXMath.eps * 100,
             i, j, crds,
             S_le = S.length,
@@ -562,7 +578,7 @@ JXG2.JSXMath.Clip = {
             console.log("<<<<<< Phase 1 done");
         }
         return [S_intersect, C_intersect];
-    },
+    }
 
     /**
      * It is testedd if the point q lies to the left or right
@@ -574,7 +590,7 @@ JXG2.JSXMath.Clip = {
      * @returns string 'left' or 'right'
      * @private
      */
-    _getPosition: function (q, p1, p2, p3) {
+    static _getPosition(q, p1, p2, p3) {
         var s1 = Geometry.det3p(q, p1, p2),
             s2 = Geometry.det3p(q, p2, p3),
             s3 = Geometry.det3p(p1, p2, p3);
@@ -591,7 +607,7 @@ JXG2.JSXMath.Clip = {
             return 'left';
         }
         return 'right';
-    },
+    }
 
     /**
      * Determine the delayed status of degenerated intersection points.
@@ -605,8 +621,8 @@ JXG2.JSXMath.Clip = {
      * @see JXG2.JSXMath.Clip.ClipmarkEntryExit
      * @see JXG2.JSXMath.Clip.Clip_handleIntersectionChains
      */
-    _classifyDegenerateIntersections: function (P) {
-        var Pp, Pm, Qp, Qm,  Q,
+    static _classifyDegenerateIntersections(P) {
+        var Pp, Pm, Qp, Qm, Q,
             side, cnt, tmp, det,
             oppositeDir,
             s1, s2, s3, s4,
@@ -791,7 +807,7 @@ JXG2.JSXMath.Clip = {
         if (DEBUG) {
             console.log("------------------------");
         }
-    },
+    }
 
     /**
      * At this point the degenerated intersections have been classified.
@@ -804,7 +820,7 @@ JXG2.JSXMath.Clip = {
      * @see JXG2.JSXMath.Clip.Clip_classifyDegenerateIntersections
      * @private
      */
-    _handleIntersectionChains: function (P) {
+    static _handleIntersectionChains(P) {
         var cnt = 0,
             start_status = "Null",
             P_start,
@@ -899,7 +915,7 @@ JXG2.JSXMath.Clip = {
             }
             P = P._next;
         }
-    },
+    }
 
     /**
      * Handle the case that all vertices of one path are contained
@@ -913,7 +929,7 @@ JXG2.JSXMath.Clip = {
      * @param {JXG2.board} board JSXGraph board object. It is needed to convert between
      * user coordinates and screen coordinates.
      */
-    _handleFullyDegenerateCase: function (S, C, board) {
+    static _handleFullyDegenerateCase(S, C, board) {
         var P, Q, l, M, crds,
             q1, q2, node, i, j,
             leP, leQ, is_on_Q,
@@ -986,9 +1002,9 @@ JXG2.JSXMath.Clip = {
                 }
             }
         }
-    },
+    }
 
-    _getStatus: function (P, path) {
+    static _getStatus(P, path) {
         var status;
         while (P.intersection) {
             if (P._end) {
@@ -1007,7 +1023,7 @@ JXG2.JSXMath.Clip = {
         }
 
         return [P, status];
-    },
+    }
 
     /**
      * Mark the intersection vertices of path1 as entry points or as exit points
@@ -1027,7 +1043,7 @@ JXG2.JSXMath.Clip = {
      * @param  {Array} path1 First path
      * @param  {Array} path2 Second path
      */
-    markEntryExit: function (path1, path2, starters) {
+    static markEntryExit(path1, path2, starters) {
         var status, P, cnt, res,
             i, len, start,
             endless = true,
@@ -1154,7 +1170,7 @@ JXG2.JSXMath.Clip = {
                 cnt++;
             }
         }
-    },
+    }
 
     /**
      *
@@ -1163,14 +1179,14 @@ JXG2.JSXMath.Clip = {
      * @param {Boolean} isBackward
      * @returns {Boolean} True, if the node is an intersection and is of type 'X'
      */
-    _stayOnPath: function (P, status) {
+    static _stayOnPath(P, status) {
         var stay = true;
 
         if (P.intersection && P.data.type !== 'B') {
             stay = status === P.entry_exit;
         }
         return stay;
-    },
+    }
 
     /**
      * Add a point to the clipping path and returns if the algorithms
@@ -1183,7 +1199,7 @@ JXG2.JSXMath.Clip = {
      * @returns {Boolean} true: point has been visited before, false otherwise
      * @private
      */
-    _addVertex: function (path, vertex, DEBUG) {
+    static _addVertex(path, vertex, DEBUG) {
         if (!isNaN(vertex.coords.usrCoords[1]) && !isNaN(vertex.coords.usrCoords[2])) {
             path.push(vertex);
         }
@@ -1215,7 +1231,7 @@ JXG2.JSXMath.Clip = {
             }
         }
         return false;
-    },
+    }
 
     /**
      * Tracing phase of the Greiner-Hormann algorithm, see
@@ -1231,7 +1247,7 @@ JXG2.JSXMath.Clip = {
      * @return {Array}             Array consisting of two arrays containing the x-coordinates and the y-coordintaes of
      *      the resulting path.
      */
-    tracing: function (S, S_intersect, clip_type) {
+    static tracing(S, S_intersect, clip_type) {
         var P, status, current, start,
             cnt = 0,
             maxCnt = 10000,
@@ -1388,7 +1404,7 @@ JXG2.JSXMath.Clip = {
             S_idx++;
         }
         return this._getCoordsArrays(path, false);
-    },
+    }
 
     /**
      * Handle path clipping if one of the two paths is empty.
@@ -1398,7 +1414,7 @@ JXG2.JSXMath.Clip = {
      * @param  {String} clip_type Type of Boolean operation: 'intersection', 'union', 'differrence'.
      * @return {Boolean}        true, if one of the input paths is empty, false otherwise.
      */
-    isEmptyCase: function (S, C, clip_type) {
+    static isEmptyCase(S, C, clip_type) {
         if (clip_type === "intersection" && (S.length === 0 || C.length === 0)) {
             return true;
         }
@@ -1410,9 +1426,9 @@ JXG2.JSXMath.Clip = {
         }
 
         return false;
-    },
+    }
 
-    _getCoordsArrays: function (path, doClose) {
+    static _getCoordsArrays(path, doClose) {
         var pathX = [],
             pathY = [],
             i,
@@ -1438,7 +1454,7 @@ JXG2.JSXMath.Clip = {
         }
 
         return [pathX, pathY];
-    },
+    }
 
     /**
      * Handle cases when there are no intersection points of the two paths. This is the case if the
@@ -1450,7 +1466,7 @@ JXG2.JSXMath.Clip = {
      * @return {Array}          Array consisting of two arrays containing the x-coordinates and the y-coordinates of
      *      the resulting path.
      */
-    handleEmptyIntersection: function (S, C, clip_type) {
+    static handleEmptyIntersection(S, C, clip_type) {
         var P,
             Q,
             doClose = false,
@@ -1553,7 +1569,7 @@ JXG2.JSXMath.Clip = {
         }
 
         return this._getCoordsArrays(path, doClose);
-    },
+    }
 
     /**
      * Count intersection points of type 'X'.
@@ -1561,7 +1577,7 @@ JXG2.JSXMath.Clip = {
      * @returns Number
      * @private
      */
-    _countCrossingIntersections: function (intersections) {
+    static _countCrossingIntersections(intersections) {
         var i,
             le = intersections.length,
             sum = 0;
@@ -1572,7 +1588,7 @@ JXG2.JSXMath.Clip = {
             }
         }
         return sum;
-    },
+    }
 
     /**
      * Create path from all sorts of input elements and convert it
@@ -1586,7 +1602,7 @@ JXG2.JSXMath.Clip = {
      * @returns {Array} Array of JXG2.Coords elements containing a path.
      * @see JXG2.JSXMath.Clip.ClipgreinerHormann
      */
-    _getPath: function (obj, board) {
+    static _getPath(obj, board) {
         var i, len, r,
             rad, angle, alpha, steps,
             S = [];
@@ -1671,7 +1687,7 @@ JXG2.JSXMath.Clip = {
         }
 
         return S;
-    },
+    }
 
     /**
      * Determine the intersection, union or difference of two closed paths.
@@ -1910,8 +1926,8 @@ JXG2.JSXMath.Clip = {
      * </script><pre>
      *
      */
-    greinerHormann: function (subject, clip, clip_type, board) {
-        //},
+    static greinerHormann(subject, clip, clip_type, board) {
+        //}
         // subject_first_point_type, clip_first_point_type) {
 
         var len,
@@ -1943,7 +1959,7 @@ JXG2.JSXMath.Clip = {
         if (
             len > 0 &&
             Geometry.distance(C[0].coords.usrCoords, C[len - 1].coords.usrCoords, 3) <
-                JSXMath.eps * JSXMath.eps
+            JSXMath.eps * JSXMath.eps
         ) {
             C.pop();
         }
@@ -1987,7 +2003,7 @@ JXG2.JSXMath.Clip = {
 
         // Phase 3: tracing
         return this.tracing(S, S_intersect, clip_type);
-    },
+    }
 
     /**
      * Union of two closed paths. The paths could be JSXGraph elements circle, curve, or polygon.
@@ -2052,9 +2068,9 @@ JXG2.JSXMath.Clip = {
      * </script><pre>
      *
      */
-    union: function (path1, path2, board) {
+    static union(path1, path2, board) {
         return this.greinerHormann(path1, path2, "union", board);
-    },
+    }
 
     /**
      * Intersection of two closed paths. The paths could be JSXGraph elements circle, curve, or polygon.
@@ -2130,9 +2146,9 @@ JXG2.JSXMath.Clip = {
      *
      *
      */
-    intersection: function (path1, path2, board) {
+    static calcIntersection(path1, path2, board) {
         return this.greinerHormann(path1, path2, "intersection", board);
-    },
+    }
 
     /**
      * Difference of two closed paths, i.e. path1 minus path2.
@@ -2198,11 +2214,7 @@ JXG2.JSXMath.Clip = {
      * </script><pre>
      *
      */
-    difference: function (path1, path2, board) {
+    static difference(path1, path2, board) {
         return this.greinerHormann(path1, path2, "difference", board);
     }
 };
-
-// JXG2.extend(JXG2.JSXMath.Clip, /** @lends Geometry.Clip */ {});
-
-export default JXG2.JSXMath.Clip;

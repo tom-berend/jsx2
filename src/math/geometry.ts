@@ -639,7 +639,7 @@ export class Geometry {
      *
      * @returns {Number}
      */
-    static signedPolygon(p, sort) {
+    static signedPolygon(p, sort=true) {
         var i,
             N,
             A = 0,
@@ -1671,7 +1671,7 @@ export class Geometry {
      *                           regarded outside if the winding number is zero,
      *                           inside otherwise.
      */
-    static windingNumber(usrCoords, path, doNotClosePath) {
+    static windingNumber(usrCoords, path, doNotClosePath=false) {
         var wn = 0,
             le = path.length,
             x = usrCoords[1],

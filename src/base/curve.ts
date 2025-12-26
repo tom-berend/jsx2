@@ -37,19 +37,22 @@
  */
 
 import { JXG2 } from "../jxg.js";
-import Clip from "../math/clip.js";
+import { Clip } from "../math/clip.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 import { Geometry } from "../math/geometry.js";
-import {GeometryElement} from "./element.js";
+import { GeometryElement } from "./element.js";
 import GeonextParser from "../parser/geonext.js";
-import ImplicitPlot from "../math/implicitplot.js";
+import { ImplicitPlot } from "../math/implicitplot.js";
 import { JSXMath } from "../math/math.js";
 import Metapost from "../math/metapost.js";
 import { Numerics } from "../math/numerics.js";
 import Plot from "../math/plot.js";
-import QDT from "../math/qdt.js";
+import { Quadtree } from "../math/qdt.js";
 import { Type } from "../utils/type.js";
+import { CoordsElement } from "../index.js";
+import { LooseObject } from "../interfaces.js";
+import { Board } from "./board.js";
 
 /**
  * Curves are the common object for function graphs, parametric curves, polar curves, and data plots.
@@ -62,18 +65,17 @@ import { Type } from "../utils/type.js";
  * @see JXG2.Board#generateName
  * @see JXG2.Board#addCurve
  */
-JXG2.Curve = function (board, parents, attributes) {
-    this.constructor(board, attributes, OBJECT_TYPE.CURVE, OBJECT_CLASS.CURVE);
+export class Curve extends CoordsElement {
+    points = [];
 
-    this.points = [];
     /**
      * Number of points on curves. This value changes
      * between numberPointsLow and numberPointsHigh.
      * It is set in {@link JXG2.Curve#updateCurve}.
      */
-    this.numberPoints = this.evalVisProp('numberpointshigh');
+    numberPoints: number
 
-    this.bezierDegree = 1;
+    bezierDegree = 1;
 
     /**
      * Array holding the x-coordinates of a data plot.
@@ -81,7 +83,7 @@ JXG2.Curve = function (board, parents, attributes) {
      * the method {@link JXG2.Curve#updateDataArray}.
      * @type array
      */
-    this.dataX = null;
+    dataX = null;
 
     /**
      * Array holding the y-coordinates of a data plot.
@@ -89,7 +91,7 @@ JXG2.Curve = function (board, parents, attributes) {
      * the method {@link JXG2.Curve#updateDataArray}.
      * @type array
      */
-    this.dataY = null;
+    dataY = null;
 
     /**
      * Array of ticks storing all the ticks on this curve. Do not set this field directly and use
@@ -98,1424 +100,1430 @@ JXG2.Curve = function (board, parents, attributes) {
      * @type Array
      * @see JXG2.Ticks
      */
-    this.ticks = [];
+    ticks = [];
 
     /**
      * Stores a quadtree if it is required. The quadtree is generated in the curve
      * updates and can be used to speed up the hasPoint method.
      * @type Geometry.Quadtree
      */
-    this.qdt = null;
+    qdt = null;
 
-    if (Type.exists(parents[0])) {
-        this.varname = parents[0];
-    } else {
-        this.varname = 'x';
-    }
+    /**
+ * The parametric function which defines the x-coordinate of the curve.
+ * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
+ * @param {Boolean} suspendUpdate A boolean flag which is false for the
+ * first call of the function during a fresh plot of the curve and true
+ * for all subsequent calls of the function. This may be used to speed up the
+ * plotting of the curve, if the e.g. the curve depends on some input elements.
+ * @returns {Number} x-coordinate of the curve at t.
+ */
+    X = (t: number, suspendUpdate = false) => NaN
 
-    // function graphs: "x"
-    this.xterm = parents[1];
-    // function graphs: e.g. "x^2"
-    this.yterm = parents[2];
+
+    /**
+     * The parametric function which defines the y-coordinate of the curve.
+     * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
+     * @param {Boolean} suspendUpdate A boolean flag which is false for the
+     * first call of the function during a fresh plot of the curve and true
+     * for all subsequent calls of the function. This may be used to speed up the
+     * plotting of the curve, if the e.g. the curve depends on some input elements.
+     * @returns {Number} y-coordinate of the curve at t.
+     */
+    Y = (t: number, suspendUpdate = false) => NaN
+
+    /**
+     * Treat the curve as curve with homogeneous coordinates.
+     * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
+     * @returns {Number} Always 1.0
+     */
+    Z = (t: number, suspendUpdate = false) => 1
+
+    varname
+    xterm
+    yterm
+
+
 
     // Converts GEONExT syntax into JavaScript syntax
-    this.generateTerm(this.varname, this.xterm, this.yterm, parents[3], parents[4]);
-    // First evaluation of the curve
-    this.updateCurve();
 
-    this.id = this.board.setId(this, 'G');
-    this.board.renderer.drawCurve(this);
 
-    this.board.finalizeAdding(this);
+    constructor(board: Board, parents: any[], attributes: LooseObject) {
+        super(board, attributes, OBJECT_TYPE.CURVE, OBJECT_CLASS.CURVE);
 
-    this.createGradient();
-    this.elType = 'curve';
-    this.createLabel();
 
-    if (Type.isString(this.xterm)) {
-        this.notifyParents(this.xterm);
+        this.numberPoints = this.evalVisProp('numberpointshigh');
+
+        if (Type.exists(parents[0])) {
+            this.varname = parents[0];
+        } else {
+            this.varname = 'x';
+        }
+
+        // function graphs: "x"
+        this.xterm = parents[1];
+        // function graphs: e.g. "x^2"
+        this.yterm = parents[2];
+
+        this.generateTerm(this.varname, this.xterm, this.yterm, parents[3], parents[4]);
+        // First evaluation of the curve
+        this.updateCurve();
+
+        this.id = this.board.setId(this, 'G');
+        this.board.renderer.drawCurve(this);
+
+        this.board.finalizeAdding(this);
+
+        this.createGradient();
+        this.elType = 'curve';
+        this.createLabel();
+
+        if (Type.isString(this.xterm)) {
+            this.notifyParents(this.xterm);
+        }
+        if (Type.isString(this.yterm)) {
+            this.notifyParents(this.yterm);
+        }
+
+        this.methodMap = Type.deepCopy(this.methodMap, {
+            generateTerm: "generateTerm",
+            setTerm: "generateTerm",
+            move: "moveTo",
+            moveTo: "moveTo",
+            MinX: "minX",
+            MaxX: "maxX"
+        });
     }
-    if (Type.isString(this.yterm)) {
-        this.notifyParents(this.yterm);
+
+    /**
+     * Gives the default value of the left bound for the curve.
+     * May be overwritten in {@link JXG2.Curve#generateTerm}.
+     * @returns {Number} Left bound for the curve.
+     */
+    minX() {
+        var leftCoords;
+
+        if (this.evalVisProp('curvetype') === 'polar') {
+            return 0;
+        }
+
+        leftCoords = new Coords(
+            COORDS_BY.SCREEN,
+            [-this.board.canvasWidth * 0.1, 0],
+            this.board,
+            false
+        );
+        return leftCoords.usrCoords[1];
     }
 
-    this.methodMap = Type.deepCopy(this.methodMap, {
-        generateTerm: "generateTerm",
-        setTerm: "generateTerm",
-        move: "moveTo",
-        moveTo: "moveTo",
-        MinX: "minX",
-        MaxX: "maxX"
-    });
-};
 
-// JXG2.Curve.prototype = new GeometryElement();
+    /**
+     * Gives the default value of the right bound for the curve.
+     * May be overwritten in {@link JXG2.Curve#generateTerm}.
+     * @returns {Number} Right bound for the curve.
+     */
+    maxX() {
+        var rightCoords;
 
-JXG2.extend(
-    JXG2.Curve.prototype,
-    /** @lends JXG2.Curve.prototype */ {
-        /**
-         * Gives the default value of the left bound for the curve.
-         * May be overwritten in {@link JXG2.Curve#generateTerm}.
-         * @returns {Number} Left bound for the curve.
-         */
-        minX: function () {
-            var leftCoords;
+        if (this.evalVisProp('curvetype') === 'polar') {
+            return 2 * Math.PI;
+        }
+        rightCoords = new Coords(
+            COORDS_BY.SCREEN,
+            [this.board.canvasWidth * 1.1, 0],
+            this.board,
+            false
+        );
 
-            if (this.evalVisProp('curvetype') === 'polar') {
-                return 0;
+        return rightCoords.usrCoords[1];
+    }
+
+
+    /**
+     * Return the homogeneous coordinates of the curve at t - including all transformations
+     * applied to the curve.
+     * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
+     * @returns {Array} [Z(t), X(t), Y(t)] plus transformations
+     */
+    Ft(t) {
+        var c = [this.Z(t), this.X(t), this.Y(t)],
+            len = this.transformations.length;
+
+        if (len > 0) {
+            c = JSXMath.matVecMult(this.transformMat, c);
+        }
+        c[1] /= c[0];
+        c[2] /= c[0];
+        c[0] /= c[0];
+
+        return c;
+    }
+
+    /**
+     * Checks whether (x,y) is near the curve.
+     * @param {Number} x Coordinate in x direction, screen coordinates.
+     * @param {Number} y Coordinate in y direction, screen coordinates.
+     * @param {Number} start Optional start index for search on data plots.
+     * @returns {Boolean} True if (x,y) is near the curve, False otherwise.
+     */
+    hasPoint(x, y, start) {
+        var t, c, i, tX, tY,
+            checkPoint, len, invMat, isIn,
+            res = [],
+            points,
+            qdt,
+            steps = this.evalVisProp('numberpointslow'),
+            d = (this.maxX() - this.minX()) / steps,
+            prec, type,
+            dist = Infinity,
+            ux2, uy2,
+            ev_ct,
+            mi, ma,
+            suspendUpdate = true;
+
+        if (Type.isObject(this.evalVisProp('precision'))) {
+            type = this.board._inputDevice;
+            prec = this.evalVisProp('precision.' + type);
+        } else {
+            // 'inherit'
+            prec = this.board.options.precision.hasPoint;
+        }
+
+        // From now on, x,y are usrCoords
+        checkPoint = new Coords(COORDS_BY.SCREEN, [x, y], this.board, false);
+        x = checkPoint.usrCoords[1];
+        y = checkPoint.usrCoords[2];
+
+        // Handle inner points of the curve
+        if (this.bezierDegree === 1 && this.evalVisProp('hasinnerpoints')) {
+            isIn = Geometry.windingNumber([1, x, y], this.points, true);
+            if (isIn !== 0) {
+                return true;
+            }
+        }
+
+        // We use usrCoords. Only in the final distance calculation
+        // screen coords are used
+        prec += this.evalVisProp('strokewidth') * 0.5;
+        prec *= prec; // We do not want to take sqrt
+        ux2 = this.board.unitX * this.board.unitX;
+        uy2 = this.board.unitY * this.board.unitY;
+
+        mi = this.minX();
+        ma = this.maxX();
+        if (Type.exists(this._visibleArea)) {
+            mi = this._visibleArea[0];
+            ma = this._visibleArea[1];
+            d = (ma - mi) / steps;
+        }
+
+        ev_ct = this.evalVisProp('curvetype');
+        if (ev_ct === "parameter" || ev_ct === 'polar') {
+            // Transform the mouse/touch coordinates
+            // back to the original position of the curve.
+            // This is needed, because we work with the function terms, not the points.
+            if (this.transformations.length > 0) {
+                this.updateTransformMatrix();
+                invMat = JSXMath.inverse(this.transformMat);
+                c = JSXMath.matVecMult(invMat, [1, x, y]);
+                x = c[1];
+                y = c[2];
             }
 
-            leftCoords = new Coords(
-                COORDS_BY.SCREEN,
-                [-this.board.canvasWidth * 0.1, 0],
-                this.board,
-                false
-            );
-            return leftCoords.usrCoords[1];
-        },
+            // Brute force search for a point on the curve close to the mouse pointer
+            for (i = 0, t = mi; i < steps; i++) {
+                tX = this.X(t, suspendUpdate);
+                tY = this.Y(t, suspendUpdate);
 
-        /**
-         * Gives the default value of the right bound for the curve.
-         * May be overwritten in {@link JXG2.Curve#generateTerm}.
-         * @returns {Number} Right bound for the curve.
-         */
-        maxX: function () {
-            var rightCoords;
+                dist = (x - tX) * (x - tX) * ux2 + (y - tY) * (y - tY) * uy2;
 
-            if (this.evalVisProp('curvetype') === 'polar') {
-                return 2 * Math.PI;
-            }
-            rightCoords = new Coords(
-                COORDS_BY.SCREEN,
-                [this.board.canvasWidth * 1.1, 0],
-                this.board,
-                false
-            );
-
-            return rightCoords.usrCoords[1];
-        },
-
-        /**
-         * The parametric function which defines the x-coordinate of the curve.
-         * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
-         * @param {Boolean} suspendUpdate A boolean flag which is false for the
-         * first call of the function during a fresh plot of the curve and true
-         * for all subsequent calls of the function. This may be used to speed up the
-         * plotting of the curve, if the e.g. the curve depends on some input elements.
-         * @returns {Number} x-coordinate of the curve at t.
-         */
-        X: function (t) {
-            return NaN;
-        },
-
-        /**
-         * The parametric function which defines the y-coordinate of the curve.
-         * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
-         * @param {Boolean} suspendUpdate A boolean flag which is false for the
-         * first call of the function during a fresh plot of the curve and true
-         * for all subsequent calls of the function. This may be used to speed up the
-         * plotting of the curve, if the e.g. the curve depends on some input elements.
-         * @returns {Number} y-coordinate of the curve at t.
-         */
-        Y: function (t) {
-            return NaN;
-        },
-
-        /**
-         * Treat the curve as curve with homogeneous coordinates.
-         * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
-         * @returns {Number} Always 1.0
-         */
-        Z: function (t) {
-            return 1;
-        },
-
-        /**
-         * Return the homogeneous coordinates of the curve at t - including all transformations
-         * applied to the curve.
-         * @param {Number} t A number between {@link JXG2.Curve#minX} and {@link JXG2.Curve#maxX}.
-         * @returns {Array} [Z(t), X(t), Y(t)] plus transformations
-         */
-        Ft: function (t) {
-            var c = [this.Z(t), this.X(t), this.Y(t)],
-                len = this.transformations.length;
-
-            if (len > 0) {
-                c = JSXMath.matVecMult(this.transformMat, c);
-            }
-            c[1] /= c[0];
-            c[2] /= c[0];
-            c[0] /= c[0];
-
-            return c;
-        },
-
-        /**
-         * Checks whether (x,y) is near the curve.
-         * @param {Number} x Coordinate in x direction, screen coordinates.
-         * @param {Number} y Coordinate in y direction, screen coordinates.
-         * @param {Number} start Optional start index for search on data plots.
-         * @returns {Boolean} True if (x,y) is near the curve, False otherwise.
-         */
-        hasPoint: function (x, y, start) {
-            var t, c, i, tX, tY,
-                checkPoint, len, invMat, isIn,
-                res = [],
-                points,
-                qdt,
-                steps = this.evalVisProp('numberpointslow'),
-                d = (this.maxX() - this.minX()) / steps,
-                prec, type,
-                dist = Infinity,
-                ux2, uy2,
-                ev_ct,
-                mi, ma,
-                suspendUpdate = true;
-
-            if (Type.isObject(this.evalVisProp('precision'))) {
-                type = this.board._inputDevice;
-                prec = this.evalVisProp('precision.' + type);
-            } else {
-                // 'inherit'
-                prec = this.board.options.precision.hasPoint;
-            }
-
-            // From now on, x,y are usrCoords
-            checkPoint = new Coords(COORDS_BY.SCREEN, [x, y], this.board, false);
-            x = checkPoint.usrCoords[1];
-            y = checkPoint.usrCoords[2];
-
-            // Handle inner points of the curve
-            if (this.bezierDegree === 1 && this.evalVisProp('hasinnerpoints')) {
-                isIn = Geometry.windingNumber([1, x, y], this.points, true);
-                if (isIn !== 0) {
+                if (dist <= prec) {
                     return true;
                 }
+
+                t += d;
+            }
+        } else if (ev_ct === "plot" || ev_ct === 'functiongraph') {
+            // Here, we can ignore transformations of the curve,
+            // since we are working directly with the points.
+
+            if (!Type.exists(start) || start < 0) {
+                start = 0;
             }
 
-            // We use usrCoords. Only in the final distance calculation
-            // screen coords are used
-            prec += this.evalVisProp('strokewidth') * 0.5;
-            prec *= prec; // We do not want to take sqrt
-            ux2 = this.board.unitX * this.board.unitX;
-            uy2 = this.board.unitY * this.board.unitY;
-
-            mi = this.minX();
-            ma = this.maxX();
-            if (Type.exists(this._visibleArea)) {
-                mi = this._visibleArea[0];
-                ma = this._visibleArea[1];
-                d = (ma - mi) / steps;
+            if (
+                Type.exists(this.qdt) &&
+                this.evalVisProp('useqdt') &&
+                this.bezierDegree !== 3
+            ) {
+                qdt = this.qdt.query(new Coords(COORDS_BY.USER, [x, y], this.board));
+                points = qdt.points;
+                len = points.length;
+            } else {
+                points = this.points;
+                len = this.numberPoints - 1;
             }
 
-            ev_ct = this.evalVisProp('curvetype');
-            if (ev_ct === "parameter" || ev_ct === 'polar') {
-                // Transform the mouse/touch coordinates
-                // back to the original position of the curve.
-                // This is needed, because we work with the function terms, not the points.
-                if (this.transformations.length > 0) {
-                    this.updateTransformMatrix();
-                    invMat = JSXMath.inverse(this.transformMat);
-                    c = JSXMath.matVecMult(invMat, [1, x, y]);
-                    x = c[1];
-                    y = c[2];
-                }
-
-                // Brute force search for a point on the curve close to the mouse pointer
-                for (i = 0, t = mi; i < steps; i++) {
-                    tX = this.X(t, suspendUpdate);
-                    tY = this.Y(t, suspendUpdate);
-
-                    dist = (x - tX) * (x - tX) * ux2 + (y - tY) * (y - tY) * uy2;
-
-                    if (dist <= prec) {
-                        return true;
-                    }
-
-                    t += d;
-                }
-            } else if (ev_ct === "plot" || ev_ct === 'functiongraph') {
-                // Here, we can ignore transformations of the curve,
-                // since we are working directly with the points.
-
-                if (!Type.exists(start) || start < 0) {
-                    start = 0;
-                }
-
-                if (
-                    Type.exists(this.qdt) &&
-                    this.evalVisProp('useqdt') &&
-                    this.bezierDegree !== 3
-                ) {
-                    qdt = this.qdt.query(new Coords(COORDS_BY.USER, [x, y], this.board));
-                    points = qdt.points;
-                    len = points.length;
+            for (i = start; i < len; i++) {
+                if (this.bezierDegree === 3) {
+                    //res.push(Geometry.projectCoordsToBeziersegment([1, x, y], this, i));
+                    res = Geometry.projectCoordsToBeziersegment([1, x, y], this, i);
                 } else {
-                    points = this.points;
-                    len = this.numberPoints - 1;
-                }
+                    if (qdt) {
+                        if (points[i].prev) {
+                            res = Geometry.projectCoordsToSegment(
+                                [1, x, y],
+                                points[i].prev.usrCoords,
+                                points[i].usrCoords
+                            );
+                        }
 
-                for (i = start; i < len; i++) {
-                    if (this.bezierDegree === 3) {
-                        //res.push(Geometry.projectCoordsToBeziersegment([1, x, y], this, i));
-                        res = Geometry.projectCoordsToBeziersegment([1, x, y], this, i);
-                    } else {
-                        if (qdt) {
-                            if (points[i].prev) {
-                                res = Geometry.projectCoordsToSegment(
-                                    [1, x, y],
-                                    points[i].prev.usrCoords,
-                                    points[i].usrCoords
-                                );
-                            }
-
-                            // If the next point in the array is the same as the current points
-                            // next neighbor we don't have to project it onto that segment because
-                            // that will already be done in the next iteration of this loop.
-                            if (points[i].next && points[i + 1] !== points[i].next) {
-                                res = Geometry.projectCoordsToSegment(
-                                    [1, x, y],
-                                    points[i].usrCoords,
-                                    points[i].next.usrCoords
-                                );
-                            }
-                        } else {
+                        // If the next point in the array is the same as the current points
+                        // next neighbor we don't have to project it onto that segment because
+                        // that will already be done in the next iteration of this loop.
+                        if (points[i].next && points[i + 1] !== points[i].next) {
                             res = Geometry.projectCoordsToSegment(
                                 [1, x, y],
                                 points[i].usrCoords,
-                                points[i + 1].usrCoords
+                                points[i].next.usrCoords
                             );
                         }
-                    }
-
-                    if (
-                        res[1] >= 0 &&
-                        res[1] <= 1 &&
-                        (x - res[0][1]) * (x - res[0][1]) * ux2 +
-                        (y - res[0][2]) * (y - res[0][2]) * uy2 <=
-                        prec
-                    ) {
-                        return true;
+                    } else {
+                        res = Geometry.projectCoordsToSegment(
+                            [1, x, y],
+                            points[i].usrCoords,
+                            points[i + 1].usrCoords
+                        );
                     }
                 }
-                return false;
+
+                if (
+                    res[1] >= 0 &&
+                    res[1] <= 1 &&
+                    (x - res[0][1]) * (x - res[0][1]) * ux2 +
+                    (y - res[0][2]) * (y - res[0][2]) * uy2 <=
+                    prec
+                ) {
+                    return true;
+                }
             }
-            return dist < prec;
-        },
+            return false;
+        }
+        return dist < prec;
+    }
 
-        /**
-         * Allocate points in the Coords array this.points
-         */
-        allocatePoints: function () {
-            var i, len;
+    /**
+     * Allocate points in the Coords array this.points
+     */
+    allocatePoints() {
+        var i, len;
 
+        len = this.numberPoints;
+
+        if (this.points.length < this.numberPoints) {
+            for (i = this.points.length; i < len; i++) {
+                this.points[i] = new Coords(
+                    COORDS_BY.USER,
+                    [0, 0],
+                    this.board,
+                    false
+                );
+            }
+        }
+    }
+
+    /**
+     * Generates points of the curve to be plotted.
+     * @returns {JXG2.Curve} Reference to the curve object.
+     * @see JXG2.Curve#updateCurve
+     */
+    update() {
+        if (this.needsUpdate) {
+            if (this.evalVisProp('trace')) {
+                this.cloneToBackground();
+            }
+            this.updateCurve();
+        }
+
+        return this;
+    }
+
+    /**
+     * Updates the visual contents of the curve.
+     * @returns {JXG2.Curve} Reference to the curve object.
+     */
+    updateRenderer() {
+        //var wasReal;
+
+        if (!this.needsUpdate) {
+            return this;
+        }
+
+        if (this.visPropCalc.visible) {
+            // wasReal = this.isReal;
+
+            this.isReal = Plot.checkReal(this.points);
+
+            if (
+                //wasReal &&
+                !this.isReal
+            ) {
+                this.updateVisibility(false);
+            }
+        }
+
+        if (this.visPropCalc.visible) {
+            this.board.renderer.updateCurve(this);
+        }
+
+        /* Update the label if visible. */
+        if (
+            this.hasLabel &&
+            this.visPropCalc.visible &&
+            this.label &&
+            this.label.visPropCalc.visible &&
+            this.isReal
+        ) {
+            this.label.update();
+            this.board.renderer.updateText(this.label);
+        }
+
+        // Update rendNode display
+        this.setDisplayRendNode();
+        // if (this.visPropCalc.visible !== this.visPropOld.visible) {
+        //     this.board.renderer.display(this, this.visPropCalc.visible);
+        //     this.visPropOld.visible = this.visPropCalc.visible;
+        //
+        //     if (this.hasLabel) {
+        //         this.board.renderer.display(this.label, this.label.visPropCalc.visible);
+        //     }
+        // }
+
+        this.needsUpdate = false;
+        return this;
+    }
+
+    /**
+     * For dynamic dataplots updateCurve can be used to compute new entries
+     * for the arrays {@link JXG2.Curve#dataX} and {@link JXG2.Curve#dataY}. It
+     * is used in {@link JXG2.Curve#updateCurve}. Default is an empty method, can
+     * be overwritten by the user.
+     *
+     *
+     * @example
+     * // This example overwrites the updateDataArray method.
+     * // There, new values for the arrays JXG2.Curve.dataX and JXG2.Curve.dataY
+     * // are computed from the value of the slider N
+     *
+     * var N = board.create('slider', [[0,1.5],[3,1.5],[1,3,40]], {name:'n',snapWidth:1});
+     * var circ = board.create('circle',[[4,-1.5],1],{strokeWidth:1, strokecolor:'black', strokeWidth:2,
+     * 		fillColor:'#0055ff13'});
+     *
+     * var c = board.create('curve', [[0],[0]],{strokecolor:'red', strokeWidth:2});
+     * c.updateDataArray = function() {
+     *         var r = 1, n = Math.floor(N.Value()),
+     *             x = [0], y = [0],
+     *             phi = Math.PI/n,
+     *             h = r*Math.cos(phi),
+     *             s = r*Math.sin(phi),
+     *             i, j,
+     *             px = 0, py = 0, sgn = 1,
+     *             d = 16,
+     *             dt = phi/d,
+     *             pt;
+     *
+     *         for (i = 0; i < n; i++) {
+     *             for (j = -d; j <= d; j++) {
+     *                 pt = dt*j;
+     *                 x.push(px + r*Math.sin(pt));
+     *                 y.push(sgn*r*Math.cos(pt) - (sgn-1)*h*0.5);
+     *             }
+     *             px += s;
+     *             sgn *= (-1);
+     *         }
+     *         x.push((n - 1)*s);
+     *         y.push(h + (sgn - 1)*h*0.5);
+     *         this.dataX = x;
+     *         this.dataY = y;
+     *     }
+     *
+     * var c2 = board.create('curve', [[0],[0]],{strokecolor:'red', strokeWidth:1});
+     * c2.updateDataArray = function() {
+     *         var r = 1, n = Math.floor(N.Value()),
+     *             px = circ.midpoint.X(), py = circ.midpoint.Y(),
+     *             x = [px], y = [py],
+     *             phi = Math.PI/n,
+     *             s = r*Math.sin(phi),
+     *             i, j,
+     *             d = 16,
+     *             dt = phi/d,
+     *             pt = Math.PI*0.5+phi;
+     *
+     *         for (i = 0; i < n; i++) {
+     *             for (j= -d; j <= d; j++) {
+     *                 x.push(px + r*Math.cos(pt));
+     *                 y.push(py + r*Math.sin(pt));
+     *                 pt -= dt;
+     *             }
+     *             x.push(px);
+     *             y.push(py);
+     *             pt += dt;
+     *         }
+     *         this.dataX = x;
+     *         this.dataY = y;
+     *     }
+     *     board.update();
+     *
+     * </pre><div id="JXG20bc7802-e69e-11e5-b1bf-901b0e1b8723" class="jxgbox" style="width: 600px; height: 400px;"></div>
+     * <script type="text/javascript">
+     *     (function() {
+     *         var board = JXG2.JSXGraph.initBoard('JXG20bc7802-e69e-11e5-b1bf-901b0e1b8723',
+     *             {boundingbox: [-1.5,2,8,-3], keepaspectratio: true, axis: true, showcopyright: false, shownavigation: false});
+     *             var N = board.create('slider', [[0,1.5],[3,1.5],[1,3,40]], {name:'n',snapWidth:1});
+     *             var circ = board.create('circle',[[4,-1.5],1],{strokeWidth:1, strokecolor:'black',
+     *             strokeWidth:2, fillColor:'#0055ff13'});
+     *
+     *             var c = board.create('curve', [[0],[0]],{strokecolor:'red', strokeWidth:2});
+     *             c.updateDataArray = function() {
+     *                     var r = 1, n = Math.floor(N.Value()),
+     *                         x = [0], y = [0],
+     *                         phi = Math.PI/n,
+     *                         h = r*Math.cos(phi),
+     *                         s = r*Math.sin(phi),
+     *                         i, j,
+     *                         px = 0, py = 0, sgn = 1,
+     *                         d = 16,
+     *                         dt = phi/d,
+     *                         pt;
+     *
+     *                     for (i=0;i<n;i++) {
+     *                         for (j=-d;j<=d;j++) {
+     *                             pt = dt*j;
+     *                             x.push(px+r*Math.sin(pt));
+     *                             y.push(sgn*r*Math.cos(pt)-(sgn-1)*h*0.5);
+     *                         }
+     *                         px += s;
+     *                         sgn *= (-1);
+     *                     }
+     *                     x.push((n-1)*s);
+     *                     y.push(h+(sgn-1)*h*0.5);
+     *                     this.dataX = x;
+     *                     this.dataY = y;
+     *                 }
+     *
+     *             var c2 = board.create('curve', [[0],[0]],{strokecolor:'red', strokeWidth:1});
+     *             c2.updateDataArray = function() {
+     *                     var r = 1, n = Math.floor(N.Value()),
+     *                         px = circ.midpoint.X(), py = circ.midpoint.Y(),
+     *                         x = [px], y = [py],
+     *                         phi = Math.PI/n,
+     *                         s = r*Math.sin(phi),
+     *                         i, j,
+     *                         d = 16,
+     *                         dt = phi/d,
+     *                         pt = Math.PI*0.5+phi;
+     *
+     *                     for (i=0;i<n;i++) {
+     *                         for (j=-d;j<=d;j++) {
+     *                             x.push(px+r*Math.cos(pt));
+     *                             y.push(py+r*Math.sin(pt));
+     *                             pt -= dt;
+     *                         }
+     *                         x.push(px);
+     *                         y.push(py);
+     *                         pt += dt;
+     *                     }
+     *                     this.dataX = x;
+     *                     this.dataY = y;
+     *                 }
+     *                 board.update();
+     *
+     *     })();
+     *
+     * </script><pre>
+     *
+     * @example
+     * // This is an example which overwrites updateDataArray and produces
+     * // a Bezier curve of degree three.
+     * var A = board.create('point', [-3,3]);
+     * var B = board.create('point', [3,-2]);
+     * var line = board.create('segment', [A,B]);
+     *
+     * var height = 0.5; // height of the curly brace
+     *
+     * // Curly brace
+     * var crl = board.create('curve', [[0],[0]], {strokeWidth:1, strokeColor:'black'});
+     * crl.bezierDegree = 3;
+     * crl.updateDataArray = function() {
+     *     var d = [B.X()-A.X(), B.Y()-A.Y()],
+     *         dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
+     *         mid = [(A.X()+B.X())*0.5, (A.Y()+B.Y())*0.5];
+     *
+     *     d[0] *= height/dl;
+     *     d[1] *= height/dl;
+     *
+     *     this.dataX = [ A.X(), A.X()-d[1], mid[0], mid[0]-d[1], mid[0], B.X()-d[1], B.X() ];
+     *     this.dataY = [ A.Y(), A.Y()+d[0], mid[1], mid[1]+d[0], mid[1], B.Y()+d[0], B.Y() ];
+     * };
+     *
+     * // Text
+     * var txt = board.create('text', [
+     *                     function() {
+     *                         var d = [B.X()-A.X(), B.Y()-A.Y()],
+     *                             dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
+     *                             mid = (A.X()+B.X())*0.5;
+     *
+     *                         d[1] *= height/dl;
+     *                         return mid-d[1]+0.1;
+     *                     },
+     *                     function() {
+     *                         var d = [B.X()-A.X(), B.Y()-A.Y()],
+     *                             dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
+     *                             mid = (A.Y()+B.Y())*0.5;
+     *
+     *                         d[0] *= height/dl;
+     *                         return mid+d[0]+0.1;
+     *                     },
+     *                     function() { return "length=" + JXG2.toFixed(B.Dist(A), 2); }
+     *                 ]);
+     *
+     *
+     * board.update(); // This update is necessary to call updateDataArray the first time.
+     *
+     * </pre><div id="JXGa61a4d66-e69f-11e5-b1bf-901b0e1b8723"  class="jxgbox" style="width: 300px; height: 300px;"></div>
+     * <script type="text/javascript">
+     *     (function() {
+     *      var board = JXG2.JSXGraph.initBoard('JXGa61a4d66-e69f-11e5-b1bf-901b0e1b8723',
+     *             {boundingbox: [-4, 4, 4,-4], axis: true, showcopyright: false, shownavigation: false});
+     *     var A = board.create('point', [-3,3]);
+     *     var B = board.create('point', [3,-2]);
+     *     var line = board.create('segment', [A,B]);
+     *
+     *     var height = 0.5; // height of the curly brace
+     *
+     *     // Curly brace
+     *     var crl = board.create('curve', [[0],[0]], {strokeWidth:1, strokeColor:'black'});
+     *     crl.bezierDegree = 3;
+     *     crl.updateDataArray = function() {
+     *         var d = [B.X()-A.X(), B.Y()-A.Y()],
+     *             dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
+     *             mid = [(A.X()+B.X())*0.5, (A.Y()+B.Y())*0.5];
+     *
+     *         d[0] *= height/dl;
+     *         d[1] *= height/dl;
+     *
+     *         this.dataX = [ A.X(), A.X()-d[1], mid[0], mid[0]-d[1], mid[0], B.X()-d[1], B.X() ];
+     *         this.dataY = [ A.Y(), A.Y()+d[0], mid[1], mid[1]+d[0], mid[1], B.Y()+d[0], B.Y() ];
+     *     };
+     *
+     *     // Text
+     *     var txt = board.create('text', [
+     *                         function() {
+     *                             var d = [B.X()-A.X(), B.Y()-A.Y()],
+     *                                 dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
+     *                                 mid = (A.X()+B.X())*0.5;
+     *
+     *                             d[1] *= height/dl;
+     *                             return mid-d[1]+0.1;
+     *                         },
+     *                         function() {
+     *                             var d = [B.X()-A.X(), B.Y()-A.Y()],
+     *                                 dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
+     *                                 mid = (A.Y()+B.Y())*0.5;
+     *
+     *                             d[0] *= height/dl;
+     *                             return mid+d[0]+0.1;
+     *                         },
+     *                         function() { return "length="+JXG2.toFixed(B.Dist(A), 2); }
+     *                     ]);
+     *
+     *
+     *     board.update(); // This update is necessary to call updateDataArray the first time.
+     *
+     *     })();
+     *
+     * </script><pre>
+     *
+     *
+     */
+    updateDataArray() {
+        // this used to return this, but we shouldn't rely on the user to implement it.
+    }
+
+    /**
+     * Computes the curve path
+     * @see JXG2.Curve#update
+     * @returns {JXG2.Curve} Reference to the curve object.
+     */
+    updateCurve() {
+        var i, len, mi, ma,
+            x, y,
+            version = this.visProp.plotversion,
+            //t1, t2, l1,
+            suspendUpdate = false;
+
+        this.updateTransformMatrix();
+        this.updateDataArray();
+        mi = this.minX();
+        ma = this.maxX();
+
+        if (Type.exists(this.dataX)) {
+            // Discrete data points, i.e. x-coordinates are given in an array
+            this.numberPoints = this.dataX.length;
             len = this.numberPoints;
 
-            if (this.points.length < this.numberPoints) {
-                for (i = this.points.length; i < len; i++) {
-                    this.points[i] = new Coords(
+            // It is possible, that the array length has increased.
+            this.allocatePoints();
+
+            for (i = 0; i < len; i++) {
+                x = i;
+
+                // y-coordinates are in an array
+                if (Type.exists(this.dataY)) {
+                    y = i;
+                    // The last parameter prevents rounding in usr2screen().
+                    this.points[i].setCoordinates(
                         COORDS_BY.USER,
-                        [0, 0],
-                        this.board,
+                        [this.dataX[i], this.dataY[i]],
+                        false
+                    );
+                } else {
+                    // discrete x data, continuous y data
+                    y = this.X(x);
+                    // The last parameter prevents rounding in usr2screen().
+                    this.points[i].setCoordinates(
+                        COORDS_BY.USER,
+                        [this.dataX[i], this.Y(y, suspendUpdate)],
                         false
                     );
                 }
-            }
-        },
+                this.points[i]._t = i;
 
-        /**
-         * Generates points of the curve to be plotted.
-         * @returns {JXG2.Curve} Reference to the curve object.
-         * @see JXG2.Curve#updateCurve
-         */
-        update: function () {
-            if (this.needsUpdate) {
-                if (this.evalVisProp('trace')) {
-                    this.cloneToBackground(true);
+                // this.updateTransform(this.points[i]);
+                suspendUpdate = true;
+            }
+
+        } else {
+            // Continuous x-data, i.e. given as a function
+            if (this.evalVisProp('doadvancedplot')) {
+                // console.time('plot');
+
+                if (version === 1 || this.evalVisProp('doadvancedplotold')) {
+                    Plot.updateParametricCurveOld(this, mi, ma);
+                } else if (version === 2) {
+                    Plot.updateParametricCurve_v2(this, mi, ma);
+                } else if (version === 3) {
+                    Plot.updateParametricCurve_v3(this, mi, ma);
+                } else if (version === 4) {
+                    Plot.updateParametricCurve_v4(this, mi, ma);
+                } else {
+                    Plot.updateParametricCurve_v2(this, mi, ma);
                 }
-                this.updateCurve();
-            }
-
-            return this;
-        },
-
-        /**
-         * Updates the visual contents of the curve.
-         * @returns {JXG2.Curve} Reference to the curve object.
-         */
-        updateRenderer: function () {
-            //var wasReal;
-
-            if (!this.needsUpdate) {
-                return this;
-            }
-
-            if (this.visPropCalc.visible) {
-                // wasReal = this.isReal;
-
-                this.isReal = Plot.checkReal(this.points);
-
-                if (
-                    //wasReal &&
-                    !this.isReal
-                ) {
-                    this.updateVisibility(false);
+                // console.timeEnd('plot');
+            } else {
+                if (this.board.updateQuality === this.board.BOARD_QUALITY_HIGH) {
+                    this.numberPoints = this.evalVisProp('numberpointshigh');
+                } else {
+                    this.numberPoints = this.evalVisProp('numberpointslow');
                 }
-            }
-
-            if (this.visPropCalc.visible) {
-                this.board.renderer.updateCurve(this);
-            }
-
-            /* Update the label if visible. */
-            if (
-                this.hasLabel &&
-                this.visPropCalc.visible &&
-                this.label &&
-                this.label.visPropCalc.visible &&
-                this.isReal
-            ) {
-                this.label.update();
-                this.board.renderer.updateText(this.label);
-            }
-
-            // Update rendNode display
-            this.setDisplayRendNode();
-            // if (this.visPropCalc.visible !== this.visPropOld.visible) {
-            //     this.board.renderer.display(this, this.visPropCalc.visible);
-            //     this.visPropOld.visible = this.visPropCalc.visible;
-            //
-            //     if (this.hasLabel) {
-            //         this.board.renderer.display(this.label, this.label.visPropCalc.visible);
-            //     }
-            // }
-
-            this.needsUpdate = false;
-            return this;
-        },
-
-        /**
-         * For dynamic dataplots updateCurve can be used to compute new entries
-         * for the arrays {@link JXG2.Curve#dataX} and {@link JXG2.Curve#dataY}. It
-         * is used in {@link JXG2.Curve#updateCurve}. Default is an empty method, can
-         * be overwritten by the user.
-         *
-         *
-         * @example
-         * // This example overwrites the updateDataArray method.
-         * // There, new values for the arrays JXG2.Curve.dataX and JXG2.Curve.dataY
-         * // are computed from the value of the slider N
-         *
-         * var N = board.create('slider', [[0,1.5],[3,1.5],[1,3,40]], {name:'n',snapWidth:1});
-         * var circ = board.create('circle',[[4,-1.5],1],{strokeWidth:1, strokecolor:'black', strokeWidth:2,
-         * 		fillColor:'#0055ff13'});
-         *
-         * var c = board.create('curve', [[0],[0]],{strokecolor:'red', strokeWidth:2});
-         * c.updateDataArray = function() {
-         *         var r = 1, n = Math.floor(N.Value()),
-         *             x = [0], y = [0],
-         *             phi = Math.PI/n,
-         *             h = r*Math.cos(phi),
-         *             s = r*Math.sin(phi),
-         *             i, j,
-         *             px = 0, py = 0, sgn = 1,
-         *             d = 16,
-         *             dt = phi/d,
-         *             pt;
-         *
-         *         for (i = 0; i < n; i++) {
-         *             for (j = -d; j <= d; j++) {
-         *                 pt = dt*j;
-         *                 x.push(px + r*Math.sin(pt));
-         *                 y.push(sgn*r*Math.cos(pt) - (sgn-1)*h*0.5);
-         *             }
-         *             px += s;
-         *             sgn *= (-1);
-         *         }
-         *         x.push((n - 1)*s);
-         *         y.push(h + (sgn - 1)*h*0.5);
-         *         this.dataX = x;
-         *         this.dataY = y;
-         *     }
-         *
-         * var c2 = board.create('curve', [[0],[0]],{strokecolor:'red', strokeWidth:1});
-         * c2.updateDataArray = function() {
-         *         var r = 1, n = Math.floor(N.Value()),
-         *             px = circ.midpoint.X(), py = circ.midpoint.Y(),
-         *             x = [px], y = [py],
-         *             phi = Math.PI/n,
-         *             s = r*Math.sin(phi),
-         *             i, j,
-         *             d = 16,
-         *             dt = phi/d,
-         *             pt = Math.PI*0.5+phi;
-         *
-         *         for (i = 0; i < n; i++) {
-         *             for (j= -d; j <= d; j++) {
-         *                 x.push(px + r*Math.cos(pt));
-         *                 y.push(py + r*Math.sin(pt));
-         *                 pt -= dt;
-         *             }
-         *             x.push(px);
-         *             y.push(py);
-         *             pt += dt;
-         *         }
-         *         this.dataX = x;
-         *         this.dataY = y;
-         *     }
-         *     board.update();
-         *
-         * </pre><div id="JXG20bc7802-e69e-11e5-b1bf-901b0e1b8723" class="jxgbox" style="width: 600px; height: 400px;"></div>
-         * <script type="text/javascript">
-         *     (function() {
-         *         var board = JXG2.JSXGraph.initBoard('JXG20bc7802-e69e-11e5-b1bf-901b0e1b8723',
-         *             {boundingbox: [-1.5,2,8,-3], keepaspectratio: true, axis: true, showcopyright: false, shownavigation: false});
-         *             var N = board.create('slider', [[0,1.5],[3,1.5],[1,3,40]], {name:'n',snapWidth:1});
-         *             var circ = board.create('circle',[[4,-1.5],1],{strokeWidth:1, strokecolor:'black',
-         *             strokeWidth:2, fillColor:'#0055ff13'});
-         *
-         *             var c = board.create('curve', [[0],[0]],{strokecolor:'red', strokeWidth:2});
-         *             c.updateDataArray = function() {
-         *                     var r = 1, n = Math.floor(N.Value()),
-         *                         x = [0], y = [0],
-         *                         phi = Math.PI/n,
-         *                         h = r*Math.cos(phi),
-         *                         s = r*Math.sin(phi),
-         *                         i, j,
-         *                         px = 0, py = 0, sgn = 1,
-         *                         d = 16,
-         *                         dt = phi/d,
-         *                         pt;
-         *
-         *                     for (i=0;i<n;i++) {
-         *                         for (j=-d;j<=d;j++) {
-         *                             pt = dt*j;
-         *                             x.push(px+r*Math.sin(pt));
-         *                             y.push(sgn*r*Math.cos(pt)-(sgn-1)*h*0.5);
-         *                         }
-         *                         px += s;
-         *                         sgn *= (-1);
-         *                     }
-         *                     x.push((n-1)*s);
-         *                     y.push(h+(sgn-1)*h*0.5);
-         *                     this.dataX = x;
-         *                     this.dataY = y;
-         *                 }
-         *
-         *             var c2 = board.create('curve', [[0],[0]],{strokecolor:'red', strokeWidth:1});
-         *             c2.updateDataArray = function() {
-         *                     var r = 1, n = Math.floor(N.Value()),
-         *                         px = circ.midpoint.X(), py = circ.midpoint.Y(),
-         *                         x = [px], y = [py],
-         *                         phi = Math.PI/n,
-         *                         s = r*Math.sin(phi),
-         *                         i, j,
-         *                         d = 16,
-         *                         dt = phi/d,
-         *                         pt = Math.PI*0.5+phi;
-         *
-         *                     for (i=0;i<n;i++) {
-         *                         for (j=-d;j<=d;j++) {
-         *                             x.push(px+r*Math.cos(pt));
-         *                             y.push(py+r*Math.sin(pt));
-         *                             pt -= dt;
-         *                         }
-         *                         x.push(px);
-         *                         y.push(py);
-         *                         pt += dt;
-         *                     }
-         *                     this.dataX = x;
-         *                     this.dataY = y;
-         *                 }
-         *                 board.update();
-         *
-         *     })();
-         *
-         * </script><pre>
-         *
-         * @example
-         * // This is an example which overwrites updateDataArray and produces
-         * // a Bezier curve of degree three.
-         * var A = board.create('point', [-3,3]);
-         * var B = board.create('point', [3,-2]);
-         * var line = board.create('segment', [A,B]);
-         *
-         * var height = 0.5; // height of the curly brace
-         *
-         * // Curly brace
-         * var crl = board.create('curve', [[0],[0]], {strokeWidth:1, strokeColor:'black'});
-         * crl.bezierDegree = 3;
-         * crl.updateDataArray = function() {
-         *     var d = [B.X()-A.X(), B.Y()-A.Y()],
-         *         dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
-         *         mid = [(A.X()+B.X())*0.5, (A.Y()+B.Y())*0.5];
-         *
-         *     d[0] *= height/dl;
-         *     d[1] *= height/dl;
-         *
-         *     this.dataX = [ A.X(), A.X()-d[1], mid[0], mid[0]-d[1], mid[0], B.X()-d[1], B.X() ];
-         *     this.dataY = [ A.Y(), A.Y()+d[0], mid[1], mid[1]+d[0], mid[1], B.Y()+d[0], B.Y() ];
-         * };
-         *
-         * // Text
-         * var txt = board.create('text', [
-         *                     function() {
-         *                         var d = [B.X()-A.X(), B.Y()-A.Y()],
-         *                             dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
-         *                             mid = (A.X()+B.X())*0.5;
-         *
-         *                         d[1] *= height/dl;
-         *                         return mid-d[1]+0.1;
-         *                     },
-         *                     function() {
-         *                         var d = [B.X()-A.X(), B.Y()-A.Y()],
-         *                             dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
-         *                             mid = (A.Y()+B.Y())*0.5;
-         *
-         *                         d[0] *= height/dl;
-         *                         return mid+d[0]+0.1;
-         *                     },
-         *                     function() { return "length=" + JXG2.toFixed(B.Dist(A), 2); }
-         *                 ]);
-         *
-         *
-         * board.update(); // This update is necessary to call updateDataArray the first time.
-         *
-         * </pre><div id="JXGa61a4d66-e69f-11e5-b1bf-901b0e1b8723"  class="jxgbox" style="width: 300px; height: 300px;"></div>
-         * <script type="text/javascript">
-         *     (function() {
-         *      var board = JXG2.JSXGraph.initBoard('JXGa61a4d66-e69f-11e5-b1bf-901b0e1b8723',
-         *             {boundingbox: [-4, 4, 4,-4], axis: true, showcopyright: false, shownavigation: false});
-         *     var A = board.create('point', [-3,3]);
-         *     var B = board.create('point', [3,-2]);
-         *     var line = board.create('segment', [A,B]);
-         *
-         *     var height = 0.5; // height of the curly brace
-         *
-         *     // Curly brace
-         *     var crl = board.create('curve', [[0],[0]], {strokeWidth:1, strokeColor:'black'});
-         *     crl.bezierDegree = 3;
-         *     crl.updateDataArray = function() {
-         *         var d = [B.X()-A.X(), B.Y()-A.Y()],
-         *             dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
-         *             mid = [(A.X()+B.X())*0.5, (A.Y()+B.Y())*0.5];
-         *
-         *         d[0] *= height/dl;
-         *         d[1] *= height/dl;
-         *
-         *         this.dataX = [ A.X(), A.X()-d[1], mid[0], mid[0]-d[1], mid[0], B.X()-d[1], B.X() ];
-         *         this.dataY = [ A.Y(), A.Y()+d[0], mid[1], mid[1]+d[0], mid[1], B.Y()+d[0], B.Y() ];
-         *     };
-         *
-         *     // Text
-         *     var txt = board.create('text', [
-         *                         function() {
-         *                             var d = [B.X()-A.X(), B.Y()-A.Y()],
-         *                                 dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
-         *                                 mid = (A.X()+B.X())*0.5;
-         *
-         *                             d[1] *= height/dl;
-         *                             return mid-d[1]+0.1;
-         *                         },
-         *                         function() {
-         *                             var d = [B.X()-A.X(), B.Y()-A.Y()],
-         *                                 dl = Math.sqrt(d[0]*d[0]+d[1]*d[1]),
-         *                                 mid = (A.Y()+B.Y())*0.5;
-         *
-         *                             d[0] *= height/dl;
-         *                             return mid+d[0]+0.1;
-         *                         },
-         *                         function() { return "length="+JXG2.toFixed(B.Dist(A), 2); }
-         *                     ]);
-         *
-         *
-         *     board.update(); // This update is necessary to call updateDataArray the first time.
-         *
-         *     })();
-         *
-         * </script><pre>
-         *
-         *
-         */
-        updateDataArray: function () {
-            // this used to return this, but we shouldn't rely on the user to implement it.
-        },
-
-        /**
-         * Computes the curve path
-         * @see JXG2.Curve#update
-         * @returns {JXG2.Curve} Reference to the curve object.
-         */
-        updateCurve: function () {
-            var i, len, mi, ma,
-                x, y,
-                version = this.visProp.plotversion,
-                //t1, t2, l1,
-                suspendUpdate = false;
-
-            this.updateTransformMatrix();
-            this.updateDataArray();
-            mi = this.minX();
-            ma = this.maxX();
-
-            if (Type.exists(this.dataX)) {
-                // Discrete data points, i.e. x-coordinates are given in an array
-                this.numberPoints = this.dataX.length;
-                len = this.numberPoints;
 
                 // It is possible, that the array length has increased.
                 this.allocatePoints();
-
-                for (i = 0; i < len; i++) {
-                    x = i;
-
-                    // y-coordinates are in an array
-                    if (Type.exists(this.dataY)) {
-                        y = i;
-                        // The last parameter prevents rounding in usr2screen().
-                        this.points[i].setCoordinates(
-                            COORDS_BY.USER,
-                            [this.dataX[i], this.dataY[i]],
-                            false
-                        );
-                    } else {
-                        // discrete x data, continuous y data
-                        y = this.X(x);
-                        // The last parameter prevents rounding in usr2screen().
-                        this.points[i].setCoordinates(
-                            COORDS_BY.USER,
-                            [this.dataX[i], this.Y(y, suspendUpdate)],
-                            false
-                        );
-                    }
-                    this.points[i]._t = i;
-
-                    // this.updateTransform(this.points[i]);
-                    suspendUpdate = true;
-                }
-
-            } else {
-                // Continuous x-data, i.e. given as a function
-                if (this.evalVisProp('doadvancedplot')) {
-                    // console.time('plot');
-
-                    if (version === 1 || this.evalVisProp('doadvancedplotold')) {
-                        Plot.updateParametricCurveOld(this, mi, ma);
-                    } else if (version === 2) {
-                        Plot.updateParametricCurve_v2(this, mi, ma);
-                    } else if (version === 3) {
-                        Plot.updateParametricCurve_v3(this, mi, ma);
-                    } else if (version === 4) {
-                        Plot.updateParametricCurve_v4(this, mi, ma);
-                    } else {
-                        Plot.updateParametricCurve_v2(this, mi, ma);
-                    }
-                    // console.timeEnd('plot');
-                } else {
-                    if (this.board.updateQuality === this.board.BOARD_QUALITY_HIGH) {
-                        this.numberPoints = this.evalVisProp('numberpointshigh');
-                    } else {
-                        this.numberPoints = this.evalVisProp('numberpointslow');
-                    }
-
-                    // It is possible, that the array length has increased.
-                    this.allocatePoints();
-                    Plot.updateParametricCurveNaive(this, mi, ma, this.numberPoints);
-                }
-                len = this.numberPoints;
-
-                if (
-                    this.evalVisProp('useqdt') &&
-                    this.board.updateQuality === this.board.BOARD_QUALITY_HIGH
-                ) {
-                    this.qdt = new QDT(this.board.getBoundingBox());
-                    for (i = 0; i < this.points.length; i++) {
-                        this.qdt.insert(this.points[i]);
-
-                        if (i > 0) {
-                            this.points[i].prev = this.points[i - 1];
-                        }
-
-                        if (i < len - 1) {
-                            this.points[i].next = this.points[i + 1];
-                        }
-                    }
-                }
-
-                // for (i = 0; i < len; i++) {
-                //     this.updateTransform(this.points[i]);
-                // }
+                Plot.updateParametricCurveNaive(this, mi, ma, this.numberPoints);
             }
+            len = this.numberPoints;
 
             if (
-                this.evalVisProp('curvetype') !== "plot" &&
-                this.evalVisProp('rdpsmoothing')
+                this.evalVisProp('useqdt') &&
+                this.board.updateQuality === this.board.BOARD_QUALITY_HIGH
             ) {
-                // console.time('rdp');
-                this.points = Numerics.RamerDouglasPeucker(this.points, 0.2);
-                this.numberPoints = this.points.length;
-                // console.timeEnd('rdp');
-                // console.log(this.numberPoints);
+                this.qdt = new Quadtree(this.board.getBoundingBox());
+                for (i = 0; i < this.points.length; i++) {
+                    this.qdt.insert(this.points[i]);
+
+                    if (i > 0) {
+                        this.points[i].prev = this.points[i - 1];
+                    }
+
+                    if (i < len - 1) {
+                        this.points[i].next = this.points[i + 1];
+                    }
+                }
             }
 
-            len = this.numberPoints;
-            for (i = 0; i < len; i++) {
-                this.updateTransform(this.points[i]);
-            }
+            // for (i = 0; i < len; i++) {
+            //     this.updateTransform(this.points[i]);
+            // }
+        }
 
-            return this;
-        },
+        if (
+            this.evalVisProp('curvetype') !== "plot" &&
+            this.evalVisProp('rdpsmoothing')
+        ) {
+            // console.time('rdp');
+            this.points = Numerics.RamerDouglasPeucker(this.points, 0.2);
+            this.numberPoints = this.points.length;
+            // console.timeEnd('rdp');
+            // console.log(this.numberPoints);
+        }
 
-        updateTransformMatrix: function () {
-            var t,
-                i,
-                len = this.transformations.length;
+        len = this.numberPoints;
+        for (i = 0; i < len; i++) {
+            this.updateTransform(this.points[i]);
+        }
 
-            this.transformMat = [
-                [1, 0, 0],
-                [0, 1, 0],
-                [0, 0, 1]
-            ];
+        return this;
+    }
 
-            for (i = 0; i < len; i++) {
-                t = this.transformations[i];
-                t.update();
-                this.transformMat = JSXMath.matMatMult(t.matrix, this.transformMat);
-            }
+    updateTransformMatrix() {
+        var t,
+            i,
+            len = this.transformations.length;
 
-            return this;
-        },
+        this.transformMat = [
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]
+        ];
 
-        /**
-         * Applies the transformations of the curve to the given point <tt>p</tt>.
-         * Before using it, {@link JXG2.Curve#updateTransformMatrix} has to be called.
-         * @param {JXG2.Point} p
-         * @returns {JXG2.Point} The given point.
-         */
-        updateTransform: function (p) {
-            var c,
-                len = this.transformations.length;
+        for (i = 0; i < len; i++) {
+            t = this.transformations[i];
+            t.update();
+            this.transformMat = JSXMath.matMatMult(t.matrix, this.transformMat);
+        }
 
-            if (len > 0) {
-                c = JSXMath.matVecMult(this.transformMat, p.usrCoords);
-                p.setCoordinates(COORDS_BY.USER, c, false, true);
-            }
+        return this;
+    }
 
-            return p;
-        },
+    /**
+     * Applies the transformations of the curve to the given point <tt>p</tt>.
+     * Before using it, {@link JXG2.Curve#updateTransformMatrix} has to be called.
+     * @param {JXG2.Point} p
+     * @returns {JXG2.Point} The given point.
+     */
+    updateTransform(p) {
+        var c,
+            len = this.transformations.length;
 
-        /**
-         * Add transformations to this curve.
-         * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation} or an array of {@link JXG2.Transformation}s.
-         * @returns {JXG2.Curve} Reference to the curve object.
-         */
-        addTransform: function (transform) {
+        if (len > 0) {
+            c = JSXMath.matVecMult(this.transformMat, p.usrCoords);
+            p.setCoordinates(COORDS_BY.USER, c, false, true);
+        }
+
+        return p;
+    }
+
+    /**
+     * Add transformations to this curve.
+     * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation} or an array of {@link JXG2.Transformation}s.
+     * @returns {JXG2.Curve} Reference to the curve object.
+     */
+    addTransform(transform) {
+        var i,
+            list = Type.isArray(transform) ? transform : [transform],
+            len = list.length;
+
+        for (i = 0; i < len; i++) {
+            this.transformations.push(list[i]);
+        }
+
+        return this;
+    }
+
+    /**
+     * Generate the method curve.X() in case curve.dataX is an array
+     * and generate the method curve.Y() in case curve.dataY is an array.
+     * @private
+     * @param {String} which Either 'X' or 'Y'
+     * @returns {function}
+     **/
+    interpolationFunctionFromArray(which) {
+        var data = "data" + which,
+            that = this;
+
+        return function (t, suspendedUpdate) {
             var i,
-                list = Type.isArray(transform) ? transform : [transform],
-                len = list.length;
+                j,
+                t0,
+                t1,
+                arr = that[data],
+                len = arr.length,
+                last,
+                f = [];
 
-            for (i = 0; i < len; i++) {
-                this.transformations.push(list[i]);
+            if (isNaN(t)) {
+                return NaN;
             }
 
-            return this;
-        },
-
-        /**
-         * Generate the method curve.X() in case curve.dataX is an array
-         * and generate the method curve.Y() in case curve.dataY is an array.
-         * @private
-         * @param {String} which Either 'X' or 'Y'
-         * @returns {function}
-         **/
-        interpolationFunctionFromArray: function (which) {
-            var data = "data" + which,
-                that = this;
-
-            return function (t, suspendedUpdate) {
-                var i,
-                    j,
-                    t0,
-                    t1,
-                    arr = that[data],
-                    len = arr.length,
-                    last,
-                    f = [];
-
-                if (isNaN(t)) {
-                    return NaN;
+            if (t < 0) {
+                if (Type.isFunction(arr[0])) {
+                    return arr[0]();
                 }
 
-                if (t < 0) {
-                    if (Type.isFunction(arr[0])) {
-                        return arr[0]();
+                return arr[0];
+            }
+
+            if (that.bezierDegree === 3) {
+                last = (len - 1) / 3;
+
+                if (t >= last) {
+                    if (Type.isFunction(arr[arr.length - 1])) {
+                        return arr[arr.length - 1]();
                     }
 
-                    return arr[0];
+                    return arr[arr.length - 1];
                 }
 
-                if (that.bezierDegree === 3) {
-                    last = (len - 1) / 3;
+                i = Math.floor(t) * 3;
+                t0 = t % 1;
+                t1 = 1 - t0;
 
-                    if (t >= last) {
-                        if (Type.isFunction(arr[arr.length - 1])) {
-                            return arr[arr.length - 1]();
-                        }
-
-                        return arr[arr.length - 1];
-                    }
-
-                    i = Math.floor(t) * 3;
-                    t0 = t % 1;
-                    t1 = 1 - t0;
-
-                    for (j = 0; j < 4; j++) {
-                        if (Type.isFunction(arr[i + j])) {
-                            f[j] = arr[i + j]();
-                        } else {
-                            f[j] = arr[i + j];
-                        }
-                    }
-
-                    return (
-                        t1 * t1 * (t1 * f[0] + 3 * t0 * f[1]) +
-                        (3 * t1 * f[2] + t0 * f[3]) * t0 * t0
-                    );
-                }
-
-                if (t > len - 2) {
-                    i = len - 2;
-                } else {
-                    i = Math.floor(t);
-                }
-
-                if (i === t) {
-                    if (Type.isFunction(arr[i])) {
-                        return arr[i]();
-                    }
-                    return arr[i];
-                }
-
-                for (j = 0; j < 2; j++) {
+                for (j = 0; j < 4; j++) {
                     if (Type.isFunction(arr[i + j])) {
                         f[j] = arr[i + j]();
                     } else {
                         f[j] = arr[i + j];
                     }
                 }
-                return f[0] + (f[1] - f[0]) * (t - i);
-            };
-        },
 
-        /**
-         * Converts the JavaScript/JessieCode/GEONExT syntax of the defining function term into JavaScript.
-         * New methods X() and Y() for the Curve object are generated, further
-         * new methods for minX() and maxX().
-         * If mi or ma are not supplied, default functions are set.
-         *
-         * @param {String} varname Name of the parameter in xterm and yterm, e.g. 'x' or 't'
-         * @param {String|Number|Function|Array} xterm Term for the x coordinate. Can also be an array consisting of discrete values.
-         * @param {String|Number|Function|Array} yterm Term for the y coordinate. Can also be an array consisting of discrete values.
-         * @param {String|Number|Function} [mi] Lower bound on the parameter
-         * @param {String|Number|Function} [ma] Upper bound on the parameter
-         * @see JXG2.GeonextParser.geonext2JS
-         */
-        generateTerm: function (varname, xterm, yterm, mi, ma) {
-            var fx, fy, mat;
+                return (
+                    t1 * t1 * (t1 * f[0] + 3 * t0 * f[1]) +
+                    (3 * t1 * f[2] + t0 * f[3]) * t0 * t0
+                );
+            }
 
-            // Generate the methods X() and Y()
-            if (Type.isArray(xterm)) {
-                // Discrete data
-                this.dataX = xterm;
-
-                this.numberPoints = this.dataX.length;
-                this.X = this.interpolationFunctionFromArray.apply(this, ["X"]);
-                this.visProp.curvetype = 'plot';
-                this.isDraggable = true;
+            if (t > len - 2) {
+                i = len - 2;
             } else {
-                // Continuous data
-                this.X = Type.createFunction(xterm, this.board, varname);
-                if (Type.isString(xterm)) {
-                    this.visProp.curvetype = 'functiongraph';
-                } else if (Type.isFunction(xterm) || Type.isNumber(xterm)) {
-                    this.visProp.curvetype = 'parameter';
+                i = Math.floor(t);
+            }
+
+            if (i === t) {
+                if (Type.isFunction(arr[i])) {
+                    return arr[i]();
                 }
-
-                this.isDraggable = true;
+                return arr[i];
             }
 
-            if (Type.isArray(yterm)) {
-                this.dataY = yterm;
-                this.Y = this.interpolationFunctionFromArray.apply(this, ["Y"]);
-            } else if (!Type.exists(yterm)) {
-                // Discrete data as an array of coordinate pairs,
-                // i.e. transposed input
-                mat = JSXMath.transpose(xterm);
-                this.dataX = mat[0];
-                this.dataY = mat[1];
-                this.numberPoints = this.dataX.length;
-                this.Y = this.interpolationFunctionFromArray.apply(this, ["Y"]);
-            } else {
-                this.Y = Type.createFunction(yterm, this.board, varname);
+            for (j = 0; j < 2; j++) {
+                if (Type.isFunction(arr[i + j])) {
+                    f[j] = arr[i + j]();
+                } else {
+                    f[j] = arr[i + j];
+                }
+            }
+            return f[0] + (f[1] - f[0]) * (t - i);
+        };
+    }
+
+    /**
+     * Converts the JavaScript/JessieCode/GEONExT syntax of the defining function term into JavaScript.
+     * New methods X() and Y() for the Curve object are generated, further
+     * new methods for minX() and maxX().
+     * If mi or ma are not supplied, default functions are set.
+     *
+     * @param {String} varname Name of the parameter in xterm and yterm, e.g. 'x' or 't'
+     * @param {String|Number|Function|Array} xterm Term for the x coordinate. Can also be an array consisting of discrete values.
+     * @param {String|Number|Function|Array} yterm Term for the y coordinate. Can also be an array consisting of discrete values.
+     * @param {String|Number|Function} [mi] Lower bound on the parameter
+     * @param {String|Number|Function} [ma] Upper bound on the parameter
+     * @see JXG2.GeonextParser.geonext2JS
+     */
+    generateTerm(varname, xterm, yterm, mi, ma) {
+        var fx, fy, mat;
+
+        // Generate the methods X() and Y()
+        if (Type.isArray(xterm)) {
+            // Discrete data
+            this.dataX = xterm;
+
+            this.numberPoints = this.dataX.length;
+            this.X = this.interpolationFunctionFromArray.apply(this, ["X"]);
+            this.visProp.curvetype = 'plot';
+            this.isDraggable = true;
+        } else {
+            // Continuous data
+            this.X = Type.createFunction(xterm, this.board, varname);
+            if (Type.isString(xterm)) {
+                this.visProp.curvetype = 'functiongraph';
+            } else if (Type.isFunction(xterm) || Type.isNumber(xterm)) {
+                this.visProp.curvetype = 'parameter';
             }
 
-            /**
-             * Polar form
-             * Input data is function xterm() and offset coordinates yterm
-             */
-            if (Type.isFunction(xterm) && Type.isArray(yterm)) {
-                // Xoffset, Yoffset
-                fx = Type.createFunction(yterm[0], this.board, "");
-                fy = Type.createFunction(yterm[1], this.board, "");
+            this.isDraggable = true;
+        }
 
-                this.X = function (phi) {
-                    return xterm(phi) * Math.cos(phi) + fx();
-                };
-                this.X.deps = fx.deps;
-
-                this.Y = function (phi) {
-                    return xterm(phi) * Math.sin(phi) + fy();
-                };
-                this.Y.deps = fy.deps;
-
-                this.visProp.curvetype = 'polar';
-            }
-
-            // Set the upper and lower bounds for the parameter of the curve.
-            // If not defined, reset the bounds to the default values
-            // given in Curve.prototype.minX, Curve.prototype.maxX
-            if (Type.exists(mi)) {
-                this.minX = Type.createFunction(mi, this.board, "");
-            } else {
-                delete this.minX;
-            }
-            if (Type.exists(ma)) {
-                this.maxX = Type.createFunction(ma, this.board, "");
-            } else {
-                delete this.maxX;
-            }
-
-            this.addParentsFromJCFunctions([this.X, this.Y, this.minX, this.maxX]);
-        },
+        if (Type.isArray(yterm)) {
+            this.dataY = yterm;
+            this.Y = this.interpolationFunctionFromArray.apply(this, ["Y"]);
+        } else if (!Type.exists(yterm)) {
+            // Discrete data as an array of coordinate pairs,
+            // i.e. transposed input
+            mat = JSXMath.transpose(xterm);
+            this.dataX = mat[0];
+            this.dataY = mat[1];
+            this.numberPoints = this.dataX.length;
+            this.Y = this.interpolationFunctionFromArray.apply(this, ["Y"]);
+        } else {
+            this.Y = Type.createFunction(yterm, this.board, varname);
+        }
 
         /**
-         * Finds dependencies in a given term and notifies the parents by adding the
-         * dependent object to the found objects child elements.
-         * @param {String} contentStr String containing dependencies for the given object.
+         * Polar form
+         * Input data is function xterm() and offset coordinates yterm
          */
-        notifyParents: function (contentStr) {
-            var fstr,
-                dep,
-                isJessieCode = false,
-                obj;
+        if (Type.isFunction(xterm) && Type.isArray(yterm)) {
+            // Xoffset, Yoffset
+            fx = Type.createFunction(yterm[0], this.board, "");
+            fy = Type.createFunction(yterm[1], this.board, "");
 
-            // Read dependencies found by the JessieCode parser
-            obj = { xterm: 1, yterm: 1 };
-            for (fstr in obj) {
-                if (
-                    obj.hasOwnProperty(fstr) &&
-                    this.hasOwnProperty(fstr) &&
-                    this[fstr].origin
-                ) {
-                    isJessieCode = true;
-                    for (dep in this[fstr].origin.deps) {
-                        if (this[fstr].origin.deps.hasOwnProperty(dep)) {
-                            this[fstr].origin.deps[dep].addChild(this);
-                        }
+            this.X = function (phi) {
+                return xterm(phi) * Math.cos(phi) + fx();
+            };
+            // this.X.deps = fx.deps;      // tbtb - something for jessiecode?
+
+            this.Y = function (phi) {
+                return xterm(phi) * Math.sin(phi) + fy();
+            };
+            // this.Y.deps = fy.deps;          // tbtb - something for jessiecode?
+
+            this.visProp.curvetype = 'polar';
+        }
+
+        // Set the upper and lower bounds for the parameter of the curve.
+        // If not defined, reset the bounds to the default values
+        // given in Curve.prototype.minX, Curve.prototype.maxX
+        if (Type.exists(mi)) {
+            this.minX = Type.createFunction(mi, this.board, "");
+        } else {
+            delete this.minX;
+        }
+        if (Type.exists(ma)) {
+            this.maxX = Type.createFunction(ma, this.board, "");
+        } else {
+            delete this.maxX;
+        }
+
+        this.addParentsFromJCFunctions([this.X, this.Y, this.minX, this.maxX]);
+    }
+
+    /**
+     * Finds dependencies in a given term and notifies the parents by adding the
+     * dependent object to the found objects child elements.
+     * @param {String} contentStr String containing dependencies for the given object.
+     */
+    notifyParents(contentStr) {
+        var fstr,
+            dep,
+            isJessieCode = false,
+            obj;
+
+        // Read dependencies found by the JessieCode parser
+        obj = { xterm: 1, yterm: 1 };
+        for (fstr in obj) {
+            if (
+                obj.hasOwnProperty(fstr) &&
+                this.hasOwnProperty(fstr) &&
+                this[fstr].origin
+            ) {
+                isJessieCode = true;
+                for (dep in this[fstr].origin.deps) {
+                    if (this[fstr].origin.deps.hasOwnProperty(dep)) {
+                        this[fstr].origin.deps[dep].addChild(this);
                     }
                 }
             }
-
-            if (!isJessieCode) {
-                GeonextParser.findDependencies(this, contentStr, this.board);
-            }
-        },
-
-        /**
-         * Position a curve label according to the attributes "position" and distance.
-         * This function is also used for angle, arc and sector.
-         *
-         * @param {String} pos
-         * @param {Number} distance
-         * @returns {JXG2.Coords}
-         */
-        getLabelPosition: function (pos, distance) {
-            var x, y, xy,
-                c, d, e,
-                lbda,
-                mi, ma, ar,
-                t, dx, dy,
-                dist = 1.5;
-
-            // Shrink domain if necessary
-            mi = this.minX();
-            ma = this.maxX();
-            ar = Numerics.findDomain(this.X, [mi, ma], null, false);
-            ar = Numerics.findDomain(this.Y, ar, null, false);
-            mi = Math.max(ar[0], ar[0]);
-            ma = Math.min(ar[1], ar[1]);
-
-            xy = Type.parsePosition(pos);
-            lbda = Type.parseNumber(xy.pos, ma - mi, 1);
-
-            if (xy.pos.indexOf('fr') < 0 &&
-                xy.pos.indexOf('%') < 0) {
-                // 'px' or numbers are not supported
-                lbda = 0;
-            }
-
-            t = mi + lbda;
-
-            x = this.X(t);
-            y = this.Y(t);
-            // If x or y are NaN, the label is set to the line
-            // between the first and last point.
-            if (isNaN(x + y)) {
-                lbda /= (ma - mi);
-                t = mi + lbda;
-                x = this.X(mi) + lbda * (this.X(ma) - this.X(mi));
-                y = this.Y(mi) + lbda * (this.Y(ma) - this.Y(mi));
-            }
-            c = (new Coords(COORDS_BY.USER, [x, y], this.board)).scrCoords;
-
-            e = JSXMath.eps;
-            if (t < mi + e) {
-                dx = (this.X(t + e) - this.X(t)) / e;
-                dy = (this.Y(t + e) - this.Y(t)) / e;
-            } else if (t > ma - e) {
-                dx = (this.X(t) - this.X(t - e)) / e;
-                dy = (this.Y(t) - this.Y(t - e)) / e;
-            } else {
-                dx = 0.5 * (this.X(t + e) - this.X(t - e)) / e;
-                dy = 0.5 * (this.Y(t + e) - this.Y(t - e)) / e;
-            }
-            dx = isNaN(dx) ? 1. : dx;
-            dy = isNaN(dy) ? 1. : dy;
-            d = Math.hypot(dx, dy);
-
-            if (xy.side === 'left') {
-                dy *= -1;
-            } else {
-                dx *= -1;
-            }
-
-            // Position left or right
-
-            if (Type.exists(this.label)) {
-                dist = 0.5 * distance / d;
-            }
-
-            x = c[1] + dy * this.label.size[0] * dist;
-            y = c[2] - dx * this.label.size[1] * dist;
-
-            return new Coords(COORDS_BY.SCREEN, [x, y], this.board);
-        },
-
-        // documented in geometryElement
-        getLabelAnchor: function () {
-            var x, y, pos,
-                // xy, lbda, e,
-                // t, dx, dy, d,
-                // dist = 1.5,
-                c,
-                ax = 0.05 * this.board.canvasWidth,
-                ay = 0.05 * this.board.canvasHeight,
-                bx = 0.95 * this.board.canvasWidth,
-                by = 0.95 * this.board.canvasHeight;
-
-            if (!Type.exists(this.label)) {
-                return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
-            }
-            pos = this.label.evalVisProp('position');
-            if (!Type.isString(pos)) {
-                return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
-            }
-
-            if (pos.indexOf('right') < 0 && pos.indexOf('left') < 0) {
-                switch (this.evalVisProp('label.position')) {
-                    case "ulft":
-                        x = ax;
-                        y = ay;
-                        break;
-                    case "llft":
-                        x = ax;
-                        y = by;
-                        break;
-                    case "rt":
-                        x = bx;
-                        y = 0.5 * by;
-                        break;
-                    case "lrt":
-                        x = bx;
-                        y = by;
-                        break;
-                    case "urt":
-                        x = bx;
-                        y = ay;
-                        break;
-                    case "top":
-                        x = 0.5 * bx;
-                        y = ay;
-                        break;
-                    case "bot":
-                        x = 0.5 * bx;
-                        y = by;
-                        break;
-                    default:
-                        // includes case 'lft'
-                        x = ax;
-                        y = 0.5 * by;
-                }
-            } else {
-                // New positioning
-                return this.getLabelPosition(pos, this.label.evalVisProp('distance'));
-                // xy = Type.parsePosition(pos);
-                // lbda = Type.parseNumber(xy.pos, this.maxX() - this.minX(), 1);
-
-                // if (xy.pos.indexOf('fr') < 0 &&
-                //     xy.pos.indexOf('%') < 0) {
-                //     // 'px' or numbers are not supported
-                //     lbda = 0;
-                // }
-
-                // t = this.minX() + lbda;
-                // x = this.X(t);
-                // y = this.Y(t);
-                // c = (new Coords(COORDS_BY.USER, [x, y], this.board)).scrCoords;
-
-                // e = JSXMath.eps;
-                // if (t < this.minX() + e) {
-                //     dx = (this.X(t + e) - this.X(t)) / e;
-                //     dy = (this.Y(t + e) - this.Y(t)) / e;
-                // } else if (t > this.maxX() - e) {
-                //     dx = (this.X(t) - this.X(t - e)) / e;
-                //     dy = (this.Y(t) - this.Y(t - e)) / e;
-                // } else {
-                //     dx = 0.5 * (this.X(t + e) - this.X(t - e)) / e;
-                //     dy = 0.5 * (this.Y(t + e) - this.Y(t - e)) / e;
-                // }
-                // d = Math.hypot(dx, dy);
-
-                // if (xy.side === 'left') {
-                //     dy *= -1;
-                // } else {
-                //     dx *= -1;
-                // }
-
-                // // Position left or right
-
-                // if (Type.exists(this.label)) {
-                //     dist = 0.5 * this.label.evalVisProp('distance') / d;
-                // }
-
-                // x = c[1] + dy * this.label.size[0] * dist;
-                // y = c[2] - dx * this.label.size[1] * dist;
-
-                // return new Coords(COORDS_BY.SCREEN, [x, y], this.board);
-
-            }
-            c = new Coords(COORDS_BY.SCREEN, [x, y], this.board, false);
-            return Geometry.projectCoordsToCurve(
-                c.usrCoords[1], c.usrCoords[2], 0, this, this.board
-            )[0];
-        },
-
-        // documented in geometry element
-        cloneToBackground: function () {
-            var er,
-                copy = Type.getCloneObject(this);
-
-            copy.points = this.points.slice(0);
-            copy.bezierDegree = this.bezierDegree;
-            copy.numberPoints = this.numberPoints;
-
-            er = this.board.renderer.enhancedRendering;
-            this.board.renderer.enhancedRendering = true;
-            this.board.renderer.drawCurve(copy);
-            this.board.renderer.enhancedRendering = er;
-            this.traces[copy.id] = copy.rendNode;
-
-            return this;
-        },
-
-        // Already documented in GeometryElement
-        bounds: function () {
-            var minX = Infinity,
-                maxX = -Infinity,
-                minY = Infinity,
-                maxY = -Infinity,
-                l = this.points.length,
-                i,
-                bezier,
-                up;
-
-            if (this.bezierDegree === 3) {
-                // Add methods X(), Y()
-                for (i = 0; i < l; i++) {
-                    this.points[i].X = Type.bind(function () {
-                        return this.usrCoords[1];
-                    }, this.points[i]);
-                    this.points[i].Y = Type.bind(function () {
-                        return this.usrCoords[2];
-                    }, this.points[i]);
-                }
-                bezier = Numerics.bezier(this.points);
-                up = bezier[3]();
-                minX = Numerics.fminbr(
-                    function (t) {
-                        return bezier[0](t);
-                    },
-                    [0, up]
-                );
-                maxX = Numerics.fminbr(
-                    function (t) {
-                        return -bezier[0](t);
-                    },
-                    [0, up]
-                );
-                minY = Numerics.fminbr(
-                    function (t) {
-                        return bezier[1](t);
-                    },
-                    [0, up]
-                );
-                maxY = Numerics.fminbr(
-                    function (t) {
-                        return -bezier[1](t);
-                    },
-                    [0, up]
-                );
-
-                minX = bezier[0](minX);
-                maxX = bezier[0](maxX);
-                minY = bezier[1](minY);
-                maxY = bezier[1](maxY);
-                return [minX, maxY, maxX, minY];
-            }
-
-            // Linear segments
-            for (i = 0; i < l; i++) {
-                if (minX > this.points[i].usrCoords[1]) {
-                    minX = this.points[i].usrCoords[1];
-                }
-
-                if (maxX < this.points[i].usrCoords[1]) {
-                    maxX = this.points[i].usrCoords[1];
-                }
-
-                if (minY > this.points[i].usrCoords[2]) {
-                    minY = this.points[i].usrCoords[2];
-                }
-
-                if (maxY < this.points[i].usrCoords[2]) {
-                    maxY = this.points[i].usrCoords[2];
-                }
-            }
-
-            return [minX, maxY, maxX, minY];
-        },
-
-        // documented in element.js
-        getParents: function () {
-            var p = [this.xterm, this.yterm, this.minX(), this.maxX()];
-
-            if (this.parents.length !== 0) {
-                p = this.parents;
-            }
-
-            return p;
-        },
-
-        /**
-         * Shift the curve by the vector 'where'.
-         *
-         * @param {Array} where Array containing the x and y coordinate of the target location.
-         * @returns {JXG2.Curve} Reference to itself.
-         */
-        moveTo: function (where) {
-            // TODO add animation
-            var delta = [],
-                p;
-            if (this.points.length > 0 && !this.evalVisProp('fixed')) {
-                p = this.points[0];
-                if (where.length === 3) {
-                    delta = [
-                        where[0] - p.usrCoords[0],
-                        where[1] - p.usrCoords[1],
-                        where[2] - p.usrCoords[2]
-                    ];
-                } else {
-                    delta = [where[0] - p.usrCoords[1], where[1] - p.usrCoords[2]];
-                }
-                this.setPosition(COORDS_BY.USER, delta);
-                return this.board.update(this);
-            }
-            return this;
-        },
-
-        /**
-         * If the curve is the result of a transformation applied
-         * to a continuous curve, the glider projection has to be done
-         * on the original curve. Otherwise there will be problems
-         * when changing between high and low precision plotting,
-         * since there number of points changes.
-         *
-         * @private
-         * @returns {Array} [Boolean, curve]: Array contining 'true' if curve is result of a transformation,
-         *   and the source curve of the transformation.
-         */
-        getTransformationSource: function () {
-            var isTransformed, curve_org;
-            if (Type.exists(this._transformationSource)) {
-                curve_org = this._transformationSource;
-                if (
-                    curve_org.elementClass === OBJECT_CLASS.CURVE //&&
-                    //curve_org.evalVisProp('curvetype') !== 'plot'
-                ) {
-                    isTransformed = true;
-                }
-            }
-            return [isTransformed, curve_org];
         }
 
-        // See Geometry.pnpoly
-        // pnpoly: function (x_in, y_in, coord_type) {
-        //     var i,
-        //         j,
-        //         len,
-        //         x,
-        //         y,
-        //         crds,
-        //         v = this.points,
-        //         isIn = false;
-
-        //     if (coord_type === COORDS_BY.USER) {
-        //         crds = new Coords(COORDS_BY.USER, [x_in, y_in], this.board);
-        //         x = crds.scrCoords[1];
-        //         y = crds.scrCoords[2];
-        //     } else {
-        //         x = x_in;
-        //         y = y_in;
-        //     }
-
-        //     len = this.points.length;
-        //     for (i = 0, j = len - 2; i < len - 1; j = i++) {
-        //         if (
-        //             v[i].scrCoords[2] > y !== v[j].scrCoords[2] > y &&
-        //             x <
-        //                 ((v[j].scrCoords[1] - v[i].scrCoords[1]) * (y - v[i].scrCoords[2])) /
-        //                     (v[j].scrCoords[2] - v[i].scrCoords[2]) +
-        //                     v[i].scrCoords[1]
-        //         ) {
-        //             isIn = !isIn;
-        //         }
-        //     }
-
-        //     return isIn;
-        // }
+        if (!isJessieCode) {
+            GeonextParser.findDependencies(this, contentStr, this.board);
+        }
     }
-);
+
+    /**
+     * Position a curve label according to the attributes "position" and distance.
+     * This function is also used for angle, arc and sector.
+     *
+     * @param {String} pos
+     * @param {Number} distance
+     * @returns {JXG2.Coords}
+     */
+    getLabelPosition(pos, distance) {
+        var x, y, xy,
+            c, d, e,
+            lbda,
+            mi, ma, ar,
+            t, dx, dy,
+            dist = 1.5;
+
+        // Shrink domain if necessary
+        mi = this.minX();
+        ma = this.maxX();
+        ar = Numerics.findDomain(this.X, [mi, ma], null, false);
+        ar = Numerics.findDomain(this.Y, ar, null, false);
+        mi = Math.max(ar[0], ar[0]);
+        ma = Math.min(ar[1], ar[1]);
+
+        xy = Type.parsePosition(pos);
+        lbda = Type.parseNumber(xy.pos, ma - mi, 1);
+
+        if (xy.pos.indexOf('fr') < 0 &&
+            xy.pos.indexOf('%') < 0) {
+            // 'px' or numbers are not supported
+            lbda = 0;
+        }
+
+        t = mi + lbda;
+
+        x = this.X(t);
+        y = this.Y(t);
+        // If x or y are NaN, the label is set to the line
+        // between the first and last point.
+        if (isNaN(x + y)) {
+            lbda /= (ma - mi);
+            t = mi + lbda;
+            x = this.X(mi) + lbda * (this.X(ma) - this.X(mi));
+            y = this.Y(mi) + lbda * (this.Y(ma) - this.Y(mi));
+        }
+        c = (new Coords(COORDS_BY.USER, [x, y], this.board)).scrCoords;
+
+        e = JSXMath.eps;
+        if (t < mi + e) {
+            dx = (this.X(t + e) - this.X(t)) / e;
+            dy = (this.Y(t + e) - this.Y(t)) / e;
+        } else if (t > ma - e) {
+            dx = (this.X(t) - this.X(t - e)) / e;
+            dy = (this.Y(t) - this.Y(t - e)) / e;
+        } else {
+            dx = 0.5 * (this.X(t + e) - this.X(t - e)) / e;
+            dy = 0.5 * (this.Y(t + e) - this.Y(t - e)) / e;
+        }
+        dx = isNaN(dx) ? 1. : dx;
+        dy = isNaN(dy) ? 1. : dy;
+        d = Math.hypot(dx, dy);
+
+        if (xy.side === 'left') {
+            dy *= -1;
+        } else {
+            dx *= -1;
+        }
+
+        // Position left or right
+
+        if (Type.exists(this.label)) {
+            dist = 0.5 * distance / d;
+        }
+
+        x = c[1] + dy * this.label.size[0] * dist;
+        y = c[2] - dx * this.label.size[1] * dist;
+
+        return new Coords(COORDS_BY.SCREEN, [x, y], this.board);
+    }
+
+    // documented in geometryElement
+    getLabelAnchor() {
+        var x, y, pos,
+            // xy, lbda, e,
+            // t, dx, dy, d,
+            // dist = 1.5,
+            c,
+            ax = 0.05 * this.board.canvasWidth,
+            ay = 0.05 * this.board.canvasHeight,
+            bx = 0.95 * this.board.canvasWidth,
+            by = 0.95 * this.board.canvasHeight;
+
+        if (!Type.exists(this.label)) {
+            return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
+        }
+        pos = this.label.evalVisProp('position');
+        if (!Type.isString(pos)) {
+            return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
+        }
+
+        if (pos.indexOf('right') < 0 && pos.indexOf('left') < 0) {
+            switch (this.evalVisProp('label.position')) {
+                case "ulft":
+                    x = ax;
+                    y = ay;
+                    break;
+                case "llft":
+                    x = ax;
+                    y = by;
+                    break;
+                case "rt":
+                    x = bx;
+                    y = 0.5 * by;
+                    break;
+                case "lrt":
+                    x = bx;
+                    y = by;
+                    break;
+                case "urt":
+                    x = bx;
+                    y = ay;
+                    break;
+                case "top":
+                    x = 0.5 * bx;
+                    y = ay;
+                    break;
+                case "bot":
+                    x = 0.5 * bx;
+                    y = by;
+                    break;
+                default:
+                    // includes case 'lft'
+                    x = ax;
+                    y = 0.5 * by;
+            }
+        } else {
+            // New positioning
+            return this.getLabelPosition(pos, this.label.evalVisProp('distance'));
+            // xy = Type.parsePosition(pos);
+            // lbda = Type.parseNumber(xy.pos, this.maxX() - this.minX(), 1);
+
+            // if (xy.pos.indexOf('fr') < 0 &&
+            //     xy.pos.indexOf('%') < 0) {
+            //     // 'px' or numbers are not supported
+            //     lbda = 0;
+            // }
+
+            // t = this.minX() + lbda;
+            // x = this.X(t);
+            // y = this.Y(t);
+            // c = (new Coords(COORDS_BY.USER, [x, y], this.board)).scrCoords;
+
+            // e = JSXMath.eps;
+            // if (t < this.minX() + e) {
+            //     dx = (this.X(t + e) - this.X(t)) / e;
+            //     dy = (this.Y(t + e) - this.Y(t)) / e;
+            // } else if (t > this.maxX() - e) {
+            //     dx = (this.X(t) - this.X(t - e)) / e;
+            //     dy = (this.Y(t) - this.Y(t - e)) / e;
+            // } else {
+            //     dx = 0.5 * (this.X(t + e) - this.X(t - e)) / e;
+            //     dy = 0.5 * (this.Y(t + e) - this.Y(t - e)) / e;
+            // }
+            // d = Math.hypot(dx, dy);
+
+            // if (xy.side === 'left') {
+            //     dy *= -1;
+            // } else {
+            //     dx *= -1;
+            // }
+
+            // // Position left or right
+
+            // if (Type.exists(this.label)) {
+            //     dist = 0.5 * this.label.evalVisProp('distance') / d;
+            // }
+
+            // x = c[1] + dy * this.label.size[0] * dist;
+            // y = c[2] - dx * this.label.size[1] * dist;
+
+            // return new Coords(COORDS_BY.SCREEN, [x, y], this.board);
+
+        }
+        c = new Coords(COORDS_BY.SCREEN, [x, y], this.board, false);
+        return Geometry.projectCoordsToCurve(
+            c.usrCoords[1], c.usrCoords[2], 0, this, this.board
+        )[0];
+    }
+
+    // documented in geometry element
+    cloneToBackground() {
+        var er,
+            copy = Type.getCloneObject(this);
+
+        copy.points = this.points.slice(0);
+        copy.bezierDegree = this.bezierDegree;
+        copy.numberPoints = this.numberPoints;
+
+        er = this.board.renderer.enhancedRendering;
+        this.board.renderer.enhancedRendering = true;
+        this.board.renderer.drawCurve(copy);
+        this.board.renderer.enhancedRendering = er;
+        this.traces[copy.id] = copy.rendNode;
+
+        return this;
+    }
+
+    // Already documented in GeometryElement
+    bounds() {
+        var minX = Infinity,
+            maxX = -Infinity,
+            minY = Infinity,
+            maxY = -Infinity,
+            l = this.points.length,
+            i,
+            bezier,
+            up;
+
+        if (this.bezierDegree === 3) {
+            // Add methods X(), Y()
+            for (i = 0; i < l; i++) {
+                this.points[i].X = Type.bind(function () {
+                    return this.usrCoords[1];
+                }, this.points[i]);
+                this.points[i].Y = Type.bind(function () {
+                    return this.usrCoords[2];
+                }, this.points[i]);
+            }
+            bezier = Numerics.bezier(this.points);
+            up = bezier[3]();
+            minX = Numerics.fminbr(
+                function (t) {
+                    return bezier[0](t);
+                },
+                [0, up]
+            );
+            maxX = Numerics.fminbr(
+                function (t) {
+                    return -bezier[0](t);
+                },
+                [0, up]
+            );
+            minY = Numerics.fminbr(
+                function (t) {
+                    return bezier[1](t);
+                },
+                [0, up]
+            );
+            maxY = Numerics.fminbr(
+                function (t) {
+                    return -bezier[1](t);
+                },
+                [0, up]
+            );
+
+            minX = bezier[0](minX);
+            maxX = bezier[0](maxX);
+            minY = bezier[1](minY);
+            maxY = bezier[1](maxY);
+            return [minX, maxY, maxX, minY];
+        }
+
+        // Linear segments
+        for (i = 0; i < l; i++) {
+            if (minX > this.points[i].usrCoords[1]) {
+                minX = this.points[i].usrCoords[1];
+            }
+
+            if (maxX < this.points[i].usrCoords[1]) {
+                maxX = this.points[i].usrCoords[1];
+            }
+
+            if (minY > this.points[i].usrCoords[2]) {
+                minY = this.points[i].usrCoords[2];
+            }
+
+            if (maxY < this.points[i].usrCoords[2]) {
+                maxY = this.points[i].usrCoords[2];
+            }
+        }
+
+        return [minX, maxY, maxX, minY];
+    }
+
+    // documented in element.js
+    getParents() {
+        var p = [this.xterm, this.yterm, this.minX(), this.maxX()];
+
+        if (this.parents.length !== 0) {
+            p = this.parents;
+        }
+
+        return p;
+    }
+
+    /**
+     * Shift the curve by the vector 'where'.
+     *
+     * @param {Array} where Array containing the x and y coordinate of the target location.
+     * @returns {JXG2.Curve} Reference to itself.
+     */
+    moveTo(where) {
+        // TODO add animation
+        var delta = [],
+            p;
+        if (this.points.length > 0 && !this.evalVisProp('fixed')) {
+            p = this.points[0];
+            if (where.length === 3) {
+                delta = [
+                    where[0] - p.usrCoords[0],
+                    where[1] - p.usrCoords[1],
+                    where[2] - p.usrCoords[2]
+                ];
+            } else {
+                delta = [where[0] - p.usrCoords[1], where[1] - p.usrCoords[2]];
+            }
+            this.setPosition(COORDS_BY.USER, delta);
+            return this.board.update(this);
+        }
+        return this;
+    }
+
+    /**
+     * If the curve is the result of a transformation applied
+     * to a continuous curve, the glider projection has to be done
+     * on the original curve. Otherwise there will be problems
+     * when changing between high and low precision plotting,
+     * since there number of points changes.
+     *
+     * @private
+     * @returns {Array} [Boolean, curve]: Array contining 'true' if curve is result of a transformation,
+     *   and the source curve of the transformation.
+     */
+    getTransformationSource() {
+        var isTransformed, curve_org;
+        if (Type.exists(this._transformationSource)) {
+            curve_org = this._transformationSource;
+            if (
+                curve_org.elementClass === OBJECT_CLASS.CURVE //&&
+                //curve_org.evalVisProp('curvetype') !== 'plot'
+            ) {
+                isTransformed = true;
+            }
+        }
+        return [isTransformed, curve_org];
+    }
+
+    // See Geometry.pnpoly
+    // pnpoly(x_in, y_in, coord_type) {
+    //     var i,
+    //         j,
+    //         len,
+    //         x,
+    //         y,
+    //         crds,
+    //         v = this.points,
+    //         isIn = false;
+
+    //     if (coord_type === COORDS_BY.USER) {
+    //         crds = new Coords(COORDS_BY.USER, [x_in, y_in], this.board);
+    //         x = crds.scrCoords[1];
+    //         y = crds.scrCoords[2];
+    //     } else {
+    //         x = x_in;
+    //         y = y_in;
+    //     }
+
+    //     len = this.points.length;
+    //     for (i = 0, j = len - 2; i < len - 1; j = i++) {
+    //         if (
+    //             v[i].scrCoords[2] > y !== v[j].scrCoords[2] > y &&
+    //             x <
+    //                 ((v[j].scrCoords[1] - v[i].scrCoords[1]) * (y - v[i].scrCoords[2])) /
+    //                     (v[j].scrCoords[2] - v[i].scrCoords[2]) +
+    //                     v[i].scrCoords[1]
+    //         ) {
+    //             isIn = !isIn;
+    //         }
+    //     }
+
+    //     return isIn;
+    // }
+}
+
 
 /**
  * @class  Curves can be defined by mappings or by discrete data sets.
@@ -1681,7 +1689,7 @@ JXG2.extend(
  *
  * </script><pre>
  */
-JXG2.createCurve = function (board, parents, attributes) {
+export function createCurve(board, parents, attributes) {
     var obj,
         cu,
         attr = Type.copyAttributes(attributes, board.options, 'curve');
@@ -1738,7 +1746,6 @@ JXG2.createCurve = function (board, parents, attributes) {
     return new JXG2.Curve(board, ["x"].concat(parents), attr);
 };
 
-JXG2.registerElement("curve", JXG2.createCurve);
 
 /**
  * @class A functiongraph visualizes a map x &rarr; f(x).
@@ -1780,7 +1787,7 @@ JXG2.registerElement("curve", JXG2.createCurve);
  *   var graph = alex2_board.create('functiongraph', [function(x){ return 0.5*x*x-2*x;}, -2, function(){return s.Value();}]);
  * </script><pre>
  */
-JXG2.createFunctiongraph = function (board, parents, attributes) {
+export function createFunctiongraph(board, parents, attributes) {
     var attr,
         par = ["x", "x"].concat(parents); // variable name and identity function for x-coordinate
     // par = ["x", function(x) { return x; }].concat(parents);
@@ -1791,8 +1798,6 @@ JXG2.createFunctiongraph = function (board, parents, attributes) {
     return new JXG2.Curve(board, par, attr);
 };
 
-JXG2.registerElement("functiongraph", JXG2.createFunctiongraph);
-JXG2.registerElement("plot", JXG2.createFunctiongraph);
 
 /**
  * @class The (natural) cubic spline curves (function graph) interpolating a set of points.
@@ -1841,7 +1846,7 @@ JXG2.registerElement("plot", JXG2.createFunctiongraph);
  * </script><pre>
  *
  */
-JXG2.createSpline = function (board, parents, attributes) {
+export function createSpline(board, parents, attributes) {
     var el, funcs, ret;
 
     funcs = function () {
@@ -1938,12 +1943,6 @@ JXG2.createSpline = function (board, parents, attributes) {
 };
 
 /**
- * Register the element type spline at JSXGraph
- * @private
- */
-JXG2.registerElement("spline", JXG2.createSpline);
-
-/**
  * @class Cardinal spline curve through a given data set.
  * Create a dynamic cardinal spline interpolated curve given by sample points p_1 to p_n.
  * @pseudo
@@ -2001,7 +2000,7 @@ JXG2.registerElement("spline", JXG2.createSpline);
  * </script><pre>
  *
  */
-JXG2.createCardinalSpline = function (board, parents, attributes) {
+export function createCardinalSpline(board, parents, attributes) {
     var el,
         getPointLike,
         points,
@@ -2105,13 +2104,13 @@ JXG2.createCardinalSpline = function (board, parents, attributes) {
          */
         getPointLike = function (ii) {
             return {
-                X: function () {
+                X() {
                     return q[ii][0];
                 },
-                Y: function () {
+                Y() {
                     return q[ii][1];
                 },
-                Dist: function (p) {
+                Dist(p) {
                     var dx = this.X() - p.X(),
                         dy = this.Y() - p.Y();
 
@@ -2153,11 +2152,6 @@ JXG2.createCardinalSpline = function (board, parents, attributes) {
     return el;
 };
 
-/**
- * Register the element type cardinalspline at JSXGraph
- * @private
- */
-JXG2.registerElement("cardinalspline", JXG2.createCardinalSpline);
 
 /**
  * @class Interpolate data points by the spline curve from Metapost (by Donald Knuth and John Hobby).
@@ -2252,7 +2246,7 @@ JXG2.registerElement("cardinalspline", JXG2.createCardinalSpline);
  * </script><pre>
  *
  */
-JXG2.createMetapostSpline = function (board, parents, attributes) {
+export function createMetapostSpline(board, parents, attributes) {
     var el,
         getPointLike,
         points,
@@ -2342,10 +2336,10 @@ JXG2.createMetapostSpline = function (board, parents, attributes) {
          */
         getPointLike = function (ii) {
             return {
-                X: function () {
+                X() {
                     return q[ii][0];
                 },
-                Y: function () {
+                Y() {
                     return q[ii][1];
                 }
             };
@@ -2395,7 +2389,6 @@ JXG2.createMetapostSpline = function (board, parents, attributes) {
     return el;
 };
 
-JXG2.registerElement("metapostspline", JXG2.createMetapostSpline);
 
 /**
  * @class Visualize the Riemann sum which is an approximation of an integral by a finite sum.
@@ -2476,7 +2469,7 @@ JXG2.registerElement("metapostspline", JXG2.createMetapostSpline);
  * })();
  * </script><pre>
  */
-JXG2.createRiemannsum = function (board, parents, attributes) {
+export function createRiemannsum(board, parents, attributes) {
     var n, type, f, par, c, attr;
 
     attr = Type.copyAttributes(attributes, board.options, 'riemannsum');
@@ -2538,7 +2531,6 @@ JXG2.createRiemannsum = function (board, parents, attributes) {
     return c;
 };
 
-JXG2.registerElement("riemannsum", JXG2.createRiemannsum);
 
 /**
  * @class A trace curve is simple locus curve showing the orbit of a point that depends on a glider point.
@@ -2572,7 +2564,7 @@ JXG2.registerElement("riemannsum", JXG2.createRiemannsum);
  *       curve = tc1_board.create('tracecurve', [g1, p2]);
  * </script><pre>
  */
-JXG2.createTracecurve = function (board, parents, attributes) {
+export function createTracecurve(board, parents, attributes) {
     var c, glider, tracepoint, attr;
 
     if (parents.length !== 2) {
@@ -2696,7 +2688,6 @@ JXG2.createTracecurve = function (board, parents, attributes) {
     return c;
 };
 
-JXG2.registerElement("tracecurve", JXG2.createTracecurve);
 
 /**
      * @class A step function is a function graph that is piecewise constant.
@@ -2722,7 +2713,7 @@ JXG2.registerElement("tracecurve", JXG2.createTracecurve);
      *   var curve = sf1_board.create('stepfunction', [[0,1,2,3,4,5], [1,3,0,2,2,1]]);
      * </script><pre>
      */
-JXG2.createStepfunction = function (board, parents, attributes) {
+export function createStepfunction(board, parents, attributes) {
     var c, attr;
     if (parents.length !== 2) {
         throw new Error(
@@ -2766,7 +2757,6 @@ JXG2.createStepfunction = function (board, parents, attributes) {
     return c;
 };
 
-JXG2.registerElement("stepfunction", JXG2.createStepfunction);
 
 /**
  * @class A curve visualizing the function graph of the (numerical) derivative of a given curve.
@@ -2795,7 +2785,7 @@ JXG2.registerElement("stepfunction", JXG2.createStepfunction);
  * </script><pre>
  *
  */
-JXG2.createDerivative = function (board, parents, attributes) {
+export function createDerivative(board, parents, attributes) {
     var c, curve, dx, dy, attr;
 
     if (parents.length !== 1 && parents[0].class !== OBJECT_CLASS.CURVE) {
@@ -2831,7 +2821,6 @@ JXG2.createDerivative = function (board, parents, attributes) {
     return c;
 };
 
-JXG2.registerElement("derivative", JXG2.createDerivative);
 
 /**
  * @class The path forming the intersection of two closed path elements.
@@ -2867,7 +2856,7 @@ JXG2.registerElement("derivative", JXG2.createDerivative);
  * </script><pre>
  *
  */
-JXG2.createCurveIntersection = function (board, parents, attributes) {
+export function createCurveIntersection(board, parents, attributes) {
     var c;
 
     if (parents.length !== 2) {
@@ -2883,7 +2872,7 @@ JXG2.createCurveIntersection = function (board, parents, attributes) {
      * @ignore
      */
     c.updateDataArray = function () {
-        var a = Clip.intersection(parents[0], parents[1], this.board);
+        var a = Clip.calcIntersection(parents[0], parents[1], this.board);
         this.dataX = a[0];
         this.dataY = a[1];
     };
@@ -2924,7 +2913,7 @@ JXG2.createCurveIntersection = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG2.createCurveUnion = function (board, parents, attributes) {
+export function createCurveUnion(board, parents, attributes) {
     var c;
 
     if (parents.length !== 2) {
@@ -2981,7 +2970,7 @@ JXG2.createCurveUnion = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG2.createCurveDifference = function (board, parents, attributes) {
+export function createCurveDifference(board, parents, attributes) {
     var c;
 
     if (parents.length !== 2) {
@@ -3004,9 +2993,6 @@ JXG2.createCurveDifference = function (board, parents, attributes) {
     return c;
 };
 
-JXG2.registerElement("curvedifference", JXG2.createCurveDifference);
-JXG2.registerElement("curveintersection", JXG2.createCurveIntersection);
-JXG2.registerElement("curveunion", JXG2.createCurveUnion);
 
 // /**
 //  * @class Concat of two path elements, in general neither is a closed path. The parent elements have to be curves, too.
@@ -3144,7 +3130,7 @@ JXG2.registerElement("curveunion", JXG2.createCurveUnion);
  * </script><pre>
  *
  */
-JXG2.createBoxPlot = function (board, parents, attributes) {
+export function createBoxPlot(board, parents, attributes) {
     var box, i, len,
         attr = Type.copyAttributes(attributes, board.options, 'boxplot');
 
@@ -3220,7 +3206,6 @@ JXG2.createBoxPlot = function (board, parents, attributes) {
     return box;
 };
 
-JXG2.registerElement("boxplot", JXG2.createBoxPlot);
 
 /**
  * @class An implicit curve is a plane curve defined by an implicit equation
@@ -3384,7 +3369,7 @@ JXG2.registerElement("boxplot", JXG2.createBoxPlot);
  * </script><pre>
  *
  */
-JXG2.createImplicitCurve = function (board, parents, attributes) {
+export function createImplicitCurve(board, parents, attributes) {
     var c, attr;
 
     if ([1, 3, 5].indexOf(parents.length) < 0) {
@@ -3551,27 +3536,5 @@ JXG2.createImplicitCurve = function (board, parents, attributes) {
     return c;
 };
 
-JXG2.registerElement("implicitcurve", JXG2.createImplicitCurve);
 
 
-export default JXG2.Curve;
-
-// export default {
-//     Curve: JXG2.Curve,
-//     createCardinalSpline: JXG2.createCardinalSpline,
-//     createCurve: JXG2.createCurve,
-//     createCurveDifference: JXG2.createCurveDifference,
-//     createCurveIntersection: JXG2.createCurveIntersection,
-//     createCurveUnion: JXG2.createCurveUnion,
-//     createDerivative: JXG2.createDerivative,
-//     createFunctiongraph: JXG2.createFunctiongraph,
-//     createMetapostSpline: JXG2.createMetapostSpline,
-//     createPlot: JXG2.createFunctiongraph,
-//     createSpline: JXG2.createSpline,
-//     createRiemannsum: JXG2.createRiemannsum,
-//     createStepfunction: JXG2.createStepfunction,
-//     createTracecurve: JXG2.createTracecurve
-// };
-
-// const Curve = JXG2.Curve;
-// export { Curve as default, Curve};

@@ -35,7 +35,7 @@ import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
 import { JSXMath } from "./math.js";
-import Extrapolate from "./extrapolate.js";
+import { Extrapolate } from "./extrapolate.js";
 import { Numerics } from "./numerics.js";
 import { Statistics } from "./statistics.js";
 import { Geometry } from "./geometry.js";

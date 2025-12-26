@@ -541,7 +541,6 @@ export class JSXGraph {
 
         // tbtb - move the renderer to Board, so that different boards have different renderers
         // renderer = this.initRenderer(box, dimensions, attr.document, attr.renderer);
-        // tbtb ---  this._setARIA(box, attr);
 
         // Create the board.
         // board.options will contain the user supplied board attributes

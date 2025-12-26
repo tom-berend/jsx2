@@ -3522,7 +3522,7 @@ export class Numerics {
      * @see Geometry.Numerics.fminbr
      * @memberof Geometry.Numerics
      */
-    static fzero(f, x0, context) {
+    static fzero(f, x0, context?) {
         var a, b, c,
             fa, fb, fc,
             res, x00,
