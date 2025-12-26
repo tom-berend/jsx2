@@ -48,7 +48,7 @@ const dbugColor = `color:white;background-color:black`;
  */
 
 // import { JXG2 } from "../jxg.js";
-import Options from "../options.js";
+import { Options } from "../options.js";
 
 import { JSXMath } from "../math/math.js";
 import { Geometry } from "../math/geometry.js";
@@ -1684,7 +1684,7 @@ export function createSegment(board, parents, attributes) {
  *   var alex1_l1 = alex1_board.create('arrow', [alex1_p1, alex1_p2]);
  * </script><pre>
  */
-export function createArrow (board, parents, attributes) {
+export function createArrow(board, parents, attributes) {
     var el, attr;
 
     attributes.straightFirst = false;
@@ -2092,7 +2092,7 @@ export function createAxis(board, parents, attributes) {
  *   var tlex1_t1 = tlex1_board.create('tangent', [tlex1_g1]);
  * </script><pre>
  */
-export function createTangent (board, parents, attributes) {
+export function createTangent(board, parents, attributes) {
     var p, c, j, el, tangent, attr,
         getCurveTangentDir,
         res, isTransformed,
@@ -2445,7 +2445,7 @@ export function createTangent (board, parents, attributes) {
  *   var nlex1_norm1 = nlex1_board.create('normal', [nlex1_c1, nlex1_p2]);
  * </script><pre>
  */
-export function createNormal (board, parents, attributes) {
+export function createNormal(board, parents, attributes) {
     var p, c, l, i, attr, pp, attrp,
         getCurveNormalDir,
         res, isTransformed,
@@ -2864,7 +2864,7 @@ export function createNormal (board, parents, attributes) {
  *   var rlex1_r1 = rlex1_board.create('radicalaxis', [rlex1_c1, rlex1_c2]);
  * </script><pre>
  */
-export function createRadicalAxis (board, parents, attributes) {
+export function createRadicalAxis(board, parents, attributes) {
     var el, el1, el2;
 
     if (
@@ -2966,7 +2966,7 @@ export function createRadicalAxis (board, parents, attributes) {
  * var plex2_l1 = plex2_board.create('polarline', [plex2_c1, plex2_p3]);
  * </script><pre>
  */
-export function createPolarLine (board, parents, attributes) {
+export function createPolarLine(board, parents, attributes) {
     var el,
         el1,
         el2,
@@ -3080,7 +3080,7 @@ export function createPolarLine (board, parents, attributes) {
  * </script><pre>
  *
  */
-export function createTangentTo (board, parents, attributes) {
+export function createTangentTo(board, parents, attributes) {
     var el, attr,
         conic, pointFrom, num,
         intersect, polar;

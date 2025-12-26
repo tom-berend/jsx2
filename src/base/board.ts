@@ -46,7 +46,7 @@ import { LooseObject } from '../interfaces.js';
 import { BOARD_MODE, BOARD_QUALITY, OBJECT_CLASS, OBJECT_TYPE, COORDS_BY, Version } from './constants.js';
 import { GeometryElement } from './element.js';
 import { Coords } from './coords.js';
-import Options from '../options.js';
+import { Options } from '../options.js';
 import { Numerics } from '../math/numerics.js'
 import { Geometry } from '../math/geometry.js';
 // import {Statistics} from '../math/statistics.js';
@@ -67,7 +67,7 @@ import { Dim } from '../interfaces.js'
 import { Text } from '../base/text.js'
 import { Point } from '../base/point.js'
 import { Checkbox } from "../element/checkbox.js"
-import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis,createPolarLine,createTangentTo } from '../base/line.js'
+import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis, createPolarLine, createTangentTo } from '../base/line.js'
 // import createPoint from '../base/point.js'
 
 

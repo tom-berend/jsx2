@@ -1,4 +1,4 @@
-const dbug = (elem?/*: GeometryElement*/) =>false;//   elem && elem.id === 'jxgBoard1P1Label';
+const dbug = (elem?/*: GeometryElement*/) => false;//   elem && elem.id === 'jxgBoard1P1Label';
 const dbugColor = `color:blue;background-color:#ffc0c0`;
 
 /*
@@ -36,7 +36,7 @@ const dbugColor = `color:blue;background-color:#ffc0c0`;
 /*jslint nomen: true, plusplus: true, newcap:true*/
 
 // import { JXG2 } from "../jxg.js";
-import  Options  from "../options.js";
+import { Options } from "../options.js";
 import { AbstractRenderer } from "./abstract.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { Type } from "../utils/type.js";
@@ -48,7 +48,7 @@ import { Numerics } from "../math/numerics.js";
 import { Board } from "../base/board.js";
 import { Env } from "../utils/env.js"
 import { GeometryElement } from "../base/element.js";
-import {Text} from "../base/text.js"
+import { Text } from "../base/text.js"
 import { Dim, SVGType } from "../interfaces.js"
 
 
@@ -208,7 +208,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @returns DOM node to be added to this.defs.
      * @private
      */
-    createShadowFilter(id:string, rgb, opacity:number, blend:number, blur:number, offset:number[]=[5,5]) {
+    createShadowFilter(id: string, rgb, opacity: number, blend: number, blur: number, offset: number[] = [5, 5]) {
         var feOffset, feColor, feGaussianBlur, feBlend, mat;
 
         this.assertNonNullish(this.container, 'expected container')
@@ -707,7 +707,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.AbstractRenderer#displayCopyright
      * @see Text#fontSize
      */
-    displayLogo(str:string, fontsize:number) {
+    displayLogo(str: string, fontsize: number) {
         var node,
             s = 1.5 * fontsize,
             alpha = 0.2;
@@ -766,7 +766,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateText
      * @see JXG2.AbstractRenderer#updateTextStyle
      */
-    updateInternalText(el:Text) {
+    updateInternalText(el: Text) {
         var content = el.plaintext,
             v, css,
             ev_ax = el.getAnchorX(),
@@ -856,7 +856,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.Image
      * @see JXG2.AbstractRenderer#updateImage
      */
-    drawImage(el:GeometryElement) {
+    drawImage(el: GeometryElement) {
         var node = this.createPrim("image", el.id);
 
         node.setAttributeNS(null, "preserveAspectRatio", "none");
@@ -1062,8 +1062,8 @@ export class SVGRenderer extends AbstractRenderer {
     setLayer(el/*: GeometryElement*/, level: number) {
         if (!Type.exists(level)) {
             level = 0;
-        } else if (level >= Options.layers.numlayers) {
-            level = Options.layers.numlayers - 1;
+        } else if (level >= Options.layer.numlayers) {
+            level = Options.layer.numlayers - 1;
         }
 
         this.layers[level].appendChild(el.rendNode);
@@ -1157,7 +1157,7 @@ export class SVGRenderer extends AbstractRenderer {
     updateEllipsePrim(node: HTMLElement, x: number, y: number, rx: number, ry: number) {
         var huge = 1000000;
 
-        if (dbug()) console.log(`%c svg: updateEllipsePrim(node, x:${x}, y:${y}, rx:${rx}, ry:${ry} )`, dbugColor,node)
+        if (dbug()) console.log(`%c svg: updateEllipsePrim(node, x:${x}, y:${y}, rx:${rx}, ry:${ry} )`, dbugColor, node)
 
         huge = 200000; // IE
         // webkit does not like huge values if the object is dashed

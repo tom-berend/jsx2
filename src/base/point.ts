@@ -41,7 +41,7 @@ const dbugColor = `color:red;background-color:blue`;
  */
 
 import { JXG2 } from "../jxg.js";
-import Options from "../options.js";
+import { Options } from "../options.js";
 import { JSXMath } from "../math/math.js";
 import { Geometry } from "../math/geometry.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
@@ -112,8 +112,8 @@ export class Point extends CoordsElement {
 
         this.needsUpdate = true;
 
-    // if(dbug(this))
-        console.warn(`%c new Point(${JSON.stringify(parents)},${JSON.stringify(attributes)})`,dbugColor, this)
+        // if(dbug(this))
+        console.warn(`%c new Point(${JSON.stringify(parents)},${JSON.stringify(attributes)})`, dbugColor, this)
     }
 
     /**
@@ -498,10 +498,10 @@ export class Point extends CoordsElement {
                 plainName = this.name;
             }
 
-            console.log('createLabel ',this.X(),this.Y(), plainName)
+            console.log('createLabel ', this.X(), this.Y(), plainName)
 
             this.label = new Text(this.board, [() => this.X(), () => this.Y(), plainName], attr);
-            this.label.addConstraint([1,() => this.X(), () => this.Y()])
+            this.label.addConstraint([1, () => this.X(), () => this.Y()])
             this.label.needsUpdate = true;
             this.label.dump = false;
             this.label.fullUpdate();

@@ -61,7 +61,7 @@ import { CoordsElement } from "./coordselement.js";
 import { Coords } from "./coords.js";
 // import { TextOptions } from "../optionInterfaces.js";
 import { Board } from "./board.js"
-import Options from "../options.js"
+import { Options } from "../options.js"
 import { LooseObject } from "../interfaces.js";
 
 var priv = {
@@ -553,28 +553,28 @@ export class Text extends CoordsElement {
         // offsetWidth and offsetHeight seem to be supported for internal vml elements by IE10+ in IE8 mode.
         if (ev_d === "html") {
             //tbtb//if (Type.exists(node.offsetWidth)) {
-                //tbtb// window.setTimeout(() => {
-                //tbtb//     this.size = [node.offsetWidth, node.offsetHeight];
-                //tbtb//     this.needsUpdate = true;
-                //tbtb//     this.updateRenderer();
-                //tbtb// }, 0);
+            //tbtb// window.setTimeout(() => {
+            //tbtb//     this.size = [node.offsetWidth, node.offsetHeight];
+            //tbtb//     this.needsUpdate = true;
+            //tbtb//     this.updateRenderer();
+            //tbtb// }, 0);
 
 
-                // In case, there is non-zero padding or borders
-                // the following approach does not longer work.
-                // s = [node.offsetWidth, node.offsetHeight];
-                // if (s[0] === 0 && s[1] === 0) { // Some browsers need some time to set offsetWidth and offsetHeight
-                //     that = this;
-                //     window.setTimeout(function () {
-                //         that.size = [node.offsetWidth, node.offsetHeight];
-                //         that.needsUpdate = true;
-                //         that.updateRenderer();
-                //     } 0);
-                // } else {
-                //     this.size = s;
-                // }
+            // In case, there is non-zero padding or borders
+            // the following approach does not longer work.
+            // s = [node.offsetWidth, node.offsetHeight];
+            // if (s[0] === 0 && s[1] === 0) { // Some browsers need some time to set offsetWidth and offsetHeight
+            //     that = this;
+            //     window.setTimeout(function () {
+            //         that.size = [node.offsetWidth, node.offsetHeight];
+            //         that.needsUpdate = true;
+            //         that.updateRenderer();
+            //     } 0);
             // } else {
-                this.size = this.crudeSizeEstimate();
+            //     this.size = s;
+            // }
+            // } else {
+            this.size = this.crudeSizeEstimate();
             // }
         } else if (ev_d === "internal") {
             if (this.board.renderer.type === "svg") {

@@ -52,7 +52,7 @@ const dbugColor = `color:red;background-color:#00ffc0`;
 
 // import { JXG2 } from '../jxg.js'
 import { LooseObject } from "../interfaces.js";
-import Options from "../options.js";
+import { Options } from "../options.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js'
 import { Coords } from "../base/coords.js";
 
@@ -549,7 +549,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#makeArrows
      * @see JXG2.AbstractRenderer#getArrowHeadData
      */
-    updatePathWithArrowHeads(el:GeometryElement, doHighlight?) {
+    updatePathWithArrowHeads(el: GeometryElement, doHighlight?) {
         var hl = doHighlight ? 'highlight' : '',
             w,
             arrowData;
@@ -727,7 +727,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#getPositionArrowHead
      *
      */
-    updateLineWithEndings(el:GeometryElement, arrowData) {
+    updateLineWithEndings(el: GeometryElement, arrowData) {
         var c1,
             c2,
             // useTotalLength = true,
@@ -1044,7 +1044,7 @@ export abstract class AbstractRenderer {
         var node: HTMLElement, z, level, ev_visible;
 
         if (dbug(el))
-             console.log(`%c abstract: drawText(${el.id})`, dbugColor)
+            console.log(`%c abstract: drawText(${el.id})`, dbugColor)
 
         if (this.container !== null) {
             if (

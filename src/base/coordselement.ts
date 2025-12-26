@@ -48,7 +48,7 @@ import { Coords } from "./coords.js";
 import { OBJECT_TYPE, OBJECT_CLASS, COORDS_BY } from "./constants.js";
 import { Type } from "../utils/type.js";
 import { GeometryElement } from "../base/element.js";
-import Options from "../options.js"
+import { Options } from "../options.js"
 import Transformation from "./transformation.js";
 
 
@@ -2562,9 +2562,9 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     }
 
     // new version
-    public coordsElementInit(coords: any[] /*coords part of parents */, attr1?,attr2?) {
+    public coordsElementInit(coords: any[] /*coords part of parents */, attr1?, attr2?) {
         // if (dbug(this))
-        console.warn(`%c coordselements: INIT ${JSON.stringify(coords)}`, dbugColor, attr1,attr2)
+        console.warn(`%c coordselements: INIT ${JSON.stringify(coords)}`, dbugColor, attr1, attr2)
 
         let isConstrained = false
 
