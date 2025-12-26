@@ -68,8 +68,9 @@ import { Text } from '../base/text.js'
 import { Point } from '../base/point.js'
 import { Checkbox } from "../element/checkbox.js"
 import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis, createPolarLine, createTangentTo } from '../base/line.js'
-// import createPoint from '../base/point.js'
-
+import { createCircle } from './circle.js';
+import { createTicks, createHatchmark } from "./ticks.js";
+import { createTransform, createTransform3D} from "./transformation.js";
 
 /**
  * Constructs a new Board object.
@@ -313,7 +314,7 @@ export class Board extends Events {
      * An array containing all geometric objects on the board in the order of construction.
      * @type Array
      */
-    objectsList = [];
+    objectsList: GeometryElement[] = [];
 
     /**
      * An associative array containing all groups belonging to the board. Key is the id of the group and value is a reference to the object.
@@ -993,6 +994,8 @@ export class Board extends Events {
      * @returns {String} Unique id for an element.
      */
     setId(obj: GeometryElement, type: string) {
+        console.assert(typeof obj == 'object', typeof obj)
+
         var randomNumber,
             num = this.numObjects,
             elId = obj.id;
@@ -5938,7 +5941,6 @@ export class Board extends Events {
             }
         }
         */
-        console.log(`%c updateElements(${this.id})`, dbugColor, this.objectsList)
         for (el = 0; el < this.objectsList.length; el++) {
             pEl = this.objectsList[el];
             if (this.needsFullUpdate && pEl.elementClass === OBJECT_CLASS.TEXT) {
@@ -5993,7 +5995,7 @@ export class Board extends Events {
             this.updateRendererCanvas();
         } else {
             for (el = 0; el < len; el++) {
-                if (this.objectsList[el].visProp.islabel && this.objectsList[el].visProp.autoposition) {
+                if (this.objectsList[el].visProp["islabel"] && this.objectsList[el].visProp["autoposition"]) {
                     autoPositionLabelList.push(el);
                 } else {
                     this.objectsList[el].updateRenderer();
@@ -6359,6 +6361,7 @@ export class Board extends Events {
             case 'text': el = new Text(this, parents, attributes); break;
             case 'point': el = new Point(this, parents, attributes); break;
             case 'checkbox': el = new Checkbox(this, parents, attributes); break;
+
             case 'line': el = createLine(this, parents, attributes); break;
             case 'segment': el = createSegment(this, parents, attributes); break;
             case 'arrow': el = createArrow(this, parents, attributes); break;
@@ -6368,6 +6371,13 @@ export class Board extends Events {
             case 'radialAxis': el = createRadicalAxis(this, parents, attributes); break;
             case 'polarline': el = createPolarLine(this, parents, attributes); break;
             case 'tangentto': el = createTangentTo(this, parents, attributes); break;
+
+            case 'circle': el = createCircle(this, parents, attributes); break;
+            case 'ticks': el = createTicks(this, parents, attributes); break;
+            case 'hatch': el = createHatchmark(this, parents, attributes); break;
+
+            case 'transform': el = createTransform(this, parents, attributes); break;
+
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)
                 throw new Error('JSXGraph: create: Unknown element type given: ' + elementType);

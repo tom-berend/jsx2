@@ -65,6 +65,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { GeometryElement } from "../base/element.js";
 import { SVGType } from "../interfaces.js";
 import { Text } from "../base/text.js"
+import { elements } from "../index.js";
 
 
 /**
@@ -1082,8 +1083,18 @@ export abstract class AbstractRenderer {
             el.htmlStr = "";
 
             // Set el.visPropCalc.visible
-            if (el.visProp.islabel && Type.exists(el.visProp.anchor)) {
-                ev_visible = el.visProp.anchor.evalVisProp('visible');
+            if (el.visProp.islabel && Type.exists(el.visProp["anchor"])) {
+                if (el.board.objects[el.visProp["anchor"]] == undefined) {
+                    console.log(el)
+                    console.log(el.visProp["anchor"])
+                    console.log(el.board.objects)
+                }
+                if (typeof el.visProp["anchor"] !== 'string') {
+                    console.error(true, 'should be GeometryElement')
+                    ev_visible = true
+                } else {
+                    ev_visible = el.board.objects[el.visProp["anchor"]].evalVisProp('visible')
+                }
                 el.prepareUpdate().updateVisibility(ev_visible);
             } else {
                 el.prepareUpdate().updateVisibility();

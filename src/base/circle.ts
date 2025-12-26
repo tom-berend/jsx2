@@ -38,13 +38,14 @@
  * a board.
  */
 
-import {JXG2} from "../jxg.js";
-import {GeometryElement} from "./element.js";
-import {Coords} from "../base/coords.js";
-import {OBJECT_CLASS,OBJECT_TYPE,COORDS_BY} from "../base/constants.js";
-import {JSXMath} from "../math/math.js";
+import { JXG2 } from "../jxg.js";
+import {Options} from "../options.js";
+import { GeometryElement } from "./element.js";
+import { Coords } from "../base/coords.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
+import { JSXMath } from "../math/math.js";
 import GeonextParser from "../parser/geonext.js";
-import {Type} from "../utils/type.js";
+import { Type } from "../utils/type.js";
 
 /**
  * A circle consists of all points with a given distance from one point. This point is called center, the distance is called radius.
@@ -69,10 +70,8 @@ import {Type} from "../utils/type.js";
  * @param {Object} attributes
  * @see JXG2.Board#generateName
  */
-JXG2.Circle = function (board, method, par1, par2, attributes) {
-    // Call the constructor of GeometryElement
-    this.constructor(board, attributes, OBJECT_TYPE.CIRCLE, OBJECT_CLASS.CIRCLE);
 
+export class Circle extends GeometryElement {
     /**
      * Stores the given method.
      * Can be
@@ -87,22 +86,22 @@ JXG2.Circle = function (board, method, par1, par2, attributes) {
      * @see JXG2.Circle#line
      * @see JXG2.Circle#circle
      */
-    this.method = method;
+    method
 
     // this is kept so existing code won't ne broken
-    this.midpoint = this.board.select(par1);
+    midpoint
 
     /**
      * The circles center. Do not set this parameter directly as it will break JSXGraph's update system.
      * @type JXG2.Point
      */
-    this.center = this.board.select(par1);
+    //center  // tbtb - defined in GeometryElement
 
     /** Point on the circle only set if method equals 'twoPoints'. Do not set this parameter directly as it will break JSXGraph's update system.
      * @type JXG2.Point
      * @see JXG2.Circle#method
      */
-    this.point2 = null;
+    point2 = null;
 
     /** Radius of the circle
      * only set if method equals 'pointRadius'
@@ -110,7 +109,7 @@ JXG2.Circle = function (board, method, par1, par2, attributes) {
      * @default null
      * @see JXG2.Circle#method
      */
-    this.radius = 0;
+    radius = 0;
 
     /** Line defining the radius of the circle given by the distance from the startpoint and the endpoint of the line
      * only set if method equals 'pointLine'. Do not set this parameter directly as it will break JSXGraph's update system.
@@ -118,7 +117,7 @@ JXG2.Circle = function (board, method, par1, par2, attributes) {
      * @default null
      * @see JXG2.Circle#method
      */
-    this.line = null;
+    line = null;
 
     /** Circle defining the radius of the circle given by the radius of the other circle
      * only set if method equals 'pointLine'. Do not set this parameter directly as it will break JSXGraph's update system.
@@ -126,707 +125,740 @@ JXG2.Circle = function (board, method, par1, par2, attributes) {
      * @default null
      * @see JXG2.Circle#method
      */
-    this.circle = null;
+    circle = null;
 
-    this.points = [];
+    points = [];
+    gxtterm
+    dataX
+    dataY
 
-    if (method === 'twoPoints') {
-        this.point2 = board.select(par2);
-        this.radius = this.Radius();
-    } else if (method === 'pointRadius') {
-        this.gxtterm = par2;
-        // Converts JessieCode syntax into JavaScript syntax and generally ensures that the radius is a function
-        this.updateRadius = Type.createFunction(par2, this.board);
-        // First evaluation of the radius function
-        this.updateRadius();
-        this.addParentsFromJCFunctions([this.updateRadius]);
-    } else if (method === 'pointLine') {
-        // dann ist p2 die Id eines Objekts vom Typ Line!
-        this.line = board.select(par2);
-        this.radius = this.line.point1.coords.distance(
-            COORDS_BY.USER,
-            this.line.point2.coords
-        );
-    } else if (method === 'pointCircle') {
-        // dann ist p2 die Id eines Objekts vom Typ Circle!
-        this.circle = board.select(par2);
-        this.radius = this.circle.Radius();
-    }
+    par1
+    par2
+    numberPoints
+    bezierDegree
 
-    // create Label
-    this.id = this.board.setId(this, 'C');
-    this.board.renderer.drawEllipse(this);
-    this.board.finalizeAdding(this);
+    constructor(board, method: 'twoPoints' | 'pointRadius' | 'pointLine' | 'pointCircle', par1, par2, attributes) {
+        super(board, attributes, OBJECT_TYPE.CIRCLE, OBJECT_CLASS.CIRCLE)
 
-    this.createGradient();
-    this.elType = 'circle';
-    this.createLabel();
+        this.method = method;
+        this.center = this.board.select(par1);
+        this.midpoint = this.board.select(par1);
 
-    if (Type.exists(this.center._is_new)) {
-        this.addChild(this.center);
-        delete this.center._is_new;
-    } else {
-        this.center.addChild(this);
-    }
+        this.par1 = par1
+        this.par2 = par2
 
-    if (method === 'pointRadius') {
-        this.notifyParents(par2);
-    } else if (method === 'pointLine') {
-        this.line.addChild(this);
-    } else if (method === 'pointCircle') {
-        this.circle.addChild(this);
-    } else if (method === 'twoPoints') {
-        if (Type.exists(this.point2._is_new)) {
-            this.addChild(this.point2);
-            delete this.point2._is_new;
-        } else {
-            this.point2.addChild(this);
-        }
-    }
 
-    this.methodMap = Type.deepCopy(this.methodMap, {
-        setRadius: "setRadius",
-        getRadius: "getRadius",
-        Area: "Area",
-        area: "Area",
-        Perimeter: "Perimeter",
-        Circumference: "Perimeter",
-        radius: "Radius",
-        Radius: "Radius",
-        Diameter: "Diameter",
-        center: "center",
-        line: "line",
-        point2: "point2"
-    });
-};
-
-// JXG2.Circle.prototype = new GeometryElement();
-
-JXG2.extend(
-    JXG2.Circle.prototype,
-    /** @lends JXG2.Circle.prototype */ {
-        /**
-         * Checks whether (x,y) is near the circle line or inside of the ellipse
-         * (in case JXG2.Options.conic#hasInnerPoints is true).
-         * @param {Number} x Coordinate in x direction, screen coordinates.
-         * @param {Number} y Coordinate in y direction, screen coordinates.
-         * @returns {Boolean} True if (x,y) is near the circle, False otherwise.
-         * @private
-         */
-        hasPoint: function (x, y) {
-            var prec, type,
-                mp = this.center.coords.usrCoords,
-                p = new Coords(COORDS_BY.SCREEN, [x, y], this.board),
-                r = this.Radius(),
-                dx, dy, dist;
-
-            if (Type.isObject(this.evalVisProp('precision'))) {
-                type = this.board._inputDevice;
-                prec = this.evalVisProp('precision.' + type);
-            } else {
-                // 'inherit'
-                prec = this.board.options.precision.hasPoint;
-            }
-            dx = mp[1] - p.usrCoords[1];
-            dy = mp[2] - p.usrCoords[2];
-            dist = Math.hypot(dx, dy);
-
-            // We have to use usrCoords, since Radius is available in usrCoords only.
-            prec += this.evalVisProp('strokewidth') * 0.5;
-            prec /= Math.sqrt(Math.abs(this.board.unitX * this.board.unitY));
-
-            if (this.evalVisProp('hasinnerpoints')) {
-                return dist < r + prec;
-            }
-
-            return Math.abs(dist - r) < prec;
-        },
-
-        // /**
-        //  * Used to generate a polynomial for a point p that lies on this circle.
-        //  * @param {JXG2.Point} p The point for which the polynomial is generated.
-        //  * @returns {Array} An array containing the generated polynomial.
-        //  * @private
-        //  */
-        generatePolynomial: function (p) {
-            /*
-             * We have four methods to construct a circle:
-             *   (a) Two points
-             *   (b) center and radius
-             *   (c) center and radius given by length of a segment
-             *   (d) center and radius given by another circle
-             *
-             * In case (b) we have to distinguish two cases:
-             *  (i)  radius is given as a number
-             *  (ii) radius is given as a function
-             * In the latter case there's no guarantee the radius depends on other geometry elements
-             * in a polynomial way so this case has to be omitted.
-             *
-             * Another tricky case is case (d):
-             * The radius depends on another circle so we have to cycle through the ancestors of each circle
-             * until we reach one that's radius does not depend on another circles radius.
-             *
-             *
-             * All cases (a) to (d) vary only in calculation of the radius. So the basic formulae for
-             * a glider G (g1,g2) on a circle with center M (m1,m2) and radius r is just:
-             *
-             *     (g1-m1)^2 + (g2-m2)^2 - r^2 = 0
-             *
-             * So the easiest case is (b) with a fixed radius given as a number. The other two cases (a)
-             * and (c) are quite the same: Euclidean distance between two points A (a1,a2) and B (b1,b2),
-             * squared:
-             *
-             *     r^2 = (a1-b1)^2 + (a2-b2)^2
-             *
-             * For case (d) we have to cycle recursively through all defining circles and finally return the
-             * formulae for calculating r^2. For that we use JXG2.Circle.symbolic.generateRadiusSquared().
-             */
-            var m1 = this.center.symbolic.x,
-                m2 = this.center.symbolic.y,
-                g1 = p.symbolic.x,
-                g2 = p.symbolic.y,
-                rsq = this.generateRadiusSquared();
-
-            /* No radius can be calculated (Case b.ii) */
-            if (rsq === "") {
-                return [];
-            }
-
-            return [
-                "((" + g1 + ")-(" + m1 + "))^2 + ((" + g2 + ")-(" + m2 + "))^2 - (" + rsq + ")"
-            ];
-        },
-
-        /**
-         * Generate symbolic radius calculation for loci determination with Groebner-Basis algorithm.
-         * @returns {String} String containing symbolic calculation of the circle's radius or an empty string
-         * if the radius can't be expressed in a polynomial equation.
-         * @private
-         */
-        generateRadiusSquared: function () {
-            /*
-             * Four cases:
-             *
-             *   (a) Two points
-             *   (b) center and radius
-             *   (c) center and radius given by length of a segment
-             *   (d) center and radius given by another circle
-             */
-            var m1,
-                m2,
-                p1,
-                p2,
-                q1,
-                q2,
-                rsq = "";
-
-            if (this.method === 'twoPoints') {
-                m1 = this.center.symbolic.x;
-                m2 = this.center.symbolic.y;
-                p1 = this.point2.symbolic.x;
-                p2 = this.point2.symbolic.y;
-
-                rsq = "((" + p1 + ")-(" + m1 + "))^2 + ((" + p2 + ")-(" + m2 + "))^2";
-            } else if (this.method === 'pointRadius') {
-                if (Type.isNumber(this.radius)) {
-                    rsq = (this.radius * this.radius).toString();
-                }
-            } else if (this.method === 'pointLine') {
-                p1 = this.line.point1.symbolic.x;
-                p2 = this.line.point1.symbolic.y;
-
-                q1 = this.line.point2.symbolic.x;
-                q2 = this.line.point2.symbolic.y;
-
-                rsq = "((" + p1 + ")-(" + q1 + "))^2 + ((" + p2 + ")-(" + q2 + "))^2";
-            } else if (this.method === 'pointCircle') {
-                rsq = this.circle.Radius();
-            }
-
-            return rsq;
-        },
-
-        /**
-         * Uses the boards renderer to update the circle.
-         */
-        update: function () {
-            var x, y, z, r, c, i;
-
-            if (this.needsUpdate) {
-                if (this.evalVisProp('trace')) {
-                    this.cloneToBackground();
-                }
-
-                if (this.method === 'pointLine') {
-                    this.radius = this.line.point1.coords.distance(
-                        COORDS_BY.USER,
-                        this.line.point2.coords
-                    );
-                } else if (this.method === 'pointCircle') {
-                    this.radius = this.circle.Radius();
-                } else if (this.method === 'pointRadius') {
-                    this.radius = this.updateRadius();
-                }
-                this.radius = Math.abs(this.radius);
-
-                this.updateStdform();
-                this.updateQuadraticform();
-
-                // Approximate the circle by 4 Bezier segments
-                // This will be used for intersections of type curve / circle.
-                // See https://spencermortensen.com/articles/bezier-circle/
-                z = this.center.coords.usrCoords[0];
-                x = this.center.coords.usrCoords[1] / z;
-                y = this.center.coords.usrCoords[2] / z;
-                z /= z;
-                r = this.Radius();
-                c = 0.551915024494;
-
-                this.numberPoints = 13;
-                this.dataX = [
-                    x + r, x + r, x + r * c, x, x - r * c, x - r, x - r, x - r, x - r * c, x, x + r * c, x + r, x + r
-                ];
-                this.dataY = [
-                    y, y + r * c, y + r, y + r, y + r, y + r * c, y, y - r * c, y - r, y - r, y - r, y - r * c, y
-                ];
-                this.bezierDegree = 3;
-                for (i = 0; i < this.numberPoints; i++) {
-                    this.points[i] = new Coords(
-                        COORDS_BY.USER,
-                        [this.dataX[i], this.dataY[i]],
-                        this.board
-                    );
-                }
-            }
-
-            return this;
-        },
-
-        /**
-         * Updates this circle's {@link JXG2.Circle#quadraticform}.
-         * @private
-         */
-        updateQuadraticform: function () {
-            var m = this.center,
-                mX = m.X(),
-                mY = m.Y(),
-                r = this.Radius();
-
-            this.quadraticform = [
-                [mX * mX + mY * mY - r * r, -mX, -mY],
-                [-mX, 1, 0],
-                [-mY, 0, 1]
-            ];
-        },
-
-        /**
-         * Updates the stdform derived from the position of the center and the circle's radius.
-         * @private
-         */
-        updateStdform: function () {
-            this.stdform[3] = 0.5;
-            this.stdform[4] = this.Radius();
-            this.stdform[1] = -this.center.coords.usrCoords[1];
-            this.stdform[2] = -this.center.coords.usrCoords[2];
-            if (!isFinite(this.stdform[4])) {
-                this.stdform[0] = Type.exists(this.point2)
-                    ? -(
-                          this.stdform[1] * this.point2.coords.usrCoords[1] +
-                          this.stdform[2] * this.point2.coords.usrCoords[2]
-                      )
-                    : 0;
-            }
-            this.normalize();
-        },
-
-        /**
-         * Uses the boards renderer to update the circle.
-         * @private
-         */
-        updateRenderer: function () {
-            // var wasReal;
-
-            if (!this.needsUpdate) {
-                return this;
-            }
-
-            if (this.visPropCalc.visible) {
-                // wasReal = this.isReal;
-                this.isReal =
-                    !isNaN(
-                        this.center.coords.usrCoords[1] +
-                            this.center.coords.usrCoords[2] +
-                            this.Radius()
-                    ) && this.center.isReal;
-
-                if (
-                    //wasReal &&
-                    !this.isReal
-                ) {
-                    this.updateVisibility(false);
-                }
-            }
-
-            // Update the position
-            if (this.visPropCalc.visible) {
-                this.board.renderer.updateEllipse(this);
-            }
-
-            // Update the label if visible.
-            if (
-                this.hasLabel &&
-                this.visPropCalc.visible &&
-                this.label &&
-                this.label.visPropCalc.visible &&
-                this.isReal
-            ) {
-                this.label.update();
-                this.board.renderer.updateText(this.label);
-            }
-
-            // Update rendNode display
-            this.setDisplayRendNode();
-            // if (this.visPropCalc.visible !== this.visPropOld.visible) {
-            //     this.board.renderer.display(this, this.visPropCalc.visible);
-            //     this.visPropOld.visible = this.visPropCalc.visible;
-            //
-            //     if (this.hasLabel) {
-            //         this.board.renderer.display(this.label, this.label.visPropCalc.visible);
-            //     }
-            // }
-
-            this.needsUpdate = false;
-            return this;
-        },
-
-        /**
-         * Finds dependencies in a given term and resolves them by adding the elements referenced in this
-         * string to the circle's list of ancestors.
-         * @param {String} contentStr
-         * @private
-         */
-        notifyParents: function (contentStr) {
-            if (Type.isString(contentStr)) {
-                GeonextParser.findDependencies(this, contentStr, this.board);
-            }
-        },
-
-        /**
-         * Set a new radius, then update the board.
-         * @param {String|Number|function} r A string, function or number describing the new radius.
-         * @returns {JXG2.Circle} Reference to this circle
-         */
-        setRadius: function (r) {
-            this.updateRadius = Type.createFunction(r, this.board);
+        if (method === 'twoPoints') {
+            this.point2 = board.select(par2);
+            this.radius = this.Radius();
+        } else if (method === 'pointRadius') {
+            this.gxtterm = par2;
+            // Converts JessieCode syntax into JavaScript syntax and generally ensures that the radius is a function
+            this.updateRadius = Type.createFunction(par2, this.board);
+            // First evaluation of the radius function
+            this.updateRadius();
             this.addParentsFromJCFunctions([this.updateRadius]);
-            this.board.update();
+        } else if (method === 'pointLine') {
+            // dann ist p2 die Id eines Objekts vom Typ Line!
+            this.line = board.select(par2);
+            this.radius = this.line.point1.coords.distance(
+                COORDS_BY.USER,
+                this.line.point2.coords
+            );
+        } else if (method === 'pointCircle') {
+            // dann ist p2 die Id eines Objekts vom Typ Circle!
+            this.circle = board.select(par2);
+            this.radius = this.circle.Radius();
+        }
 
-            return this;
-        },
+                this.visProp = Type.initVisProps(Options.board, Options.elements, Options.circle, attributes)
 
-        /**
-         * Calculates the radius of the circle.
-         * @param {String|Number|function} [value] Set new radius
-         * @returns {Number} The radius of the circle
-         */
-        Radius: function (value) {
-            if (Type.exists(value)) {
-                this.setRadius(value);
-                return this.Radius();
-            }
 
-            if (this.method === 'twoPoints') {
-                if (
-                    Type.cmpArrays(this.point2.coords.usrCoords, [0, 0, 0]) ||
-                    Type.cmpArrays(this.center.coords.usrCoords, [0, 0, 0])
-                ) {
-                    return NaN;
-                }
+        // create Label
+        this.id = this.board.setId(this, 'C');
+        this.board.renderer.drawEllipse(this);
+        this.board.finalizeAdding(this);
 
-                return this.center.Dist(this.point2);
-            }
+        this.createGradient();
+        this.elType = 'circle';
+        this.createLabel();
 
-            if (this.method === "pointLine" || this.method === 'pointCircle') {
-                return this.radius;
-            }
+        if (Type.exists(this.center._is_new)) {
+            this.addChild(this.center);
+            delete this.center._is_new;
+        } else {
+            this.center.addChild(this);
+        }
 
-            if (this.method === 'pointRadius') {
-                return (this.evalVisProp('nonnegativeonly')) ?
-                    Math.max(0.0, this.updateRadius()) :
-                    Math.abs(this.updateRadius());
-            }
-
-            return NaN;
-        },
-
-        /**
-         * Calculates the diameter of the circle.
-         * @returns {Number} The Diameter of the circle
-         */
-        Diameter: function () {
-            return 2 * this.Radius();
-        },
-
-        /**
-         * Use {@link JXG2.Circle#Radius}.
-         * @deprecated
-         */
-        getRadius: function () {
-            JXG2.deprecated("Circle.getRadius()", "Circle.Radius()");
-            return this.Radius();
-        },
-
-        // documented in geometry element
-        getTextAnchor: function () {
-            return this.center.coords;
-        },
-
-        // documented in geometry element
-        getLabelAnchor: function () {
-            var x, y, pos,
-                xy, lbda, sgn,
-                dist = 1.5,
-                r = this.Radius(),
-                c = this.center.coords.usrCoords,
-                SQRTH = 7.071067811865e-1; // sqrt(2)/2
-
-            if (!Type.exists(this.label)) {
-                return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
-            }
-
-            pos = this.label.evalVisProp('position');
-            if (!Type.isString(pos)) {
-                return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
-            }
-
-            if (pos.indexOf('right') < 0 && pos.indexOf('left') < 0) {
-                switch (this.evalVisProp('label.position')) {
-                    case "lft":
-                        x = c[1] - r;
-                        y = c[2];
-                        break;
-                    case "llft":
-                        x = c[1] - SQRTH * r;
-                        y = c[2] - SQRTH * r;
-                        break;
-                    case "rt":
-                        x = c[1] + r;
-                        y = c[2];
-                        break;
-                    case "lrt":
-                        x = c[1] + SQRTH * r;
-                        y = c[2] - SQRTH * r;
-                        break;
-                    case "urt":
-                        x = c[1] + SQRTH * r;
-                        y = c[2] + SQRTH * r;
-                        break;
-                    case "top":
-                        x = c[1];
-                        y = c[2] + r;
-                        break;
-                    case "bot":
-                        x = c[1];
-                        y = c[2] - r;
-                        break;
-                    default:
-                        // includes case 'ulft'
-                        x = c[1] - SQRTH * r;
-                        y = c[2] + SQRTH * r;
-                        break;
-                }
+        if (method === 'pointRadius') {
+            this.notifyParents(par2);
+        } else if (method === 'pointLine') {
+            this.line.addChild(this);
+        } else if (method === 'pointCircle') {
+            this.circle.addChild(this);
+        } else if (method === 'twoPoints') {
+            if (Type.exists(this.point2._is_new)) {
+                this.addChild(this.point2);
+                delete this.point2._is_new;
             } else {
-                // New positioning
-                c = this.center.coords.scrCoords;
+                this.point2.addChild(this);
+            }
+        }
 
-                xy = Type.parsePosition(pos);
-                lbda = Type.parseNumber(xy.pos, 2 * Math.PI, 1);
-                if (xy.pos.indexOf('fr') < 0 &&
-                    xy.pos.indexOf('%') < 0) {
-                    if (xy.pos.indexOf('px') >= 0) {
-                        // 'px' or numbers are not supported
-                        lbda = 0;
-                    } else {
-                        // Pure numbers are interpreted as degrees
-                        lbda *= Math.PI / 180;
-                    }
-                }
+        this.methodMap = Type.deepCopy(this.methodMap, {
+            setRadius: "setRadius",
+            getRadius: "getRadius",
+            Area: "Area",
+            area: "Area",
+            Perimeter: "Perimeter",
+            Circumference: "Perimeter",
+            radius: "Radius",
+            Radius: "Radius",
+            Diameter: "Diameter",
+            center: "center",
+            line: "line",
+            point2: "point2"
+        });
+    };
+    /**
+     * Checks whether (x,y) is near the circle line or inside of the ellipse
+     * (in case JXG2.Options.conic#hasInnerPoints is true).
+     * @param {Number} x Coordinate in x direction, screen coordinates.
+     * @param {Number} y Coordinate in y direction, screen coordinates.
+     * @returns {Boolean} True if (x,y) is near the circle, False otherwise.
+     * @private
+     */
+    hasPoint(x, y) {
+        var prec, type,
+            mp = this.center.coords.usrCoords,
+            p = new Coords(COORDS_BY.SCREEN, [x, y], this.board),
+            r = this.Radius(),
+            dx, dy, dist;
 
-                // Position left or right
-                sgn = 1;
-                if (xy.side === 'left') {
-                    sgn = -1;
-                }
+        if (Type.isObject(this.evalVisProp('precision'))) {
+            type = this.board._inputDevice;
+            prec = this.evalVisProp('precision.' + type);
+        } else {
+            // 'inherit'
+            prec = this.board.options.precision.hasPoint;
+        }
+        dx = mp[1] - p.usrCoords[1];
+        dy = mp[2] - p.usrCoords[2];
+        dist = Math.hypot(dx, dy);
 
-                if (Type.exists(this.label)) {
-                    dist = sgn * 0.5 * this.label.evalVisProp('distance');
-                }
+        // We have to use usrCoords, since Radius is available in usrCoords only.
+        prec += this.evalVisProp('strokewidth') * 0.5;
+        prec /= Math.sqrt(Math.abs(this.board.unitX * this.board.unitY));
 
-                x = c[1] + (r * this.board.unitX + this.label.size[0] * dist) * Math.cos(lbda);
-                y = c[2] - (r * this.board.unitY + this.label.size[1] * dist) * Math.sin(lbda);
+        if (this.evalVisProp('hasinnerpoints')) {
+            return dist < r + prec;
+        }
 
-                return new Coords(COORDS_BY.SCREEN, [x, y], this.board);
+        return Math.abs(dist - r) < prec;
+    }
+
+    // /**
+    //  * Used to generate a polynomial for a point p that lies on this circle.
+    //  * @param {JXG2.Point} p The point for which the polynomial is generated.
+    //  * @returns {Array} An array containing the generated polynomial.
+    //  * @private
+    //  */
+    generatePolynomial(p) {
+        /*
+         * We have four methods to construct a circle:
+         *   (a) Two points
+         *   (b) center and radius
+         *   (c) center and radius given by length of a segment
+         *   (d) center and radius given by another circle
+         *
+         * In case (b) we have to distinguish two cases:
+         *  (i)  radius is given as a number
+         *  (ii) radius is given as a function
+         * In the latter case there's no guarantee the radius depends on other geometry elements
+         * in a polynomial way so this case has to be omitted.
+         *
+         * Another tricky case is case (d):
+         * The radius depends on another circle so we have to cycle through the ancestors of each circle
+         * until we reach one that's radius does not depend on another circles radius.
+         *
+         *
+         * All cases (a) to (d) vary only in calculation of the radius. So the basic formulae for
+         * a glider G (g1,g2) on a circle with center M (m1,m2) and radius r is just:
+         *
+         *     (g1-m1)^2 + (g2-m2)^2 - r^2 = 0
+         *
+         * So the easiest case is (b) with a fixed radius given as a number. The other two cases (a)
+         * and (c) are quite the same: Euclidean distance between two points A (a1,a2) and B (b1,b2),
+         * squared:
+         *
+         *     r^2 = (a1-b1)^2 + (a2-b2)^2
+         *
+         * For case (d) we have to cycle recursively through all defining circles and finally return the
+         * formulae for calculating r^2. For that we use JXG2.Circle.symbolic.generateRadiusSquared().
+         */
+        var m1 = this.center.symbolic.x,
+            m2 = this.center.symbolic.y,
+            g1 = p.symbolic.x,
+            g2 = p.symbolic.y,
+            rsq = this.generateRadiusSquared();
+
+        /* No radius can be calculated (Case b.ii) */
+        if (rsq === "") {
+            return [];
+        }
+
+        return [
+            "((" + g1 + ")-(" + m1 + "))^2 + ((" + g2 + ")-(" + m2 + "))^2 - (" + rsq + ")"
+        ];
+    }
+
+    /**
+     * Generate symbolic radius calculation for loci determination with Groebner-Basis algorithm.
+     * @returns {String} String containing symbolic calculation of the circle's radius or an empty string
+     * if the radius can't be expressed in a polynomial equation.
+     * @private
+     */
+    generateRadiusSquared() {
+        /*
+         * Four cases:
+         *
+         *   (a) Two points
+         *   (b) center and radius
+         *   (c) center and radius given by length of a segment
+         *   (d) center and radius given by another circle
+         */
+        var m1,
+            m2,
+            p1,
+            p2,
+            q1,
+            q2,
+            rsq = "";
+
+        if (this.method === 'twoPoints') {
+            m1 = this.center.symbolic.x;
+            m2 = this.center.symbolic.y;
+            p1 = this.point2.symbolic.x;
+            p2 = this.point2.symbolic.y;
+
+            rsq = "((" + p1 + ")-(" + m1 + "))^2 + ((" + p2 + ")-(" + m2 + "))^2";
+        } else if (this.method === 'pointRadius') {
+            if (Type.isNumber(this.radius)) {
+                rsq = (this.radius * this.radius).toString();
+            }
+        } else if (this.method === 'pointLine') {
+            p1 = this.line.point1.symbolic.x;
+            p2 = this.line.point1.symbolic.y;
+
+            q1 = this.line.point2.symbolic.x;
+            q2 = this.line.point2.symbolic.y;
+
+            rsq = "((" + p1 + ")-(" + q1 + "))^2 + ((" + p2 + ")-(" + q2 + "))^2";
+        } else if (this.method === 'pointCircle') {
+            rsq = this.circle.Radius();
+        }
+
+        return rsq;
+    }
+
+    /**
+     * Uses the boards renderer to update the circle.
+     */
+    update() {
+        var x, y, z, r, c, i;
+
+        if (this.needsUpdate) {
+            if (this.evalVisProp('trace')) {
+                this.cloneToBackground();
             }
 
-            return new Coords(COORDS_BY.USER, [x, y], this.board);
-        },
+            if (this.method === 'pointLine') {
+                this.radius = this.line.point1.coords.distance(
+                    COORDS_BY.USER,
+                    this.line.point2.coords
+                );
+            } else if (this.method === 'pointCircle') {
+                this.radius = this.circle.Radius();
+            } else if (this.method === 'pointRadius') {
+                this.radius = this.updateRadius();
+            }
+            this.radius = Math.abs(this.radius);
 
-        // documented in geometry element
-        cloneToBackground: function () {
-            var er,
-                r = this.Radius(),
-                copy = Type.getCloneObject(this);
+            this.updateStdform();
+            this.updateQuadraticform();
 
-            copy.center = {
-                coords: this.center.coords
-            };
-            copy.Radius = function () {
-                return r;
-            };
-            copy.getRadius = function () {
-                return r;
-            };
+            // Approximate the circle by 4 Bezier segments
+            // This will be used for intersections of type curve / circle.
+            // See https://spencermortensen.com/articles/bezier-circle/
+            z = this.center.coords.usrCoords[0];
+            x = this.center.coords.usrCoords[1] / z;
+            y = this.center.coords.usrCoords[2] / z;
+            z /= z;
+            r = this.Radius();
+            c = 0.551915024494;
 
-            er = this.board.renderer.enhancedRendering;
-            this.board.renderer.enhancedRendering = true;
-            this.board.renderer.drawEllipse(copy);
-            this.board.renderer.enhancedRendering = er;
-            this.traces[copy.id] = copy.rendNode;
+            this.numberPoints = 13;
+            this.dataX = [
+                x + r, x + r, x + r * c, x, x - r * c, x - r, x - r, x - r, x - r * c, x, x + r * c, x + r, x + r
+            ];
+            this.dataY = [
+                y, y + r * c, y + r, y + r, y + r, y + r * c, y, y - r * c, y - r, y - r, y - r, y - r * c, y
+            ];
+            this.bezierDegree = 3;
+            for (i = 0; i < this.numberPoints; i++) {
+                this.points[i] = new Coords(
+                    COORDS_BY.USER,
+                    [this.dataX[i], this.dataY[i]],
+                    this.board
+                );
+            }
+        }
 
+        return this;
+    }
+
+    /**
+     * Updates this circle's {@link JXG2.Circle#quadraticform}.
+     * @private
+     */
+    updateQuadraticform() {
+        var m = this.center,
+            mX = m.X(),
+            mY = m.Y(),
+            r = this.Radius();
+
+        this.quadraticform = [
+            [mX * mX + mY * mY - r * r, -mX, -mY],
+            [-mX, 1, 0],
+            [-mY, 0, 1]
+        ];
+    }
+
+    /**
+     * Updates the stdform derived from the position of the center and the circle's radius.
+     * @private
+     */
+    updateStdform() {
+        this.stdform[3] = 0.5;
+        this.stdform[4] = this.Radius();
+        this.stdform[1] = -this.center.coords.usrCoords[1];
+        this.stdform[2] = -this.center.coords.usrCoords[2];
+        if (!isFinite(this.stdform[4])) {
+            this.stdform[0] = Type.exists(this.point2)
+                ? -(
+                    this.stdform[1] * this.point2.coords.usrCoords[1] +
+                    this.stdform[2] * this.point2.coords.usrCoords[2]
+                )
+                : 0;
+        }
+        this.normalize();
+    }
+
+    /**
+     * Uses the boards renderer to update the circle.
+     * @private
+     */
+    updateRenderer() {
+        // var wasReal;
+
+        if (!this.needsUpdate) {
             return this;
-        },
+        }
 
-        /**
-         * Add transformations to this circle.
-         * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation} or an array of {@link JXG2.Transformation}s.
-         * @returns {JXG2.Circle} Reference to this circle object.
-         */
-        addTransform: function (transform) {
-            var i,
-                list = Type.isArray(transform) ? transform : [transform],
-                len = list.length;
+        if (this.visPropCalc.visible) {
+            // wasReal = this.isReal;
+            this.isReal =
+                !isNaN(
+                    this.center.coords.usrCoords[1] +
+                    this.center.coords.usrCoords[2] +
+                    this.Radius()
+                ) && this.center.isReal;
 
-            for (i = 0; i < len; i++) {
-                this.center.transformations.push(list[i]);
-
-                if (this.method === 'twoPoints') {
-                    this.point2.transformations.push(list[i]);
-                }
+            if (
+                //wasReal &&
+                !this.isReal
+            ) {
+                this.updateVisibility(false);
             }
+        }
 
-            return this;
-        },
+        // Update the position
+        if (this.visPropCalc.visible) {
+            this.board.renderer.updateEllipse(this);
+        }
 
-        // see element.js
-        snapToGrid: function () {
-            var forceIt = this.evalVisProp('snaptogrid');
+        // Update the label if visible.
+        if (
+            this.hasLabel &&
+            this.visPropCalc.visible &&
+            this.label &&
+            this.label.visPropCalc.visible &&
+            this.isReal
+        ) {
+            this.label.update();
+            this.board.renderer.updateText(this.label);
+        }
 
-            this.center.handleSnapToGrid(forceIt, true);
-            if (this.method === 'twoPoints') {
-                this.point2.handleSnapToGrid(forceIt, true);
-            }
+        // Update rendNode display
+        this.setDisplayRendNode();
+        // if (this.visPropCalc.visible !== this.visPropOld.visible) {
+        //     this.board.renderer.display(this, this.visPropCalc.visible);
+        //     this.visPropOld.visible = this.visPropCalc.visible;
+        //
+        //     if (this.hasLabel) {
+        //         this.board.renderer.display(this.label, this.label.visPropCalc.visible);
+        //     }
+        // }
 
-            return this;
-        },
+        this.needsUpdate = false;
+        return this;
+    }
 
-        // see element.js
-        snapToPoints: function () {
-            var forceIt = this.evalVisProp('snaptopoints');
-
-            this.center.handleSnapToPoints(forceIt);
-            if (this.method === 'twoPoints') {
-                this.point2.handleSnapToPoints(forceIt);
-            }
-
-            return this;
-        },
-
-        /**
-         * Treats the circle as parametric curve and calculates its X coordinate.
-         * @param {Number} t Number between 0 and 1.
-         * @returns {Number} <tt>X(t)= radius*cos(t)+centerX</tt>.
-         */
-        X: function (t) {
-            return this.Radius() * Math.cos(t * 2 * Math.PI) + this.center.coords.usrCoords[1];
-        },
-
-        /**
-         * Treats the circle as parametric curve and calculates its Y coordinate.
-         * @param {Number} t Number between 0 and 1.
-         * @returns {Number} <tt>X(t)= radius*sin(t)+centerY</tt>.
-         */
-        Y: function (t) {
-            return this.Radius() * Math.sin(t * 2 * Math.PI) + this.center.coords.usrCoords[2];
-        },
-
-        /**
-         * Treat the circle as parametric curve and calculates its Z coordinate.
-         * @param {Number} t ignored
-         * @returns {Number} 1.0
-         */
-        Z: function (t) {
-            return 1.0;
-        },
-
-        /**
-         * Returns 0.
-         * @private
-         */
-        minX: function () {
-            return 0.0;
-        },
-
-        /**
-         * Returns 1.
-         * @private
-         */
-        maxX: function () {
-            return 1.0;
-        },
-
-        /**
-         * Circle area
-         * @returns {Number} area of the circle.
-         */
-        Area: function () {
-            var r = this.Radius();
-
-            return r * r * Math.PI;
-        },
-
-        /**
-         * Perimeter (circumference) of circle.
-         * @returns {Number} Perimeter of circle in user units.
-         */
-        Perimeter: function () {
-            return 2 * this.Radius() * Math.PI;
-        },
-
-        /**
-         * Get bounding box of the circle.
-         * @returns {Array} [x1, y1, x2, y2]
-         */
-        bounds: function () {
-            var uc = this.center.coords.usrCoords,
-                r = this.Radius();
-
-            return [uc[1] - r, uc[2] + r, uc[1] + r, uc[2] - r];
-        },
-
-        /**
-         * Get data to construct this element. Data consists of the parent elements
-         * and static data like radius.
-         * @returns {Array} data necessary to construct this element
-         */
-        getParents: function () {
-            if (this.parents.length === 1) {
-                // i.e. this.method === 'pointRadius'
-                return this.parents.concat(this.radius);
-            }
-            return this.parents;
+    /**
+     * Finds dependencies in a given term and resolves them by adding the elements referenced in this
+     * string to the circle's list of ancestors.
+     * @param {String} contentStr
+     * @private
+     */
+    notifyParents(contentStr) {
+        if (Type.isString(contentStr)) {
+            GeonextParser.findDependencies(this, contentStr, this.board);
         }
     }
-);
+
+    /**
+     * Set a new radius, then update the board.
+     * @param {String|Number|function} r A string, function or number describing the new radius.
+     * @returns {JXG2.Circle} Reference to this circle
+     */
+    setRadius(r) {
+        this.updateRadius = Type.createFunction(r, this.board);
+        this.addParentsFromJCFunctions([this.updateRadius]);
+        this.board.update();
+
+        return this;
+    }
+
+    /**
+     * Calculates the radius of the circle.
+     * @param {String|Number|function} [value] Set new radius
+     * @returns {Number} The radius of the circle
+     */
+    Radius(value?) {
+        if (Type.exists(value)) {
+            this.setRadius(value);
+            return this.Radius();
+        }
+
+        if (this.method === 'twoPoints') {
+            if (
+                Type.cmpArrays(this.point2.coords.usrCoords, [0, 0, 0]) ||
+                Type.cmpArrays(this.center.coords.usrCoords, [0, 0, 0])
+            ) {
+                return NaN;
+            }
+
+            return this.center.Dist(this.point2);
+        }
+
+        if (this.method === "pointLine" || this.method === 'pointCircle') {
+            return this.radius;
+        }
+
+        if (this.method === 'pointRadius') {
+            return (this.evalVisProp('nonnegativeonly')) ?
+                Math.max(0.0, this.updateRadius()) :
+                Math.abs(this.updateRadius());
+        }
+
+        return NaN;
+    }
+
+    /**
+     * Calculates the diameter of the circle.
+     * @returns {Number} The Diameter of the circle
+     */
+    Diameter() {
+        return 2 * this.Radius();
+    }
+
+    /**
+     * Use {@link JXG2.Circle#Radius}.
+     * @deprecated
+     */
+    getRadius() {
+        JXG2.deprecated("Circle.getRadius()", "Circle.Radius()");
+        return this.Radius();
+    }
+
+    // documented in geometry element
+    getTextAnchor() {
+        return this.center.coords;
+    }
+
+    // documented in geometry element
+    getLabelAnchor() {
+        var x, y, pos,
+            xy, lbda, sgn,
+            dist = 1.5,
+            r = this.Radius(),
+            c = this.center.coords.usrCoords,
+            SQRTH = 7.071067811865e-1; // sqrt(2)/2
+
+        if (!Type.exists(this.label)) {
+            return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
+        }
+
+        pos = this.label.evalVisProp('position');
+        if (!Type.isString(pos)) {
+            return new Coords(COORDS_BY.SCREEN, [NaN, NaN], this.board);
+        }
+
+        if (pos.indexOf('right') < 0 && pos.indexOf('left') < 0) {
+            switch (this.evalVisProp('label.position')) {
+                case "lft":
+                    x = c[1] - r;
+                    y = c[2];
+                    break;
+                case "llft":
+                    x = c[1] - SQRTH * r;
+                    y = c[2] - SQRTH * r;
+                    break;
+                case "rt":
+                    x = c[1] + r;
+                    y = c[2];
+                    break;
+                case "lrt":
+                    x = c[1] + SQRTH * r;
+                    y = c[2] - SQRTH * r;
+                    break;
+                case "urt":
+                    x = c[1] + SQRTH * r;
+                    y = c[2] + SQRTH * r;
+                    break;
+                case "top":
+                    x = c[1];
+                    y = c[2] + r;
+                    break;
+                case "bot":
+                    x = c[1];
+                    y = c[2] - r;
+                    break;
+                default:
+                    // includes case 'ulft'
+                    x = c[1] - SQRTH * r;
+                    y = c[2] + SQRTH * r;
+                    break;
+            }
+        } else {
+            // New positioning
+            c = this.center.coords.scrCoords;
+
+            xy = Type.parsePosition(pos);
+            lbda = Type.parseNumber(xy.pos, 2 * Math.PI, 1);
+            if (xy.pos.indexOf('fr') < 0 &&
+                xy.pos.indexOf('%') < 0) {
+                if (xy.pos.indexOf('px') >= 0) {
+                    // 'px' or numbers are not supported
+                    lbda = 0;
+                } else {
+                    // Pure numbers are interpreted as degrees
+                    lbda *= Math.PI / 180;
+                }
+            }
+
+            // Position left or right
+            sgn = 1;
+            if (xy.side === 'left') {
+                sgn = -1;
+            }
+
+            if (Type.exists(this.label)) {
+                dist = sgn * 0.5 * this.label.evalVisProp('distance');
+            }
+
+            x = c[1] + (r * this.board.unitX + this.label.size[0] * dist) * Math.cos(lbda);
+            y = c[2] - (r * this.board.unitY + this.label.size[1] * dist) * Math.sin(lbda);
+
+            return new Coords(COORDS_BY.SCREEN, [x, y], this.board);
+        }
+
+        return new Coords(COORDS_BY.USER, [x, y], this.board);
+    }
+
+    // documented in geometry element
+    cloneToBackground() {
+        var er,
+            r = this.Radius(),
+            copy = Type.getCloneObject(this);
+
+        copy.center = {
+            coords: this.center.coords
+        };
+        copy.Radius = function () {
+            return r;
+        };
+        copy.getRadius = function () {
+            return r;
+        };
+
+        er = this.board.renderer.enhancedRendering;
+        this.board.renderer.enhancedRendering = true;
+        this.board.renderer.drawEllipse(copy);
+        this.board.renderer.enhancedRendering = er;
+        this.traces[copy.id] = copy.rendNode;
+
+        return this;
+    }
+
+    /**
+     * Add transformations to this circle.
+     * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation} or an array of {@link JXG2.Transformation}s.
+     * @returns {JXG2.Circle} Reference to this circle object.
+     */
+    addTransform(transform) {
+        var i,
+            list = Type.isArray(transform) ? transform : [transform],
+            len = list.length;
+
+        for (i = 0; i < len; i++) {
+            this.center.transformations.push(list[i]);
+
+            if (this.method === 'twoPoints') {
+                this.point2.transformations.push(list[i]);
+            }
+        }
+
+        return this;
+    }
+
+    // see element.js
+    snapToGrid() {
+        var forceIt = this.evalVisProp('snaptogrid');
+
+        this.center.handleSnapToGrid(forceIt, true);
+        if (this.method === 'twoPoints') {
+            this.point2.handleSnapToGrid(forceIt, true);
+        }
+
+        return this;
+    }
+
+    // see element.js
+    snapToPoints() {
+        var forceIt = this.evalVisProp('snaptopoints');
+
+        this.center.handleSnapToPoints(forceIt);
+        if (this.method === 'twoPoints') {
+            this.point2.handleSnapToPoints(forceIt);
+        }
+
+        return this;
+    }
+
+    /**
+     * Treats the circle as parametric curve and calculates its X coordinate.
+     * @param {Number} t Number between 0 and 1.
+     * @returns {Number} <tt>X(t)= radius*cos(t)+centerX</tt>.
+     */
+    X(t) {
+        return this.Radius() * Math.cos(t * 2 * Math.PI) + this.center.coords.usrCoords[1];
+    }
+
+    /**
+     * Treats the circle as parametric curve and calculates its Y coordinate.
+     * @param {Number} t Number between 0 and 1.
+     * @returns {Number} <tt>X(t)= radius*sin(t)+centerY</tt>.
+     */
+    Y(t) {
+        return this.Radius() * Math.sin(t * 2 * Math.PI) + this.center.coords.usrCoords[2];
+    }
+
+    /**
+     * Treat the circle as parametric curve and calculates its Z coordinate.
+     * @param {Number} t ignored
+     * @returns {Number} 1.0
+     */
+    Z(t) {
+        return 1.0;
+    }
+
+    /**
+     * Returns 0.
+     * @private
+     */
+    minX() {
+        return 0.0;
+    }
+
+    /**
+     * Returns 1.
+     * @private
+     */
+    maxX() {
+        return 1.0;
+    }
+
+    /**
+     * Circle area
+     * @returns {Number} area of the circle.
+     */
+    Area() {
+        var r = this.Radius();
+
+        return r * r * Math.PI;
+    }
+
+    /**
+     * Perimeter (circumference) of circle.
+     * @returns {Number} Perimeter of circle in user units.
+     */
+    Perimeter() {
+        return 2 * this.Radius() * Math.PI;
+    }
+
+    /**
+     * Get bounding box of the circle.
+     * @returns {Array} [x1, y1, x2, y2]
+     */
+    bounds() {
+        var uc = this.center.coords.usrCoords,
+            r = this.Radius();
+
+        return [uc[1] - r, uc[2] + r, uc[1] + r, uc[2] - r];
+    }
+
+    /**
+     * Get data to construct this element. Data consists of the parent elements
+     * and static data like radius.
+     * @returns {Array} data necessary to construct this element
+     */
+    getParents() {
+        if (this.parents.length === 1) {
+            // i.e. this.method === 'pointRadius'
+            return this.parents.concat(this.radius);
+        }
+        return this.parents;
+    }
+
+    /**
+        * Creates a label element for this geometry element.
+        * @see JXG2.GeometryElement#addLabelToElement
+        */
+    createLabel() {
+        this.createLabelGeneric()
+        return;
+
+    }
+
+    updateRadius():number {
+        if (this.method === 'pointRadius') {
+
+
+        }
+        return 1
+    }
+}
 
 /**
  * @class A circle can be defined by various combinations of points and numbers.
@@ -839,10 +871,10 @@ JXG2.extend(
  * @constructor
  * @type JXG2.Circle
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {JXG2.Point_number,JXG2.Point,JXG2.Line,JXG2.Circle} center,radius The center must be given as a {@link JXG2.Point},
- * see {@link JXG2.providePoints}, but the radius can be given
+ * @param {JXG2.Point_number,JXG2.Point,JXG2.Line,JXG2.Circle} center,radius The center must be given as a {@link JXG2.Point}
+ * see {@link JXG2.providePoints} but the radius can be given
  * as a number (which will create a circle with a fixed radius),
- * another {@link JXG2.Point}, a {@link JXG2.Line} (the distance of start and end point of the
+ * another {@link JXG2.Point} a {@link JXG2.Line} (the distance of start and end point of the
  * line will determine the radius), or another {@link JXG2.Circle}.
  * <p>
  * If the radius is supplied as number or output of a function, its absolute value is taken.
@@ -873,7 +905,7 @@ JXG2.extend(
  *     c1 = board.create('circle', [p1, 3]);
  *
  * // Create another circle using the above circle
- * var c2 = board.create('circle', [function() { return [p1.X(), p1.Y() + 1];}, function() { return c1.Radius(); }]);
+ * var c2 = board.create('circle', [function() { return [p1.X(), p1.Y() + 1];} function() { return c1.Radius(); }]);
  * </pre><div class="jxgbox" id="JXG54165f60-93b9-441d-8979-ac5d0f193020" style="width: 400px; height: 400px;"></div>
  * <script type="text/javascript">
  * (function() {
@@ -882,7 +914,7 @@ JXG2.extend(
  * var c1 = board.create('circle', [p1, 3]);
  *
  * // Create another circle using the above circle
- * var c2 = board.create('circle', [function() { return [p1.X(), p1.Y() + 1];}, function() { return c1.Radius(); }]);
+ * var c2 = board.create('circle', [function() { return [p1.X(), p1.Y() + 1];} function() { return c1.Radius(); }]);
  * })();
  * </script><pre>
  * @example
@@ -924,7 +956,7 @@ JXG2.extend(
  * </script><pre>
  *
  */
-JXG2.createCircle = function (board, parents, attributes) {
+export function createCircle(board, parents, attributes) {
     var el,
         p,
         i,
@@ -987,31 +1019,31 @@ JXG2.createCircle = function (board, parents, attributes) {
 
     if (p.length === 2 && Type.isPoint(p[0]) && Type.isPoint(p[1])) {
         // Point/Point
-        el = new JXG2.Circle(board, "twoPoints", p[0], p[1], attr);
+        el = new Circle(board, "twoPoints", p[0], p[1], attr);
     } else if (
         (Type.isNumber(p[0]) || Type.isFunction(p[0]) || Type.isString(p[0])) &&
         Type.isPoint(p[1])
     ) {
         // Number/Point
-        el = new JXG2.Circle(board, "pointRadius", p[1], p[0], attr);
+        el = new Circle(board, "pointRadius", p[1], p[0], attr);
     } else if (
         (Type.isNumber(p[1]) || Type.isFunction(p[1]) || Type.isString(p[1])) &&
         Type.isPoint(p[0])
     ) {
         // Point/Number
-        el = new JXG2.Circle(board, "pointRadius", p[0], p[1], attr);
+        el = new Circle(board, "pointRadius", p[0], p[1], attr);
     } else if (p[0] === OBJECT_CLASS.CIRCLE && Type.isPoint(p[1])) {
         // Circle/Point
-        el = new JXG2.Circle(board, "pointCircle", p[1], p[0], attr);
+        el = new Circle(board, "pointCircle", p[1], p[0], attr);
     } else if (p[1].elementClass === OBJECT_CLASS.CIRCLE && Type.isPoint(p[0])) {
         // Point/Circle
-        el = new JXG2.Circle(board, "pointCircle", p[0], p[1], attr);
+        el = new Circle(board, "pointCircle", p[0], p[1], attr);
     } else if (p[0].elementClass === OBJECT_CLASS.LINE && Type.isPoint(p[1])) {
         // Line/Point
-        el = new JXG2.Circle(board, "pointLine", p[1], p[0], attr);
+        el = new Circle(board, "pointLine", p[1], p[0], attr);
     } else if (p[1].elementClass === OBJECT_CLASS.LINE && Type.isPoint(p[0])) {
         // Point/Line
-        el = new JXG2.Circle(board, "pointLine", p[0], p[1], attr);
+        el = new Circle(board, "pointLine", p[0], p[1], attr);
     } else if (
         parents.length === 3 &&
         Type.isPoint(p[0]) &&
@@ -1030,11 +1062,11 @@ JXG2.createCircle = function (board, parents, attributes) {
     } else {
         throw new Error(
             "JSXGraph: Can't create circle with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parent types: [point,point], [point,number], [point,function], [point,circle], [point,point,point], [circle,transformation]"
+            typeof parents[0] +
+            "' and '" +
+            typeof parents[1] +
+            "'." +
+            "\nPossible parent types: [point,point], [point,number], [point,function], [point,circle], [point,point,point], [circle,transformation]"
         );
     }
 
@@ -1049,10 +1081,3 @@ JXG2.createCircle = function (board, parents, attributes) {
     return el;
 };
 
-JXG2.registerElement("circle", JXG2.createCircle);
-
-export default JXG2.Circle;
-// export default {
-//     Circle: JXG2.Circle,
-//     createCircle: JXG2.createCircle
-// };

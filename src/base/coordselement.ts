@@ -49,7 +49,7 @@ import { OBJECT_TYPE, OBJECT_CLASS, COORDS_BY } from "./constants.js";
 import { Type } from "../utils/type.js";
 import { GeometryElement } from "../base/element.js";
 import { Options } from "../options.js"
-import Transformation from "./transformation.js";
+import { Transformation } from "./transformation.js";
 
 
 export interface CoordsMethods {

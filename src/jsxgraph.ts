@@ -570,8 +570,8 @@ export class JSXGraph {
             axattr = typeof attr.axis === "object" ? attr.axis : {};
 
             // The defaultAxes attributes are overwritten by user supplied axis object.
-            axattr_x = Type.deepCopy(options.board.defaultaxes.x, axattr);
-            axattr_y = Type.deepCopy(options.board.defaultaxes.y, axattr);
+            axattr_x = Type.deepCopy(Options.board.defaultAxes.x, axattr);
+            axattr_y = Type.deepCopy(Options.board.defaultAxes.y, axattr);
 
             // The user supplied defaultAxes attributes are merged in.
             if (attr.defaultaxes.x) {

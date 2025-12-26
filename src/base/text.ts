@@ -140,6 +140,8 @@ export class Text extends CoordsElement {
 
 
         let coordinates = parents.slice(0, -1)
+        this.relativeCoords = new Coords(COORDS_BY.USER, coordinates, board)  // used by transforms
+
         this.content = parents[parents.length - 1];
 
         //tbtb
