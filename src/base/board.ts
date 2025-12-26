@@ -67,7 +67,7 @@ import { Dim } from '../interfaces.js'
 import { Text } from '../base/text.js'
 import { Point } from '../base/point.js'
 import { Checkbox } from "../element/checkbox.js"
-import { Line,Segment,createLine} from '../base/line.js'
+import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis,createPolarLine,createTangentTo } from '../base/line.js'
 // import createPoint from '../base/point.js'
 
 
@@ -6359,7 +6359,15 @@ export class Board extends Events {
             case 'text': el = new Text(this, parents, attributes); break;
             case 'point': el = new Point(this, parents, attributes); break;
             case 'checkbox': el = new Checkbox(this, parents, attributes); break;
-            case 'line': el =createLine(this, parents, attributes); break;
+            case 'line': el = createLine(this, parents, attributes); break;
+            case 'segment': el = createSegment(this, parents, attributes); break;
+            case 'arrow': el = createArrow(this, parents, attributes); break;
+            case 'axis': el = createAxis(this, parents, attributes); break;
+            case 'tangent': el = createTangent(this, parents, attributes); break;
+            case 'tangent': el = createNormal(this, parents, attributes); break;
+            case 'radialAxis': el = createRadicalAxis(this, parents, attributes); break;
+            case 'polarline': el = createPolarLine(this, parents, attributes); break;
+            case 'tangentto': el = createTangentTo(this, parents, attributes); break;
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)
                 throw new Error('JSXGraph: create: Unknown element type given: ' + elementType);

@@ -25,7 +25,7 @@
  and <https://opensource.org/licenses/MIT/>.
  */
 
-JXG2.TracenpocheReader = function (board, str) {
+export function TracenpocheReader(board, str) {
     this.board = board;
     this.content = str;
 
@@ -81,7 +81,7 @@ JXG2.TracenpocheReader = function (board, str) {
                 // AB, the meaning is Dist(A,B)
                 isSmallName = c >= "a" && c <= "z" ? true : false;
 
-                for (;;) {
+                for (; ;) {
                     c = inputStr.charAt(i);
                     if (isSmallName) {
                         if (
@@ -120,7 +120,7 @@ JXG2.TracenpocheReader = function (board, str) {
                 // possibly '0'.
                 str = c;
                 i++;
-                for (;;) {
+                for (; ;) {
                     // Look for more digits
                     c = inputStr.charAt(i);
                     if (c < "0" || c > '9') {
@@ -133,7 +133,7 @@ JXG2.TracenpocheReader = function (board, str) {
                     // Look for a decimal fraction part
                     i++;
                     str += c;
-                    for (;;) {
+                    for (; ;) {
                         c = inputStr.charAt(i);
                         if (c < "0" || c > '9') {
                             break;
@@ -178,7 +178,7 @@ JXG2.TracenpocheReader = function (board, str) {
                 str = "";
                 q = c;
                 i++;
-                for (;;) {
+                for (; ;) {
                     c = inputStr.charAt(i);
                     if (c < " ") {
                         error(
@@ -245,7 +245,7 @@ JXG2.TracenpocheReader = function (board, str) {
             } else if (c === "/" && inputStr.charAt(i + 1) === "/") {
                 // comment
                 i++;
-                for (;;) {
+                for (; ;) {
                     c = inputStr.charAt(i);
                     if (c === "\n" || c === "\r" || c === "") {
                         break;
@@ -315,16 +315,16 @@ JXG2.TracenpocheReader = function (board, str) {
         var error = function (tok, msg) {
             throw new Error(
                 "TraceEnPocheReader: syntax error at char " +
-                    tok.from +
-                    ": " +
-                    tok.value +
-                    " - " +
-                    msg
+                tok.from +
+                ": " +
+                tok.value +
+                " - " +
+                msg
             );
         };
 
         var createObject = function (o) {
-            function F() {}
+            function F() { }
             F.prototype = o;
             return new F();
         };
