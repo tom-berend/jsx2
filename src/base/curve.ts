@@ -36,7 +36,6 @@
  * @fileoverview In this file the geometry element Curve is defined.
  */
 
-import { JXG2 } from "../jxg.js";
 import { Clip } from "../math/clip.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
@@ -45,12 +44,12 @@ import { GeometryElement } from "./element.js";
 import GeonextParser from "../parser/geonext.js";
 import { ImplicitPlot } from "../math/implicitplot.js";
 import { JSXMath } from "../math/math.js";
-import Metapost from "../math/metapost.js";
+import {Metapost} from "../math/metapost.js";
 import { Numerics } from "../math/numerics.js";
 import Plot from "../math/plot.js";
 import { Quadtree } from "../math/qdt.js";
 import { Type } from "../utils/type.js";
-import { CoordsElement } from "../index.js";
+import { CoordsElement } from "../base/coordselement.js";
 import { LooseObject } from "../interfaces.js";
 import { Board } from "./board.js";
 
@@ -65,7 +64,7 @@ import { Board } from "./board.js";
  * @see JXG2.Board#generateName
  * @see JXG2.Board#addCurve
  */
-export class Curve extends CoordsElement {
+export class Curve extends GeometryElement {
     points = [];
 
     /**
@@ -142,7 +141,9 @@ export class Curve extends CoordsElement {
     varname
     xterm
     yterm
-
+    _transformationSource
+    transformMat
+    _visibleArea
 
 
     // Converts GEONExT syntax into JavaScript syntax
@@ -176,7 +177,7 @@ export class Curve extends CoordsElement {
 
         this.createGradient();
         this.elType = 'curve';
-        this.createLabel();
+        this.createLabelGeneric();
 
         if (Type.isString(this.xterm)) {
             this.notifyParents(this.xterm);
@@ -758,7 +759,7 @@ export class Curve extends CoordsElement {
     updateCurve() {
         var i, len, mi, ma,
             x, y,
-            version = this.visProp.plotversion,
+            version = this.visProp["plotversion"],
             //t1, t2, l1,
             suspendUpdate = false;
 
@@ -1039,15 +1040,15 @@ export class Curve extends CoordsElement {
 
             this.numberPoints = this.dataX.length;
             this.X = this.interpolationFunctionFromArray.apply(this, ["X"]);
-            this.visProp.curvetype = 'plot';
+            this.visProp["curvetype"] = 'plot';
             this.isDraggable = true;
         } else {
             // Continuous data
             this.X = Type.createFunction(xterm, this.board, varname);
             if (Type.isString(xterm)) {
-                this.visProp.curvetype = 'functiongraph';
+                this.visProp["curvetype"] = 'functiongraph';
             } else if (Type.isFunction(xterm) || Type.isNumber(xterm)) {
-                this.visProp.curvetype = 'parameter';
+                this.visProp["curvetype"] = 'parameter';
             }
 
             this.isDraggable = true;
@@ -1087,7 +1088,7 @@ export class Curve extends CoordsElement {
             };
             // this.Y.deps = fy.deps;          // tbtb - something for jessiecode?
 
-            this.visProp.curvetype = 'polar';
+            this.visProp["curvetype"] = 'polar';
         }
 
         // Set the upper and lower bounds for the parameter of the curve.
@@ -1718,7 +1719,7 @@ export function createCurve(board, parents, attributes) {
         }
         attr = Type.copyAttributes(attr, board.options, 'curve');
 
-        cu = new JXG2.Curve(board, ["x", [], []], attr);
+        cu = new Curve(board, ["x", [], []], attr);
         /**
          * @class
          * @ignore
@@ -1743,7 +1744,7 @@ export function createCurve(board, parents, attributes) {
         return cu;
     }
     attr = Type.copyAttributes(attributes, board.options, 'curve');
-    return new JXG2.Curve(board, ["x"].concat(parents), attr);
+    return new Curve(board, ["x"].concat(parents), attr);
 };
 
 
@@ -1795,7 +1796,7 @@ export function createFunctiongraph(board, parents, attributes) {
     attr = Type.copyAttributes(attributes, board.options, 'functiongraph');
     attr = Type.copyAttributes(attr, board.options, 'curve');
     attr.curvetype = 'functiongraph';
-    return new JXG2.Curve(board, par, attr);
+    return new Curve(board, par, attr);
 };
 
 
@@ -1935,7 +1936,7 @@ export function createSpline(board, parents, attributes) {
     attributes = Type.copyAttributes(attributes, board.options, 'curve');
     attributes.curvetype = 'functiongraph';
     ret = funcs();
-    el = new JXG2.Curve(board, ["x", "x", ret[0], ret[1], ret[2]], attributes);
+    el = new Curve(board, ["x", "x", ret[0], ret[1], ret[2]], attributes);
     el.setParents(parents);
     el.elType = 'spline';
 
@@ -2133,7 +2134,7 @@ export function createCardinalSpline(board, parents, attributes) {
 
     splineArr = ["x"].concat(Numerics.CardinalSpline(points, tau, type));
 
-    el = new JXG2.Curve(board, splineArr, attributes);
+    el = new Curve(board, splineArr, attributes);
     le = points.length;
     el.setParents(points);
     for (i = 0; i < le; i++) {
@@ -2356,7 +2357,7 @@ export function createMetapostSpline(board, parents, attributes) {
 
     controls = parents[1];
 
-    el = new JXG2.Curve(board, ["t", [], [], 0, p.length - 1], attributes);
+    el = new Curve(board, ["t", [], [], 0, p.length - 1], attributes);
     /**
      * @class
      * @ignore

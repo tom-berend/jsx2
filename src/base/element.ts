@@ -345,7 +345,7 @@ export class GeometryElement extends Events {
     _org_type: OBJECT_TYPE
     elementClass: OBJECT_CLASS
     id: string
-    name: string | Function 
+    name: string | Function
     needsRegularUpdate: boolean
     animationData: LooseObject
     evalvisProp: LooseObject
@@ -2277,7 +2277,7 @@ export class GeometryElement extends Events {
      * @param {Number} y Coordinate in y direction, screen coordinates.
      * @returns {Boolean} True if (x,y) is near the element, False otherwise.
      */
-    hasPoint(x, y) {
+    hasPoint(x, y, start) {
         return false;
     }
 

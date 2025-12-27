@@ -31,7 +31,7 @@
 /*jslint nomen: true, plusplus: true*/
 
 import { JXG2 } from "../jxg.js";
-import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE,COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
 import { JSXMath } from "./math.js";
