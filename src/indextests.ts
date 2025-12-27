@@ -33,14 +33,14 @@ export class IndexTests {
             this.boards.push(JSXGraph.initBoard(
                 'box', {
                 boundingBox: [-10, 10, 10, -10],
-                // axis: true
+                axis: true
             }));
 
         if (this.old)
             this.boards.push((window as any).JXG.JSXGraph.initBoard(
                 'box2', {
                 boundingBox: [-10, 10, 10, -10],
-                // axis: true
+                axis: true
             }));
 
     }

@@ -221,7 +221,7 @@ import { Point } from "../base/point.js";
  *
  *
  */
-JXG2.createSlider = function (board, parents, attributes) {
+export function createSlider  (board, parents, attributes) {
     var pos0, pos1,
         smin, start, smax, diff,
         p1, p2, p3, l1, l2,
@@ -597,8 +597,3 @@ JXG2.createSlider = function (board, parents, attributes) {
     return p3;
 };
 
-JXG2.registerElement("slider", JXG2.createSlider);
-
-// export default {
-//     createSlider: JXG2.createSlider
-// };

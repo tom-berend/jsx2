@@ -215,7 +215,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  *     }());
  * </script><pre>
  */
-JXG2.createGrid = function (board, parents, attributes) {
+export function createGrid (board, parents, attributes) {
     var eps = JSXMath.eps,       // to avoid rounding errors
         maxLines = 5000,    // maximum number of vertical or horizontal grid elements (abort criterion for performance reasons)
 
@@ -1048,4 +1048,3 @@ JXG2.createGrid = function (board, parents, attributes) {
     return majorGrid;
 };
 
-JXG2.registerElement("grid", JXG2.createGrid);

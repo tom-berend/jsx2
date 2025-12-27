@@ -1708,6 +1708,7 @@ export class GeometryElement extends Events {
             }
         }
 
+        console.assert(val !== undefined,`missing visProp "${key}" in ${this.id}`)
         return val;
     }
 

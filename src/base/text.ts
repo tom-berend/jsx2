@@ -130,7 +130,7 @@ export class Text extends CoordsElement {
             console.warn(`%c text constructor(${JSON.stringify(parents).substring(0, 100)})`, dbugColor)
 
         this.elType = "text";
-        this.visProp = Type.initVisProps(Options.board, Options.elements, Options.text, attributes)
+        this.visProp = Type.initVisProps(Options.board, Options.elements, Options.point, Options.label, Options.text, attributes)
 
         /* Register text on board. */
         this.id = this.board.setId(this, "T");

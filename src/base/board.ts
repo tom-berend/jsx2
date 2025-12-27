@@ -75,6 +75,8 @@ import {
     createCurve, createFunctiongraph, createSpline, createCardinalSpline, createMetapostSpline, createRiemannsum, createTracecurve, createStepfunction, createDerivative,
     createCurveIntersection, createCurveUnion, createCurveDifference, createBoxPlot, createImplicitCurve
 } from "./curve.js";
+import { createSlider } from '../element/slider.js';
+import { createGrid } from '../element/grid.js';
 
 
 /**
@@ -6398,6 +6400,8 @@ export class Board extends Events {
             case 'boxPlot': el = createBoxPlot(this, parents, attributes); break;
             case 'implicitCurve': el = createImplicitCurve(this, parents, attributes); break;
 
+            case 'slider': el = createSlider(this, parents, attributes); break;
+            case 'grid': el = createGrid(this, parents, attributes); break;
 
 
 

@@ -1060,16 +1060,16 @@ export class JSXMath {
             return n;
         }
 
-        if (JXG2.exists(max)) {
+        if (Type.exists(max)) {
             n = Math.min(n, max);
         }
-        if (JXG2.exists(min)) {
+        if (Type.exists(min)) {
             n = Math.max(n, min);
         }
 
         minOr0 = min || 0;
 
-        if (JXG2.exists(step)) {
+        if (Type.exists(step)) {
             tmp = (n - minOr0) / step;
             if (Number.isInteger(tmp)) {
                 return n;
@@ -1079,10 +1079,10 @@ export class JSXMath {
             n = minOr0 + tmp * step;
         }
 
-        if (JXG2.exists(max)) {
+        if (Type.exists(max)) {
             n = Math.min(n, max);
         }
-        if (JXG2.exists(min)) {
+        if (Type.exists(min)) {
             n = Math.max(n, min);
         }
 

@@ -10,7 +10,7 @@
         "build": "rimraf ./build && tsc -w",
         "comment2": "to run a single test (eg: coords):  npx jest coords",
         "test": "jest",
-        "lint": "eslint",
+        "lint": "eslint src/*",
         "comment3": "use 'npx eslint src/*/point.* to lint a single file",
         "docs": "typedoc",
         "dist": "vite build --base=/jsx3d/dist/",

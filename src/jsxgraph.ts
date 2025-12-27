@@ -192,7 +192,7 @@ export class JSXGraph {
         board.maxboundingbox = attr.maxboundingbox;
         board.resizeContainer(dimensions.width, dimensions.height, true, true);
         board._createSelectionPolygon(attr);
-        board.renderer.drawNavigationBar(board, attr.navbar);
+        board.renderer.drawNavigationBar(board, Options.navbar);
         JXG2.boards[board.id] = board;
     }
 
@@ -480,8 +480,16 @@ export class JSXGraph {
         if (attributes.theme !== 'default' && Type.exists(JXG2.themes[attributes.theme])) {
             theme = JXG2.themes[attributes.theme];
         }
+
+        // old style copies EVERYTHIN
         options = Type.deepCopy(Options, theme, true);
         attr = this._setAttributes(attributes, options);
+        console.log(attr)
+
+        // // new style only copies what is necessary
+        // attr = Type.initVisProps(Options.board, Options.layer, Options.navbar,Options.label, Options.point, Options.text,  attributes)
+        // console.log(attr)
+
 
         dimensions = Env.getDimensions(box, attr.document);
 
