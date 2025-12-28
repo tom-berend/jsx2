@@ -1653,10 +1653,6 @@ export function createSegment(board, parents, attributes) {
 
     el.elType = 'segment';
 
-    console.log('new', el.id, el)
-    console.log(el.point1.coords.usrCoords, el.point2.coords.usrCoords)
-
-
     return el;
 };
 

@@ -698,6 +698,7 @@ export class Board extends Events {
         // TODO why do we need this?  can we change the board andelement default values?
 
         this.options = {}
+        // tbtb - next line doesn't work.  should be a deep copy
         Object.keys(Options).map((key) => this.options[key] = Options[key])
 
         attributes = Type.initVisProps(Options.board, attributes)

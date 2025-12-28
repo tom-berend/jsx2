@@ -172,6 +172,8 @@ export class Circle extends GeometryElement {
         }
 
                 this.visProp = Type.initVisProps(Options.board, Options.elements, Options.circle, attributes)
+                console.log(this.visProp)
+                console.log(this.board.options)
 
 
         // create Label

@@ -24,6 +24,7 @@ export class IndexTests {
         this.point()
         this.text()
         this.line()
+        this.circle()
         this.curve()
         this.widgets()
     }
@@ -67,9 +68,14 @@ export class IndexTests {
 
             // circle and radius
             board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
+        })
+    }
+    circle() {
+        this.boards.map((board) => {
             board.create('circle', [[-1, -1], [-2, -1]], { strokecolor: 'green' })
         })
     }
+
     curve() {
         this.boards.map((board) => {
             board.create('curve', [(t) => t - Math.sin(t), (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);

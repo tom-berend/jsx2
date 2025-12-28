@@ -657,8 +657,8 @@ export class SVGRenderer extends AbstractRenderer {
 
         node.setAttributeNS(null, "stroke", ticks.evalVisProp('strokecolor'));
         node.setAttributeNS(null, "fill", "none");
-        // node.setAttributeNS(null, 'fill', ticks.evalVisProp('fillcolor'));
-        // node.setAttributeNS(null, 'fill-opacity', ticks.evalVisProp('fillopacity'));
+        node.setAttributeNS(null, 'fill', ticks.evalVisProp('fillcolor'));
+        node.setAttributeNS(null, 'fill-opacity', ticks.evalVisProp('fillopacity'));
         node.setAttributeNS(
             null,
             "stroke-opacity",
@@ -1783,7 +1783,7 @@ export class SVGRenderer extends AbstractRenderer {
      * 'none'.
      * @param {Number} opacity Opacity of the fill color. Must be between 0 and 1.
      */
-    setObjectFillColor(el/*: GeometryElement*/, color: string, opacity: number, rendNode?: HTMLElement) {
+    setObjectFillColor(el/*: GeometryElement*/, color: any, opacity: number, rendNode?: HTMLElement) {
         var node, c, rgbo, oo,
             rgba = color,
             o = opacity,
@@ -1799,7 +1799,9 @@ export class SVGRenderer extends AbstractRenderer {
         ) {
             return;
         }
-        if (Type.exists(rgba) && rgba !== 'none') {
+
+        if (Type.exists(rgba) && rgba !== false) {
+
             if (rgba.length !== 9) {
                 // RGB, not RGBA
                 c = rgba;
@@ -1823,28 +1825,28 @@ export class SVGRenderer extends AbstractRenderer {
                 }, el.visPropOld.fillcolor);
             }
 
-            if (el.otype === OBJECT_TYPE.IMAGE) {
+            if (el.type === OBJECT_TYPE.IMAGE) {
                 this._setAttribute(function () {
                     node.setAttributeNS(null, "opacity", oo);
                 }, el.visPropOld.fillopacity);
                 //node.style['opacity'] = oo;  // This would overwrite values set by CSS class.
             } else {
-                if (c === "none") {
+                if (c === 'none') {
                     // This is done only for non-images
                     // because images have no fill color.
                     oo = 0;
                     // This is necessary if there is a foreignObject below.
-                    node.setAttributeNS(null, "pointer-events", "visibleStroke");
+                    node.setAttributeNS(null, "pointer-events", 'visibleStroke');
                 } else {
                     // This is the default
-                    node.setAttributeNS(null, "pointer-events", "visiblePainted");
+                    node.setAttributeNS(null, "pointer-events", 'visiblePainted');
                 }
                 this._setAttribute(function () {
-                    node.setAttributeNS(null, "fill-opacity", oo);
+                    node.setAttributeNS(null, 'fill-opacity', oo);
                 }, el.visPropOld.fillopacity);
             }
 
-            if (grad === "linear" || grad === "radial") {
+            if (grad === "linear" || grad === 'radial') {
                 this.updateGradient(el);
             }
         }
@@ -1860,7 +1862,7 @@ export class SVGRenderer extends AbstractRenderer {
      * <strong>green</strong> for green.
      * @param {Number} opacity Opacity of the fill color. Must be between 0 and 1.
      */
-    setObjectStrokeColor(el, color, opacity) {
+    setObjectStrokeColor(el, color:any, opacity) {
         if (dbug(el)) console.warn(`%c svg: setObjectSrokeColor(el, color:${color},opacity:'${opacity}'`, dbugColor)
 
         var rgba = color,

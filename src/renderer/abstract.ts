@@ -235,7 +235,7 @@ export abstract class AbstractRenderer {
             not = not || {};
 
             this.setObjectTransition(el);
-            if (!el.evalVisProp('draft')) {
+            if (!el.evalVisProp('draft.draft')) {
                 if (!not.stroke) {
                     if (el.highlighted) {
                         this.setObjectStrokeColor(
@@ -1088,9 +1088,6 @@ export abstract class AbstractRenderer {
             // Set el.visPropCalc.visible
             if (el.visProp.islabel && Type.exists(el.visProp["anchor"])) {
                 if (el.board.objects[el.visProp["anchor"]] == undefined) {
-                    console.log(el)
-                    console.log(el.visProp["anchor"])
-                    console.log(el.board.objects)
                 }
                 if (typeof el.visProp["anchor"] !== 'string') {
                     console.error(true, 'should be GeometryElement')
@@ -1738,7 +1735,7 @@ export abstract class AbstractRenderer {
      * @param {JXG2.GeometryElement} el Reference of the object that is in draft mode.
      */
     setDraft(el) {
-        if (!el.evalVisProp('draft')) {
+        if (!el.evalVisProp('draft.draft')) {
             return;
         }
         var draftColor = el.board.options.elements.draft.color,
