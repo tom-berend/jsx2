@@ -348,7 +348,6 @@ export class GeometryElement extends Events {
     name: string | Function
     needsRegularUpdate: boolean
     animationData: LooseObject
-    evalvisProp: LooseObject
     animationCallback
     visPropOld
     label
@@ -716,7 +715,7 @@ export class GeometryElement extends Events {
     draggable() {
         return (
             this.isDraggable &&
-            !this.evalvisProp['fixed'] &&
+            !this.evalVisProp('fixed') &&
             // !this.visProp.frozen &&
             this.otype !== OBJECT_TYPE.GLIDER
         );
