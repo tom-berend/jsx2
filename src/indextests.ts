@@ -33,14 +33,14 @@ export class IndexTests {
             this.boards.push(JSXGraph.initBoard(
                 'box', {
                 boundingBox: [-10, 10, 10, -10],
-                axis: true
+                // axis: true
             }));
 
         if (this.old)
             this.boards.push((window as any).JXG.JSXGraph.initBoard(
                 'box2', {
                 boundingBox: [-10, 10, 10, -10],
-                axis: true
+                // axis: true
             }));
 
     }
@@ -58,9 +58,12 @@ export class IndexTests {
     }
     line() {
         this.boards.map((board) => {
+            board.create('segment', [[-3, -2], [-4, -2]], { strokecolor: 'green' })
+
             let p1 = board.create('point', [-3, -3])
             let p2 = board.create('point', [-4, -3])
             board.create('segment', [p1, p2], { strokecolor: 'blue' })
+
 
             // circle and radius
             board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })

@@ -96,7 +96,8 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
         if (!Array.isArray(coordinates))
             throw new Error('who did not send number[] to coordinates??')
 
-        if (dbug()) console.warn(`%c coords constructor [${coordinates[0]},${coordinates[1]}]`, dbugColor)
+        if (dbug())
+            console.warn(`%c coords [${JSON.stringify(coordinates)} ${method==COORDS_BY.USER?'User':'Screen'}]`, dbugColor)
 
         this.board = board
         this.method = method
@@ -113,7 +114,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
         // EventEmitter.eventify(this);  // tb now handled by class hierarchy
         // }
 
-        this.setCoordinates(this.method, [coordinates[0], coordinates[1]], false, true);
+        this.setCoordinates(this.method, coordinates, false, true);
     };
 
     /**
@@ -204,50 +205,48 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
     setCoordinates(coord_type: COORDS_BY, coordinates: number[], doRound: boolean = true, noevent: boolean = false) {
         // console.log(`setCoordinates(${JSON.stringify(coordinates)})`)
 
-        var uc = this.usrCoords,
-            sc = this.scrCoords,
-            // Original values
-            ou = [uc[0], uc[1], uc[2]],
-            os = [sc[0], sc[1], sc[2]];
+            var uc = this.usrCoords,
+                sc = this.scrCoords,
+                // Original values
+                ou = [uc[0], uc[1], uc[2]],
+                os = [sc[0], sc[1], sc[2]];
 
-        if (coord_type === COORDS_BY.USER) {
-            if (coordinates.length === 2) {
-                // Euclidean coordinates
-                uc[0] = 1.0;
-                uc[1] = coordinates[0];
-                uc[2] = coordinates[1];
+            if (coord_type === COORDS_BY.USER) {
+                if (coordinates.length === 2) {
+                    // Euclidean coordinates
+                    uc[0] = 1.0;
+                    uc[1] = coordinates[0];
+                    uc[2] = coordinates[1];
+                } else {
+                    // Homogeneous coordinates (normalized)
+                    uc[0] = coordinates[0];
+                    uc[1] = coordinates[1];
+                    uc[2] = coordinates[2];
+                    this.normalizeUsrCoords();
+                }
+                this.usr2screen(doRound);
             } else {
-                // Homogeneous coordinates (normalized)
-                uc[0] = coordinates[0];
-                uc[1] = coordinates[1];
-                uc[2] = coordinates[2];
-                this.normalizeUsrCoords();
+                if (coordinates.length === 2) {
+                    // Euclidean coordinates
+                    sc[1] = coordinates[0];
+                    sc[2] = coordinates[1];
+                } else {
+                    // Homogeneous coordinates (normalized)
+                    sc[1] = coordinates[1];
+                    sc[2] = coordinates[2];
+                }
+                this.screen2usr();
             }
-            this.usr2screen(doRound);
-        } else {
-            if (coordinates.length === 2) {
-                // Euclidean coordinates
-                sc[1] = coordinates[0];
-                sc[2] = coordinates[1];
-            } else {
-                // Homogeneous coordinates (normalized)
-                sc[1] = coordinates[1];
-                sc[2] = coordinates[2];
-            }
-            this.screen2usr();
 
-            if (dbug())
-                console.warn(`%c Coords: usrCoords set to ${JSON.stringify(this.usrCoords)}`, dbugColor)
+            if (this.emitter && !noevent && (os[1] !== sc[1] || os[2] !== sc[2])) {
+                this.triggerEventHandlers(["update"], [ou, os]);
+            }
+
+            return this;
         }
 
-        if (this.emitter && !noevent && (os[1] !== sc[1] || os[2] !== sc[2])) {
-            // TODO: move triggerEventHandlers out of Coords !!
-            this.triggerEventHandlers(["update"], [ou, os]);
-            // throw new Error('move triggerEventHandlers out of Coords !!')
-        }
 
-        return this;
-    }
+
 
     /**
      * Copy array, either scrCoords or usrCoords

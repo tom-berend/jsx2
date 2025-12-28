@@ -734,8 +734,10 @@ export abstract class AbstractRenderer {
             // useTotalLength = true,
             margin = null;
 
-        c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board);
-        c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
+        c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board, true);
+        c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board, true);
+
+
         margin = el.evalVisProp('margin');
         Geometry.calcStraight(el, c1, c2, margin);
 
@@ -750,6 +752,7 @@ export abstract class AbstractRenderer {
             c2.scrCoords[2],
             el.board
         );
+
 
         return this;
     }

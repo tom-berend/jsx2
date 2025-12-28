@@ -97,6 +97,9 @@ export class Point extends CoordsElement {
         /* Register point on board. */
         this.id = this.board.setId(this, 'P');
 
+            // if (dbug(this))
+        console.warn(`%c create Point,${JSON.stringify(parents).substring(0, 100)}) ${this.id}`, dbugColor)
+
         this.board.renderer.drawPoint(this);
 
         this.element = this.board.select(attributes['anchor']);
@@ -572,6 +575,8 @@ export function createPoint(board, parents, attributes) {
 
     attr = Type.copyAttributes(attributes, board.options, 'point');
     el = new Point(board, parents, attr);
+
+    console.log('new',el.id,el.point1.coords.usrCoords,el.point2.coords.usrCoords)
     if (!el) {
         throw new Error(
             "JSXGraph: Can't create point with parent types '" +
