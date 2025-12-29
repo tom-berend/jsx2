@@ -47,6 +47,7 @@ import { BOARD_MODE, BOARD_QUALITY, OBJECT_CLASS, OBJECT_TYPE, COORDS_BY, Versio
 import { GeometryElement } from './element.js';
 import { Coords } from './coords.js';
 import { Options } from '../options.js';
+import { BoardOptions } from '../optionInterfaces.js';
 import { Numerics } from '../math/numerics.js'
 import { Geometry } from '../math/geometry.js';
 // import {Statistics} from '../math/statistics.js';
@@ -89,8 +90,8 @@ import { createGrid } from '../element/grid.js';
  * the board is drawn in. This is usually a HTML div. If it is the reference to an HTML element and this element does not have an attribute "id",
  * this attribute "id" is set to a random value.
  * @param {JXG2.AbstractRenderer} renderer The reference of a renderer.
- * @param {String} id Unique identifier for the board, may be an empty string or null or even undefined.
- * @param {JXG2.Coords} origin The coordinates where the origin is placed, in user coordinates.
+ * @param  id Unique identifier for the board, may be an empty string or null or even undefined.
+ * @param {Coords} origin The coordinates where the origin is placed, in user coordinates.
  * @param {Number} zoomX Zoom factor in x-axis direction
  * @param {Number} zoomY Zoom factor in y-axis direction
  * @param {Number} unitX Units in x-axis direction
@@ -680,7 +681,7 @@ export class Board extends Events {
 
 
     constructor(
-        containerName: string = '',
+        containerName: string,
         rendererType: 'svg' | 'canvas' | 'no' | 'auto' = 'svg',
         id?: string,
         origin: number[] = [0, 0],
@@ -690,7 +691,7 @@ export class Board extends Events {
         unitY: number = Infinity,
         canvasWidth: number = 500,
         canvasHeight: number = 500,
-        attributes: LooseObject = {}  //    = Options.board   // the full default attrs with overrides
+        attributes: BoardOptions = {}  //    = Options.board   // the full default attrs with overrides
     ) {
         super()
 
@@ -698,12 +699,12 @@ export class Board extends Events {
         // TODO why do we need this?  can we change the board andelement default values?
 
         this.options = {}
-        // tbtb - next line doesn't work.  should be a deep copy
+        // tbtb - next line doesn't work.  should be a structuredClone
         Object.keys(Options).map((key) => this.options[key] = Options[key])
 
         attributes = Type.initVisProps(Options.board, attributes)
 
-        if (Type.exists(attributes.document) && attributes.document !== false) {
+        if (Type.exists(attributes.document) && attributes.document !== null) {
             this.document = attributes.document;
         } else if (Env.isBrowser) {
             this.document = document;

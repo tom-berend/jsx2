@@ -1105,7 +1105,7 @@ export class Curve extends GeometryElement {
             delete this.maxX;
         }
 
-        this.addParentsFromJCFunctions([this.X, this.Y, this.minX, this.maxX]);
+        //tbtb // this.addParentsFromJCFunctions([this.X, this.Y, this.minX, this.maxX]);
     }
 
     /**

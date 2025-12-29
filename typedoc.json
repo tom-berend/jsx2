@@ -1,6 +1,7 @@
 {
     "$schema": "https://typedoc.org/schema.json",
-    "entryPoints": ["./src/jxg.ts"],
+    "entryPointStrategy": "expand",
+    "entryPoints": ["./src/jsxgraph.ts"],
     "exclude":["**/*+(.spec).ts"],
     "out": "doc"
 }

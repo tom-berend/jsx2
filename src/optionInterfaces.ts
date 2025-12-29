@@ -53,8 +53,8 @@ import { BlobOptions } from "buffer";
 
 
 
-interface Point {}
-interface GeometryElement{}
+interface Point { }
+interface GeometryElement { }
 
 
 export interface JcOptions {
@@ -95,6 +95,14 @@ export interface PrecisionOptions {
 }
 
 
+export interface DraftOptions {
+    draft: boolean,
+    strokeColor: string,
+    fillColor: string,
+    strokeOpacity: number,
+    fillOpacity: number,
+    strokeWidth: number,
+}
 
 
 export interface BoardOptions {
@@ -622,7 +630,7 @@ export interface BoardOptions {
      * </script><pre>
      *
      */
-    intl?: { enabled: boolean, locale:string }
+    intl?: { enabled: boolean, locale: string }
 
     /**
      * If set to true the ratio between horizontal and vertical unit sizes
@@ -1600,14 +1608,15 @@ export interface GeometryElementOptions {
      * @type Object
      * @defaultValue <tt>{@link JXG.Options.elements.draft#draft}</tt>
      */
-    draft?: {
-        draft?: boolean
-        strokeColor?: string
-        fillColor?: string
-        strokeOpacity?: number
-        fillOpacity?: number
-        strokeWidth?: number
-    }
+    draft?: DraftOptions,
+    // {
+    //     draft?: boolean
+    //     strokeColor?: string
+    //     fillColor?: string
+    //     strokeOpacity?: number
+    //     fillOpacity?: number
+    //     strokeWidth?: number
+    // }
 
     /**
      * If the element is dragged it will be moved on mousedown or touchstart to the
@@ -2649,7 +2658,7 @@ export interface TickOptions {
      * @type function
      * @name Ticks#generateLabelValue
      */
-    generateLabelValue?: boolean|null
+    generateLabelValue?: boolean | null
 
     /**
      * Draw labels yes/no
@@ -4310,7 +4319,7 @@ export interface ButtonOptions {
      * @type Boolean
      * @defaultValue false
      */
-    disabled:boolean
+    disabled: boolean
 
     display: 'html'
 
@@ -5896,7 +5905,7 @@ export interface InfoboxOptions {
     fontSize?: number
     isLabel?: boolean
     strokeColor?: '#bbbbbb',
-    display: 'html'|'internal',             // 'html' or 'internal'
+    display: 'html' | 'internal',             // 'html' or 'internal'
     anchorX: 'left',             //  'left', 'middle', or 'right': horizontal alignment
     //  of the text.
     anchorY: 'middle',           //  'top', 'middle', or 'bottom': vertical alignment
@@ -7479,7 +7488,7 @@ export interface PointOptions {
      */
     infoboxDigits?: 'auto' | 'none'
 
-    draft?: boolean
+    draft?: DraftOptions
 
     /**
      * List of attractor elements. If the distance of the point is less than
@@ -9803,7 +9812,7 @@ export interface TurtleOptions {
      * @visprop
      */
 
-    strokeWidth ?: number
+    strokeWidth?: number
     fillColor?: string
     strokeColor?: string
 
@@ -9814,8 +9823,8 @@ export interface TurtleOptions {
      * @name Turtle#arrow
      */
     arrow?: {
-        strokeWidth ?: number
-        withLabel ?: boolean
+        strokeWidth?: number
+        withLabel?: boolean
         strokeColor?: string
         lastArrow?: boolean
     }

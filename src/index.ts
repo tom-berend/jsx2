@@ -2,7 +2,7 @@
 import './jxg.js';
 import { JXG2 } from './jxg.js';
 
-import { Env } from './utils/env.js'; 
+import { Env } from './utils/env.js';
 
 // import './base/constants.js';
 // import './utils/type.js';
@@ -109,7 +109,7 @@ export const Expect = JXG2.Expect;
 export const JSXGraph = JXG2.JSXGraph;
 export const JSXMath = JXG2.JSXMath;
 export const Options = JXG2.Options;
-export const boards = JXG2.boards;
+// export const boards = JXG2.boards;
 export const elements = JXG2.elements;
 export const palette = JXG2.palette;
 export const paletteWong = JXG2.paletteWong;
@@ -166,7 +166,7 @@ export const escapeHTML = JXG2.escapeHTML;
 export const evalSlider = JXG2.evalSlider;
 export const evaluate = JXG2.evaluate;
 export const filterElements = JXG2.filterElements;
-export const getBoardByContainerId = JXG2.getBoardByContainerId;
+// export const getBoardByContainerId = JXG2.getBoardByContainerId;
 export const getCSSTransformMatrix = JXG2.getCSSTransformMatrix;
 export const getCSSTransform = JXG2.getCSSTransform;
 export const getDimensions = JXG2.getDimensions;

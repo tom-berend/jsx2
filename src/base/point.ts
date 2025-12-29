@@ -50,6 +50,9 @@ import { Type } from "../utils/type.js";
 import { CoordsElement } from "./coordselement.js";
 import { COORDS_BY_USER } from "../index.js";
 import { Text } from "../base/text.js"
+import { PointOptions } from "../optionInterfaces.js";
+import { Board } from "../base/board.js";
+import { LooseObject } from "../interfaces.js";
 
 /**
  * A point is the basic geometric element. Based on points lines and circles can be constructed which can be intersected
@@ -87,7 +90,7 @@ import { Text } from "../base/text.js"
 // JXG2.Point.prototype = new GeometryElement();
 export class Point extends CoordsElement {
 
-    constructor(board, parents, attributes = {}) {
+    constructor(board: Board, parents: any[], attributes: LooseObject = {}) {
         super(board, COORDS_BY_USER, parents, attributes, OBJECT_TYPE.POINT, OBJECT_CLASS.POINT)
 
 
@@ -126,12 +129,10 @@ export class Point extends CoordsElement {
      * @returns {Boolean} True if (x,y) is near the point, False otherwise.
      * @private
      */
-    hasPoint(x, y) {
-        var coordsScr = this.coords.scrCoords,
-            r,
-            prec,
-            type,
-            unit = this.evalVisProp('sizeunit');
+    hasPoint(x: number, y: number): boolean {
+        let r, prec, type
+        let coordsScr = this.coords.scrCoords
+        let unit = this.evalVisProp('sizeunit');
 
         if (Type.isObject(this.evalVisProp('precision'))) {
             type = this.board._inputDevice;
@@ -156,7 +157,7 @@ export class Point extends CoordsElement {
     /**
      * Updates the position of the point.
      */
-    update(fromParent?: boolean) {
+    update(fromParent?: boolean):GeometryElement {
         if (dbug(this)) console.warn(`%c Point: pointUpdate ${this.id} ${fromParent}`, dbugColor)
 
         // if (!this.needsUpdate) {

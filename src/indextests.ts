@@ -22,34 +22,36 @@ export class IndexTests {
         this.initBoard()
 
         this.point()
-        this.text()
-        this.line()
-        this.circle()
+        // this.text()
+        // this.line()
+        // this.circle()
         this.curve()
-        this.widgets()
+        // this.widgets()
     }
 
     initBoard() {
+        let attr = {
+                boundingBox: [-10, 10, 10, -10],
+                // axis: true,
+                shownavigation:false,
+                showcopyright:false,
+                showinfobox:false,
+        }
+
         if (this.new)
             this.boards.push(JSXGraph.initBoard(
-                'box', {
-                boundingBox: [-10, 10, 10, -10],
-                // axis: true
-            }));
+                'box', attr));
 
         if (this.old)
             this.boards.push((window as any).JXG.JSXGraph.initBoard(
-                'box2', {
-                boundingBox: [-10, 10, 10, -10],
-                // axis: true
-            }));
+                'box2', attr));
 
     }
 
     point() {
         this.boards.map((board) => {
             let a = board.create('point', [1, 3])
-            board.create('point', [() => a.X() + 1, () => a.Y() + 1], { name: 'new second', strokecolor: 'blue' })
+            // board.create('point', [() => a.X() + 1, () => a.Y() + 1], { name: 'locked to A', strokecolor: 'blue' })
         })
     }
     text() {
@@ -79,6 +81,7 @@ export class IndexTests {
     curve() {
         this.boards.map((board) => {
             board.create('curve', [(t) => t - Math.sin(t), (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
+            board.create('functiongraph',[(x)=>Math.sin(x*2), -8, 8])
         })
     }
     widgets() {

@@ -39,7 +39,6 @@
  *
  */
 
-import { JXG2 } from "./jxg.js";
 import { Env } from "./utils/env.js";
 import { Type } from "./utils/type.js";
 // import {JSXMath} from "./math/math.js";
@@ -52,6 +51,14 @@ import CanvasRenderer from "./renderer/canvas.js";
 import NoRenderer from "./renderer/no.js";
 
 import './index.js'
+import { LooseObject } from "./interfaces.js";
+
+
+const original:LooseObject = { name: "MDN" };
+original.itself = original;
+
+// Clone it
+const clone = structuredClone(original);
 
 /**
  * Constructs a new JSXGraph singleton object.
@@ -59,6 +66,29 @@ import './index.js'
  * to load, save, create and free a board.
  */
 export class JSXGraph {
+
+    /**
+     * Store a reference to every board in this central list. This will at some point
+     * replace this.JSXGraph.boards.
+     * @type Object
+     */
+    static boards: { [key: string]: Board } = {};
+
+    /**
+     * Store the available file readers in this structure.
+     * @type Object
+     */
+    static readers: LooseObject = {};
+
+    /**
+     * Associative array that keeps track of all constructable elements registered
+     * via {@link this.registerElement}.
+     * @type Object
+     */
+    static elements: Object = {};
+
+    static themes: Object = {};
+
 
     constructor() {
         /**
@@ -193,7 +223,7 @@ export class JSXGraph {
         board.resizeContainer(dimensions.width, dimensions.height, true, true);
         board._createSelectionPolygon(attr);
         board.renderer.drawNavigationBar(board, Options.navbar);
-        JXG2.boards[board.id] = board;
+        this.boards[board.id] = board;
     }
 
     /**
@@ -477,8 +507,8 @@ export class JSXGraph {
 
         attributes = attributes || {};
         // Merge a possible theme
-        if (attributes.theme !== 'default' && Type.exists(JXG2.themes[attributes.theme])) {
-            theme = JXG2.themes[attributes.theme];
+        if (attributes.theme !== 'default' && Type.exists(this.themes[attributes.theme])) {
+            theme = this.themes[attributes.theme];
         }
 
         // old style copies EVERYTHIN
@@ -722,7 +752,7 @@ export class JSXGraph {
         let el;
 
         if (typeof board === 'string') {
-            board = JXG2.boards[board];
+            board = this.boards[board];
         }
 
         this._removeARIANodes(board);
@@ -757,7 +787,7 @@ export class JSXGraph {
         // delete board.jc;
 
         // Finally remove the board itself from the boards array
-        delete JXG2.boards[board.id];
+        delete this.boards[board.id];
     }
 
     /**
@@ -769,6 +799,22 @@ export class JSXGraph {
         Env.deprecated("JXG.JSXGraph.registerElement()", "JXG.registerElement()");
         // JXG.registerElement(element, creator);
     }
+
+    /**
+     * s may be the string containing the id of an HTML tag that hosts a JSXGraph board.
+     * This function returns the reference to the board.
+     * @param  s String of an HTML tag that hosts a JSXGraph board
+     * @returns Reference to the board or null.
+     */
+    static getBoardByContainerId(s: string): Board | null {
+        for (const [key, value] of Object.entries(this.boards)) {
+            if (value.container === s) {
+                return value;
+            }
+        }
+        return null;
+    }
+
 }
 
 // // JessieScript/JessieCode startup:

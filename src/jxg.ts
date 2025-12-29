@@ -396,7 +396,7 @@ export class JXG2 {
      * replace this.JSXGraph.boards.
      * @type Object
      */
-    static boards: object = {};
+    // moved to JSXGraph //static boards: object = {};
 
     /**
      * Store the available file readers in this structure.
@@ -577,20 +577,6 @@ export class JXG2 {
     //     return board.select(s, false);
     // }
 
-    /**
-     * s may be the string containing the id of an HTML tag that hosts a JSXGraph board.
-     * This function returns the reference to the board.
-     * @param  s String of an HTML tag that hosts a JSXGraph board
-     * @returns Reference to the board or null.
-     */
-    static getBoardByContainerId(s: string): Object | null {
-        for (const [key, value] of Object.entries(this.boards)) {
-            if (value.container === s) {
-                return value;
-            }
-        }
-        return null;
-    }
 
     /**
      * This method issues a warning to the developer that the given function is deprecated

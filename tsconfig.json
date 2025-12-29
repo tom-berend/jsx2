@@ -20,13 +20,13 @@
         "noImplicitAny": false,
         "sourceMap": true,
         "isolatedModules": true,
-        "rewriteRelativeImportExtensions":true,
+        "rewriteRelativeImportExtensions": true,
     },
     "include": [
         "src/**/*.ts",
         "src/**/*.js"
     ],
-    "exclude":[
+    "exclude": [
         "build/**/*.*"
-    ]
+    ],
 }

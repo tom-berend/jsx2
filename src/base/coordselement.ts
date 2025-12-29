@@ -1546,7 +1546,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                 //newfuncs[i] = new Function('','return ' + t + ';');
                 //v = GeonextParser.replaceNameById(v, this.board);
                 throw new Error('snippet')
-                // newfuncs[i] = this.snippet(v, true, null, true);
+                //tbtb // newfuncs[i] = this.snippet(v, true, null, true);
                 this.addParentsFromJCFunctions([newfuncs[i]]);
 
                 // Store original term as 'Xjc' or 'Yjc'

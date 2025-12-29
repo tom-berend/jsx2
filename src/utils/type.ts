@@ -430,6 +430,7 @@ export class Type {
     static createFunction(term, board, variableName?, evalGeonext = false) {
         var f = null;
 
+
         // if ((!this.exists(evalGeonext) || evalGeonext) && this.isString(term)) {
         if (this.isString(term)) {
             // Convert GEONExT syntax into  JavaScript syntax
@@ -438,7 +439,10 @@ export class Type {
             //term = JXG2.GeonextParser.replaceNameById(term, board);
             //term = JXG2.GeonextParser.geonext2JS(term, board);
 
-            f = board.jc.snippet(term, true, variableName, false);
+            // throw new Error('snippet')
+            // tbtb // f = board.jc.snippet(term, true, variableName, false);
+            f = function(){ return term};   // tbtb
+            
         } else if (this.isFunction(term)) {
             f = term;
             f.deps = (this.isObject(term.deps)) ? term.deps : {};

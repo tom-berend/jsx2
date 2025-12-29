@@ -465,7 +465,7 @@ export abstract class AbstractRenderer {
             this.display(el, false);
         }
 
-        if (el.evalVisProp('draft')) {
+        if (el.evalVisProp('draft.draft')) {
             this.setDraft(el);
         }
     }
@@ -1086,7 +1086,7 @@ export abstract class AbstractRenderer {
             el.htmlStr = "";
 
             // Set el.visPropCalc.visible
-            if (el.visProp.islabel && Type.exists(el.visProp["anchor"])) {
+            if (el.visProp["islabel"] && Type.exists(el.visProp["anchor"])) {
                 if (el.board.objects[el.visProp["anchor"]] == undefined) {
                 }
                 if (typeof el.visProp["anchor"] !== 'string') {
@@ -1381,7 +1381,7 @@ export abstract class AbstractRenderer {
             so, sc,
             css,
             node,
-            display = Env.isBrowser() ? el.visProp.display : "internal",
+            display = Env.isBrowser() ? el.visProp["display"] : "internal",
             nodeList = ["rendNode", "rendNodeTag", "rendNodeLabel"],
             lenN = nodeList.length,
             fontUnit = el.evalVisProp('fontunit'),
@@ -1613,7 +1613,7 @@ export abstract class AbstractRenderer {
         var i, do_hl, sw;
 
         this.setObjectTransition(el);
-        if (!el.visProp.draft) {
+        if (!el.evalVisProp("draft.draft")) {
             if (el.otype === OBJECT_TYPE.POLYGON) {
                 this.setObjectFillColor(el, el.evalVisProp('highlightfillcolor'), el.evalVisProp('highlightfillopacity'));
                 do_hl = el.evalVisProp('highlightbystrokewidth');

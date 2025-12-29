@@ -68,38 +68,30 @@ export class GeometryElement extends Events {
 
     /**
      * Controls if updates are necessary
-     * @type Boolean
-     * @default true
      */
-    needsUpdate = true;
+    needsUpdate: boolean = true;
 
     /**
      * Controls if this element can be dragged. In GEONExT only
      * free points and gliders can be dragged.
-     * @type Boolean
-     * @default false
      */
-    isDraggable = false;
+    isDraggable: boolean = false;
 
     /**
      * If element is in two dimensional real space this is true, else false.
-     * @type Boolean
-     * @default true
      */
-    isReal = true;
+    isReal: boolean = true;
 
     /**
      * Stores all dependent objects to be updated when this point is moved.
      * @type Object
      */
-    childElements = {};
+    childElements: LooseObject = {};
 
     /**
      * If element has a label subelement then this property will be set to true.
-     * @type Boolean
-     * @default false
      */
-    hasLabel = false;
+    hasLabel: boolean = false;
 
     /**
      * True, if the element is currently highlighted.
@@ -365,7 +357,7 @@ export class GeometryElement extends Events {
     // Z
     ticks
     defaultTicks
-    coords
+    coords: Coords
     vertices
     center
     points
@@ -387,7 +379,8 @@ export class GeometryElement extends Events {
         super()
 
 
-        var name, key, attr;
+        let name, key, attr;
+
         EventEmitter.eventify(this);
 
 
@@ -465,18 +458,17 @@ export class GeometryElement extends Events {
      * Add an element as a child to the current element. Can be used to model dependencies between geometry elements.
      * @param {JXG2.GeometryElement} obj The dependent object.
      */
-    addChild(obj) {
-        var el, el2;
+    addChild(obj: GeometryElement): GeometryElement {
 
         this.childElements[obj.id] = obj;
         this.addDescendants(obj);  // TODO TomBerend removed this. Check if it is possible.
         obj.ancestors[this.id] = this;
 
-        for (el in this.descendants) {
+        for (let el in this.descendants) {
             if (this.descendants.hasOwnProperty(el)) {
                 this.descendants[el].ancestors[this.id] = this;
 
-                for (el2 in this.ancestors) {
+                for (let el2 in this.ancestors) {
                     if (this.ancestors.hasOwnProperty(el2)) {
                         this.descendants[el].ancestors[this.ancestors[el2].id] =
                             this.ancestors[el2];
@@ -485,9 +477,9 @@ export class GeometryElement extends Events {
             }
         }
 
-        for (el in this.ancestors) {
+        for (let el in this.ancestors) {
             if (this.ancestors.hasOwnProperty(el)) {
-                for (el2 in this.descendants) {
+                for (let el2 in this.descendants) {
                     if (this.descendants.hasOwnProperty(el2)) {
                         this.ancestors[el].descendants[this.descendants[el2].id] =
                             this.descendants[el2];
@@ -928,8 +920,9 @@ export class GeometryElement extends Events {
      * Can be used sometimes to commit changes to the object.
      * @return {JXG2.GeometryElement} Reference to the element
      */
-    update(force = true) {
+    update(force = true): GeometryElement {
         throw new Error('called Abstract update')
+
         if (this.evalVisProp('trace')) {
             this.cloneToBackground();
         }
@@ -941,7 +934,7 @@ export class GeometryElement extends Events {
      * @return {JXG2.GeometryElement} Reference to the element
      * @private
      */
-    updateRenderer() {
+    updateRenderer(): GeometryElement {
         return this;
     }
 
@@ -951,7 +944,7 @@ export class GeometryElement extends Events {
      * @return {JXG2.GeometryElement} Reference to the element
      * @private
      */
-    fullUpdate(visible) {
+    fullUpdate(visible): GeometryElement {
         return this.prepareUpdate().update(true).updateVisibility(visible).updateRenderer();
     }
 
@@ -967,7 +960,7 @@ export class GeometryElement extends Events {
      * @return {JXG2.GeometryElement} Reference to the element
      * @private
      */
-    setDisplayRendNode(val?) {
+    setDisplayRendNode(val?: boolean): GeometryElement {
         var i, len, s, len_s, obj;
 
         if (val === undefined) {
@@ -1022,7 +1015,7 @@ export class GeometryElement extends Events {
      * Alias for "element.setAttribute({visible: false});"
      * @return {JXG2.GeometryElement} Reference to the element
      */
-    hide() {
+    hide():GeometryElement {
         this.setAttribute({ visible: false });
         return this;
     }
@@ -1032,7 +1025,7 @@ export class GeometryElement extends Events {
      * Alias for {@link JXG2.GeometryElement#hide}
      * @returns {JXG2.GeometryElement} Reference to the element
      */
-    hideElement() {
+    hideElement():GeometryElement {
         this.hide();
         return this;
     }
@@ -1042,7 +1035,7 @@ export class GeometryElement extends Events {
      * Alias for "element.setAttribute({visible: true});"
      * @return {JXG2.GeometryElement} Reference to the element
      */
-    show() {
+    show():GeometryElement {
         this.setAttribute({ visible: true });
         return this;
     }
@@ -1052,7 +1045,7 @@ export class GeometryElement extends Events {
      * Alias for {@link JXG2.GeometryElement#show}
      * @returns {JXG2.GeometryElement} Reference to the element
      */
-    showElement() {
+    showElement():GeometryElement {
         this.show();
         return this;
     }
@@ -1080,7 +1073,7 @@ export class GeometryElement extends Events {
      * @return {JXG2.GeometryElement} Reference to the element.
      * @private
      */
-    updateVisibility(parent_val?) {
+    updateVisibility(parent_val?:boolean):GeometryElement {
         var i, len, s, len_s, obj, val;
 
         if (this.needsUpdate) {
@@ -1658,12 +1651,20 @@ export class GeometryElement extends Events {
             // e.g. label.visible
             arr = key.split('.');
             le = arr.length;
-            val = this.visProp;
-            for (i = 0; i < le; i++) {
-                if (Type.exists(val)) {
-                    val = val[arr[i]];
-                }
+            if (le == 2) {
+                val = this.visProp[arr[0]][arr[1]]
+            } else if (le == 3) {
+                val = this.visProp[arr[0]][arr[1]][arr[2]]
+            } else {
+                throw new Error(key)
             }
+
+            // val = this.visProp;
+            // for (i = 0; i < le; i++) {
+            //     if (Type.exists(val)) {
+            //         val = val[arr[i]];
+            //     }
+            // }
         }
 
 
@@ -1707,7 +1708,7 @@ export class GeometryElement extends Events {
             }
         }
 
-        console.assert(val !== undefined,`missing visProp "${key}" in ${this.id}`)
+        console.assert(val !== undefined, `missing visProp "${key}" in ${this.id}`)
         return val;
     }
 
