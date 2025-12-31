@@ -30,10 +30,9 @@
 /*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG2 } from "../jxg.js";
-import { OBJECT_CLASS, OBJECT_TYPE,COORDS_BY } from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
-
+import { Curve } from "../base/curve.js";
 import { JSXMath } from "./math.js";
 import { Extrapolate } from "./extrapolate.js";
 import { Numerics } from "./numerics.js";
@@ -41,6 +40,25 @@ import { Statistics } from "./statistics.js";
 import { Geometry } from "./geometry.js";
 import IntervalArithmetic from "./ia.js";
 import { Type } from "../utils/type.js";
+import { Env } from "../utils/env.js";
+
+/**
+ * Number of equidistant points where the function is evaluated
+ */
+const steps = 1021 //2053, // 1021,
+
+class Component {
+    left_isNaN = false;
+    right_isNaN = false;
+    left_t = null;
+    right_t = null;
+    t_values = [];
+    x_values = [];
+    y_values = [];
+    len = 0;
+}
+
+
 
 /**
  * Functions for plotting of curves.
@@ -48,11 +66,26 @@ import { Type } from "../utils/type.js";
  * @exports JXG2.JSXMath.Plot as Geometry.Plot
  * @namespace
  */
-JXG2.JSXMath.Plot = {
+export class Plot {
+    static _lastCrds = [0, 0, 0]
+    static _lastUsrCrds = [0, 0, 0]
+    static _lastScrCrds = [0, 0, 0]
+    static nanLevel = 4
+    static jumpLevel = 4
+    static smoothLevel = 7; //depth - 10;
+    static testLevel = 4;
+    static cusp_threshold = 0.5;
+    static jump_threshold = 0.99;
+    static smooth_threshold = 2;
+    static _visibleArea = [100, 100]
+    static criticalThreshold = 10
+
+
+
     /**
      * Check if at least one point on the curve is finite and real.
      **/
-    checkReal: function (points) {
+    static checkReal(points) {
         var b = false,
             i,
             p,
@@ -66,7 +99,7 @@ JXG2.JSXMath.Plot = {
             }
         }
         return b;
-    },
+    }
 
     //----------------------------------------------------------------------
     // Plot algorithm v0
@@ -79,7 +112,7 @@ JXG2.JSXMath.Plot = {
      * @param {Number} len Number of data points
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    updateParametricCurveNaive: function (curve, mi, ma, len) {
+    static updateParametricCurveNaive(curve, mi, ma, len) {
         var i,
             t,
             suspendUpdate = false,
@@ -97,7 +130,7 @@ JXG2.JSXMath.Plot = {
             suspendUpdate = true;
         }
         return curve;
-    },
+    }
 
     //----------------------------------------------------------------------
     // Plot algorithm v1
@@ -115,14 +148,14 @@ JXG2.JSXMath.Plot = {
      * @param {JXG2.Board} board
      * @returns {Boolean} <tt>true</tt> if the given segment is outside the visible area.
      */
-    isSegmentOutside: function (x0, y0, x1, y1, board) {
+    static isSegmentOutside(x0, y0, x1, y1, board) {
         return (
             (y0 < 0 && y1 < 0) ||
             (y0 > board.canvasHeight && y1 > board.canvasHeight) ||
             (x0 < 0 && x1 < 0) ||
             (x0 > board.canvasWidth && x1 > board.canvasWidth)
         );
-    },
+    }
 
     /**
      * Compares the absolute value of <tt>dx</tt> with <tt>MAXX</tt> and the absolute value of <tt>dy</tt>
@@ -136,17 +169,17 @@ JXG2.JSXMath.Plot = {
      * @param {Number} MAXY
      * @returns {Boolean} <tt>true</tt>, if <tt>|dx| &lt; MAXX</tt> and <tt>|dy| &lt; MAXY</tt>.
      */
-    isDistOK: function (dx, dy, MAXX, MAXY) {
+    static isDistOK(dx, dy, MAXX, MAXY) {
         return Math.abs(dx) < MAXX && Math.abs(dy) < MAXY && !isNaN(dx + dy);
-    },
+    }
 
     /**
      * @private
      * @deprecated
      */
-    isSegmentDefined: function (x0, y0, x1, y1) {
+    static isSegmentDefined(x0, y0, x1, y1) {
         return !(isNaN(x0 + y0) && isNaN(x1 + y1));
-    },
+    }
 
     /**
      * Updates the data points of a parametric curve. This version is used if {@link JXG2.Curve#doadvancedplot} is <tt>true</tt>.
@@ -158,7 +191,7 @@ JXG2.JSXMath.Plot = {
      * @param {Number} ma Right bound of curve
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    updateParametricCurveOld: function (curve, mi, ma) {
+    static updateParametricCurveOld(curve, mi, ma) {
         var i, t, d, x, y,
             x0, y0,// t0,
             top,
@@ -198,7 +231,7 @@ JXG2.JSXMath.Plot = {
                 return Math.hypot(x0, y0);
             };
 
-        JXG2.deprecated("Curve.updateParametricCurveOld()");
+        Env.deprecated("Curve.updateParametricCurveOld()");
 
         if (curve.board.updateQuality === curve.board.BOARD_QUALITY_LOW) {
             MAX_DEPTH = 15;
@@ -319,7 +352,7 @@ JXG2.JSXMath.Plot = {
         curve.numberPoints = curve.points.length;
 
         return curve;
-    },
+    }
 
     //----------------------------------------------------------------------
     // Plot algorithm v2
@@ -333,7 +366,7 @@ JXG2.JSXMath.Plot = {
      * @private
      * @param {JXG2.Coords} pnt Coords to add to the list of points
      */
-    _insertPoint_v2: function (curve, pnt, t) {
+    static _insertPoint_v2(curve: Curve, pnt: Coords, t) {
         var lastReal = !isNaN(this._lastCrds[1] + this._lastCrds[2]), // The last point was real
             newReal = !isNaN(pnt.scrCoords[1] + pnt.scrCoords[2]), // New point is real point
             cw = curve.board.canvasWidth,
@@ -361,7 +394,7 @@ JXG2.JSXMath.Plot = {
             curve.points.push(pnt);
             this._lastCrds = pnt.copy('scrCoords');
         }
-    },
+    }
 
     /**
      * Check if there is a single NaN function value at t0.
@@ -369,7 +402,7 @@ JXG2.JSXMath.Plot = {
      * @param {*} t0
      * @returns {Boolean} true if there is a second NaN point close by, false otherwise
      */
-    neighborhood_isNaN_v2: function (curve, t0) {
+    static neighborhood_isNaN_v2(curve, t0) {
         var is_undef,
             pnt = new Coords(COORDS_BY.USER, [0, 0], curve.board, false),
             t,
@@ -393,7 +426,7 @@ JXG2.JSXMath.Plot = {
             }
         }
         return true;
-    },
+    }
 
     /**
      * Investigate a function term at the bounds of intervals where
@@ -411,7 +444,7 @@ JXG2.JSXMath.Plot = {
      * @param {Number} depth Actual recursion depth. The recursion stops if depth is equal to 0.
      * @returns {JXG2.Boolean} true if the point is inserted and the recursion should stop, false otherwise.
      */
-    _borderCase: function (curve, a, b, c, ta, tb, tc, depth) {
+    static _borderCase(curve, a, b, c, ta, tb, tc, depth) {
         var t, pnt, p,
             p_good = null,
             j,
@@ -523,13 +556,14 @@ JXG2.JSXMath.Plot = {
             if (p_good !== null) {
                 this._insertPoint_v2(
                     curve,
-                    new Coords(COORDS_BY.USER, p_good, curve.board, false)
+                    new Coords(COORDS_BY.USER, p_good, curve.board, false),
+                    t       // tbtb - added missing param ??
                 );
                 return true;
             }
         }
         return false;
-    },
+    }
 
     /**
      * Recursive interval bisection algorithm for curve plotting.
@@ -546,7 +580,7 @@ JXG2.JSXMath.Plot = {
      *                 the segment [a,b] is regarded as straight line.
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    _plotRecursive_v2: function (curve, a, ta, b, tb, depth, delta) {
+    static _plotRecursive_v2(curve, a, ta, b, tb, depth, delta) {
         var tc,
             c,
             ds,
@@ -626,7 +660,7 @@ JXG2.JSXMath.Plot = {
         }
 
         return this;
-    },
+    }
 
     /**
      * Updates the data points of a parametric curve. This version is used if {@link JXG2.Curve#plotVersion} is <tt>3</tt>.
@@ -636,7 +670,7 @@ JXG2.JSXMath.Plot = {
      * @param {Number} ma Right bound of curve
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    updateParametricCurve_v2: function (curve, mi, ma) {
+    static updateParametricCurve_v2(curve, mi, ma) {
         var ta, tb,
             a, b,
             suspendUpdate = false,
@@ -667,7 +701,7 @@ JXG2.JSXMath.Plot = {
 
         curve.points = [];
 
-        if (this.xterm === 'x') {
+        if (curve.xterm === 'x') {
             // For function graphs we can restrict the plot interval
             // to the visible area + plus margin
             bbox = curve.board.getBoundingBox();
@@ -723,7 +757,7 @@ JXG2.JSXMath.Plot = {
         //console.timeEnd('plot');
 
         return curve;
-    },
+    }
 
     //----------------------------------------------------------------------
     // Plot algorithm v3
@@ -737,7 +771,7 @@ JXG2.JSXMath.Plot = {
      * @param {*} limes
      * @private
      */
-    _insertLimesPoint: function (curve, pnt, t, depth, limes) {
+    static _insertLimesPoint(curve, pnt, t, depth, limes) {
         var p0, p1, p2;
 
         // Ignore jump point if it follows limes
@@ -787,7 +821,7 @@ JXG2.JSXMath.Plot = {
         curve.points.push(p2);
         this._lastScrCrds = p2.copy('scrCoords');
         this._lastUsrCrds = p2.copy('usrCoords');
-    },
+    }
 
     /**
      * Add a point to the curve plot. If the new point is too close to the previously inserted point,
@@ -798,7 +832,7 @@ JXG2.JSXMath.Plot = {
      * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {JXG2.Coords} pnt Coords to add to the list of points
      */
-    _insertPoint: function (curve, pnt, t, depth, limes) {
+    static _insertPoint(curve, pnt, t, depth, limes) {
         var last_is_real = !isNaN(this._lastScrCrds[1] + this._lastScrCrds[2]), // The last point was real
             point_is_real = !isNaN(pnt[1] + pnt[2]), // New point is real point
             cw = curve.board.canvasWidth,
@@ -851,7 +885,7 @@ JXG2.JSXMath.Plot = {
         curve.points.push(p);
         this._lastScrCrds = p.copy('scrCoords');
         this._lastUsrCrds = p.copy('usrCoords');
-    },
+    }
 
     /**
      * Compute distances in screen coordinates between the points ab,
@@ -864,7 +898,7 @@ JXG2.JSXMath.Plot = {
      * @param {Array} c Screen coordinates of the bisection point at (ta + tb) / 2
      * @returns {Array} array of distances in screen coordinates between: ab, ac, cb, and cd.
      */
-    _triangleDists: function (a, b, c) {
+    static _triangleDists(a, b, c) {
         var d, d_ab, d_ac, d_cb, d_cd;
 
         d = [a[0] * b[0], (a[1] + b[1]) * 0.5, (a[2] + b[2]) * 0.5];
@@ -875,7 +909,7 @@ JXG2.JSXMath.Plot = {
         d_cd = Geometry.distance(c, d, 3);
 
         return [d_ab, d_ac, d_cb, d_cd];
-    },
+    }
 
     /**
      * Test if the function is undefined on an interval:
@@ -890,7 +924,7 @@ JXG2.JSXMath.Plot = {
      * @param {Array} b Screen coordinates of the right interval bound
      * @param {Number} tb Parameter which evaluates to b, i.e. [1, X(tb), Y(tb)] = b in screen coordinates
      */
-    _isUndefined: function (curve, a, ta, b, tb) {
+    static _isUndefined(curve, a, ta, b, tb) {
         var t, i, pnt;
 
         if (!isNaN(a[1] + a[2]) || !isNaN(b[1] + b[2])) {
@@ -912,7 +946,7 @@ JXG2.JSXMath.Plot = {
         }
 
         return true;
-    },
+    }
 
     /**
      * Decide if a path segment is too far from the canvas that we do not need to draw it.
@@ -924,7 +958,7 @@ JXG2.JSXMath.Plot = {
      * @param  {JXG2.Board} board
      * @returns {Boolean}   True if the segment is too far away from the canvas, false otherwise.
      */
-    _isOutside: function (a, ta, b, tb, board) {
+    static _isOutside(a, ta, b, tb, board) {
         var off = 500,
             cw = board.canvasWidth,
             ch = board.canvasHeight;
@@ -935,7 +969,7 @@ JXG2.JSXMath.Plot = {
             (a[1] > cw + off && b[1] > cw + off) ||
             (a[2] > ch + off && b[2] > ch + off)
         );
-    },
+    }
 
     /**
      * Decide if a point of a curve is too far from the canvas that we do not need to draw it.
@@ -944,13 +978,13 @@ JXG2.JSXMath.Plot = {
      * @param {JXG2.Board} board
      * @returns {Boolean}  True if the point is too far away from the canvas, false otherwise.
      */
-    _isOutsidePoint: function (a, board) {
+    static _isOutsidePoint(a, board) {
         var off = 500,
             cw = board.canvasWidth,
             ch = board.canvasHeight;
 
         return !!(a[1] < -off || a[2] < -off || a[1] > cw + off || a[2] > ch + off);
-    },
+    }
 
     /**
      * For a curve c(t) defined on the interval [ta, tb] find the first point
@@ -971,7 +1005,7 @@ JXG2.JSXMath.Plot = {
      * the starting point and the curve parameter at this point.
      * @private
      */
-    _findStartPoint: function (curve, a, ta, b, tb) {
+    static _findStartPoint(curve, a, ta, b, tb) {
         // The code below is too unstable.
         // E.g. [function(t) { return Math.pow(t, 2) * (t + 5) * Math.pow(t - 5, 2); }, -8, 8]
         // Therefore, we return here.
@@ -1074,7 +1108,7 @@ JXG2.JSXMath.Plot = {
         // console.log("TODO _findStartPoint", curve.Y.toString(), tc);
         // pnt.setCoordinates(COORDS_BY.USER, [curve.X(ta, true), curve.Y(ta, true)], false);
         // return [pnt.scrCoords, ta];
-    },
+    }
 
     /**
      * Investigate a function term at the bounds of intervals where
@@ -1094,7 +1128,7 @@ JXG2.JSXMath.Plot = {
      *
      * @private
      */
-    _getBorderPos: function (curve, ta, a, tc, c, tb, b) {
+    static _getBorderPos(curve, ta, a, tc, c, tb, b) {
         var t, pnt, p, j,
             max_it = 30,
             is_undef = false,
@@ -1145,7 +1179,7 @@ JXG2.JSXMath.Plot = {
             ++j;
         } while (j < max_it && Math.abs(t_good - t_bad) > JSXMath.eps);
         return t;
-    },
+    }
 
     /**
      *
@@ -1153,7 +1187,7 @@ JXG2.JSXMath.Plot = {
      * @param {Number} ta
      * @param {Number} tb
      */
-    _getCuspPos: function (curve, ta, tb) {
+    static _getCuspPos(curve, ta, tb) {
         var a = [curve.X(ta, true), curve.Y(ta, true)],
             b = [curve.X(tb, true), curve.Y(tb, true)],
             max_func = function (t) {
@@ -1165,7 +1199,7 @@ JXG2.JSXMath.Plot = {
             };
 
         return Numerics.fminbr(max_func, [ta, tb], curve);
-    },
+    }
 
     /**
      *
@@ -1173,7 +1207,7 @@ JXG2.JSXMath.Plot = {
      * @param {Number} ta
      * @param {Number} tb
      */
-    _getJumpPos: function (curve, ta, tb) {
+    static _getJumpPos(curve, ta, tb) {
         var max_func = function (t) {
             var e = JSXMath.eps * JSXMath.eps,
                 c1 = [curve.X(t, true), curve.Y(t, true)],
@@ -1182,7 +1216,7 @@ JXG2.JSXMath.Plot = {
         };
 
         return Numerics.fminbr(max_func, [ta, tb], curve);
-    },
+    }
 
     /**
      *
@@ -1190,7 +1224,7 @@ JXG2.JSXMath.Plot = {
      * @param {Number} t
      * @private
      */
-    _getLimits: function (curve, t) {
+    static _getLimits(curve, t) {
         var res,
             step = 2 / (curve.maxX() - curve.minX()),
             x_l,
@@ -1231,7 +1265,7 @@ JXG2.JSXMath.Plot = {
             right_y: y_r,
             t: t
         };
-    },
+    }
 
     /**
      *
@@ -1245,7 +1279,7 @@ JXG2.JSXMath.Plot = {
      * @param {Number} depth
      * @private
      */
-    _getLimes: function (curve, ta, a, tc, c, tb, b, may_be_special, depth) {
+    static _getLimes(curve, ta, a, tc, c, tb, b, may_be_special, depth) {
         var t;
 
         if (may_be_special === 'border') {
@@ -1256,7 +1290,7 @@ JXG2.JSXMath.Plot = {
             t = this._getJumpPos(curve, ta, tb);
         }
         return this._getLimits(curve, t);
-    },
+    }
 
     /**
      * Recursive interval bisection algorithm for curve plotting.
@@ -1272,7 +1306,7 @@ JXG2.JSXMath.Plot = {
      *                 the segment [a,b] is regarded as straight line.
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    _plotNonRecursive: function (curve, a, ta, b, tb, d) {
+    static _plotNonRecursive(curve, a, ta, b, tb, d) {
         var tc,
             c,
             ds,
@@ -1376,7 +1410,7 @@ JXG2.JSXMath.Plot = {
         }
 
         return this;
-    },
+    }
 
     /**
      * Updates the data points of a parametric curve. This version is used if {@link JXG2.Curve#plotVersion} is <tt>3</tt>.
@@ -1386,7 +1420,7 @@ JXG2.JSXMath.Plot = {
      * @param {Number} ma Right bound of curve
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    updateParametricCurve_v3: function (curve, mi, ma) {
+    static updateParametricCurve_v3(curve, mi, ma) {
         var ta,
             tb,
             a,
@@ -1477,7 +1511,7 @@ JXG2.JSXMath.Plot = {
         // console.log("number of points:", this.numberPoints);
 
         return curve;
-    },
+    }
 
     //----------------------------------------------------------------------
     // Plot algorithm v4
@@ -1491,7 +1525,7 @@ JXG2.JSXMath.Plot = {
      * @returns Object
      * @private
      */
-    _criticalInterval: function (vec, le, level) {
+    static _criticalInterval(vec, le, level) {
         var i,
             j,
             le1,
@@ -1573,20 +1607,9 @@ JXG2.JSXMath.Plot = {
         }
 
         return { smooth: smooth, groups: groups, types: types };
-    },
+    }
 
-    Component: function () {
-        this.left_isNaN = false;
-        this.right_isNaN = false;
-        this.left_t = null;
-        this.right_t = null;
-        this.t_values = [];
-        this.x_values = [];
-        this.y_values = [];
-        this.len = 0;
-    },
-
-    findComponents: function (curve, mi, ma, steps) {
+    static findComponents(curve, mi, ma, safariteps) {
         var i, t, h,
             x, y,
             components = [],
@@ -1598,7 +1621,7 @@ JXG2.JSXMath.Plot = {
             suspended = false;
 
         h = (ma - mi) / steps;
-        components[comp_nr] = new this.Component();
+        components[comp_nr] = new Component();
         comp = components[comp_nr];
 
         for (i = 0, t = mi; i <= steps; i++, t += h) {
@@ -1619,7 +1642,7 @@ JXG2.JSXMath.Plot = {
                     // Prepare a new component
                     comp_started = false;
                     comp_nr++;
-                    components[comp_nr] = new this.Component();
+                    components[comp_nr] = new Component();
                     comp = components[comp_nr];
                     cntNaNs = 0;
                 }
@@ -1652,9 +1675,9 @@ JXG2.JSXMath.Plot = {
         }
 
         return components;
-    },
+    }
 
-    getPointType: function (curve, pos, t_approx, t_values, x_table, y_table, len) {
+    static getPointType(curve, pos, t_approx, t_values, x_table, y_table, len) {
         var x_values = x_table[0],
             y_values = y_table[0],
             full_len = t_values.length,
@@ -1688,30 +1711,30 @@ JXG2.JSXMath.Plot = {
         }
 
         return result;
-    },
+    }
 
-    newtonApprox: function (idx, t, h, level, table) {
+    static newtonApprox(idx, t, h, level, table) {
         var i,
             s = 0.0;
         for (i = level; i > 0; i--) {
             s = ((s + table[i][idx]) * (t - (i - 1) * h)) / i;
         }
         return s + table[0][idx];
-    },
+    }
 
     // Thiele's interpolation formula,
     // https://en.wikipedia.org/wiki/Thiele%27s_interpolation_formula
     // unused
-    thiele: function (t, recip, t_values, idx, degree) {
+    static thiele(t, recip, t_values, idx, degree) {
         var i,
             v = 0.0;
         for (i = degree; i > 1; i--) {
             v = (t - t_values[idx + i]) / (recip[i][idx + 1] - recip[i - 2][idx + 1] + v);
         }
         return recip[0][idx + 1] + (t - t_values[idx + 1]) / (recip[1][idx + 1] + v);
-    },
+    }
 
-    differenceMethodExperiments: function (component, curve) {
+    static differenceMethodExperiments(component, curve) {
         var i,
             level,
             le,
@@ -1796,7 +1819,10 @@ JXG2.JSXMath.Plot = {
             // Store point location which may be centered around
             // critical points.
             // If the level is suitable, step out of the loop.
-            groups = this._criticalPoints(y_diffs, le, level);
+            throw new Error(`tbtb - _criticalPoints doesn't exist`)
+            // groups = this._criticalPoints(y_diffs, le, level);
+
+
             if (groups === false) {
                 // Its seems, the degree of the polynomial is equal to level
                 console.log("Polynomial of degree", level);
@@ -1828,24 +1854,26 @@ JXG2.JSXMath.Plot = {
             }
             pos = Math.floor(groups[i][pos].i + level / 2);
             // Analyze the critical point
-            criticalPoints.push(
-                this.getPointType(
-                    curve,
-                    pos,
-                    t_values,
-                    x_values,
-                    y_values,
-                    x_slopes,
-                    y_slopes,
-                    le + 1
-                )
-            );
+
+            throw new Error('tbtb - getPointType only has 7 params, we are sending 8')
+            // criticalPoints.push(
+            //     this.getPointType(
+            //         curve,
+            //         pos,
+            //         t_values,
+            //         x_values,
+            //         y_values,
+            //         x_slopes,
+            //         y_slopes,
+            //         le + 1
+            //     )
+            // );
         }
 
         return [criticalPoints, x_table, y_table, x_recip, y_recip];
-    },
+    }
 
-    getCenterOfCriticalInterval: function (group, degree, t_values) {
+    static getCenterOfCriticalInterval(group, degree, t_values) {
         var ma,
             j,
             pos,
@@ -1894,9 +1922,9 @@ JXG2.JSXMath.Plot = {
             pos_mean,
             t_values[Math.floor(pos_mean)] + h * (pos_mean - Math.floor(pos_mean))
         ];
-    },
+    }
 
-    differenceMethod: function (component, curve) {
+    static differenceMethod(component, curve) {
         var i,
             level,
             le,
@@ -2006,9 +2034,9 @@ JXG2.JSXMath.Plot = {
         //     console.log("Convergence level", level);
         // }
         return [criticalPoints, x_table, y_table, degree_x, degree_y];
-    },
+    }
 
-    _insertPoint_v4: function (curve, crds, t, doLog) {
+    static _insertPoint_v4(curve, crds, t, doLog?) {
         var p,
             prev = null,
             x,
@@ -2034,9 +2062,9 @@ JXG2.JSXMath.Plot = {
 
         p._t = t;
         curve.points.push(p);
-    },
+    }
 
-    getInterval: function (curve, ta, tb) {
+    static getInterval(curve, ta, tb) {
         var t_int,
             // x_int,
             y_int;
@@ -2050,13 +2078,13 @@ JXG2.JSXMath.Plot = {
         // x_int = curve.X(t_int, true);
         y_int = curve.Y(t_int, true);
         curve.board.mathLib = Math;
-        curve.board.mathLibJXG = JXG2.Math;
+        curve.board.mathLibJXG = JSXMath;
 
         //console.log(x_int, y_int);
         return y_int;
-    },
+    }
 
-    sign: function (v) {
+    static sign(v) {
         if (v < 0) {
             return -1;
         }
@@ -2064,9 +2092,9 @@ JXG2.JSXMath.Plot = {
             return 1;
         }
         return 0;
-    },
+    }
 
-    handleBorder: function (curve, comp, group, x_table, y_table) {
+    static handleBorder(curve, comp, group, x_table, y_table) {
         var idx = group.idx,
             t,
             t1,
@@ -2144,9 +2172,9 @@ JXG2.JSXMath.Plot = {
                 this._insertPoint_v4(curve, [1, x, y], t);
             }
         }
-    },
+    }
 
-    _seconditeration_v4: function (curve, comp, group, x_table, y_table) {
+    static _seconditeration_v4(curve, comp, group, x_table, y_table) {
         var i, t1, t2, ret, components2, comp2, idx, groups2, g, x_table2, y_table2, start, le;
 
         // Look at two points, hopefully left and right from the critical point
@@ -2189,9 +2217,9 @@ JXG2.JSXMath.Plot = {
             }
         }
         return this;
-    },
+    }
 
-    _recurse_v4: function (curve, t1, t2, x1, y1, x2, y2, level) {
+    static _recurse_v4(curve, t1, t2, x1, y1, x2, y2, level) {
         var tol = 2,
             t = (t1 + t2) * 0.5,
             x = curve.X(t, true),
@@ -2221,9 +2249,9 @@ JXG2.JSXMath.Plot = {
         } else {
             this._insertPoint_v4(curve, [1, x, y], t);
         }
-    },
+    }
 
-    handleSingularity: function (curve, comp, group, x_table, y_table) {
+    static handleSingularity(curve, comp, group, x_table, y_table) {
         var idx = group.idx,
             t,
             t1,
@@ -2361,21 +2389,16 @@ JXG2.JSXMath.Plot = {
             // Right branch very steep upwards -> add the minimum
             this._insertPoint_v4(curve, [1, x, lo], t);
         }
-    },
-
-    /**
-     * Number of equidistant points where the function is evaluated
-     */
-    steps: 1021, //2053, // 1021,
+    }
 
     /**
      * If the absolute maximum of the set of differences is larger than
      * criticalThreshold * median of these values, it is regarded as critical point.
      * @see Geometry.Plot._criticalInterval
      */
-    criticalThreshold: 1000,
+    criticalThreshold: 1000
 
-    plot_v4: function (curve, ta, tb, steps) {
+    static plot_v4(curve, ta, tb) {
         var i,
             // j,
             le,
@@ -2532,7 +2555,7 @@ JXG2.JSXMath.Plot = {
                 this._insertPoint_v4(curve, [1, NaN, NaN], comp.right_t);
             }
         }
-    },
+    }
 
     /**
      * Updates the data points of a parametric curve, plotVersion 4. This version is used if {@link JXG2.Curve#plotVersion} is <tt>4</tt>.
@@ -2541,7 +2564,7 @@ JXG2.JSXMath.Plot = {
      * @param {Number} ma Right bound of curve
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    updateParametricCurve_v4: function (curve, mi, ma) {
+    static updateParametricCurve_v4(curve, mi, ma) {
         var ta, tb, w2, bbox;
 
         if (curve.xterm === 'x') {
@@ -2560,11 +2583,11 @@ JXG2.JSXMath.Plot = {
         curve.points = [];
 
         //console.log("--------------------");
-        this.plot_v4(curve, ta, tb, this.steps);
+        this.plot_v4(curve, ta, tb);
 
         curve.numberPoints = curve.points.length;
         //console.log(curve.numberPoints);
-    },
+    }
 
     //----------------------------------------------------------------------
     // Plot algorithm alias
@@ -2581,9 +2604,8 @@ JXG2.JSXMath.Plot = {
      *
      * @see JXG2.Curve#updateParametricCurve_v2
      */
-    updateParametricCurve: function (curve, mi, ma) {
+    static updateParametricCurve(curve, mi, ma) {
         return this.updateParametricCurve_v2(curve, mi, ma);
     }
 };
 
-export default JXG2.JSXMath.Plot;

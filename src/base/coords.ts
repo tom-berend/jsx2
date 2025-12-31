@@ -1,4 +1,4 @@
-const dbug = (elem?) => false // elem && elem.id === 'jxgBoard1P1Label';
+const dbug = (elem?) => false //elem && elem.id === 'jxgBoard1P1Label';
 const dbugColor = `color:black;background-color:white`;
 
 // TODO: need a way to mark Coord as invalid.   Geometry often sends [0, NaN, NaN] or Coords
@@ -77,6 +77,10 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
 
     public method: COORDS_BY
 
+    public elem: GeometryElement
+
+    public _t:number = 0    // this is used in Plot.  need to document
+
     /**
      * Constructs a new Coordinates object.
      * @class This is the Coordinates class.
@@ -88,16 +92,18 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      * @param {Boolean} [emitter=true]
      * @constructor
      */
-    constructor(method: COORDS_BY, coordinates: number[] | Object | Function, board: Board, emitter: boolean = true) {
+    constructor(method: COORDS_BY, coordinates: number[] | Object | Function, board: Board, emitter = true, elem?: GeometryElement) {
         super()
+
+        this.elem = elem;
 
         if (board === undefined)
             throw new Error('who did not send Board??')
         if (!Array.isArray(coordinates))
             throw new Error('who did not send number[] to coordinates??')
 
-        if (dbug())
-            console.warn(`%c coords [${JSON.stringify(coordinates)} ${method==COORDS_BY.USER?'User':'Screen'}]`, dbugColor)
+        if (dbug(this.elem))
+            console.warn(`%c coords [${JSON.stringify(coordinates)} ${method == COORDS_BY.USER ? 'User' : 'Screen'}]`, dbugColor)
 
         this.board = board
         this.method = method
@@ -115,6 +121,9 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
         // }
 
         this.setCoordinates(this.method, coordinates, false, true);
+
+        if (dbug(this.elem))
+            console.warn(`%c new Coords scrCoords:${JSON.stringify(this.scrCoords)}}`, dbugColor)
     };
 
     /**
@@ -205,45 +214,48 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
     setCoordinates(coord_type: COORDS_BY, coordinates: number[], doRound: boolean = true, noevent: boolean = false) {
         // console.log(`setCoordinates(${JSON.stringify(coordinates)})`)
 
-            var uc = this.usrCoords,
-                sc = this.scrCoords,
-                // Original values
-                ou = [uc[0], uc[1], uc[2]],
-                os = [sc[0], sc[1], sc[2]];
+        var uc = this.usrCoords,
+            sc = this.scrCoords,
+            // Original values
+            ou = [uc[0], uc[1], uc[2]],
+            os = [sc[0], sc[1], sc[2]];
 
-            if (coord_type === COORDS_BY.USER) {
-                if (coordinates.length === 2) {
-                    // Euclidean coordinates
-                    uc[0] = 1.0;
-                    uc[1] = coordinates[0];
-                    uc[2] = coordinates[1];
-                } else {
-                    // Homogeneous coordinates (normalized)
-                    uc[0] = coordinates[0];
-                    uc[1] = coordinates[1];
-                    uc[2] = coordinates[2];
-                    this.normalizeUsrCoords();
-                }
-                this.usr2screen(doRound);
+        if (coord_type === COORDS_BY.USER) {
+            if (coordinates.length === 2) {
+                // Euclidean coordinates
+                uc[0] = 1.0;
+                uc[1] = coordinates[0];
+                uc[2] = coordinates[1];
             } else {
-                if (coordinates.length === 2) {
-                    // Euclidean coordinates
-                    sc[1] = coordinates[0];
-                    sc[2] = coordinates[1];
-                } else {
-                    // Homogeneous coordinates (normalized)
-                    sc[1] = coordinates[1];
-                    sc[2] = coordinates[2];
-                }
-                this.screen2usr();
+                // Homogeneous coordinates (normalized)
+                uc[0] = coordinates[0];
+                uc[1] = coordinates[1];
+                uc[2] = coordinates[2];
+                this.normalizeUsrCoords();
             }
-
-            if (this.emitter && !noevent && (os[1] !== sc[1] || os[2] !== sc[2])) {
-                this.triggerEventHandlers(["update"], [ou, os]);
+            this.usr2screen(doRound);
+        } else {
+            if (coordinates.length === 2) {
+                // Euclidean coordinates
+                sc[1] = coordinates[0];
+                sc[2] = coordinates[1];
+            } else {
+                // Homogeneous coordinates (normalized)
+                sc[1] = coordinates[1];
+                sc[2] = coordinates[2];
             }
-
-            return this;
+            this.screen2usr();
         }
+
+        if (this.emitter && !noevent && (os[1] !== sc[1] || os[2] !== sc[2])) {
+            this.triggerEventHandlers(["update"], [ou, os]);
+        }
+
+        if (dbug(this.elem))
+            console.warn(`%c setCoordinates scrCoords:${JSON.stringify(this.scrCoords)}}`, dbugColor)
+
+        return this;
+    }
 
 
 
@@ -258,11 +270,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      * @returns {Array} Returns copy of the coords array either as standard array or as
      *   typed array.
      */
-    copy(obj, offset) {
-        if (offset === undefined) {
-            offset = 0;
-        }
-
+    copy(obj, offset=0) {
         return this[obj].slice(offset);
     }
 

@@ -4006,7 +4006,7 @@ export class Geometry {
             }
         }
 
-        newCoords = new Coords(COORDS_BY.USER, [x, y], board);
+        newCoords = new Coords(COORDS_BY.USER, [x, y], board, true);
         // point.position = t + npmin;
         // return minEl.updateTransform(newCoords);
         return [minEl.updateTransform(newCoords), t + npmin];

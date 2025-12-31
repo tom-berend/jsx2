@@ -52,7 +52,7 @@ const dbugColor = `color:yellow;background-color:#4040f0`;
 // import { JXG2 } from "../jxg.js";
 import { COORDS_BY, OBJECT_CLASS, OBJECT_TYPE } from "./constants.js";
 import { Geometry } from "../math/geometry.js"
-import { GeometryElement } from "./element.js";
+import { GeometryElement, GeometryElementInterface } from "./element.js";
 
 import { Env } from "../utils/env.js";
 import { Type } from "../utils/type.js";
@@ -89,7 +89,7 @@ var priv = {
  *
  */
 
-export class Text extends CoordsElement {
+export class Text extends CoordsElement /*implements GeometryElementInterface*/ {
 
     content: string | number | Function = "";    // this is the current value to evaluate
 
@@ -126,6 +126,11 @@ export class Text extends CoordsElement {
     constructor(board: Board, parents: any[], attributes = {}) {
         super(board, COORDS_BY.USER, [parents[0], parents[1]], attributes, OBJECT_TYPE.TEXT, OBJECT_CLASS.TEXT)
 
+        this.elementUpdate = () => this.update();
+        this.elementUpdateRenderer = () => this.updateRenderer();
+        this.elementGetLabelAnchor = () => this.getLabelAnchor();
+        this.elementGetTextAnchor = () => this.getTextAnchor();
+
         if (dbug(this))
             console.warn(`%c text constructor(${JSON.stringify(parents).substring(0, 100)})`, dbugColor)
 
@@ -135,12 +140,14 @@ export class Text extends CoordsElement {
         /* Register text on board. */
         this.id = this.board.setId(this, "T");
 
+        let coordinates = parents.slice(0, -1)
+        this.relativeCoords = new Coords(COORDS_BY.USER, coordinates, board, true, this)  // used by transforms
 
         this.element = this.board.select(attributes['anchor']);
+        this.addAnchor(this.coords.scrCoords, attributes['islabel'])
 
 
-        let coordinates = parents.slice(0, -1)
-        this.relativeCoords = new Coords(COORDS_BY.USER, coordinates, board)  // used by transforms
+
 
         this.content = parents[parents.length - 1];
 
@@ -232,6 +239,29 @@ export class Text extends CoordsElement {
         });
 
     }
+
+    /**
+     * Returns the coords object where a text that is bound to the element shall be drawn.
+     * Differs in some cases from the values that getLabelAnchor returns.
+     * @returns {JXG2.Coords} JXG2.Coords Place where the text shall be drawn.
+     * @see JXG2.GeometryElement#getLabelAnchor
+     */
+    getTextAnchor() {
+        return new Coords(COORDS_BY.USER, [0, 0], this.board, true, this);
+    }
+
+    /**
+     * Returns the coords object where the label of the element shall be drawn.
+     * Differs in some cases from the values that getTextAnchor returns.
+     * @returns {JXG2.Coords} JXG2.Coords Place where the text shall be drawn.
+     * @see JXG2.GeometryElement#getTextAnchor
+     */
+    getLabelAnchor() {
+        return new Coords(COORDS_BY.USER, [0, 0], this.board, true, this);
+    }
+
+
+
     /**
      * @private
      * @param {Number} x
@@ -2282,4 +2312,3 @@ export class HTMLSlider extends Text {
 }
 
 // JXG_registerElement("text", createText);
-// JXG_registerElement("htmlslider", createText);

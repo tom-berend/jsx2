@@ -4827,7 +4827,7 @@ export class Board extends Events {
             if (dbug) console.warn(`%c board: displayInfobox(val: '${val}, this.id = '${this.id}, hiddenByParent = ${this.infobox['hiddenByParent']}'`, dbugColor)
 
             this.infobox['hiddenByParent'] = !val;
-            this.infobox['prepareUpdate']().updateVisibility(val).updateRenderer();
+            this.infobox['prepareUpdate']().updateVisibility(val).elementUpdateRenderer();
         }
         return this;
     }
@@ -6007,7 +6007,7 @@ export class Board extends Events {
                 if (this.objectsList[el].visProp["islabel"] && this.objectsList[el].visProp["autoposition"]) {
                     autoPositionLabelList.push(el);
                 } else {
-                    this.objectsList[el].updateRenderer();
+                    this.objectsList[el].elementUpdateRenderer();
                 }
             }
 
@@ -6021,7 +6021,7 @@ export class Board extends Events {
             }
 
             for (el = 0; el < autoPositionLabelList.length; el++) {
-                this.objectsList[autoPositionLabelList[el]].updateRenderer();
+                this.objectsList[autoPositionLabelList[el]].elementUpdateRenderer();
             }
             /*
             for (el = autoPositionLabelList.length - 1; el >= 0; el--) {

@@ -44,9 +44,9 @@ import { GeometryElement } from "./element.js";
 import GeonextParser from "../parser/geonext.js";
 import { ImplicitPlot } from "../math/implicitplot.js";
 import { JSXMath } from "../math/math.js";
-import {Metapost} from "../math/metapost.js";
+import { Metapost } from "../math/metapost.js";
 import { Numerics } from "../math/numerics.js";
-import Plot from "../math/plot.js";
+import { Plot } from "../math/plot.js";
 import { Quadtree } from "../math/qdt.js";
 import { Type } from "../utils/type.js";
 import { CoordsElement } from "../base/coordselement.js";
@@ -151,6 +151,9 @@ export class Curve extends GeometryElement {
 
     constructor(board: Board, parents: any[], attributes: LooseObject) {
         super(board, attributes, OBJECT_TYPE.CURVE, OBJECT_CLASS.CURVE);
+
+        this.elementUpdate = () => this.update();
+        this.elementUpdateRenderer = () => this.updateRenderer();
 
 
         this.numberPoints = this.evalVisProp('numberpointshigh');
@@ -1105,7 +1108,7 @@ export class Curve extends GeometryElement {
             delete this.maxX;
         }
 
-        //tbtb // this.addParentsFromJCFunctions([this.X, this.Y, this.minX, this.maxX]);
+        this.addParentsFromJCFunctions([this.X, this.Y, this.minX, this.maxX]);
     }
 
     /**

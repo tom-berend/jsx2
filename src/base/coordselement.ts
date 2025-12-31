@@ -176,10 +176,10 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     constructor(board: Board, method: COORDS_BY, coordinates: number[] | Object | Function = [1, 0, 0], attributes: Object, otype: number, oclass: number) {
         super(board, attributes, otype, oclass)
 
-        this.coords = new Coords(COORDS_BY.USER, coordinates, this.board);
+        this.coords = new Coords(COORDS_BY.USER, coordinates, this.board, true, this);
 
-        this.initialCoords = new Coords(COORDS_BY.USER, coordinates, this.board);
-        this.actualCoords = new Coords(COORDS_BY.USER, coordinates, this.board);
+        this.initialCoords = new Coords(COORDS_BY.USER, coordinates, this.board, true, this);
+        this.actualCoords = new Coords(COORDS_BY.USER, coordinates, this.board, true, this);
 
 
         // for (let i = 0; i < coordinates.length; ++i) {
@@ -1140,7 +1140,8 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                         projCoords = new Coords(
                             COORDS_BY.USER,
                             projection[0],
-                            this.board
+                            this.board,
+                            true, this
                         );
                     }
                 } else if (el.elementClass === OBJECT_CLASS.CIRCLE) {
@@ -1153,7 +1154,8 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                     projCoords = new Coords(
                         COORDS_BY.USER,
                         Geometry.projectCoordsToPolygon(this.coords.usrCoords, el),
-                        this.board
+                        this.board,
+                        true, this
                     );
                 }
 
@@ -1210,7 +1212,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         if (dbug(this)) console.warn(`%c coordselements: setPositionDirectly, ${this.id} ${JSON.stringify(this.coords.usrCoords)}}`, dbugColor)
 
         if (this.relativeCoords) {
-            c = new Coords(method, coords, this.board);
+            c = new Coords(method, coords, this.board, true, this);
             if (this.evalVisProp('islabel')) {
                 dc = Statistics.subtract(c.scrCoords, oldCoords.scrCoords);
                 this.relativeCoords.scrCoords[1] += dc[1];
@@ -1239,7 +1241,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         // This is needed for free elements that have a transformation bound to it.
         if (this.transformations.length > 0) {
             if (method === COORDS_BY.SCREEN) {
-                newCoords = new Coords(method, coords, this.board).usrCoords;
+                newCoords = new Coords(method, coords, this.board, true, this).usrCoords;
             } else {
                 if (coords.length === 2) {
                     coords = [1].concat(coords);
@@ -1258,7 +1260,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                 this.coords.setCoordinates(COORDS_BY.USER, newCoords);
             }
         }
-        this.prepareUpdate().update();
+        this.prepareUpdate().elementUpdate();
 
         // TODO: move to glider
         // // If the user suspends the board updates we need to recalculate the relative position of
@@ -1281,7 +1283,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     setPositionByTransform(method: COORDS_BY, tv: number[]) {
         var t;
 
-        let tvCoords = new Coords(method, tv, this.board);
+        let tvCoords = new Coords(method, tv, this.board, true, this);
         t = this.board.create("transform", tvCoords.usrCoords.slice(1), {
             type: "translate"
         });
@@ -1295,7 +1297,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
             this.addTransform(this.element, t);
         }
 
-        this.prepareUpdate().update();
+        this.prepareUpdate().elementUpdate();
 
         return this;
     }
@@ -1616,9 +1618,9 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         /**
          * We have to do an update. Otherwise, elements relying on this point will receive NaN.
          */
-        this.prepareUpdate().update(true);
+        this.prepareUpdate().elementUpdate();
         if (!this.board.isSuspendedUpdate) {
-            this.updateVisibility().updateRenderer();
+            this.updateVisibility().elementUpdateRenderer();
             if (this.hasLabel) {
                 this.label.fullUpdate();
             }
@@ -1637,78 +1639,83 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      * @param{Boolean} isLabel Yes/no
      * @private
      */
-    addAnchor(coordinates, isLabel) {
+    addAnchor(coordinates, isLabel: boolean) {
         console.log(`%c coordsElements addAnchor(${JSON.stringify(coordinates)},${isLabel})`, dbugColor)
 
         if (isLabel) {
             this.relativeCoords = new Coords(
                 COORDS_BY.SCREEN,
                 coordinates.slice(0, 2),
-                this.board
+                this.board, true, this
             );
         } else {
-            this.relativeCoords = new Coords(COORDS_BY.USER, coordinates, this.board);
+            this.relativeCoords = new Coords(COORDS_BY.USER, coordinates, this.board, true, this);
         }
         this.addChild(this);
         if (isLabel) {
             this.addParents([this]);
         }
 
-        this.XEval = function () {
-            var sx, coords, anchor, ev_o;
+        // this.YEval = function () {
+        //     var sy, coords, anchor, ev_o;
 
-            if (this.evalVisProp('islabel')) {
-                ev_o = this.evalVisProp('offset');
-                sx = parseFloat(ev_o[0]);
-                anchor = this.element.getLabelAnchor();
-                coords = new Coords(
-                    COORDS_BY.SCREEN,
-                    [sx + this.relativeCoords.scrCoords[1] + anchor.scrCoords[1], 0],
-                    this.board
-                );
+        //     if (this.evalVisProp('islabel')) {
+        //         ev_o = this.evalVisProp('offset');
+        //         sy = -parseFloat(ev_o[1]);
+        //         anchor = this.element.getLabelAnchor();
+        //         coords = new Coords(
+        //             COORDS_BY.SCREEN,
+        //             [0, sy + this.relativeCoords.scrCoords[2] + anchor.scrCoords[2]],
+        //             this.board, true, this
+        //         );
 
-                return coords.usrCoords[1];
-            }
+        //         return coords.usrCoords[2];
+        //     }
 
-            anchor = this.element.getTextAnchor();
-            return this.relativeCoords.usrCoords[1] + anchor.usrCoords[1];
-        };
-
-        this.YEval = function () {
-            var sy, coords, anchor, ev_o;
-
-            if (this.evalVisProp('islabel')) {
-                ev_o = this.evalVisProp('offset');
-                sy = -parseFloat(ev_o[1]);
-                anchor = this.element.getLabelAnchor();
-                coords = new Coords(
-                    COORDS_BY.SCREEN,
-                    [0, sy + this.relativeCoords.scrCoords[2] + anchor.scrCoords[2]],
-                    this.board
-                );
-
-                return coords.usrCoords[2];
-            }
-
-            anchor = this.element.getTextAnchor();
-            return this.relativeCoords.usrCoords[2] + anchor.usrCoords[2];
-        };
+        //     anchor = this.element.getTextAnchor();
+        //     return this.relativeCoords.usrCoords[2] + anchor.usrCoords[2];
+        // };
 
         // TODO:  ??         this.ZEval = Type.createFunction(1, this.board, "");
 
-        this.updateConstraint = () => {
-            this.coords.setCoordinates(COORDS_BY.USER, [
-                this.ZEval(),
-                this.XEval(),
-                this.YEval()
-            ]);
+        // this.updateConstraint = () => {
+        //     this.coords.setCoordinates(COORDS_BY.USER, [
+        //         this.ZEval(),
+        //         this.XEval(),
+        //         this.YEval()
+        //     ]);
 
-            console.log(`cooords update constraint anon function`)
-            return this;
-        };
+        //     console.log(`cooords update constraint anon function`)
+        //     return this;
+        // };
         this.isConstrained = true;
 
-        this.updateConstraint();
+        let ev_o, sx = 0, sy = 0, anchor, coords
+
+        // if (this.evalVisProp('islabel')) {
+        //     ev_o = this.evalVisProp('offset');
+        //     sx = parseFloat(ev_o[0]);
+        //     sy = parseFloat(ev_o[1]);
+        //     anchor = this.element.elementGetLabelAnchor();
+
+        //     this.addConstraint([1, () => this.elementX()+sx, () => this.Y()+sy])
+        // } else {
+
+
+            if (Type.exists(this.element)) {
+                anchor = this.element.elementGetTextAnchor();
+            } else {
+                anchor = this.elementGetTextAnchor();
+            }
+
+        // }
+
+
+        // this.coords.setCoordinates(COORDS_BY.SCREEN, [
+        //     0,
+        //     sx + this.initialCoords.scrCoords[1] + anchor.scrCoords[1],
+        //     sy + this.initialCoords.scrCoords[2] + anchor.scrCoords[2],
+        // ]);
     }
 
     /**
@@ -2046,7 +2053,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      */
     moveTo(where, time, options) {
         options = options || {};
-        where = new Coords(COORDS_BY.USER, where, this.board);
+        where = new Coords(COORDS_BY.USER, where, this.board, true, this);
 
         var i,
             delay = this.board.attr.animationdelay,
@@ -2168,7 +2175,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      *
      */
     visit(where, time, options) {
-        where = new Coords(COORDS_BY.USER, where, this.board);
+        where = new Coords(COORDS_BY.USER, where, this.board, true, this);
 
         var i,
             j,
@@ -2468,15 +2475,17 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         return this;
     }
 
-    // documented in GeometryElement
-    getTextAnchor() {
-        return this.coords;
-    }
 
-    // documented in GeometryElement
-    getLabelAnchor() {
-        return this.coords;
-    }
+    // tbtb - moved to individual elements
+    // // documented in GeometryElement
+    // getTextAnchor() {
+    //     return this.coords;
+    // }
+
+    // // documented in GeometryElement
+    // getLabelAnchor() {
+    //     return this.coords;
+    // }
 
     // documented in element.js
     getParents() {

@@ -90,7 +90,7 @@ export class Expect {
         }
 
         if (copy) {
-            coord = new Coords(COORDS_BY.USER, coord.usrCoords, coord.board);
+            coord = new Coords(COORDS_BY.USER, coord.usrCoords, coord.board, true);
         }
 
         return coord;

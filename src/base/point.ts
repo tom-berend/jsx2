@@ -47,6 +47,7 @@ import { Geometry } from "../math/geometry.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { GeometryElement } from "./element.js";
 import { Type } from "../utils/type.js";
+import { Coords } from "./coords.js";
 import { CoordsElement } from "./coordselement.js";
 import { COORDS_BY_USER } from "../index.js";
 import { Text } from "../base/text.js"
@@ -90,8 +91,15 @@ import { LooseObject } from "../interfaces.js";
 // JXG2.Point.prototype = new GeometryElement();
 export class Point extends CoordsElement {
 
+
     constructor(board: Board, parents: any[], attributes: LooseObject = {}) {
         super(board, COORDS_BY_USER, parents, attributes, OBJECT_TYPE.POINT, OBJECT_CLASS.POINT)
+
+        this.elementUpdate = () => this.update();
+        this.elementUpdateRenderer = () => this.updateRenderer();
+        this.elementCreateLabel = () => this.createLabel()
+        this.elementGetLabelAnchor = () => this.getLabelAnchor();
+        this.elementGetTextAnchor = () => this.getTextAnchor();
 
 
         this.elType = 'point';
@@ -106,6 +114,7 @@ export class Point extends CoordsElement {
         this.board.renderer.drawPoint(this);
 
         this.element = this.board.select(attributes['anchor']);
+
         this.coordsElementInit(parents, this.visProp)
 
         if (!this.isDraggable)
@@ -121,6 +130,18 @@ export class Point extends CoordsElement {
         // if(dbug(this))
         console.warn(`%c new Point(${JSON.stringify(parents).substring(0, 30)},${JSON.stringify(attributes).substring(0, 30)})`, dbugColor, this)
     }
+
+    // documented in GeometryElement
+    getTextAnchor() {
+        return this.coords;
+    }
+
+    // documented in GeometryElement
+    getLabelAnchor() {
+        return this.coords;
+    }
+
+
 
     /**
      * Checks whether (x,y) is near the point.
@@ -157,7 +178,7 @@ export class Point extends CoordsElement {
     /**
      * Updates the position of the point.
      */
-    update(fromParent?: boolean):GeometryElement {
+    update(fromParent?: boolean): GeometryElement {
         if (dbug(this)) console.warn(`%c Point: pointUpdate ${this.id} ${fromParent}`, dbugColor)
 
         // if (!this.needsUpdate) {
@@ -505,21 +526,27 @@ export class Point extends CoordsElement {
             console.log('createLabel ', this.X(), this.Y(), plainName)
 
             this.label = new Text(this.board, [() => this.X(), () => this.Y(), plainName], attr);
-            this.label.addConstraint([1, () => this.X(), () => this.Y()])
-            this.label.needsUpdate = true;
-            this.label.dump = false;
-            this.label.fullUpdate();
 
-            this.hasLabel = true;
+                let ev_o = this.label.evalVisProp('offset');  // offset is in screen coords, must convert
+                let sx = parseFloat(ev_o[0])/this.board.unitX;
+                let sy = parseFloat(ev_o[1])/this.board.unitY;
+                
+                this.label.addConstraint([1, () => this.X() + sx, () => this.Y() + sy])
 
-            if (dbug(this.label))
-                console.warn(`%c geometryElement: new label ${this.label.id} for  ${this.id})`, dbugColor)
+                this.label.needsUpdate = true;
+                this.label.dump = false;
+                this.label.fullUpdate();
 
-            return this;
+                this.hasLabel = true;
+
+                if (dbug(this.label))
+                    console.warn(`%c geometryElement: new label ${this.label.id} for  ${this.id})`, dbugColor)
+
+                return this;
+            }
+
         }
-
     }
-}
 
 /**
  * @class Construct a free or a fixed point. A free point is created if the given parent elements are all numbers

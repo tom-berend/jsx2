@@ -51,6 +51,16 @@ import { Transformation } from "./transformation.js";
 import { Text } from "./text.js";
 import { Point } from "./point.js";
 
+
+export interface GeometryElementInterface {
+    Update: Function,
+    UpdateRenderer: Function,
+    CreateLabel: Function,
+    GetTextAnchor: Function,
+    GetLabelAnchor: Function,
+}
+
+
 /**
  * Constructs a new GeometryElement object.
  * @class This is the parent class for all geometry elements like points, circles, lines, curves...
@@ -369,11 +379,15 @@ export class GeometryElement extends Events {
     element // ???
 
 
-
-
-
-
-
+    // The inheritance tree is mangles (prototype inheritance lets the parent call the child).
+    // Problem is that in normal inheritance, this object doesn't know which child method to call.
+    // To untangle, we start with these closures, which direct 'this.elementUpdate()' to
+    // the CORRECT element.update().
+    elementUpdate = () => console.error(`add to constructor: 'this.elementUpdate = ()=>this.update();'`)
+    elementUpdateRenderer = () => console.error(`add to constructor: 'this.elementUpdateRenderer = ()=>this.updateRenderer();'`)
+    elementCreateLabel = () => console.error(`add to constructor: 'this.elementCreateLabel = ()=>this.update();'`)
+    elementGetTextAnchor = () => console.error(`add to constructor: 'this.elementGetTextAnchor = ()=>this.update();'`)
+    elementGetLabelAnchor = () => console.error(`add to constructor: 'this.elementGetLabelAnchor = ()=>this.update();'`)
 
     constructor(board: Board, attributes: LooseObject, otype: OBJECT_TYPE, oclass: OBJECT_CLASS) {
         super()
@@ -500,11 +514,12 @@ export class GeometryElement extends Events {
         var el;
 
         this.descendants[obj.id] = obj;
-        for (el in obj.childElements) {
-            if (obj.childElements.hasOwnProperty(el)) {
-                this.addDescendants(obj.childElements[el]);
-            }
-        }
+        // tbtb need to unravel childElements vs descendants
+        //tbtb infinite loop?? // for (el in obj.childElements) {
+        //tbtb infinite loop?? //     if (obj.childElements.hasOwnProperty(el)) {
+        //tbtb infinite loop?? //         this.addDescendants(obj.childElements[el]);
+        //tbtb infinite loop?? //     }
+        //tbtb infinite loop?? // }
         return this;
     }
 
@@ -805,8 +820,8 @@ export class GeometryElement extends Events {
      * @returns {JXG2.GeometryElement} this element
      */
     setPositionDirectly(method, coords, oldcoords) {
-        var c = new Coords(method, coords, this.board, false),
-            oldc = new Coords(method, oldcoords, this.board, false),
+        var c = new Coords(method, coords, this.board, false, this),
+            oldc = new Coords(method, oldcoords, this.board, false, this),
             dc = Statistics.subtract(c.usrCoords, oldc.usrCoords);
 
         this.setPosition(COORDS_BY.USER, dc);
@@ -915,28 +930,29 @@ export class GeometryElement extends Events {
         return this;
     }
 
-    /**
-     * General update method. Should be overwritten by the element itself.
-     * Can be used sometimes to commit changes to the object.
-     * @return {JXG2.GeometryElement} Reference to the element
-     */
-    update(force = true): GeometryElement {
-        throw new Error('called Abstract update')
+    // /**
+    //  * General update method. Should be overwritten by the element itself.
+    //  * Can be used sometimes to commit changes to the object.
+    //  * @return {JXG2.GeometryElement} Reference to the element
+    //  */
+    // update(force = true): GeometryElement {
+    //     throw new Error('called Abstract update')
 
-        if (this.evalVisProp('trace')) {
-            this.cloneToBackground();
-        }
-        return this;
-    }
+    //     if (this.evalVisProp('trace')) {
+    //         this.cloneToBackground();
+    //     }
+    //     return this;
+    // }
 
-    /**
-     * Provide updateRenderer method.
-     * @return {JXG2.GeometryElement} Reference to the element
-     * @private
-     */
-    updateRenderer(): GeometryElement {
-        return this;
-    }
+    // tbtb - each element now has a closure 'elementUpdateRenderer' that points to its own updateRenderer()
+    // /**
+    //  * Provide updateRenderer method.
+    //  * @return {JXG2.GeometryElement} Reference to the element
+    //  * @private
+    //  */
+    // updateRenderer(): GeometryElement {
+    //     return this;
+    // }
 
     /**
      * Run through the full update chain of an element.
@@ -944,8 +960,10 @@ export class GeometryElement extends Events {
      * @return {JXG2.GeometryElement} Reference to the element
      * @private
      */
-    fullUpdate(visible): GeometryElement {
-        return this.prepareUpdate().update(true).updateVisibility(visible).updateRenderer();
+    fullUpdate(visible) {
+        this.prepareUpdate().elementUpdate()
+        this.updateVisibility(visible)
+        this.elementUpdateRenderer();
     }
 
     /**
@@ -1015,7 +1033,7 @@ export class GeometryElement extends Events {
      * Alias for "element.setAttribute({visible: false});"
      * @return {JXG2.GeometryElement} Reference to the element
      */
-    hide():GeometryElement {
+    hide(): GeometryElement {
         this.setAttribute({ visible: false });
         return this;
     }
@@ -1025,7 +1043,7 @@ export class GeometryElement extends Events {
      * Alias for {@link JXG2.GeometryElement#hide}
      * @returns {JXG2.GeometryElement} Reference to the element
      */
-    hideElement():GeometryElement {
+    hideElement(): GeometryElement {
         this.hide();
         return this;
     }
@@ -1035,7 +1053,7 @@ export class GeometryElement extends Events {
      * Alias for "element.setAttribute({visible: true});"
      * @return {JXG2.GeometryElement} Reference to the element
      */
-    show():GeometryElement {
+    show(): GeometryElement {
         this.setAttribute({ visible: true });
         return this;
     }
@@ -1045,7 +1063,7 @@ export class GeometryElement extends Events {
      * Alias for {@link JXG2.GeometryElement#show}
      * @returns {JXG2.GeometryElement} Reference to the element
      */
-    showElement():GeometryElement {
+    showElement(): GeometryElement {
         this.show();
         return this;
     }
@@ -1073,7 +1091,7 @@ export class GeometryElement extends Events {
      * @return {JXG2.GeometryElement} Reference to the element.
      * @private
      */
-    updateVisibility(parent_val?:boolean):GeometryElement {
+    updateVisibility(parent_val?: boolean): GeometryElement {
         var i, len, s, len_s, obj, val;
 
         if (this.needsUpdate) {
@@ -1528,7 +1546,7 @@ export class GeometryElement extends Events {
                             }
                         } else {
                             if (!this.label) {
-                                // tbtb // this.createLabel();
+                                this.elementCreateLabel();
                             }
                             //this.label.showElement();
                             this.label.setAttribute({ visible: 'inherit' });
@@ -1790,7 +1808,7 @@ export class GeometryElement extends Events {
      * @see JXG2.GeometryElement#getLabelAnchor
      */
     getTextAnchor() {
-        return new Coords(COORDS_BY.USER, [0, 0], this.board);
+        return new Coords(COORDS_BY.USER, [0, 0], this.board, true, this);
     }
 
     /**
@@ -1800,7 +1818,7 @@ export class GeometryElement extends Events {
      * @see JXG2.GeometryElement#getTextAnchor
      */
     getLabelAnchor() {
-        return new Coords(COORDS_BY.USER, [0, 0], this.board);
+        return new Coords(COORDS_BY.USER, [0, 0], this.board, true, this);
     }
 
     /**
@@ -1818,7 +1836,10 @@ export class GeometryElement extends Events {
             this.elType = 'arrow';
         }
 
-        this.prepareUpdate().update().updateVisibility().updateRenderer();
+        this.prepareUpdate()
+        this.elementUpdate()
+        this.updateVisibility()
+        this.elementUpdateRenderer();
         return this;
     }
 
@@ -2409,7 +2430,7 @@ export class GeometryElement extends Events {
                 rx = Math.round(x / sX) * sX;
                 ry = Math.round(y / sY) * sY;
 
-                rcoords = new Coords(COORDS_BY.USER, [rx, ry], this.board);
+                rcoords = new Coords(COORDS_BY.USER, [rx, ry], this.board, true, this);
                 if (
                     !attractToGrid ||
                     rcoords.distance(

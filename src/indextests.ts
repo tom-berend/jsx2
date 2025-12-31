@@ -21,7 +21,7 @@ export class IndexTests {
 
         this.initBoard()
 
-        this.point()
+        // this.point()
         // this.text()
         // this.line()
         // this.circle()
