@@ -32,19 +32,18 @@
 /*global JXG2: true, define: true, DOMParser: true, ActiveXObject: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import {JXG2} from "../jxg.js";
-import {Type} from "./type.js";
+import { Type } from "./type.js";
 
 /**
  * Holds browser independent xml parsing routines. Won't work in environments other than browsers.
  * @namespace
  */
-JXG2.XML = {
+export class XML {
     /**
      * Cleans out unneccessary whitespaces in a chunk of xml.
      * @param {Object} el
      */
-    cleanWhitespace: function (el) {
+    static cleanWhitespace(el: DocumentFragment | ChildNode) {
         var cur = el.firstChild;
 
         while (Type.exists(cur)) {
@@ -55,42 +54,21 @@ JXG2.XML = {
             }
             cur = cur.nextSibling;
         }
-    },
+    }
 
     /**
      * Converts a given string into a XML tree.
      * @param {String} str
      * @returns {Object} The xml tree represented by the root node.
      */
-    parse: function (str) {
-        var parser, tree, DP;
+    static parse(str: string) {
+        var parser: DOMParser, tree
 
         // DOMParser is a function in all browsers, except older IE and Safari.
-        // In IE it does not exists (workaround in else branch), in Safari it's an object.
-        if (typeof DOMParser === "function" || typeof DOMParser === 'object') {
-            DP = DOMParser;
-        } else {
-            // IE workaround, since there is no DOMParser
-            DP = function () {
-                this.parseFromString = function (str) {
-                    var d;
-
-                    // if (typeof ActiveXObject === 'function') {
-                    //     d = new ActiveXObject('MSXML.DomDocument');
-                    //     d.loadXML(str);
-                    // }
-
-                    return d;
-                };
-            };
-        }
-
-        parser = new DP();
+        parser = new DOMParser();
         tree = parser.parseFromString(str, "text/xml");
-        this.cleanWhitespace(tree);
+        XML.cleanWhitespace(tree);
 
         return tree;
     }
 };
-
-export default JXG2.XML;

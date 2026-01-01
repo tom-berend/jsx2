@@ -40,10 +40,10 @@ const dbugColor = `color:red;background-color:blue`;
  * a board.
  */
 
-import { JXG2 } from "../jxg.js";
 import { Options } from "../options.js";
 import { JSXMath } from "../math/math.js";
 import { Geometry } from "../math/geometry.js";
+import { Numerics  } from "../math/numerics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { GeometryElement } from "./element.js";
 import { Type } from "../utils/type.js";
@@ -54,6 +54,7 @@ import { Text } from "../base/text.js"
 import { PointOptions } from "../optionInterfaces.js";
 import { Board } from "../base/board.js";
 import { LooseObject } from "../interfaces.js";
+import { Env } from "../utils/env.js";
 
 /**
  * A point is the basic geometric element. Based on points lines and circles can be constructed which can be intersected
@@ -341,7 +342,7 @@ export class Point extends CoordsElement {
      * @returns {*}
      */
     normalizeFace(s) {
-        JXG2.deprecated("Point.normalizeFace()", "JXG2.normalizePointFace()");
+        Env.deprecated("Point.normalizeFace()", "JXG2.normalizePointFace()");
         return Options.normalizePointFace(s);
     }
 
@@ -352,7 +353,7 @@ export class Point extends CoordsElement {
      * @deprecated Use setAttribute()
      */
     face(f) {
-        JXG2.deprecated("Point.face()", "Point.setAttribute()");
+        Env.deprecated("Point.face()", "Point.setAttribute()");
         this.setAttribute({ face: f });
     }
 
@@ -363,7 +364,7 @@ export class Point extends CoordsElement {
      * @deprecated Use setAttribute()
      */
     size(s) {
-        JXG2.deprecated("Point.size()", "Point.setAttribute()");
+        Env.deprecated("Point.size()", "Point.setAttribute()");
         this.setAttribute({ size: s });
     }
 
@@ -527,26 +528,26 @@ export class Point extends CoordsElement {
 
             this.label = new Text(this.board, [() => this.X(), () => this.Y(), plainName], attr);
 
-                let ev_o = this.label.evalVisProp('offset');  // offset is in screen coords, must convert
-                let sx = parseFloat(ev_o[0])/this.board.unitX;
-                let sy = parseFloat(ev_o[1])/this.board.unitY;
-                
-                this.label.addConstraint([1, () => this.X() + sx, () => this.Y() + sy])
+            let ev_o = this.label.evalVisProp('offset');  // offset is in screen coords, must convert
+            let sx = parseFloat(ev_o[0]) / this.board.unitX;
+            let sy = parseFloat(ev_o[1]) / this.board.unitY;
 
-                this.label.needsUpdate = true;
-                this.label.dump = false;
-                this.label.fullUpdate();
+            this.label.addConstraint([1, () => this.X() + sx, () => this.Y() + sy])
 
-                this.hasLabel = true;
+            this.label.needsUpdate = true;
+            this.label.dump = false;
+            this.label.fullUpdate();
 
-                if (dbug(this.label))
-                    console.warn(`%c geometryElement: new label ${this.label.id} for  ${this.id})`, dbugColor)
+            this.hasLabel = true;
 
-                return this;
-            }
+            if (dbug(this.label))
+                console.warn(`%c geometryElement: new label ${this.label.id} for  ${this.id})`, dbugColor)
 
+            return this;
         }
+
     }
+}
 
 /**
  * @class Construct a free or a fixed point. A free point is created if the given parent elements are all numbers
@@ -672,7 +673,7 @@ export function createPoint(board, parents, attributes) {
  *   gpex3_board.create('button', [1, 5, 'stop animation',function(){gpex3_p2.stopAnimation()}]);
  * </script><pre>
  */
-JXG2.createGlider = function (board, parents, attributes) {
+export function createGlider(board, parents, attributes) {
     var el,
         coords,
         attr = Type.copyAttributes(attributes, board.options, 'glider');
@@ -727,7 +728,7 @@ JXG2.createGlider = function (board, parents, attributes) {
  *   var ipex1_i = ipex1_board.create('intersection', [ipex1_c1, ipex1_l1, 0]);
  * </script><pre>
  */
-JXG2.createIntersectionPoint = function (board, parents, attributes) {
+export function createIntersectionPoint (board, parents, attributes) {
     var el, el1, el2, func,
         i, j,
         attr = Type.copyAttributes(attributes, board.options, 'intersection');
@@ -897,7 +898,7 @@ JXG2.createIntersectionPoint = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG2.createOtherIntersectionPoint = function (board, parents, attributes) {
+export function createOtherIntersectionPoint(board, parents, attributes) {
     var el, el1, el2, i,
         others, func, input,
         isGood = true,
@@ -1034,7 +1035,7 @@ JXG2.createOtherIntersectionPoint = function (board, parents, attributes) {
  * var ppex2_p5 = ppex2_board.create('polepoint', [ppex2_c1, ppex2_l1]);
  * </script><pre>
  */
-JXG2.createPolePoint = function (board, parents, attributes) {
+export function createPolePoint(board, parents, attributes) {
     var el,
         el1,
         el2,
@@ -1096,9 +1097,9 @@ JXG2.createPolePoint = function (board, parents, attributes) {
                     s = el2.stdform.slice(0, 3);
 
                 return [
-                    JXG2.JSXMath.Numerics.det([s, q[1], q[2]]),
-                    JXG2.JSXMath.Numerics.det([q[0], s, q[2]]),
-                    JXG2.JSXMath.Numerics.det([q[0], q[1], s])
+                    Numerics.det([s, q[1], q[2]]),
+                    Numerics.det([q[0], s, q[2]]),
+                    Numerics.det([q[0], q[1], s])
                 ];
             }
         ],
@@ -1113,19 +1114,3 @@ JXG2.createPolePoint = function (board, parents, attributes) {
 
     return el;
 };
-
-JXG2.registerElement("point", JXG2.createPoint);
-JXG2.registerElement("glider", JXG2.createGlider);
-JXG2.registerElement("intersection", JXG2.createIntersectionPoint);
-JXG2.registerElement("otherintersection", JXG2.createOtherIntersectionPoint);
-JXG2.registerElement("polepoint", JXG2.createPolePoint);
-
-export default JXG2.Point;
-// export default {
-//     Point: JXG2.Point,
-//     createPoint: JXG2.createPoint,
-//     createGlider: JXG2.createGlider,
-//     createIntersection: JXG2.createIntersectionPoint,
-//     createOtherIntersection: JXG2.createOtherIntersectionPoint,
-//     createPolePoint: JXG2.createPolePoint
-// };

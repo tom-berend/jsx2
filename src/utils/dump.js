@@ -397,7 +397,7 @@ JXG2.Dump = {
                 '", [' +
                 elements[i].parents.join(", ") +
                 "], " +
-                Type.toJSON(elements[i].attributes) +
+                JSON.stringify(elements[i].attributes) +
                 ");"
             );
 
@@ -422,7 +422,7 @@ JXG2.Dump = {
                 "." +
                 dump.methods[i].method +
                 "(" +
-                this.arrayToParamStr(dump.methods[i].params, Type.toJSON) +
+                this.arrayToParamStr(dump.methods[i].params, JSON.stringify) +
                 ");"
             );
             script.push("");
@@ -434,7 +434,7 @@ JXG2.Dump = {
                 "." +
                 dump.props[i].prop +
                 " = " +
-                Type.toJSON(dump.props[i].val) +
+                JSON.stringify(dump.props[i].val) +
                 ";"
             );
             script.push("");

@@ -66,7 +66,7 @@ import { Dim } from '../interfaces.js'
 
 // import {GeometryElement} from './element.js';
 import { Text } from '../base/text.js'
-import { Point } from '../base/point.js'
+import { Point,createGlider, createPolePoint, createIntersectionPoint,createOtherIntersectionPoint } from '../base/point.js'
 import { Checkbox } from "../element/checkbox.js"
 import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis, createPolarLine, createTangentTo } from '../base/line.js'
 import { createCircle } from './circle.js';
@@ -6368,7 +6368,14 @@ export class Board extends Events {
         let attr
         switch (elementType) {
             case 'text': el = new Text(this, parents, attributes); break;
+
             case 'point': el = new Point(this, parents, attributes); break;
+            case 'glider': el = createGlider(this, parents, attributes); break;
+            case 'createPolePoint' : el = createPolePoint(this,parent,attributes); break;
+            case 'createIntersectionPoint' : el = createIntersectionPoint(this,parent,attributes); break;
+            case 'createOtherIntersectionPoint' : el = createOtherIntersectionPoint(this,parent,attributes); break;
+
+
             case 'checkbox': el = new Checkbox(this, parents, attributes); break;
 
             case 'line': el = createLine(this, parents, attributes); break;

@@ -34,7 +34,6 @@ let dbugColor = 'color:black;background-color:#FF8FFF;'
 /*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true, unparam: true*/
 
-import { JXG2 } from "../jxg.js";
 import { Env } from "../utils/env.js";
 import { Events } from "../utils/event.js";
 import { Board } from "./board.js";
@@ -1315,7 +1314,8 @@ export class GeometryElement extends Events {
                 attributes[Type.trim(pair[0])] = Type.trim(pair[1]);
             } else if (!Type.isArray(arg)) {
                 // pairRaw consists of objects of the form {key1:value1,key2:value2,...}
-                JXG2.extend(attributes, arg);
+                // JXG2.extend(attributes, arg);
+                throw new Error('can we take JXG.extend out??')
             } else {
                 // pairRaw consists of array [key,value]
                 attributes[arg[0]] = arg[1];
@@ -1984,34 +1984,6 @@ export class GeometryElement extends Events {
         return this;
     }
 
-    /**
-     * EXPERIMENTAL. Generate JSON object code of visProp and other properties.
-     * @type String
-     * @private
-     * @ignore
-     * @deprecated
-     * @returns JSON string containing element's properties.
-     */
-    toJSON() {
-        var vis,
-            key,
-            json = ['{"name":', this.name];
-
-        json.push(", " + '"id":' + this.id);
-
-        vis = [];
-        for (key in this.visProp) {
-            if (this.visProp.hasOwnProperty(key)) {
-                if (Type.exists(this.visProp[key])) {
-                    vis.push('"' + key + '":' + this.visProp[key]);
-                }
-            }
-        }
-        json.push(', "visProp":{' + vis.toString() + "}");
-        json.push("}");
-
-        return json.join("");
-    }
 
     /**
      * Rotate texts or images by a given degree.

@@ -140,6 +140,15 @@ export class Circle extends GeometryElement {
     constructor(board, method: 'twoPoints' | 'pointRadius' | 'pointLine' | 'pointCircle', par1, par2, attributes) {
         super(board, attributes, OBJECT_TYPE.CIRCLE, OBJECT_CLASS.CIRCLE)
 
+
+        this.elementUpdate = () => this.update();
+        this.elementUpdateRenderer = () => this.updateRenderer();
+        this.elementCreateLabel = () => this.createLabel()
+        this.elementGetLabelAnchor = () => this.getLabelAnchor();
+        this.elementGetTextAnchor = () => this.getTextAnchor();
+
+
+
         this.method = method;
         this.center = this.board.select(par1);
         this.midpoint = this.board.select(par1);

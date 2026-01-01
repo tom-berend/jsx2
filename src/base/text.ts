@@ -1599,7 +1599,8 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
     //     if (typeof sharedState.yy.parseError === 'function') {
     //         this.parseError = sharedState.yy.parseError;
     //     } else {
-    //         this.parseError = Object.getPrototypeOf(this).parseError;
+    //         this.parseError = Object.getPrimport { Options } from "../options.js";
+// ototypeOf(this).parseError;
     //     }
     //     function popStack(n) {
     //         stack.length = stack.length - 2 * n;

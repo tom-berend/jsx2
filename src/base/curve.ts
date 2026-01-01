@@ -41,7 +41,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 import { Geometry } from "../math/geometry.js";
 import { GeometryElement } from "./element.js";
-import GeonextParser from "../parser/geonext.js";
+// import GeonextParser from "../parser/geonext.js";
 import { ImplicitPlot } from "../math/implicitplot.js";
 import { JSXMath } from "../math/math.js";
 import { Metapost } from "../math/metapost.js";
@@ -1139,9 +1139,9 @@ export class Curve extends GeometryElement {
             }
         }
 
-        if (!isJessieCode) {
-            GeonextParser.findDependencies(this, contentStr, this.board);
-        }
+        // tbtb //if (!isJessieCode) {
+        // tbtb //    GeonextParser.findDependencies(this, contentStr, this.board);
+        // tbtb //}
     }
 
     /**

@@ -42,7 +42,6 @@
 
 import { LooseObject } from '../interfaces.js'
 
-import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
 
@@ -734,7 +733,7 @@ export class Type {
                 continue;
             }
             for (j = i + 1; j < arr.length; j++) {
-                if (isArray && JXG2.cmpArrays(arr[i], arr[j])) {
+                if (isArray && Type.cmpArrays(arr[i], arr[j])) {
                     arr[i] = [];
                 } else if (!isArray && arr[i] === arr[j]) {
                     arr[i] = "";
@@ -788,7 +787,7 @@ export class Type {
      * @returns {Boolean}
      */
     static isInArray(arr, val) {
-        return JXG2.indexOf(arr, val) > -1;
+        return Type.indexOf(arr, val) > -1;
     }
 
     /**
@@ -875,7 +874,7 @@ export class Type {
      * @returns {Number}
      */
     static trunc(n, p) {
-        p = JXG2.def(p, 0);
+        p = Type.def(p, 0);
 
         return this.toFixed(n, p);
     }
@@ -1579,70 +1578,6 @@ export class Type {
         return copy;
     }
 
-    /**
-     * Converts a JavaScript object into a JSON string.
-     * @param {Object} obj A JavaScript object, functions will be ignored.
-     * @param {Boolean} [noquote=false] No quotes around the name of a property.
-     * @returns {String} The given object stored in a JSON string.
-     * @deprecated
-     */
-    static toJSON(obj, noquote) {
-        var list, prop, i, s, val;
-
-        noquote = JXG2.def(noquote, false);
-
-        // check for native JSON support:
-        if (JSON !== undefined && JSON.stringify && !noquote) {
-            try {
-                s = JSON.stringify(obj);
-                return s;
-            } catch (e) {
-                // if something goes wrong, e.g. if obj contains functions we won't return
-                // and use our own implementation as a fallback
-            }
-        }
-
-        switch (typeof obj) {
-            case "object":
-                if (obj) {
-                    list = [];
-
-                    if (this.isArray(obj)) {
-                        for (i = 0; i < obj.length; i++) {
-                            list.push(JXG2.toJSON(obj[i], noquote));
-                        }
-
-                        return "[" + list.join(",") + "]";
-                    }
-
-                    for (prop in obj) {
-                        if (obj.hasOwnProperty(prop)) {
-                            try {
-                                val = JXG2.toJSON(obj[prop], noquote);
-                            } catch (e2) {
-                                val = "";
-                            }
-
-                            if (noquote) {
-                                list.push(prop + ":" + val);
-                            } else {
-                                list.push('"' + prop + '":' + val);
-                            }
-                        }
-                    }
-
-                    return "{" + list.join(",") + "} ";
-                }
-                return 'null';
-            case "string":
-                return "'" + obj.replace(/(["'])/g, "\\$1") + "'";
-            case "number":
-            case "boolean":
-                return obj.toString();
-        }
-
-        return '0';
-    }
 
     /**
      * Resets visPropOld.

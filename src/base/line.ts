@@ -127,6 +127,13 @@ export class Line extends GeometryElement {
     constructor(board, parents, attributes) {
         super(board, attributes, OBJECT_TYPE.LINE, OBJECT_CLASS.LINE);
 
+        this.elementUpdate = () => this.update();
+        this.elementUpdateRenderer = () => this.updateRenderer();
+        this.elementCreateLabel = () => this.createLabel()
+        this.elementGetLabelAnchor = () => this.getLabelAnchor();
+        this.elementGetTextAnchor = () => this.getTextAnchor();
+
+
 
         this.point1 = this.board.select(parents[0])
         this.point2 = this.board.select(parents[1]);
@@ -1304,9 +1311,6 @@ export function createLine(board, parents, attributes) {
         doTransform = false,
         constrained = false,
         isDraggable;
-
-    if (dbug())
-        console.warn(`%c line createLine(board,${JSON.stringify(parents).substring(0, 200)})`, dbugColor)
 
     if (parents.length === 2) {
         // The line is defined by two points or coordinates of two points.

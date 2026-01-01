@@ -13,7 +13,6 @@
 /*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true, bitwise: true*/
 
-import { JXG2 } from "../jxg.js";
 
 // constants
 var uuidCharsStr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
@@ -23,9 +22,8 @@ var uuidCharsStr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx
  * General utility routines
  * @namespace
  */
-JXG2.Util = JXG2.Util || {};
 
-JXG2.Util.genUUID = function (prefix) {
+export function genUUID(prefix: string) {
     var r,
         i,
         uuid = [],
@@ -56,4 +54,3 @@ JXG2.Util.genUUID = function (prefix) {
     return prefix + uuid.join("");
 };
 
-export default JXG2.Util;
