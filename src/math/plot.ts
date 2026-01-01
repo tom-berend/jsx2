@@ -367,7 +367,7 @@ export class Plot {
      * @param {JXG2.Coords} pnt Coords to add to the list of points
      */
     static _insertPoint_v2(curve: Curve, pnt: Coords, t) {
-        var lastReal = !isNaN(this._lastCrds[1] + this._lastCrds[2]), // The last point was real
+        var lastReal = !isNaN(Plot._lastCrds[1] + Plot._lastCrds[2]), // The last point was real
             newReal = !isNaN(pnt.scrCoords[1] + pnt.scrCoords[2]), // New point is real point
             cw = curve.board.canvasWidth,
             ch = curve.board.canvasHeight,
@@ -387,12 +387,12 @@ export class Plot {
             (!newReal && lastReal) ||
             (newReal &&
                 (!lastReal ||
-                    Math.abs(pnt.scrCoords[1] - this._lastCrds[1]) > 0.7 ||
-                    Math.abs(pnt.scrCoords[2] - this._lastCrds[2]) > 0.7))
+                    Math.abs(pnt.scrCoords[1] - Plot._lastCrds[1]) > 0.7 ||
+                    Math.abs(pnt.scrCoords[2] - Plot._lastCrds[2]) > 0.7))
         ) {
             pnt._t = t;
             curve.points.push(pnt);
-            this._lastCrds = pnt.copy('scrCoords');
+            Plot._lastCrds = pnt.copy('scrCoords');
         }
     }
 
@@ -554,7 +554,7 @@ export class Plot {
             // dy = (vy - vy2) / (t_real - t_real2);
 
             if (p_good !== null) {
-                this._insertPoint_v2(
+                Plot._insertPoint_v2(
                     curve,
                     new Coords(COORDS_BY.USER, p_good, curve.board, false),
                     t       // tbtb - added missing param ??
@@ -580,7 +580,7 @@ export class Plot {
      *                 the segment [a,b] is regarded as straight line.
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    static _plotRecursive_v2(curve, a, ta, b, tb, depth, delta) {
+    static _plotRecursive_v2(curve:Curve, a, ta, b, tb, depth, delta) {
         var tc,
             c,
             ds,
@@ -597,11 +597,11 @@ export class Plot {
         }
 
         // Test if the function is undefined in an interval
-        if (depth < this.nanLevel && this._isUndefined(curve, a, ta, b, tb)) {
+        if (depth < this.nanLevel && Plot._isUndefined(curve, a, ta, b, tb)) {
             return this;
         }
 
-        if (depth < this.nanLevel && this._isOutside(a, ta, b, tb, curve.board)) {
+        if (depth < this.nanLevel && Plot._isOutside(a, ta, b, tb, curve.board)) {
             return this;
         }
 
@@ -609,11 +609,11 @@ export class Plot {
         pnt.setCoordinates(COORDS_BY.USER, [curve.X(tc, true), curve.Y(tc, true)], false);
         c = pnt.scrCoords;
 
-        if (this._borderCase(curve, a, b, c, ta, tb, tc, depth)) {
+        if (Plot._borderCase(curve, a, b, c, ta, tb, tc, depth)) {
             return this;
         }
 
-        ds = this._triangleDists(a, b, c); // returns [d_ab, d_ac, d_cb, d_cd]
+        ds = Plot._triangleDists(a, b, c); // returns [d_ab, d_ac, d_cb, d_cd]
 
         isSmooth = depth < this.smoothLevel && ds[3] < delta;
 
@@ -641,22 +641,22 @@ export class Plot {
         --depth;
 
         if (isJump) {
-            this._insertPoint_v2(
+            Plot._insertPoint_v2(
                 curve,
                 new Coords(COORDS_BY.SCREEN, [NaN, NaN], curve.board, false),
                 tc
             );
         } else if (depth <= mindepth || isSmooth) {
-            this._insertPoint_v2(curve, pnt, tc);
-            //if (this._borderCase(a, b, c, ta, tb, tc, depth)) {}
+            Plot._insertPoint_v2(curve, pnt, tc);
+            //if (Plot._borderCase(a, b, c, ta, tb, tc, depth)) {}
         } else {
-            this._plotRecursive_v2(curve, a, ta, c, tc, depth, delta);
+            Plot._plotRecursive_v2(curve, a, ta, c, tc, depth, delta);
 
             if (!isNaN(pnt.scrCoords[1] + pnt.scrCoords[2])) {
-                this._insertPoint_v2(curve, pnt, tc);
+                Plot._insertPoint_v2(curve, pnt, tc);
             }
 
-            this._plotRecursive_v2(curve, c, tc, b, tb, depth, delta);
+            Plot._plotRecursive_v2(curve, c, tc, b, tb, depth, delta);
         }
 
         return this;
@@ -670,7 +670,7 @@ export class Plot {
      * @param {Number} ma Right bound of curve
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    static updateParametricCurve_v2(curve, mi, ma) {
+    static updateParametricCurve_v2(curve:Curve, mi, ma) {
         var ta, tb,
             a, b,
             suspendUpdate = false,
@@ -732,24 +732,24 @@ export class Plot {
         );
 
         // Find start and end points of the visible area (plus a certain margin)
-        ret_arr = this._findStartPoint(curve, pa.scrCoords, ta, pb.scrCoords, tb);
+        ret_arr = Plot._findStartPoint(curve, pa.scrCoords, ta, pb.scrCoords, tb);
         pa.setCoordinates(COORDS_BY.SCREEN, ret_arr[0], false);
         ta = ret_arr[1];
-        ret_arr = this._findStartPoint(curve, pb.scrCoords, tb, pa.scrCoords, ta);
+        ret_arr = Plot._findStartPoint(curve, pb.scrCoords, tb, pa.scrCoords, ta);
         pb.setCoordinates(COORDS_BY.SCREEN, ret_arr[0], false);
         tb = ret_arr[1];
 
         // Save the visible area.
         // This can be used in Curve.hasPoint().
-        this._visibleArea = [ta, tb];
+        Plot._visibleArea = [ta, tb];
 
         // Start recursive plotting algorithm
         a = pa.copy('scrCoords');
         b = pb.copy('scrCoords');
         pa._t = ta;
         curve.points.push(pa);
-        this._lastCrds = pa.copy('scrCoords'); // Used in _insertPoint
-        this._plotRecursive_v2(curve, a, ta, b, tb, depth, delta);
+        Plot._lastCrds = pa.copy('scrCoords'); // Used in _insertPoint
+        Plot._plotRecursive_v2(curve, a, ta, b, tb, depth, delta);
         pb._t = tb;
         curve.points.push(pb);
 
@@ -771,26 +771,26 @@ export class Plot {
      * @param {*} limes
      * @private
      */
-    static _insertLimesPoint(curve, pnt, t, depth, limes) {
+    static _insertLimesPoint(curve:Curve, pnt, t, depth, limes) {
         var p0, p1, p2;
 
         // Ignore jump point if it follows limes
         if (
-            (Math.abs(this._lastUsrCrds[1]) === Infinity &&
+            (Math.abs(Plot._lastUsrCrds[1]) === Infinity &&
                 Math.abs(limes.left_x) === Infinity) ||
-            (Math.abs(this._lastUsrCrds[2]) === Infinity && Math.abs(limes.left_y) === Infinity)
+            (Math.abs(Plot._lastUsrCrds[2]) === Infinity && Math.abs(limes.left_y) === Infinity)
         ) {
-            // console.log("SKIP:", pnt.usrCoords, this._lastUsrCrds, limes);
+            // console.log("SKIP:", pnt.usrCoords, Plot._lastUsrCrds, limes);
             return;
         }
 
         // // Ignore jump left from limes
-        // if (Math.abs(limes.left_x) > 100 * Math.abs(this._lastUsrCrds[1])) {
+        // if (Math.abs(limes.left_x) > 100 * Math.abs(Plot._lastUsrCrds[1])) {
         //     x = Math.sign(limes.left_x) * Infinity;
         // } else {
         //     x = limes.left_x;
         // }
-        // if (Math.abs(limes.left_y) > 100 * Math.abs(this._lastUsrCrds[2])) {
+        // if (Math.abs(limes.left_y) > 100 * Math.abs(Plot._lastUsrCrds[2])) {
         //     y = Math.sign(limes.left_y) * Infinity;
         // } else {
         //     y = limes.left_y;
@@ -819,8 +819,8 @@ export class Plot {
         p2 = new Coords(COORDS_BY.USER, [limes.right_x, limes.right_y], curve.board);
         p2._t = t;
         curve.points.push(p2);
-        this._lastScrCrds = p2.copy('scrCoords');
-        this._lastUsrCrds = p2.copy('usrCoords');
+        Plot._lastScrCrds = p2.copy('scrCoords');
+        Plot._lastUsrCrds = p2.copy('usrCoords');
     }
 
     /**
@@ -832,8 +832,8 @@ export class Plot {
      * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {JXG2.Coords} pnt Coords to add to the list of points
      */
-    static _insertPoint(curve, pnt, t, depth, limes) {
-        var last_is_real = !isNaN(this._lastScrCrds[1] + this._lastScrCrds[2]), // The last point was real
+    static _insertPoint(curve:Curve, pnt, t, depth, limes) {
+        var last_is_real = !isNaN(Plot._lastScrCrds[1] + Plot._lastScrCrds[2]), // The last point was real
             point_is_real = !isNaN(pnt[1] + pnt[2]), // New point is real point
             cw = curve.board.canvasWidth,
             ch = curve.board.canvasHeight,
@@ -842,7 +842,7 @@ export class Plot {
             off = 500;
 
         if (Type.exists(limes)) {
-            this._insertLimesPoint(curve, pnt, t, depth, limes);
+            Plot._insertLimesPoint(curve, pnt, t, depth, limes);
             return;
         }
 
@@ -864,16 +864,16 @@ export class Plot {
         if (
             point_is_real &&
             last_is_real &&
-            Math.abs(pnt[1] - this._lastScrCrds[1]) < near &&
-            Math.abs(pnt[2] - this._lastScrCrds[2]) < near
+            Math.abs(pnt[1] - Plot._lastScrCrds[1]) < near &&
+            Math.abs(pnt[2] - Plot._lastScrCrds[2]) < near
         ) {
             return;
         }
 
         // Prevent two consecutive points at infinity (either direction)
         if (
-            (Math.abs(pnt[1]) === Infinity && Math.abs(this._lastUsrCrds[1]) === Infinity) ||
-            (Math.abs(pnt[2]) === Infinity && Math.abs(this._lastUsrCrds[2]) === Infinity)
+            (Math.abs(pnt[1]) === Infinity && Math.abs(Plot._lastUsrCrds[1]) === Infinity) ||
+            (Math.abs(pnt[2]) === Infinity && Math.abs(Plot._lastUsrCrds[2]) === Infinity)
         ) {
             return;
         }
@@ -883,8 +883,8 @@ export class Plot {
         p = new Coords(COORDS_BY.SCREEN, pnt, curve.board);
         p._t = t;
         curve.points.push(p);
-        this._lastScrCrds = p.copy('scrCoords');
-        this._lastUsrCrds = p.copy('usrCoords');
+        Plot._lastScrCrds = p.copy('scrCoords');
+        Plot._lastUsrCrds = p.copy('usrCoords');
     }
 
     /**
@@ -1028,7 +1028,7 @@ export class Plot {
         //     fnY2,
         //     bbox = curve.board.getBoundingBox();
 
-        // if (true || !this._isOutsidePoint(a, curve.board)) {
+        // if (true || !Plot._isOutsidePoint(a, curve.board)) {
         //     return [a, ta];
         // }
         // w2 = (bbox[2] - bbox[0]) * 0.3;
@@ -1283,13 +1283,13 @@ export class Plot {
         var t;
 
         if (may_be_special === 'border') {
-            t = this._getBorderPos(curve, ta, a, tc, c, tb, b);
+            t = Plot._getBorderPos(curve, ta, a, tc, c, tb, b);
         } else if (may_be_special === 'cusp') {
-            t = this._getCuspPos(curve, ta, tb);
+            t = Plot._getCuspPos(curve, ta, tb);
         } else if (may_be_special === 'jump') {
-            t = this._getJumpPos(curve, ta, tb);
+            t = Plot._getJumpPos(curve, ta, tb);
         }
-        return this._getLimits(curve, t);
+        return Plot._getLimits(curve, t);
     }
 
     /**
@@ -1348,11 +1348,11 @@ export class Plot {
 
             if (depth < this.nanLevel) {
                 // Test if the function is undefined in the whole interval [ta, tb]
-                if (this._isUndefined(curve, a, ta, b, tb)) {
+                if (Plot._isUndefined(curve, a, ta, b, tb)) {
                     continue;
                 }
                 // Test if the graph is far outside the visible are for the interval [ta, tb]
-                if (this._isOutside(a, ta, b, tb, curve.board)) {
+                if (Plot._isOutside(a, ta, b, tb, curve.board)) {
                     continue;
                 }
             }
@@ -1363,7 +1363,7 @@ export class Plot {
             x = curve.X(tc, true);
             y = curve.Y(tc, true);
             c = [1, oc[1] + x * curve.board.unitX, oc[2] - y * curve.board.unitY];
-            ds = this._triangleDists(a, b, c); // returns [d_ab, d_ac, d_cb, d_cd]
+            ds = Plot._triangleDists(a, b, c); // returns [d_ab, d_ac, d_cb, d_cd]
 
             a_nan = isNaN(a[1] + a[2]);
             b_nan = isNaN(b[1] + b[2]);
@@ -1394,15 +1394,15 @@ export class Plot {
                 if (may_be_special === "") {
                     isSmooth = true;
                 } else {
-                    limes = this._getLimes(curve, ta, a, tc, c, tb, b, may_be_special, depth);
+                    limes = Plot._getLimes(curve, ta, a, tc, c, tb, b, may_be_special, depth);
                 }
             }
 
             if (limes !== null) {
                 c = [1, NaN, NaN];
-                this._insertPoint(curve, c, tc, depth, limes);
+                Plot._insertPoint(curve, c, tc, depth, limes);
             } else if (depth <= mindepth || isSmooth) {
-                this._insertPoint(curve, c, tc, depth, null);
+                Plot._insertPoint(curve, c, tc, depth, null);
             } else {
                 stack[stack_length++] = [c, tc, b, tb, depth - 1, ds[0]];
                 stack[stack_length++] = [a, ta, c, tc, depth - 1, ds[0]];
@@ -1420,7 +1420,7 @@ export class Plot {
      * @param {Number} ma Right bound of curve
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    static updateParametricCurve_v3(curve, mi, ma) {
+    static updateParametricCurve_v3(curve:Curve, mi, ma) {
         var ta,
             tb,
             a,
@@ -1482,26 +1482,26 @@ export class Plot {
         );
 
         // Find start and end points of the visible area (plus a certain margin)
-        ret_arr = this._findStartPoint(curve, pa.scrCoords, ta, pb.scrCoords, tb);
+        ret_arr = Plot._findStartPoint(curve, pa.scrCoords, ta, pb.scrCoords, tb);
         pa.setCoordinates(COORDS_BY.SCREEN, ret_arr[0], false);
         ta = ret_arr[1];
-        ret_arr = this._findStartPoint(curve, pb.scrCoords, tb, pa.scrCoords, ta);
+        ret_arr = Plot._findStartPoint(curve, pb.scrCoords, tb, pa.scrCoords, ta);
         pb.setCoordinates(COORDS_BY.SCREEN, ret_arr[0], false);
         tb = ret_arr[1];
 
         // Save the visible area.
         // This can be used in Curve.hasPoint().
-        this._visibleArea = [ta, tb];
+        Plot._visibleArea = [ta, tb];
 
         // Start recursive plotting algorithm
         a = pa.copy('scrCoords');
         b = pb.copy('scrCoords');
         pa._t = ta;
         curve.points.push(pa);
-        this._lastScrCrds = pa.copy('scrCoords'); // Used in _insertPoint
-        this._lastUsrCrds = pa.copy('usrCoords'); // Used in _insertPoint
+        Plot._lastScrCrds = pa.copy('scrCoords'); // Used in _insertPoint
+        Plot._lastUsrCrds = pa.copy('usrCoords'); // Used in _insertPoint
 
-        this._plotNonRecursive(curve, a, ta, b, tb, depth);
+        Plot._plotNonRecursive(curve, a, ta, b, tb, depth);
 
         pb._t = tb;
         curve.points.push(pb);
@@ -1734,7 +1734,7 @@ export class Plot {
         return recip[0][idx + 1] + (t - t_values[idx + 1]) / (recip[1][idx + 1] + v);
     }
 
-    static differenceMethodExperiments(component, curve) {
+    static differenceMethodExperiments(component, curve:Curve) {
         var i,
             level,
             le,
@@ -1820,7 +1820,7 @@ export class Plot {
             // critical points.
             // If the level is suitable, step out of the loop.
             throw new Error(`tbtb - _criticalPoints doesn't exist`)
-            // groups = this._criticalPoints(y_diffs, le, level);
+            // groups = Plot._criticalPoints(y_diffs, le, level);
 
 
             if (groups === false) {
@@ -1924,7 +1924,7 @@ export class Plot {
         ];
     }
 
-    static differenceMethod(component, curve) {
+    static differenceMethod(component, curve:Curve) {
         var i,
             level,
             le,
@@ -1978,7 +1978,7 @@ export class Plot {
 
             // Store point location which may be centered around critical points.
             // If the level is suitable, step out of the loop.
-            res_y = this._criticalInterval(y_table[level + 1], le, level);
+            res_y = Plot._criticalInterval(y_table[level + 1], le, level);
             if (res_y.smooth === true) {
                 // Its seems, the degree of the polynomial is equal to level
                 // If the values in level + 1 are zero, it might be a polynomial of degree level.
@@ -1986,7 +1986,7 @@ export class Plot {
                 degree_y = level;
                 groups = [];
             }
-            res_x = this._criticalInterval(x_table[level + 1], le, level);
+            res_x = Plot._criticalInterval(x_table[level + 1], le, level);
             if (degree_x === -1 && res_x.smooth === true) {
                 // Its seems, the degree of the polynomial is equal to level
                 // If the values in level + 1 are zero, it might be a polynomial of degree level.
@@ -2036,7 +2036,7 @@ export class Plot {
         return [criticalPoints, x_table, y_table, degree_x, degree_y];
     }
 
-    static _insertPoint_v4(curve, crds, t, doLog?) {
+    static _insertPoint_v4(curve:Curve, crds, t, doLog?) {
         var p,
             prev = null,
             x,
@@ -2144,7 +2144,7 @@ export class Plot {
 
                 x = curve.X(t, true);
                 y = y_table[1][idx] < 0 ? hi : lo;
-                this._insertPoint_v4(curve, [1, x, y], t);
+                Plot._insertPoint_v4(curve, [1, x, y], t);
             }
         }
 
@@ -2153,7 +2153,7 @@ export class Plot {
             t = components2[0].t_values[i];
             x = components2[0].x_values[i];
             y = components2[0].y_values[i];
-            this._insertPoint_v4(curve, [1, x, y], t);
+            Plot._insertPoint_v4(curve, [1, x, y], t);
         }
 
         if (group.type === 'borderright') {
@@ -2169,7 +2169,7 @@ export class Plot {
                 hi = y_int.hi;
                 x = curve.X(t, true);
                 y = y_table[1][idx] > 0 ? hi : lo;
-                this._insertPoint_v4(curve, [1, x, y], t);
+                Plot._insertPoint_v4(curve, [1, x, y], t);
             }
         }
     }
@@ -2198,7 +2198,7 @@ export class Plot {
                 // Insert all uncritical points until next critical point
                 for (i = start; i < le; i++) {
                     if (!isNaN(comp2.x_values[i]) && !isNaN(comp2.y_values[i])) {
-                        this._insertPoint_v4(
+                        Plot._insertPoint_v4(
                             curve,
                             [1, comp2.x_values[i], comp2.y_values[i]],
                             comp2.t_values[i]
@@ -2213,7 +2213,7 @@ export class Plot {
             }
             le = comp2.len;
             if (idx < components2.length - 1) {
-                this._insertPoint_v4(curve, [1, NaN, NaN], comp2.right_t);
+                Plot._insertPoint_v4(curve, [1, NaN, NaN], comp2.right_t);
             }
         }
         return this;
@@ -2229,7 +2229,7 @@ export class Plot {
 
         //console.log("Level", level)
         if (level === 0) {
-            this._insertPoint_v4(curve, [1, NaN, NaN], t);
+            Plot._insertPoint_v4(curve, [1, NaN, NaN], t);
             return;
         }
         // console.log("R", t1, t2)
@@ -2237,17 +2237,17 @@ export class Plot {
         dy = (y - y1) * curve.board.unitY;
         // console.log("D1", Math.sqrt(dx * dx + dy * dy))
         if (Math.hypot(dx, dy) > tol) {
-            this._recurse_v4(curve, t1, t, x1, y1, x, y, level - 1);
+            Plot._recurse_v4(curve, t1, t, x1, y1, x, y, level - 1);
         } else {
-            this._insertPoint_v4(curve, [1, x, y], t);
+            Plot._insertPoint_v4(curve, [1, x, y], t);
         }
         dx = (x - x2) * curve.board.unitX;
         dy = (y - y2) * curve.board.unitY;
         // console.log("D2", Math.sqrt(dx * dx + dy * dy), x-x2, y-y2)
         if (Math.hypot(dx, dy) > tol) {
-            this._recurse_v4(curve, t, t2, x, y, x2, y2, level - 1);
+            Plot._recurse_v4(curve, t, t2, x, y, x2, y2, level - 1);
         } else {
-            this._insertPoint_v4(curve, [1, x, y], t);
+            Plot._insertPoint_v4(curve, [1, x, y], t);
         }
     }
 
@@ -2305,32 +2305,32 @@ export class Plot {
 
         console.log(":::", d_lft, d_rgt);
 
-        //this._insertPoint_v4(curve, [1, NaN, NaN], 0);
+        //Plot._insertPoint_v4(curve, [1, NaN, NaN], 0);
 
         if (d_lft < -d_thresh) {
             // Left branch very steep downwards -> add the minimum
-            this._insertPoint_v4(curve, [1, x, lo], t, true);
+            Plot._insertPoint_v4(curve, [1, x, lo], t, true);
             if (d_rgt <= d_thresh) {
                 // Right branch not very steep upwards -> interrupt the curve
                 // I.e. it looks like -infty / (finite or infty) and not like -infty / -infty
-                this._insertPoint_v4(curve, [1, NaN, NaN], t);
+                Plot._insertPoint_v4(curve, [1, NaN, NaN], t);
             }
         } else if (d_lft > d_thresh) {
             // Left branch very steep upwards -> add the maximum
-            this._insertPoint_v4(curve, [1, x, hi], t);
+            Plot._insertPoint_v4(curve, [1, x, hi], t);
             if (d_rgt >= -d_thresh) {
                 // Right branch not very steep downwards -> interrupt the curve
                 // I.e. it looks like infty / (finite or -infty) and not like infty / infty
-                this._insertPoint_v4(curve, [1, NaN, NaN], t);
+                Plot._insertPoint_v4(curve, [1, NaN, NaN], t);
             }
         } else {
             if (lo === -Infinity) {
-                this._insertPoint_v4(curve, [1, x, lo], t, true);
-                this._insertPoint_v4(curve, [1, NaN, NaN], t);
+                Plot._insertPoint_v4(curve, [1, x, lo], t, true);
+                Plot._insertPoint_v4(curve, [1, NaN, NaN], t);
             }
             if (hi === Infinity) {
-                this._insertPoint_v4(curve, [1, NaN, NaN], t);
-                this._insertPoint_v4(curve, [1, x, hi], t, true);
+                Plot._insertPoint_v4(curve, [1, NaN, NaN], t);
+                Plot._insertPoint_v4(curve, [1, x, hi], t, true);
             }
 
             if (group.t < comp.t_values[idx]) {
@@ -2342,7 +2342,7 @@ export class Plot {
             }
             t1 = comp.t_values[i1];
             t2 = comp.t_values[i2];
-            this._recurse_v4(
+            Plot._recurse_v4(
                 curve,
                 t1,
                 t2,
@@ -2365,29 +2365,29 @@ export class Plot {
 
             // console.log(d1, d2, y_table[0][idx])
             //                     // Finite jump
-            //                     this._insertPoint_v4(curve, [1, NaN, NaN], t);
+            //                     Plot._insertPoint_v4(curve, [1, NaN, NaN], t);
             //                 } else {
             //                     if (lo !== -Infinity && hi !== Infinity) {
             //                         // Critical point which can be ignored
-            //                         this._insertPoint_v4(curve, [1, x_table[0][idx], y_table[0][idx]], comp.t_values[idx]);
+            //                         Plot._insertPoint_v4(curve, [1, x_table[0][idx], y_table[0][idx]], comp.t_values[idx]);
             //                     } else {
             //                         if (lo === -Infinity) {
-            //                             this._insertPoint_v4(curve, [1, x, lo], t, true);
-            //                             this._insertPoint_v4(curve, [1, NaN, NaN], t);
+            //                             Plot._insertPoint_v4(curve, [1, x, lo], t, true);
+            //                             Plot._insertPoint_v4(curve, [1, NaN, NaN], t);
             //                         }
             //                         if (hi === Infinity) {
-            //                             this._insertPoint_v4(curve, [1, NaN, NaN], t);
-            //                             this._insertPoint_v4(curve, [1, x, hi], t, true);
+            //                             Plot._insertPoint_v4(curve, [1, NaN, NaN], t);
+            //                             Plot._insertPoint_v4(curve, [1, x, hi], t, true);
             //                         }
             //                     }
             // }
         }
         if (d_rgt < -d_thresh) {
             // Right branch very steep downwards -> add the maximum
-            this._insertPoint_v4(curve, [1, x, hi], t);
+            Plot._insertPoint_v4(curve, [1, x, hi], t);
         } else if (d_rgt > d_thresh) {
             // Right branch very steep upwards -> add the minimum
-            this._insertPoint_v4(curve, [1, x, lo], t);
+            Plot._insertPoint_v4(curve, [1, x, lo], t);
         }
     }
 
@@ -2474,7 +2474,7 @@ export class Plot {
                 // bad = 0;
                 // Insert all uncritical points until next critical point
                 for (i = start; i < le - 2; i++) {
-                    this._insertPoint_v4(
+                    Plot._insertPoint_v4(
                         curve,
                         [1, comp.x_values[i], comp.y_values[i]],
                         comp.t_values[i]
@@ -2493,9 +2493,9 @@ export class Plot {
                         y_int = this.getInterval(curve, t, t + h);
                         if (Type.isObject(y_int)) {
                             if (y_table[2][i] > 0) {
-                                this._insertPoint_v4(curve, [1, t + h2, y_int.lo], t + h2);
+                                Plot._insertPoint_v4(curve, [1, t + h2, y_int.lo], t + h2);
                             } else {
-                                this._insertPoint_v4(
+                                Plot._insertPoint_v4(
                                     curve,
                                     [1, t + h - h2, y_int.hi],
                                     t + h - h2
@@ -2505,23 +2505,23 @@ export class Plot {
                             t1 = Numerics.fminbr(Ypl, [t, t + h]);
                             t2 = Numerics.fminbr(Ymi, [t, t + h]);
                             if (t1 < t2) {
-                                this._insertPoint_v4(
+                                Plot._insertPoint_v4(
                                     curve,
                                     [1, curve.X(t1, true), curve.Y(t1, true)],
                                     t1
                                 );
-                                this._insertPoint_v4(
+                                Plot._insertPoint_v4(
                                     curve,
                                     [1, curve.X(t2, true), curve.Y(t2, true)],
                                     t2
                                 );
                             } else {
-                                this._insertPoint_v4(
+                                Plot._insertPoint_v4(
                                     curve,
                                     [1, curve.X(t2, true), curve.Y(t2, true)],
                                     t2
                                 );
-                                this._insertPoint_v4(
+                                Plot._insertPoint_v4(
                                     curve,
                                     [1, curve.X(t1, true), curve.Y(t1, true)],
                                     t1
@@ -2543,7 +2543,7 @@ export class Plot {
                     if (groups[g].type === "borderleft" || groups[g].type === 'borderright') {
                         this.handleBorder(curve, comp, groups[g], x_table, y_table);
                     } else {
-                        this._seconditeration_v4(curve, comp, groups[g], x_table, y_table);
+                        Plot._seconditeration_v4(curve, comp, groups[g], x_table, y_table);
                     }
 
                     start = groups[g].idx + 1 + 1;
@@ -2552,7 +2552,7 @@ export class Plot {
 
             le = comp.len;
             if (idx < components.length - 1) {
-                this._insertPoint_v4(curve, [1, NaN, NaN], comp.right_t);
+                Plot._insertPoint_v4(curve, [1, NaN, NaN], comp.right_t);
             }
         }
     }

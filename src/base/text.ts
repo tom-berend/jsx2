@@ -1572,35 +1572,6 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
     }
 
 
-    // tbtb - move these two functions from jessiecode
-
-    /**
-     * Parses a JessieCode snippet, e.g. "3+4", and wraps it into a function, if desired.
-     * @param {String} code A small snippet of JessieCode. Must not be an assignment.
-     * @param {Boolean} [funwrap=true] If true, the code is wrapped in a function.
-     * @param {String} [varname=''] Name of the parameter(s)
-     * @param {Boolean} [geonext=false] Geonext compatibility mode.
-     * @param {Boolean} [forceValueCall=true] Force evaluation of value method of sliders.
-     */
-
-    snippet(code: string | Function, funwrap = true, varname: string, geonext = false, forceValueCall = true): string {
-        let c: string
-        throw new Error('snippet')
-
-        // this.forceValueCall = Type.def(forceValueCall, true);
-
-        c = (funwrap ? ' function (' + varname + ') { return ' : '') +
-            code +
-            (funwrap ? '; }' : '') + ';';
-
-        return this.parse(c, geonext, true);
-    }
-
-    parse(input, ignore1, ignore2) {
-        console.warn('parse:', input)
-        return input;
-    }
-
 
     // /**
     //  * @class

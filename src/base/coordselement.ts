@@ -1542,20 +1542,20 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         for (i = 0; i < terms.length; i++) {
             v = terms[i];
 
-            if (Type.isString(v)) {
-                // Convert GEONExT syntax into JavaScript syntax
-                //t  = JXG.GeonextParser.geonext2JS(v, this.board);
-                //newfuncs[i] = new Function('','return ' + t + ';');
-                //v = GeonextParser.replaceNameById(v, this.board);
-                throw new Error('snippet')
-                //tbtb // newfuncs[i] = this.snippet(v, true, null, true);
-                this.addParentsFromJCFunctions([newfuncs[i]]);
+            //tbtb - if (Type.isString(v)) {
+            //     // Convert GEONExT syntax into JavaScript syntax
+            //     //t  = JXG.GeonextParser.geonext2JS(v, this.board);
+            //     //newfuncs[i] = new Function('','return ' + t + ';');
+            //     //v = GeonextParser.replaceNameById(v, this.board);
+            //     newfuncs[i] = Type.snippet(v, true, null, true);
+            //     this.addParentsFromJCFunctions([newfuncs[i]]);
 
-                // Store original term as 'Xjc' or 'Yjc'
-                if (terms.length === 2) {
-                    this[what[i] + "jc"] = terms[i];
-                }
-            } else if (Type.isFunction(v)) {
+            //     // Store original term as 'Xjc' or 'Yjc'
+            //     if (terms.length === 2) {
+            //         this[what[i] + "jc"] = terms[i];
+            //     }
+            // } else
+                if (Type.isFunction(v)) {
                 newfuncs[i] = v;
             } else if (Type.isNumber(v)) {
                 newfuncs[i] = makeConstFunction(v);

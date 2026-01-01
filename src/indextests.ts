@@ -80,7 +80,7 @@ export class IndexTests {
 
     curve() {
         this.boards.map((board) => {
-            board.create('curve', [(t) => t - Math.sin(t), (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
+            // board.create('curve', [(t) => t - Math.sin(t), (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
             board.create('functiongraph',[(x)=>Math.sin(x*2), -8, 8])
         })
     }

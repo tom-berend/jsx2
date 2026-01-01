@@ -270,7 +270,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      * @returns {Array} Returns copy of the coords array either as standard array or as
      *   typed array.
      */
-    copy(obj, offset=0) {
+    copy(obj:string, offset=0) {
         return this[obj].slice(offset);
     }
 

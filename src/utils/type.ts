@@ -432,18 +432,17 @@ export class Type {
 
 
         // if ((!this.exists(evalGeonext) || evalGeonext) && this.isString(term)) {
-        if (this.isString(term)) {
-            // Convert GEONExT syntax into  JavaScript syntax
-            //newTerm = JXG2.GeonextParser.geonext2JS(term, board);
-            //return new Function(variableName,'return ' + newTerm + ';');
-            //term = JXG2.GeonextParser.replaceNameById(term, board);
-            //term = JXG2.GeonextParser.geonext2JS(term, board);
+        //tbtb// if (this.isString(term)) {
+        // Convert GEONExT syntax into  JavaScript syntax
+        //newTerm = JXG2.GeonextParser.geonext2JS(term, board);
+        //return new Function(variableName,'return ' + newTerm + ';');
+        //term = JXG2.GeonextParser.replaceNameById(term, board);
+        //term = JXG2.GeonextParser.geonext2JS(term, board);
 
-            // throw new Error('snippet')
-            // tbtb // f = board.jc.snippet(term, true, variableName, false);
-            f = function(){ return term};   // tbtb
-            
-        } else if (this.isFunction(term)) {
+        // f = Type.snippet(term, true, variableName, false);
+
+        // } else
+        if (this.isFunction(term)) {
             f = term;
             f.deps = (this.isObject(term.deps)) ? term.deps : {};
         } else if (this.isNumber(term) || this.isArray(term)) {
@@ -457,9 +456,9 @@ export class Type {
             //     f.deps = {};
         }
 
-        if (f !== null) {
-            f.origin = term;
-        }
+        // tbtb what is origin??  // if (f !== null) {
+        // tbtb what is origin??  //     f.origin = term;
+        // tbtb what is origin??  // }
 
         return f;
     }

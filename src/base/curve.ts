@@ -117,7 +117,7 @@ export class Curve extends GeometryElement {
  * plotting of the curve, if the e.g. the curve depends on some input elements.
  * @returns {Number} x-coordinate of the curve at t.
  */
-    X = (t: number, suspendUpdate = false) => NaN
+    X = (t: number, suspendUpdate = false) => t
 
 
     /**
@@ -1793,8 +1793,10 @@ export function createCurve(board, parents, attributes) {
  */
 export function createFunctiongraph(board, parents, attributes) {
     var attr,
-        par = ["x", "x"].concat(parents); // variable name and identity function for x-coordinate
-    // par = ["x", function(x) { return x; }].concat(parents);
+
+
+    // tbtb - seems to be for jessiecode     par = ["x", "x"].concat(parents); // variable name and identity function for x-coordinate
+    par = ["x", function(x) { return x; }].concat(parents);
 
     attr = Type.copyAttributes(attributes, board.options, 'functiongraph');
     attr = Type.copyAttributes(attr, board.options, 'curve');
