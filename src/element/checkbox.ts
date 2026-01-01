@@ -40,8 +40,8 @@ import { JXG2 } from "../jxg.js";
 import { OBJECT_TYPE } from "../base/constants.js";
 import { Env } from "../utils/env.js";
 import { Type } from "../utils/type.js";
-import {Text} from "../base/text.js";
-import {Board} from "../base/board.js";
+import { Text } from "../base/text.js";
+import { Board } from "../base/board.js";
 
 var priv = {
     /**
@@ -173,8 +173,15 @@ var priv = {
  */
 
 export class Checkbox extends Text {
-    constructor(board:Board, parents:any[], attributes={}) {
-        super(board, parents, attributes )
+    constructor(board: Board, parents: any[], attributes = {}) {
+        super(board, parents, attributes)
+
+        this.elementUpdate = () => this.update();
+        this.elementUpdateRenderer = () => this.updateRenderer();
+        // this.elementCreateLabel = () => this.createLabel()
+        this.elementGetLabelAnchor = () => this.getLabelAnchor();
+        this.elementGetTextAnchor = () => this.getTextAnchor();
+
 
         var t,
             par,

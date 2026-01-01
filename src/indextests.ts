@@ -27,15 +27,16 @@ export class IndexTests {
         this.circle()
         this.curve()
         this.widgets()
+        this.image()
     }
 
     initBoard() {
         let attr = {
-                boundingBox: [-10, 10, 10, -10],
-                // axis: true,
-                shownavigation:false,
-                showcopyright:false,
-                showinfobox:false,
+            boundingBox: [-10, 10, 10, -10],
+            // axis: true,
+            shownavigation: false,
+            showcopyright: false,
+            showinfobox: false,
         }
 
         if (this.new)
@@ -81,7 +82,7 @@ export class IndexTests {
     curve() {
         this.boards.map((board) => {
             board.create('curve', [(t) => t - Math.sin(t), (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
-            board.create('functiongraph',[(x)=>Math.sin(x*2), -8, 8])
+            board.create('functiongraph', [(x) => Math.sin(x * 2), -8, 8])
         })
     }
     widgets() {
@@ -90,6 +91,11 @@ export class IndexTests {
             let b = board.create('point', [-8.3, 8.3], { name: 'is checked', fillcolor: () => a.Value() ? 'red' : 'green' })
         })
     }
+    image() {
+        this.boards.map((board) => {
+            board.create('image', ['space-invader.png', [-9, -8], [3, 3]]);
+        }
+       }
 
 }
 

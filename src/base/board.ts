@@ -78,7 +78,7 @@ import {
 } from "./curve.js";
 import { createSlider } from '../element/slider.js';
 import { createGrid } from '../element/grid.js';
-
+import {createImage} from '../base/image.js';
 
 /**
  * Constructs a new Board object.
@@ -6411,6 +6411,8 @@ export class Board extends Events {
 
             case 'slider': el = createSlider(this, parents, attributes); break;
             case 'grid': el = createGrid(this, parents, attributes); break;
+
+            case 'image': el = createImage(this, parents, attributes); break;
 
 
 

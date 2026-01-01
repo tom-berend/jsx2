@@ -36,13 +36,13 @@
  * @fileoverview In this file the geometry element Image is defined.
  */
 
-import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 import { GeometryElement } from "./element.js";
 import { JSXMath } from "../math/math.js";
 import { Type } from "../utils/type.js";
 import { CoordsElement } from "./coordselement.js";
+import { Options } from "../options.js";
 
 /**
  * Construct and handle images
@@ -62,313 +62,325 @@ import { CoordsElement } from "./coordselement.js";
  * @param  {Array} size Array containing width and height of the image in user coordinates.
  *
  */
-JXG2.Image = function (board, coords, attributes, url, size) {
-    this.constructor(board, attributes, OBJECT_TYPE.IMAGE, OBJECT_CLASS.OTHER);
-    this.element = this.board.select(attributes.anchor);
-    this.coordsConstructor(coords);
+export class Image extends CoordsElement {
 
-    this.W = Type.createFunction(size[0], this.board, "");
-    this.H = Type.createFunction(size[1], this.board, "");
-    this.addParentsFromJCFunctions([this.W, this.H]);
+    public size
+    public usrSize
+    public url
+    public span
 
-    this.usrSize = [this.W(), this.H()];
+    constructor(board, coords, attributes, url, size) {
+        super(board, COORDS_BY.USER, coords, attributes, OBJECT_TYPE.IMAGE, OBJECT_CLASS.OTHER)
+
+        // this.elementUpdate = () => this.update();
+        this.elementUpdateRenderer = () => this.updateRenderer();
+        // this.elementCreateLabel = () => this.createLabel()
+        this.elementGetLabelAnchor = () => this.getLabelAnchor();
+        this.elementGetTextAnchor = () => this.getTextAnchor();
+
+        this.elType = 'image';
+        this.visProp = Type.initVisProps(Options.board, Options.elements, Options.image, attributes)
+
+
+        this.element = this.board.select(attributes.anchor);
+        // this.coordsConstructor(coords);
+
+        this.W = Type.createFunction(size[0], this.board, "");
+        this.H = Type.createFunction(size[1], this.board, "");
+        this.addParentsFromJCFunctions([this.W, this.H]);
+
+        this.usrSize = [this.W(), this.H()];
+
+        /**
+         * Array of length two containing [width, height] of the image in pixel.
+         * @type array
+         */
+        this.size = [
+            Math.abs(this.usrSize[0] * board.unitX),
+            Math.abs(this.usrSize[1] * board.unitY)
+        ];
+
+        /**
+         * 'href' of the image. This might be an URL, but also a data-uri is allowed.
+         * @type string
+         */
+        this.url = url;
+
+
+        // span contains the anchor point and the two vectors
+        // spanning the image rectangle.
+        this.span = [
+            this.coords.usrCoords.slice(0),
+            [this.coords.usrCoords[0], this.W(), 0],
+            [this.coords.usrCoords[0], 0, this.H()]
+        ];
+
+        //this.parent = board.select(attributes.anchor);
+        this.id = this.board.setId(this, 'Im');
+
+        this.board.renderer.drawImage(this);
+        this.board.finalizeAdding(this);
+
+        this.methodMap = Type.deepCopy(this.methodMap, {
+            addTransformation: "addTransform",
+            trans: "addTransform",
+            W: "W",
+            Width: "W",
+            H: "H",
+            Height: "H",
+            setSize: "setSize"
+        });
+    };
+
 
     /**
-     * Array of length two containing [width, height] of the image in pixel.
-     * @type array
+     * Checks whether (x,y) is over or near the image;
+     * @param {Number} x Coordinate in x direction, screen coordinates.
+     * @param {Number} y Coordinate in y direction, screen coordinates.
+     * @returns {Boolean} True if (x,y) is over the image, False otherwise.
      */
-    this.size = [
-        Math.abs(this.usrSize[0] * board.unitX),
-        Math.abs(this.usrSize[1] * board.unitY)
-    ];
+    hasPoint(x, y) {
+        var dx,
+            dy,
+            r,
+            type,
+            prec,
+            c,
+            v,
+            p,
+            dot,
+            len = this.transformations.length;
 
-    /**
-     * 'href' of the image. This might be an URL, but also a data-uri is allowed.
-     * @type string
-     */
-    this.url = url;
+        if (Type.isObject(this.evalVisProp('precision'))) {
+            type = this.board._inputDevice;
+            prec = this.evalVisProp('precision.' + type);
+        } else {
+            // 'inherit'
+            prec = this.board.options.precision.hasPoint;
+        }
 
-    this.elType = 'image';
+        // Easy case: no transformation
+        if (len === 0) {
+            dx = x - this.coords.scrCoords[1];
+            dy = this.coords.scrCoords[2] - y;
+            r = prec;
 
-    // span contains the anchor point and the two vectors
-    // spanning the image rectangle.
-    this.span = [
-        this.coords.usrCoords.slice(0),
-        [this.coords.usrCoords[0], this.W(), 0],
-        [this.coords.usrCoords[0], 0, this.H()]
-    ];
+            return dx >= -r && dx - this.size[0] <= r && dy >= -r && dy - this.size[1] <= r;
+        }
 
-    //this.parent = board.select(attributes.anchor);
-    this.id = this.board.setId(this, 'Im');
+        // Image is transformed
+        c = new Coords(COORDS_BY.SCREEN, [x, y], this.board);
+        // v is the vector from anchor point to the drag point
+        c = c.usrCoords;
+        v = [c[0] - this.span[0][0], c[1] - this.span[0][1], c[2] - this.span[0][2]];
+        dot = JSXMath.innerProduct; // shortcut
 
-    this.board.renderer.drawImage(this);
-    this.board.finalizeAdding(this);
+        // Project the drag point to the sides.
+        p = dot(v, this.span[1]);
+        if (0 <= p && p <= dot(this.span[1], this.span[1])) {
+            p = dot(v, this.span[2]);
 
-    this.methodMap = Type.deepCopy(this.methodMap, {
-        addTransformation: "addTransform",
-        trans: "addTransform",
-        W: "W",
-        Width: "W",
-        H: "H",
-        Height: "H",
-        setSize: "setSize"
-    });
-};
-
-// JXG2.Image.prototype = new GeometryElement();
-Type.copyPrototypeMethods(JXG2.Image, CoordsElement, 'coordsConstructor');
-
-JXG2.extend(
-    JXG2.Image.prototype,
-    /** @lends JXG2.Image.prototype */ {
-        /**
-         * Checks whether (x,y) is over or near the image;
-         * @param {Number} x Coordinate in x direction, screen coordinates.
-         * @param {Number} y Coordinate in y direction, screen coordinates.
-         * @returns {Boolean} True if (x,y) is over the image, False otherwise.
-         */
-        hasPoint: function (x, y) {
-            var dx,
-                dy,
-                r,
-                type,
-                prec,
-                c,
-                v,
-                p,
-                dot,
-                len = this.transformations.length;
-
-            if (Type.isObject(this.evalVisProp('precision'))) {
-                type = this.board._inputDevice;
-                prec = this.evalVisProp('precision.' + type);
-            } else {
-                // 'inherit'
-                prec = this.board.options.precision.hasPoint;
+            if (0 <= p && p <= dot(this.span[2], this.span[2])) {
+                return true;
             }
-
-            // Easy case: no transformation
-            if (len === 0) {
-                dx = x - this.coords.scrCoords[1];
-                dy = this.coords.scrCoords[2] - y;
-                r = prec;
-
-                return dx >= -r && dx - this.size[0] <= r && dy >= -r && dy - this.size[1] <= r;
-            }
-
-            // Image is transformed
-            c = new Coords(COORDS_BY.SCREEN, [x, y], this.board);
-            // v is the vector from anchor point to the drag point
-            c = c.usrCoords;
-            v = [c[0] - this.span[0][0], c[1] - this.span[0][1], c[2] - this.span[0][2]];
-            dot = JSXMath.innerProduct; // shortcut
-
-            // Project the drag point to the sides.
-            p = dot(v, this.span[1]);
-            if (0 <= p && p <= dot(this.span[1], this.span[1])) {
-                p = dot(v, this.span[2]);
-
-                if (0 <= p && p <= dot(this.span[2], this.span[2])) {
-                    return true;
-                }
-            }
-            return false;
-        },
-
-        /**
-         * Recalculate the coordinates of lower left corner and the width and height.
-         *
-         * @returns {JXG2.GeometryElement} A reference to the element
-         * @private
-         */
-        update: function (fromParent) {
-            if (!this.needsUpdate) {
-                return this;
-            }
-
-            this.updateCoords(fromParent);
-            this.updateSize();
-            this.updateSpan();
-
-            return this;
-        },
-
-        /**
-         * Send an update request to the renderer.
-         * @private
-         */
-        updateRenderer: function () {
-            return this.updateRendererGeneric('updateImage');
-        },
-
-        /**
-         * Updates the internal arrays containing size of the image.
-         * @returns {JXG2.GeometryElement} A reference to the element
-         * @private
-         */
-        updateSize: function () {
-            this.usrSize = [this.W(), this.H()];
-            this.size = [
-                Math.abs(this.usrSize[0] * this.board.unitX),
-                Math.abs(this.usrSize[1] * this.board.unitY)
-            ];
-
-            return this;
-        },
-
-        /**
-         * Update the anchor point of the image, i.e. the lower left corner
-         * and the two vectors which span the rectangle.
-         * @returns {JXG2.GeometryElement} A reference to the element
-         * @private
-         *
-         */
-        updateSpan: function () {
-            var i, j,
-                len = this.transformations.length,
-                v = [];
-
-            if (len === 0) {
-                this.span = [
-                    [this.Z(), this.X(), this.Y()],
-                    [this.Z(), this.W(), 0],
-                    [this.Z(), 0, this.H()]
-                ];
-            } else {
-                // v contains the three defining corners of the rectangle/image
-                v[0] = [this.Z(), this.X(), this.Y()];
-                v[1] = [this.Z(), this.X() + this.W(), this.Y()];
-                v[2] = [this.Z(), this.X(), this.Y() + this.H()];
-                // Transform the three corners
-                for (i = 0; i < len; i++) {
-                    for (j = 0; j < 3; j++) {
-                        v[j] = JSXMath.matVecMult(this.transformations[i].matrix, v[j]);
-                    }
-                }
-                // Normalize the vectors
-                for (j = 0; j < 3; j++) {
-                    v[j][1] /= v[j][0];
-                    v[j][2] /= v[j][0];
-                    v[j][0] /= v[j][0];
-                }
-                // Compute the two vectors spanning the rectangle
-                // by subtracting the anchor point.
-                for (j = 1; j < 3; j++) {
-                    v[j][0] -= v[0][0];
-                    v[j][1] -= v[0][1];
-                    v[j][2] -= v[0][2];
-                }
-                this.span = v;
-            }
-
-            return this;
-        },
-
-        addTransform: function (transform) {
-            var i;
-
-            if (Type.isArray(transform)) {
-                for (i = 0; i < transform.length; i++) {
-                    this.transformations.push(transform[i]);
-                }
-            } else {
-                this.transformations.push(transform);
-            }
-
-            return this;
-        },
-
-        // Documented in element.js
-        getParents: function () {
-            var p = [this.url, [this.Z(), this.X(), this.Y()], this.usrSize];
-
-            if (this.parents.length !== 0) {
-                p = this.parents;
-            }
-
-            return p;
-        },
-
-        /**
-         * Set the width and height of the image. After setting a new size,
-         * board.update() or image.fullUpdate()
-         * has to be called to make the change visible.
-         * @param  {number|function|string} width  Number, function or string
-         *                            that determines the new width of the image
-         * @param  {number|function|string} height Number, function or string
-         *                            that determines the new height of the image
-         * @returns {JXG2.GeometryElement} A reference to the element
-         *
-         * @example
-         * var im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg',
-         *                                [-3,-2], [3,3]]);
-         * im.setSize(4, 4);
-         * board.update();
-         *
-         * </pre><div id="JXG8411e60c-f009-11e5-b1bf-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
-         * <script type="text/javascript">
-         *     (function() {
-         *         var board = JXG2.JSXGraph.initBoard('JXG8411e60c-f009-11e5-b1bf-901b0e1b8723',
-         *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
-         *     var im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg', [-3,-2],    [3,3]]);
-         *     //im.setSize(4, 4);
-         *     //board.update();
-         *
-         *     })();
-         *
-         * </script><pre>
-         *
-         * @example
-         * var p0 = board.create('point', [-3, -2]),
-         *     im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg',
-         *                     [function(){ return p0.X(); }, function(){ return p0.Y(); }],
-         *                     [3,3]]),
-         *     p1 = board.create('point', [1, 2]);
-         *
-         * im.setSize(function(){ return p1.X() - p0.X(); }, function(){ return p1.Y() - p0.Y(); });
-         * board.update();
-         *
-         * </pre><div id="JXG4ce706c0-f00a-11e5-b1bf-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
-         * <script type="text/javascript">
-         *     (function() {
-         *         var board = JXG2.JSXGraph.initBoard('JXG4ce706c0-f00a-11e5-b1bf-901b0e1b8723',
-         *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
-         *     var p0 = board.create('point', [-3, -2]),
-         *         im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg',
-         *                         [function(){ return p0.X(); }, function(){ return p0.Y(); }],
-         *                         [3,3]]),
-         *         p1 = board.create('point', [1, 2]);
-         *
-         *     im.setSize(function(){ return p1.X() - p0.X(); }, function(){ return p1.Y() - p0.Y(); });
-         *     board.update();
-         *
-         *     })();
-         *
-         * </script><pre>
-         *
-         */
-        setSize: function (width, height) {
-            this.W = Type.createFunction(width, this.board, "");
-            this.H = Type.createFunction(height, this.board, "");
-            this.addParentsFromJCFunctions([this.W, this.H]);
-            // this.fullUpdate();
-
-            return this;
-        },
-
-        /**
-         * Returns the width of the image in user coordinates.
-         * @returns {number} width of the image in user coordinates
-         */
-        W: function () { }, // Needed for docs, defined in constructor
-
-        /**
-         * Returns the height of the image in user coordinates.
-         * @returns {number} height of the image in user coordinates
-         */
-        H: function () { } // Needed for docs, defined in constructor
+        }
+        return false;
     }
-);
+
+    /**
+     * Recalculate the coordinates of lower left corner and the width and height.
+     *
+     * @returns {JXG2.GeometryElement} A reference to the element
+     * @private
+     */
+    update(fromParent) {
+        if (!this.needsUpdate) {
+            return this;
+        }
+
+        this.updateCoords(fromParent);
+        this.updateSize();
+        this.updateSpan();
+
+        return this;
+    }
+
+    /**
+     * Send an update request to the renderer.
+     * @private
+     */
+    updateRenderer() {
+        return this.updateRendererGeneric('updateImage');
+    }
+
+    /**
+     * Updates the internal arrays containing size of the image.
+     * @returns {JXG2.GeometryElement} A reference to the element
+     * @private
+     */
+    updateSize() {
+        this.usrSize = [this.W(), this.H()];
+        this.size = [
+            Math.abs(this.usrSize[0] * this.board.unitX),
+            Math.abs(this.usrSize[1] * this.board.unitY)
+        ];
+
+        return this;
+    }
+
+    /**
+     * Update the anchor point of the image, i.e. the lower left corner
+     * and the two vectors which span the rectangle.
+     * @returns {JXG2.GeometryElement} A reference to the element
+     * @private
+     *
+     */
+    updateSpan() {
+        var i, j,
+            len = this.transformations.length,
+            v = [];
+
+        if (len === 0) {
+            this.span = [
+                [this.Z(), this.X(), this.Y()],
+                [this.Z(), this.W(), 0],
+                [this.Z(), 0, this.H()]
+            ];
+        } else {
+            // v contains the three defining corners of the rectangle/image
+            v[0] = [this.Z(), this.X(), this.Y()];
+            v[1] = [this.Z(), this.X() + this.W(), this.Y()];
+            v[2] = [this.Z(), this.X(), this.Y() + this.H()];
+            // Transform the three corners
+            for (i = 0; i < len; i++) {
+                for (j = 0; j < 3; j++) {
+                    v[j] = JSXMath.matVecMult(this.transformations[i].matrix, v[j]);
+                }
+            }
+            // Normalize the vectors
+            for (j = 0; j < 3; j++) {
+                v[j][1] /= v[j][0];
+                v[j][2] /= v[j][0];
+                v[j][0] /= v[j][0];
+            }
+            // Compute the two vectors spanning the rectangle
+            // by subtracting the anchor point.
+            for (j = 1; j < 3; j++) {
+                v[j][0] -= v[0][0];
+                v[j][1] -= v[0][1];
+                v[j][2] -= v[0][2];
+            }
+            this.span = v;
+        }
+
+        return this;
+    }
+
+    addTransform(transform) {
+        var i;
+
+        if (Type.isArray(transform)) {
+            for (i = 0; i < transform.length; i++) {
+                this.transformations.push(transform[i]);
+            }
+        } else {
+            this.transformations.push(transform);
+        }
+
+        return this;
+    }
+
+    // Documented in element.js
+    getParents() {
+        var p = [this.url, [this.Z(), this.X(), this.Y()], this.usrSize];
+
+        if (this.parents.length !== 0) {
+            p = this.parents;
+        }
+
+        return p;
+    }
+
+    /**
+     * Set the width and height of the image. After setting a new size,
+     * board.update() or image.fullUpdate()
+     * has to be called to make the change visible.
+     * @param  {number|function|string} width  Number, function or string
+     *                            that determines the new width of the image
+     * @param  {number|function|string} height Number, function or string
+     *                            that determines the new height of the image
+     * @returns {JXG2.GeometryElement} A reference to the element
+     *
+     * @example
+     * var im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg',
+     *                                [-3,-2], [3,3]]);
+     * im.setSize(4, 4);
+     * board.update();
+     *
+     * </pre><div id="JXG8411e60c-f009-11e5-b1bf-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
+     * <script type="text/javascript">
+     *     (function() {
+     *         var board = JXG2.JSXGraph.initBoard('JXG8411e60c-f009-11e5-b1bf-901b0e1b8723',
+     *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
+     *     var im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg', [-3,-2],    [3,3]]);
+     *     //im.setSize(4, 4);
+     *     //board.update();
+     *
+     *     })();
+     *
+     * </script><pre>
+     *
+     * @example
+     * var p0 = board.create('point', [-3, -2]),
+     *     im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg',
+     *                     [function(){ return p0.X(); }, function(){ return p0.Y(); }],
+     *                     [3,3]]),
+     *     p1 = board.create('point', [1, 2]);
+     *
+     * im.setSize(function(){ return p1.X() - p0.X(); }, function(){ return p1.Y() - p0.Y(); });
+     * board.update();
+     *
+     * </pre><div id="JXG4ce706c0-f00a-11e5-b1bf-901b0e1b8723" class="jxgbox" style="width: 300px; height: 300px;"></div>
+     * <script type="text/javascript">
+     *     (function() {
+     *         var board = JXG2.JSXGraph.initBoard('JXG4ce706c0-f00a-11e5-b1bf-901b0e1b8723',
+     *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
+     *     var p0 = board.create('point', [-3, -2]),
+     *         im = board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg',
+     *                         [function(){ return p0.X(); }, function(){ return p0.Y(); }],
+     *                         [3,3]]),
+     *         p1 = board.create('point', [1, 2]);
+     *
+     *     im.setSize(function(){ return p1.X() - p0.X(); }, function(){ return p1.Y() - p0.Y(); });
+     *     board.update();
+     *
+     *     })();
+     *
+     * </script><pre>
+     *
+     */
+    setSize(width, height) {
+        this.W = Type.createFunction(width, this.board, "");
+        this.H = Type.createFunction(height, this.board, "");
+        this.addParentsFromJCFunctions([this.W, this.H]);
+        // this.fullUpdate();
+
+        return this;
+    }
+
+    /**
+     * Returns the width of the image in user coordinates.
+     * @returns {number} width of the image in user coordinates
+     */
+    W() { return 1 } // Needed for docs, defined in constructor
+
+    /**
+     * Returns the height of the image in user coordinates.
+     * @returns {number} height of the image in user coordinates
+     */
+    H() { return 1 } // Needed for docs, defined in constructor
+}
+
 
 /**
  * @class Display of an external image.
@@ -398,7 +410,7 @@ JXG2.extend(
  *   var image_im = image_board.create('image', ['https://jsxgraph.org/distrib/images/uccellino.jpg', [-3,-2],[3,3]]);
  * </script><pre>
  */
-JXG2.createImage = function (board, parents, attributes) {
+export function createImage(board, parents, attributes) {
     var attr,
         im,
         url = parents[0],
@@ -406,7 +418,7 @@ JXG2.createImage = function (board, parents, attributes) {
         size = parents[2];
 
     attr = Type.copyAttributes(attributes, board.options, 'image');
-    // tbtb ?? im = CoordsElement.create(JXG2.Image, board, coords, attr, url, size);
+    im = new Image(board, coords, attr, url, size);
     if (!im) {
         throw new Error(
             "JSXGraph: Can't create image with parent types '" +
@@ -426,10 +438,3 @@ JXG2.createImage = function (board, parents, attributes) {
     return im;
 };
 
-JXG2.registerElement("image", JXG2.createImage);
-
-export default JXG2.Image;
-// export default {
-//     Image: JXG2.Image,
-//     createImage: JXG2.createImage
-// };
