@@ -5960,14 +5960,14 @@ export class Board extends Events {
             // For updates of an element we distinguish if the dragged element is updated or
             // other elements are updated.
             // The difference lies in the treatment of gliders and points based on transformations.
-            pEl.update()
-            pEl.update(!Type.exists(drag) || pEl.id !== drag.id).updateVisibility();
+            pEl.elementUpdate()
+            pEl.elementUpdate(!Type.exists(drag) || pEl.id !== drag.id).updateVisibility();
         }
 
         // update groups last
         for (el in this.groups) {
             if (this.groups.hasOwnProperty(el)) {
-                this.groups[el].update(drag);
+                this.groups[el].elementUpdate(drag);
             }
         }
 

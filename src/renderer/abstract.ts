@@ -229,7 +229,7 @@ export abstract class AbstractRenderer {
      */
     _updateVisual(el: GeometryElement, not: LooseObject = {}, enhanced: boolean = false) {
 
-        if (dbug(el)) console.warn(`%c abstract: updateVisual(el)`, dbugColor, 'el.visProp = ', el.visProp, not)
+        if (dbug(el)) console.warn(`%c abstract: _updateVisual(el, ${JSON.stringify(not)}, ${enhanced})`, dbugColor, 'el.visProp = ', el.visProp, not)
 
         if (enhanced || this.enhancedRendering) {
             not = not || {};
@@ -496,6 +496,11 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#drawLine
      */
     updateLine(el) {
+
+        if (dbug(el))
+            console.warn(`%c abstract: _updateLine(${el.id})`, dbugColor)
+
+
         this._updateVisual(el);
         this.updatePathWithArrowHeads(el); // Calls the renderer primitive
         this.setLineCap(el);
@@ -737,11 +742,18 @@ export abstract class AbstractRenderer {
         c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board, true);
         c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board, true);
 
+        if (dbug(el))
+            console.warn(`%c abstract: updateLinewithEndings(${el.id}l, ${JSON.stringify(c1.scrCoords)},${JSON.stringify(c2.scrCoords)})`, dbugColor)
+
 
         margin = el.evalVisProp('margin');
-        Geometry.calcStraight(el, c1, c2, margin);
+
+
+        // tbtb  ERROR HERE:   Geometry.calcStraight(el, c1, c2, margin);
+        console.warn('fix Geometry.calcStraight !!  it mangles coords')
 
         this.handleTouchpoints(el, c1, c2, arrowData);
+
         this.getPositionArrowHead(el, c1, c2, arrowData);
 
         this.updateLinePrim(
@@ -1048,7 +1060,7 @@ export abstract class AbstractRenderer {
         var node: HTMLElement, z, level, ev_visible;
 
         if (dbug(el))
-            console.log(`%c abstract: drawText(${el.id})`, dbugColor)
+            console.warn(`%c abstract: drawText(${el.id})`, dbugColor)
 
         if (this.container !== null) {
             if (

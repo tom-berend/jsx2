@@ -506,7 +506,7 @@ export class Circle extends GeometryElement {
             this.label.visPropCalc.visible &&
             this.isReal
         ) {
-            this.label.update();
+            this.label.elementUpdate();
             this.board.renderer.updateText(this.label);
         }
 

@@ -72,7 +72,7 @@ export class Polygon extends GeometryElement {
 
 
 
-        // this.elementUpdate = () => this.update();
+        this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
         this.elementCreateLabel = () => this.createLabel()
         // this.elementGetLabelAnchor = () => this.getLabelAnchor();
@@ -234,6 +234,11 @@ export class Polygon extends GeometryElement {
      * </script><pre>
      *
      */
+
+
+    update(){
+    }
+
     pnpoly(x_in, y_in, coord_type=COORDS_BY_SCREEN) {
         return Geometry.pnpoly(x_in, y_in, this.vertices, coord_type, this.board);
     }
@@ -317,7 +322,7 @@ export class Polygon extends GeometryElement {
             this.label.visPropCalc.visible &&
             this.isReal
         ) {
-            this.label.update();
+            this.label.elementUpdate();
             this.board.renderer.updateText(this.label);
         }
 
@@ -422,14 +427,14 @@ export class Polygon extends GeometryElement {
 
         if (!borderless) {
             for (i = 0; i < this.borders.length; i++) {
-                this.borders[i].showElement().updateRenderer();
+                this.borders[i].showElement().elementUpdateRenderer();
             }
         }
 
         if (Type.exists(this.label) && this.hasLabel && this.label.hiddenByParent) {
             this.label.hiddenByParent = false;
             if (!this.label.visPropCalc.visible) {
-                this.label.showElement().updateRenderer();
+                this.label.showElement().elementUpdateRenderer();
             }
         }
         return this;
@@ -882,7 +887,6 @@ export class Polygon extends GeometryElement {
         this.inherits.push(this.vertices, this.borders);
 
         this.board.update();
-
         return this;
     }
 
@@ -1289,10 +1293,14 @@ export function createPolygon(board, parents, attributes) {
 
     // Put the points to their position
     if (is_transform) {
-        el.prepareUpdate().update().updateVisibility().updateRenderer();
+        el.prepareUpdate().elementUpdate()
+        el.updateVisibility().elementUpdateRenderer();
         le = obj.vertices.length - 1;
         for (i = 0; i < le; i++) {
-            points[i].prepareUpdate().update().updateVisibility().elementUpdateRenderer();
+            points[i].prepareUpdate()
+            points[i].elementUpdate()
+            points[i].updateVisibility()
+            points[i].elementUpdateRenderer();
         }
     }
 

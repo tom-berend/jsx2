@@ -2680,7 +2680,7 @@ export function createTracecurve(board, parents, attributes) {
                     savetrace = pEl.visProp.trace;
                     pEl.visProp.trace = false;
                     pEl.needsUpdate = true;
-                    pEl.update(true);
+                    pEl.elementUpdate(true);
                     pEl.visProp.trace = savetrace;
 
                     if (pEl === tracepoint) {

@@ -304,6 +304,9 @@ export class Line extends GeometryElement {
     update() {
         var funps;
 
+        if (dbug(this))
+            console.warn(`%c line: update() ${this.id})`, dbugColor)
+
         if (!this.needsUpdate) {
             return this;
         }
@@ -498,7 +501,7 @@ export class Line extends GeometryElement {
             this.label.visPropCalc.visible &&
             this.isReal
         ) {
-            this.label.update();
+            this.label.elementUpdate();
             this.board.renderer.updateText(this.label);
         }
 
@@ -1462,8 +1465,8 @@ export function createLine(board, parents, attributes) {
 
         // If the line will have a glider and board.suspendUpdate() has been called, we
         // need to compute the initial position of the two points p1 and p2.
-        p1.prepareUpdate().update();
-        p2.prepareUpdate().update();
+        p1.prepareUpdate().elementUpdate();
+        p2.prepareUpdate().elementUpdate();
         attr = Type.copyAttributes(attributes, board.options, 'line');
         el = new Line(board, [p1, p2], attr);
         // Not yet working, because the points are not draggable.
@@ -1602,7 +1605,6 @@ export function createLine(board, parents, attributes) {
  */
 export function createSegment(board, parents, attributes) {
     var el, attr;
-
 
     attributes.straightFirst = false;
     attributes.straightLast = false;

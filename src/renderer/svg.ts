@@ -1,4 +1,4 @@
-const dbug = (elem?/*: GeometryElement*/) => false;//   elem && elem.id === 'jxgBoard1P1Label';
+const dbug = (elem?) => elem && elem.id === "jxgBoard1L9"
 const dbugColor = `color:blue;background-color:#ffc0c0`;
 
 /*
@@ -1186,6 +1186,7 @@ export class SVGRenderer extends AbstractRenderer {
     updateLinePrim(node, p1x, p1y, p2x, p2y) {
         var huge = 1000000;
 
+        console.warn('updateLinePrim', p1x, p1y, p2x, p2y)
         huge = 200000; //IE
         if (!isNaN(p1x + p1y + p2x + p2y)) {
             // webkit does not like huge values if the object is dashed
@@ -1600,6 +1601,9 @@ export class SVGRenderer extends AbstractRenderer {
     */
 
     display(el/*: GeometryElement*/, show: boolean) {
+        if (dbug(el))
+            console.warn(`%c svg: display(${el.id}, show=${show})`, dbugColor)
+
         if (el) {
             el.visPropOld.visible = show;
         }

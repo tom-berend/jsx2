@@ -382,11 +382,12 @@ export class GeometryElement extends Events {
     // Problem is that in normal inheritance, this object doesn't know which child method to call.
     // To untangle, we start with these closures, which direct 'this.elementUpdate()' to
     // the CORRECT element.update().
-    elementUpdate = () => console.error(`add to constructor: 'this.elementUpdate = ()=>this.update();'`)
+    elementUpdate = () =>         console.error(`add to constructor: 'this.elementUpdate = ()=>this.update();'`)
     elementUpdateRenderer = () => console.error(`add to constructor: 'this.elementUpdateRenderer = ()=>this.updateRenderer();'`)
-    elementCreateLabel = () => console.error(`add to constructor: 'this.elementCreateLabel = ()=>this.update();'`)
-    elementGetTextAnchor = () => console.error(`add to constructor: 'this.elementGetTextAnchor = ()=>this.update();'`)
+
+    elementCreateLabel = () =>    console.error(`add to constructor: 'this.elementCreateLabel = ()=>this.update();'`)
     elementGetLabelAnchor = () => console.error(`add to constructor: 'this.elementGetLabelAnchor = ()=>this.update();'`)
+    elementGetTextAnchor = () =>  console.error(`add to constructor: 'this.elementGetTextAnchor = ()=>this.update();'`)
 
     constructor(board: Board, attributes: LooseObject, otype: OBJECT_TYPE, oclass: OBJECT_CLASS) {
         super()
@@ -1098,7 +1099,7 @@ export class GeometryElement extends Events {
         let original = this.visPropCalc.visible
 
         if (dbug(this))
-            console.warn(`%c GeoElement: update Visibility(${val})`, dbugColor)
+            console.warn(`%c GeoElement: update Visibility(${this.id}, ${val})`, dbugColor)
 
         if (this.needsUpdate) {
             if (Type.exists(this.view) && this.view.evalVisProp('visible') === false) {
@@ -1316,6 +1317,9 @@ export class GeometryElement extends Events {
         var i, j, le, key, value, arg,
             opacity, pair, oldvalue,
             attributes = {};
+
+        if (dbug(this))
+            console.warn(`%c GeoElement setAttribute(${this.id}, ${attr}') `, dbugColor)
 
         // Normalize the user input
         for (i = 0; i < arguments.length; i++) {
