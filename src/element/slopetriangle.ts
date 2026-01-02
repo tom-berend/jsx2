@@ -37,9 +37,9 @@
  */
 
 import { JXG2 } from "../jxg.js";
-import {Type} from "../utils/type.js";
+import { Type } from "../utils/type.js";
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
-import Polygon from "../base/polygon.js";
+import { Polygon } from "../base/polygon.js";
 
 var priv = {
     removeSlopeTriangle: function () {

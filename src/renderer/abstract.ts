@@ -1,4 +1,4 @@
-const dbug = (elem/*:GeometryElement*/) => elem && elem.id === "jxgBoard1P3Label";
+const dbug = (elem/*:GeometryElement*/) => elem && elem.id === "jxgBoard1L9";
 const dbugColor = `color:red;background-color:#00ffc0`;
 
 /*

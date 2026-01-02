@@ -1,4 +1,4 @@
-let dbug = (elem) => elem && elem.id === "jxgBoard1T5Label"
+let dbug = (elem) => elem && elem.id === "jxgBoard1L9"
 let dbugColor = 'color:black;background-color:#FF8FFF;'
 /*
     Copyright 2008-2025
@@ -318,7 +318,7 @@ export class GeometryElement extends Events {
      * @type Object
      * @default empty object
      */
-    visPropCalc = {
+    visPropCalc: LooseObject = {
         visible: false
     };
 
@@ -980,6 +980,9 @@ export class GeometryElement extends Events {
     setDisplayRendNode(val?: boolean): GeometryElement {
         var i, len, s, len_s, obj;
 
+        if (dbug(this))
+            console.warn(`%c geometryElement: setDisplayRendNode ${this.id} ${val})`, dbugColor)
+
         if (val === undefined) {
             val = this.visPropCalc.visible;
         }
@@ -1092,6 +1095,10 @@ export class GeometryElement extends Events {
      */
     updateVisibility(parent_val?: boolean): GeometryElement {
         var i, len, s, len_s, obj, val;
+        let original = this.visPropCalc.visible
+
+        if (dbug(this))
+            console.warn(`%c GeoElement: update Visibility(${val})`, dbugColor)
 
         if (this.needsUpdate) {
             if (Type.exists(this.view) && this.view.evalVisProp('visible') === false) {
@@ -1125,6 +1132,10 @@ export class GeometryElement extends Events {
                                 Type.exists(obj[i]) /*&& Type.exists(obj[i].rendNode)*/ &&
                                 obj[i].evalVisProp('visible') === 'inherit'
                             ) {
+
+                                if (dbug(obj[i]))
+                                    console.warn(`%c GeoElement: update child's Visibility(${obj[i].id}) to ${this.visPropCalc.visible}`, dbugColor)
+
                                 obj[i]
                                     .prepareUpdate()
                                     .updateVisibility(this.visPropCalc.visible);
@@ -1150,6 +1161,7 @@ export class GeometryElement extends Events {
                 this.label.prepareUpdate().updateVisibility(this.visPropCalc.visible);
             }
         }
+
         return this;
     }
 

@@ -1,4 +1,4 @@
-const dbug = (elem) => elem.id === 'jxgBoard1P3Label';
+const dbug = (elem) => false //elem.id === 'jxgBoard1P3Label';
 const dbugColor = `color:yellow;background-color:#4040f0`;
 /*
     Copyright 2008-2025

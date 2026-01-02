@@ -66,7 +66,7 @@ import { Dim } from '../interfaces.js'
 
 // import {GeometryElement} from './element.js';
 import { Text } from '../base/text.js'
-import { Point,createGlider, createPolePoint, createIntersectionPoint,createOtherIntersectionPoint } from '../base/point.js'
+import { Point, createGlider, createPolePoint, createIntersectionPoint, createOtherIntersectionPoint } from '../base/point.js'
 import { Checkbox } from "../element/checkbox.js"
 import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis, createPolarLine, createTangentTo } from '../base/line.js'
 import { createCircle } from './circle.js';
@@ -78,7 +78,8 @@ import {
 } from "./curve.js";
 import { createSlider } from '../element/slider.js';
 import { createGrid } from '../element/grid.js';
-import {createImage} from '../base/image.js';
+import { createImage } from '../base/image.js';
+import { createPolygon, createRegularPolygon, createPolygonalChain, createParallelogram } from "../base/polygon.js";
 
 /**
  * Constructs a new Board object.
@@ -6371,9 +6372,9 @@ export class Board extends Events {
 
             case 'point': el = new Point(this, parents, attributes); break;
             case 'glider': el = createGlider(this, parents, attributes); break;
-            case 'createPolePoint' : el = createPolePoint(this,parent,attributes); break;
-            case 'createIntersectionPoint' : el = createIntersectionPoint(this,parent,attributes); break;
-            case 'createOtherIntersectionPoint' : el = createOtherIntersectionPoint(this,parent,attributes); break;
+            case 'createPolePoint': el = createPolePoint(this, parent, attributes); break;
+            case 'createIntersectionPoint': el = createIntersectionPoint(this, parent, attributes); break;
+            case 'createOtherIntersectionPoint': el = createOtherIntersectionPoint(this, parent, attributes); break;
 
 
             case 'checkbox': el = new Checkbox(this, parents, attributes); break;
@@ -6414,6 +6415,10 @@ export class Board extends Events {
 
             case 'image': el = createImage(this, parents, attributes); break;
 
+            case 'polygon': el = createPolygon(this, parents, attributes); break;
+            case 'regularPolygon': el = createRegularPolygon(this, parents, attributes); break;
+            case 'polygonalChain': el = createPolygonalChain(this, parents, attributes); break;
+            case 'parallelogram': el = createParallelogram(this, parents, attributes); break;
 
 
             default:

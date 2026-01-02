@@ -1862,7 +1862,7 @@ export class SVGRenderer extends AbstractRenderer {
      * <strong>green</strong> for green.
      * @param {Number} opacity Opacity of the fill color. Must be between 0 and 1.
      */
-    setObjectStrokeColor(el, color:any, opacity) {
+    setObjectStrokeColor(el, color: any, opacity) {
         if (dbug(el)) console.warn(`%c svg: setObjectSrokeColor(el, color:${color},opacity:'${opacity}'`, dbugColor)
 
         var rgba = color,

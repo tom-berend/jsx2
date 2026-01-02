@@ -21,13 +21,14 @@ export class IndexTests {
 
         this.initBoard()
 
-        this.point()
-        this.text()
-        this.line()
-        this.circle()
-        this.curve()
-        this.widgets()
-        this.image()
+        // this.point()
+        // this.text()
+        // this.line()
+        // this.circle()
+        // this.curve()
+        // this.widgets()
+        // this.image()
+        this.polygon()
     }
 
     initBoard() {
@@ -94,9 +95,19 @@ export class IndexTests {
     image() {
         this.boards.map((board) => {
             board.create('image', ['space-invader.png', [-9, -8], [3, 3]]);
-        }
-       }
+        })
+    }
+    polygon() {
+        this.boards.map((board) => {
 
+            var p1 = board.create('point', [-5, -6]);
+            var p2 = board.create('point', [-5, -7]);
+            var p3 = board.create('point', [-4, -5]);
+            var p4 = board.create('point', [-6, -6]);
+
+            var pol = board.create('polygon', [p1, p2, p3, p4]);
+        })
+    }
 }
 
 

@@ -7697,9 +7697,9 @@ export interface PolygonOptions {
         // Polygon layer + 1
         layer?: number
         label?: {
-            position?: 'top'
+            position?: string
         }
-        visible?: 'inherit'
+        visible?: boolean | 'inherit'
     }
 
     /**

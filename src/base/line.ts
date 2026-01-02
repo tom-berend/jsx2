@@ -1,5 +1,5 @@
-const dbug = (elem?/*: GeometryElement*/) => true // elem && elem.id === 'jxgBoard1P1Label';
-const dbugColor = `color:black;background-color:pink`;
+let dbug = (elem) => elem && elem.id === "jxgBoard1L9"
+const dbugColor = `color:black;background-color:#0fffff`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -146,8 +146,8 @@ export class Line extends GeometryElement {
 
         this.elType = 'line';
 
-        // if(dbug(this))
-        console.warn(`%c new line ${parents}  for ${this.id})`, dbugColor)
+        if (dbug(this))
+            console.warn(`%c new line ${parents}  for ${this.id})`, dbugColor)
 
         /* Add line as child to defining points */
         if (this.point1._is_new) {
@@ -1172,7 +1172,7 @@ export class Line extends GeometryElement {
         attr['priv'] = this.visProp['priv'];
 
         if (dbug(this))
-            console.warn(`%c geometryElement: creating label for ${this.id})`, dbugColor)
+            console.warn(`%c line: creating label for ${this.id})`, dbugColor)
 
         if (this.visProp['withlabel']) {
 
@@ -1606,10 +1606,11 @@ export function createSegment(board, parents, attributes) {
 
     attributes.straightFirst = false;
     attributes.straightLast = false;
-    attr = Type.copyAttributes(attributes, board.options, 'segment');
+    // attr = Type.copyAttributes(attributes, board.options, 'segment');
 
-    el = board.create("line", parents.slice(0, 2), attr);
+    el = createLine(board, parents.slice(0, 2), attributes);
 
+    // segment with three parents is attempting to be fixed-length
     if (parents.length === 3) {   // line is set of solutions to a*z+b*x+c*y = 0.
         try {
             el.hasFixedLength = true;
@@ -1634,6 +1635,8 @@ export function createSegment(board, parents, attributes) {
                 "\nPossible third parent types: number or function"
             );
         }
+
+
         // if (Type.isNumber(parents[2])) {
         //     el.fixedLength = function () {
         //         return parents[2];

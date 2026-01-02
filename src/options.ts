@@ -1384,7 +1384,7 @@ export class Options {
             // Polygon layer + 1
             layer: 5,
             label: { position: 'top', },
-            visible: 'inherit',
+            visible:  'inherit',
         },
         highlightbyStrokeWidth: false,
         vertices: {

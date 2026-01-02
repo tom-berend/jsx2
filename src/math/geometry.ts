@@ -47,6 +47,7 @@ import { Statistics } from "./statistics.js";
 import { Numerics } from "./numerics.js";
 import { Type } from "../utils/type.js";
 import { Expect } from "../utils/expect.js";
+import { Board } from "../base/board.js";
 
 /**
  * Math.Geometry namespace definition. This namespace holds geometrical algorithms,
@@ -1819,7 +1820,7 @@ export class Geometry {
      * </script><pre>
      *
      */
-    static pnpoly(x_in, y_in, path, coord_type, board) {
+    static pnpoly(x_in:number, y_in:number, path, coord_type:COORDS_BY, board:Board) {
         var i, j, vi, vj, len,
             x, y, crds,
             v = path,

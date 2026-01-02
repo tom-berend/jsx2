@@ -72,7 +72,7 @@ export class Image extends CoordsElement {
     constructor(board, coords, attributes, url, size) {
         super(board, COORDS_BY.USER, coords, attributes, OBJECT_TYPE.IMAGE, OBJECT_CLASS.OTHER)
 
-        // this.elementUpdate = () => this.update();
+        this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
         // this.elementCreateLabel = () => this.createLabel()
         this.elementGetLabelAnchor = () => this.getLabelAnchor();
@@ -131,7 +131,6 @@ export class Image extends CoordsElement {
             setSize: "setSize"
         });
     };
-
 
     /**
      * Checks whether (x,y) is over or near the image;
@@ -193,12 +192,12 @@ export class Image extends CoordsElement {
      * @returns {JXG2.GeometryElement} A reference to the element
      * @private
      */
-    update(fromParent) {
+    update() {
         if (!this.needsUpdate) {
             return this;
         }
 
-        this.updateCoords(fromParent);
+        this.updateCoords(true);  // update from parents
         this.updateSize();
         this.updateSpan();
 

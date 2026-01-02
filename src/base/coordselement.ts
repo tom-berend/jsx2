@@ -1,4 +1,4 @@
-let dbug = (elem) => elem && elem.id === 'jxgBoard1P3Label'
+let dbug = (elem) => false //elem && elem.id === 'jxgBoard1P3Label'
 const dbugColor = `color:yellow;background-color:#803030`;
 
 /*
@@ -1555,7 +1555,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
             //         this[what[i] + "jc"] = terms[i];
             //     }
             // } else
-                if (Type.isFunction(v)) {
+            if (Type.isFunction(v)) {
                 newfuncs[i] = v;
             } else if (Type.isNumber(v)) {
                 newfuncs[i] = makeConstFunction(v);
@@ -1702,11 +1702,11 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         // } else {
 
 
-            if (Type.exists(this.element)) {
-                anchor = this.element.elementGetTextAnchor();
-            } else {
-                anchor = this.elementGetTextAnchor();
-            }
+        if (Type.exists(this.element)) {
+            anchor = this.element.elementGetTextAnchor();
+        } else {
+            anchor = this.elementGetTextAnchor();
+        }
 
         // }
 
@@ -2573,8 +2573,9 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
 
     // new version
     public coordsElementInit(coords: any[] /*coords part of parents */, attr1?, attr2?) {
-        // if (dbug(this))
-        console.warn(`%c coordselements: INIT ${JSON.stringify(coords)}`, dbugColor, attr1, attr2)
+
+        if (dbug(this))
+            console.warn(`%c coordselements: INIT ${JSON.stringify(coords)}`, dbugColor, attr1, attr2)
 
         let isConstrained = false
 
