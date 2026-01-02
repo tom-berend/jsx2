@@ -23,12 +23,12 @@ export class IndexTests {
 
         // this.point()
         // this.text()
-        // this.line()
+        this.line()
         // this.circle()
         // this.curve()
         // this.widgets()
         // this.image()
-        this.polygon()
+        // this.polygon()
     }
 
     initBoard() {

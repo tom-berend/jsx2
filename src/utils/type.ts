@@ -41,7 +41,7 @@
  */
 
 import { LooseObject } from '../interfaces.js'
-import {Point} from "../base/point.js";
+import { Point } from "../base/point.js";
 
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
@@ -482,56 +482,56 @@ export class Type {
      * @param {Array} attrArray List of subtype attributes for the newly created points. The list of subtypes is mapped to the list of new points.
      * @returns {Array} List of newly created {@link JXG2.Point} elements or false if not all returned elements are points.
      */
-    static providePoints(board, parents, attributes, attrClass?, attrArray?):Point[]| false {
-    var i,
-        j,
-        len,
-        lenAttr = 0,
-        points = [],
-        attr,
-        val;
+    static providePoints(board, parents, attributes, attrClass?, attrArray?): Point[] | false {
+        var i,
+            j,
+            len,
+            lenAttr = 0,
+            points = [],
+            attr,
+            val;
 
-    if (!this.isArray(parents)) {
-        parents = [parents];
-    }
-    len = parents.length;
-    if (this.exists(attrArray)) {
-        lenAttr = attrArray.length;
-    }
-    if (lenAttr === 0) {
-        attr = this.copyAttributes(attributes, board.options, attrClass);
-    }
-
-    for (i = 0; i < len; ++i) {
-        if (lenAttr > 0) {
-            j = Math.min(i, lenAttr - 1);
-            attr = this.copyAttributes(
-                attributes,
-                board.options,
-                attrClass,
-                attrArray[j].toLowerCase()
-            );
+        if (!this.isArray(parents)) {
+            parents = [parents];
         }
-        if (this.isArray(parents[i]) && parents[i].length > 1) {
-            points.push(board.create("point", parents[i], attr));
-            points[points.length - 1]._is_new = true;
-        } else if (this.isFunction(parents[i])) {
-            val = parents[i]();
-            if (this.isArray(val) && val.length > 1) {
-                points.push(board.create("point", [parents[i]], attr));
-                points[points.length - 1]._is_new = true;
+        len = parents.length;
+        if (this.exists(attrArray)) {
+            lenAttr = attrArray.length;
+        }
+        if (lenAttr === 0) {
+            attr = this.copyAttributes(attributes, board.options, attrClass);
+        }
+
+        for (i = 0; i < len; ++i) {
+            if (lenAttr > 0) {
+                j = Math.min(i, lenAttr - 1);
+                attr = this.copyAttributes(
+                    attributes,
+                    board.options,
+                    attrClass,
+                    attrArray[j].toLowerCase()
+                );
             }
-        } else {
-            points.push(board.select(parents[i]));
+            if (this.isArray(parents[i]) && parents[i].length > 1) {
+                points.push(board.create("point", parents[i], attr));
+                points[points.length - 1]._is_new = true;
+            } else if (this.isFunction(parents[i])) {
+                val = parents[i]();
+                if (this.isArray(val) && val.length > 1) {
+                    points.push(board.create("point", [parents[i]], attr));
+                    points[points.length - 1]._is_new = true;
+                }
+            } else {
+                points.push(board.select(parents[i]));
+            }
+
+            if (!this.isPoint(points[i])) {
+                return false;
+            }
         }
 
-        if (!this.isPoint(points[i])) {
-            return false;
-        }
+        return points;
     }
-
-    return points;
-}
 
     /**
      *  Test if the parents array contains existing points. If instead parents contains coordinate arrays or
@@ -554,67 +554,67 @@ export class Type {
      * @param {Array} attrArray List of subtype attributes for the newly created 3D points. The list of subtypes is mapped to the list of new 3D points.
      * @returns {Array} List of newly created {@link JXG2.Point3D} elements or false if not all returned elements are 3D points.
      */
-    static providePoints3D(view, parents, attributes, attrClass, attrArray ?) {
-    var i,
-        j,
-        len,
-        lenAttr = 0,
-        points = [],
-        attr,
-        val;
+    static providePoints3D(view, parents, attributes, attrClass, attrArray?) {
+        var i,
+            j,
+            len,
+            lenAttr = 0,
+            points = [],
+            attr,
+            val;
 
-    if (!this.isArray(parents)) {
-        parents = [parents];
-    }
-    len = parents.length;
-    if (this.exists(attrArray)) {
-        lenAttr = attrArray.length;
-    }
-    if (lenAttr === 0) {
-        attr = this.copyAttributes(attributes, view.board.options, attrClass);
-    }
-
-    for (i = 0; i < len; ++i) {
-        if (lenAttr > 0) {
-            j = Math.min(i, lenAttr - 1);
-            attr = this.copyAttributes(
-                attributes,
-                view.board.options,
-                attrClass,
-                attrArray[j]
-            );
+        if (!this.isArray(parents)) {
+            parents = [parents];
+        }
+        len = parents.length;
+        if (this.exists(attrArray)) {
+            lenAttr = attrArray.length;
+        }
+        if (lenAttr === 0) {
+            attr = this.copyAttributes(attributes, view.board.options, attrClass);
         }
 
-        if (this.isArray(parents[i]) && parents[i].length > 0 && parents[i].every((x) => this.isArray(x) && this.isNumber(x[0]))) {
-            // Testing for array-of-arrays-of-numbers, like [[1,2,3],[2,3,4]]
-            for (j = 0; j < parents[i].length; j++) {
-                points.push(view.create("point3d", parents[i][j], attr));;
-                points[points.length - 1]._is_new = true;
+        for (i = 0; i < len; ++i) {
+            if (lenAttr > 0) {
+                j = Math.min(i, lenAttr - 1);
+                attr = this.copyAttributes(
+                    attributes,
+                    view.board.options,
+                    attrClass,
+                    attrArray[j]
+                );
             }
-        } else if (this.isArray(parents[i]) && parents[i].every((x) => this.isNumber(x) || this.isFunction(x))) {
-            // Single array [1,2,3]
-            points.push(view.create("point3d", parents[i], attr));
-            points[points.length - 1]._is_new = true;
 
-        } else if (this.isPoint3D(parents[i])) {
-            points.push(parents[i]);
-        } else if (this.isFunction(parents[i])) {
-            val = parents[i]();
-            if (this.isArray(val) && val.length > 1) {
-                points.push(view.create("point3d", [parents[i]], attr));
+            if (this.isArray(parents[i]) && parents[i].length > 0 && parents[i].every((x) => this.isArray(x) && this.isNumber(x[0]))) {
+                // Testing for array-of-arrays-of-numbers, like [[1,2,3],[2,3,4]]
+                for (j = 0; j < parents[i].length; j++) {
+                    points.push(view.create("point3d", parents[i][j], attr));;
+                    points[points.length - 1]._is_new = true;
+                }
+            } else if (this.isArray(parents[i]) && parents[i].every((x) => this.isNumber(x) || this.isFunction(x))) {
+                // Single array [1,2,3]
+                points.push(view.create("point3d", parents[i], attr));
                 points[points.length - 1]._is_new = true;
+
+            } else if (this.isPoint3D(parents[i])) {
+                points.push(parents[i]);
+            } else if (this.isFunction(parents[i])) {
+                val = parents[i]();
+                if (this.isArray(val) && val.length > 1) {
+                    points.push(view.create("point3d", [parents[i]], attr));
+                    points[points.length - 1]._is_new = true;
+                }
+            } else {
+                points.push(view.select(parents[i]));
             }
-        } else {
-            points.push(view.select(parents[i]));
+
+            if (!this.isPoint3D(points[i])) {
+                return false;
+            }
         }
 
-        if (!this.isPoint3D(points[i])) {
-            return false;
-        }
+        return points;
     }
-
-    return points;
-}
 
     /**
      * Generates a function which calls the function fn in the scope of owner.
@@ -623,10 +623,10 @@ export class Type {
      * @returns {Function} A function with the same signature as fn.
      */
     static bind(fn, owner) {
-    return function () {
-        return fn.apply(owner, arguments);
-    };
-}
+        return function () {
+            return fn.apply(owner, arguments);
+        };
+    }
 
     /**
      * If <tt>val</tt> is a function, it will be evaluated without giving any parameters, else the input value
@@ -635,12 +635,12 @@ export class Type {
      * @returns If <tt>val</tt> is a function, it is evaluated and the result is returned. Otherwise <tt>val</tt> is returned.
      */
     static evaluate(val) {
-    if (this.isFunction(val)) {
-        return val();
-    }
+        if (this.isFunction(val)) {
+            return val();
+        }
 
-    return val;
-}
+        return val;
+    }
 
     /**
      * Search an array for a given value.
@@ -650,22 +650,22 @@ export class Type {
      * @returns {Number} The index of the first appearance of the given value, or
      * <tt>-1</tt> if the value was not found.
      */
-    static indexOf(array, value, sub ?) {
-    var i,
-        s = this.exists(sub);
+    static indexOf(array, value, sub?) {
+        var i,
+            s = this.exists(sub);
 
-    if (Array.prototype.indexOf && !s) {
-        return array.indexOf(value);
-    }
-
-    for (i = 0; i < array.length; i++) {
-        if ((s && array[i][sub] === value) || (!s && array[i] === value)) {
-            return i;
+        if (Array.prototype.indexOf && !s) {
+            return array.indexOf(value);
         }
-    }
 
-    return -1;
-}
+        for (i = 0; i < array.length; i++) {
+            if ((s && array[i][sub] === value) || (!s && array[i] === value)) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 
     /**
      * Eliminates duplicate entries in an array consisting of numbers and strings.
@@ -673,23 +673,23 @@ export class Type {
      * @returns {Array} The array with duplicate entries eliminated.
      */
     static eliminateDuplicates(a) {
-    var i,
-        len = a.length,
-        result = [],
-        obj = {};
+        var i,
+            len = a.length,
+            result = [],
+            obj = {};
 
-    for (i = 0; i < len; i++) {
-        obj[a[i]] = 0;
-    }
-
-    for (i in obj) {
-        if (obj.hasOwnProperty(i)) {
-            result.push(i);
+        for (i = 0; i < len; i++) {
+            obj[a[i]] = 0;
         }
-    }
 
-    return result;
-}
+        for (i in obj) {
+            if (obj.hasOwnProperty(i)) {
+                result.push(i);
+            }
+        }
+
+        return result;
+    }
 
     /**
      * Swaps to array elements.
@@ -699,14 +699,14 @@ export class Type {
      * @returns {Array} Reference to the given array.
      */
     static swap(arr, i, j) {
-    var tmp;
+        var tmp;
 
-    tmp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = tmp;
+        tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
 
-    return arr;
-}
+        return arr;
+    }
 
     /**
      * Generates a copy of an array and removes the duplicate entries. The original
@@ -715,68 +715,68 @@ export class Type {
      * @returns {Array}
      */
     static uniqueArray(arr) {
-    var i,
-        j,
-        isArray,
-        ret = [];
+        var i,
+            j,
+            isArray,
+            ret = [];
 
-    if (arr.length === 0) {
-        return [];
-    }
-
-    for (i = 0; i < arr.length; i++) {
-        isArray = this.isArray(arr[i]);
-
-        if (!this.exists(arr[i])) {
-            arr[i] = "";
-            continue;
+        if (arr.length === 0) {
+            return [];
         }
-        for (j = i + 1; j < arr.length; j++) {
-            if (isArray && Type.cmpArrays(arr[i], arr[j])) {
-                arr[i] = [];
-            } else if (!isArray && arr[i] === arr[j]) {
+
+        for (i = 0; i < arr.length; i++) {
+            isArray = this.isArray(arr[i]);
+
+            if (!this.exists(arr[i])) {
                 arr[i] = "";
+                continue;
+            }
+            for (j = i + 1; j < arr.length; j++) {
+                if (isArray && Type.cmpArrays(arr[i], arr[j])) {
+                    arr[i] = [];
+                } else if (!isArray && arr[i] === arr[j]) {
+                    arr[i] = "";
+                }
             }
         }
-    }
 
-    j = 0;
+        j = 0;
 
-    for (i = 0; i < arr.length; i++) {
-        isArray = this.isArray(arr[i]);
+        for (i = 0; i < arr.length; i++) {
+            isArray = this.isArray(arr[i]);
 
-        if (!isArray && arr[i] !== "") {
-            ret[j] = arr[i];
-            j++;
-        } else if (isArray && arr[i].length !== 0) {
-            ret[j] = arr[i].slice(0);
-            j++;
+            if (!isArray && arr[i] !== "") {
+                ret[j] = arr[i];
+                j++;
+            } else if (isArray && arr[i].length !== 0) {
+                ret[j] = arr[i].slice(0);
+                j++;
+            }
         }
-    }
 
-    arr = ret;
-    return ret;
-}
+        arr = ret;
+        return ret;
+    }
 
     static toUniqueArrayFloat(arr, eps) {
-    var a,
-        i, le;
+        var a,
+            i, le;
 
-    // if (false && Type.exists(arr.toSorted)) {
-    //     a = arr.toSorted(function(a, b) { return a - b; });
-    // } else {
-    // }
-    // Backwards compatibility
-    a = arr.slice();
-    a.sort(function (a, b) { return a - b; });
-    le = a.length;
-    for (i = le - 1; i > 0; i--) {
-        if (Math.abs(a[i] - a[i - 1]) < eps) {
-            a.splice(i, 1);
+        // if (false && Type.exists(arr.toSorted)) {
+        //     a = arr.toSorted(function(a, b) { return a - b; });
+        // } else {
+        // }
+        // Backwards compatibility
+        a = arr.slice();
+        a.sort(function (a, b) { return a - b; });
+        le = a.length;
+        for (i = le - 1; i > 0; i--) {
+            if (Math.abs(a[i] - a[i - 1]) < eps) {
+                a.splice(i, 1);
+            }
         }
+        return a;
     }
-    return a;
-}
 
 
     /**
@@ -786,8 +786,8 @@ export class Type {
      * @returns {Boolean}
      */
     static isInArray(arr, val) {
-    return Type.indexOf(arr, val) > -1;
-}
+        return Type.indexOf(arr, val) > -1;
+    }
 
     /**
      * Converts an array of {@link JXG2.Coords} objects into a coordinate matrix.
@@ -796,25 +796,25 @@ export class Type {
      * @returns {Array}
      */
     static coordsArrayToMatrix(coords, split) {
-    var i,
-        x = [],
-        m = [];
+        var i,
+            x = [],
+            m = [];
 
-    for (i = 0; i < coords.length; i++) {
-        if (split) {
-            x.push(coords[i].usrCoords[1]);
-            m.push(coords[i].usrCoords[2]);
-        } else {
-            m.push([coords[i].usrCoords[1], coords[i].usrCoords[2]]);
+        for (i = 0; i < coords.length; i++) {
+            if (split) {
+                x.push(coords[i].usrCoords[1]);
+                m.push(coords[i].usrCoords[2]);
+            } else {
+                m.push([coords[i].usrCoords[1], coords[i].usrCoords[2]]);
+            }
         }
-    }
 
-    if (split) {
-        m = [x, m];
-    }
+        if (split) {
+            m = [x, m];
+        }
 
-    return m;
-}
+        return m;
+    }
 
     /**
      * Compare two arrays.
@@ -823,29 +823,29 @@ export class Type {
      * @returns {Boolean} <tt>true</tt>, if the arrays coefficients are of same type and value.
      */
     static cmpArrays(a1, a2) {
-    var i;
+        var i;
 
-    // trivial cases
-    if (a1 === a2) {
-        return true;
-    }
+        // trivial cases
+        if (a1 === a2) {
+            return true;
+        }
 
-    if (a1.length !== a2.length) {
-        return false;
-    }
-
-    for (i = 0; i < a1.length; i++) {
-        if (this.isArray(a1[i]) && this.isArray(a2[i])) {
-            if (!this.cmpArrays(a1[i], a2[i])) {
-                return false;
-            }
-        } else if (a1[i] !== a2[i]) {
+        if (a1.length !== a2.length) {
             return false;
         }
-    }
 
-    return true;
-}
+        for (i = 0; i < a1.length; i++) {
+            if (this.isArray(a1[i]) && this.isArray(a2[i])) {
+                if (!this.cmpArrays(a1[i], a2[i])) {
+                    return false;
+                }
+            } else if (a1[i] !== a2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Removes an element from the given array
@@ -854,17 +854,17 @@ export class Type {
      * @returns {Array}
      */
     static removeElementFromArray(ar, el) {
-    var i;
+        var i;
 
-    for (i = 0; i < ar.length; i++) {
-        if (ar[i] === el) {
-            ar.splice(i, 1);
-            return ar;
+        for (i = 0; i < ar.length; i++) {
+            if (ar[i] === el) {
+                ar.splice(i, 1);
+                return ar;
+            }
         }
-    }
 
-    return ar;
-}
+        return ar;
+    }
 
     /**
      * Truncate a number <tt>n</tt> after <tt>p</tt> decimals.
@@ -873,10 +873,10 @@ export class Type {
      * @returns {Number}
      */
     static trunc(n, p) {
-    p = Type.def(p, 0);
+        p = Type.def(p, 0);
 
-    return this.toFixed(n, p);
-}
+        return this.toFixed(n, p);
+    }
 
     /**
      * Decimal adjustment of a number.
@@ -890,26 +890,26 @@ export class Type {
      * @private
      */
     static _decimalAdjust(type, value, exp) {
-    // If the exp is undefined or zero...
-    if (exp === undefined || +exp === 0) {
-        return Math[type](value);
+        // If the exp is undefined or zero...
+        if (exp === undefined || +exp === 0) {
+            return Math[type](value);
+        }
+
+        value = +value;
+        exp = +exp;
+        // If the value is not a number or the exp is not an integer...
+        if (isNaN(value) || !(typeof exp === "number" && exp % 1 === 0)) {
+            return NaN;
+        }
+
+        // Shift
+        value = value.toString().split('e');
+        value = Math[type](+(value[0] + "e" + (value[1] ? +value[1] - exp : -exp)));
+
+        // Shift back
+        value = value.toString().split('e');
+        return +(value[0] + "e" + (value[1] ? +value[1] + exp : exp));
     }
-
-    value = +value;
-    exp = +exp;
-    // If the value is not a number or the exp is not an integer...
-    if (isNaN(value) || !(typeof exp === "number" && exp % 1 === 0)) {
-        return NaN;
-    }
-
-    // Shift
-    value = value.toString().split('e');
-    value = Math[type](+(value[0] + "e" + (value[1] ? +value[1] - exp : -exp)));
-
-    // Shift back
-    value = value.toString().split('e');
-    return +(value[0] + "e" + (value[1] ? +value[1] + exp : exp));
-}
 
     /**
      * Round a number to given number of decimal digits.
@@ -922,8 +922,8 @@ export class Type {
      * @private
      */
     static _round10(value, exp) {
-    return this._decimalAdjust("round", value, exp);
-}
+        return this._decimalAdjust("round", value, exp);
+    }
 
     /**
      * "Floor" a number to given number of decimal digits.
@@ -936,8 +936,8 @@ export class Type {
      * @private
      */
     static _floor10(value, exp) {
-    return this._decimalAdjust("floor", value, exp);
-}
+        return this._decimalAdjust("floor", value, exp);
+    }
 
     /**
      * "Ceil" a number to given number of decimal digits.
@@ -950,8 +950,8 @@ export class Type {
      * @private
      */
     static _ceil10(value, exp) {
-    return this._decimalAdjust("ceil", value, exp);
-}
+        return this._decimalAdjust("ceil", value, exp);
+    }
 
     /**
      * Replacement of the default toFixed() method.
@@ -965,8 +965,8 @@ export class Type {
      * @return {String}        Rounded number is returned as string
      */
     static toFixed(num, digits) {
-    return this._round10(num, -digits).toFixed(digits);
-}
+        return this._round10(num, -digits).toFixed(digits);
+    }
 
     /**
      * Truncate a number <tt>val</tt> automatically.
@@ -975,20 +975,20 @@ export class Type {
      * @returns {Number}
      */
     static autoDigits(val) {
-    var x = Math.abs(val),
-        str;
+        var x = Math.abs(val),
+            str;
 
-    if (x >= 0.1) {
-        str = this.toFixed(val, 2);
-    } else if (x >= 0.01) {
-        str = this.toFixed(val, 4);
-    } else if (x >= 0.0001) {
-        str = this.toFixed(val, 6);
-    } else {
-        str = val;
+        if (x >= 0.1) {
+            str = this.toFixed(val, 2);
+        } else if (x >= 0.01) {
+            str = this.toFixed(val, 4);
+        } else if (x >= 0.0001) {
+            str = this.toFixed(val, 6);
+        } else {
+            str = val;
+        }
+        return str;
     }
-    return str;
-}
 
     /**
      * Convert value v. If v has the form
@@ -1004,30 +1004,30 @@ export class Type {
      * @returns {String|Number}
      */
     static parseNumber(v, percentOfWhat, convertPx) {
-    var str;
+        var str;
 
-    if (this.isString(v) && v.indexOf('%') > -1) {
-        str = v.replace(/\s+%\s+/, '');
-        return parseFloat(str) * percentOfWhat * 0.01;
-    }
-    if (this.isString(v) && v.indexOf('fr') > -1) {
-        str = v.replace(/\s+fr\s+/, '');
-        return parseFloat(str) * percentOfWhat;
-    }
-    if (this.isString(v) && v.indexOf('px') > -1) {
-        str = v.replace(/\s+px\s+/, '');
-        str = parseFloat(str);
-        if (this.isFunction(convertPx)) {
-            return convertPx(str);
-        } else if (this.isNumber(convertPx)) {
-            return str * convertPx;
-        } else {
-            return str;
+        if (this.isString(v) && v.indexOf('%') > -1) {
+            str = v.replace(/\s+%\s+/, '');
+            return parseFloat(str) * percentOfWhat * 0.01;
         }
+        if (this.isString(v) && v.indexOf('fr') > -1) {
+            str = v.replace(/\s+fr\s+/, '');
+            return parseFloat(str) * percentOfWhat;
+        }
+        if (this.isString(v) && v.indexOf('px') > -1) {
+            str = v.replace(/\s+px\s+/, '');
+            str = parseFloat(str);
+            if (this.isFunction(convertPx)) {
+                return convertPx(str);
+            } else if (this.isNumber(convertPx)) {
+                return str * convertPx;
+            } else {
+                return str;
+            }
+        }
+        // Number or String containing no unit
+        return parseFloat(v);
     }
-    // Number or String containing no unit
-    return parseFloat(v);
-}
 
     /**
      * Parse a string for label positioning of the form 'left pos' or 'pos right'
@@ -1037,27 +1037,27 @@ export class Type {
      * @returns {Obj}  <tt>{ side, pos }</tt>
      */
     static parsePosition(str) {
-    var a, i,
-        side = '',
-        pos = '';
+        var a, i,
+            side = '',
+            pos = '';
 
-    str = str.trim();
-    if (str !== '') {
-        a = str.split(/[ ,]+/);
-        for (i = 0; i < a.length; i++) {
-            if (a[i] === 'left' || a[i] === 'right') {
-                side = a[i];
-            } else {
-                pos = a[i];
+        str = str.trim();
+        if (str !== '') {
+            a = str.split(/[ ,]+/);
+            for (i = 0; i < a.length; i++) {
+                if (a[i] === 'left' || a[i] === 'right') {
+                    side = a[i];
+                } else {
+                    pos = a[i];
+                }
             }
         }
-    }
 
-    return {
-        side: side,
-        pos: pos
-    };
-}
+        return {
+            side: side,
+            pos: pos
+        };
+    }
 
     /**
      * Extracts the keys of a given object.
@@ -1067,24 +1067,24 @@ export class Type {
      * @returns {Array} All keys of the given object.
      */
     static keys(object, onlyOwn) {
-    var keys = [],
-        property;
+        var keys = [],
+            property;
 
-    // the caller decides if we use hasOwnProperty
-    /*jslint forin:true*/
-    for (property in object) {
-        if (onlyOwn) {
-            if (object.hasOwnProperty(property)) {
+        // the caller decides if we use hasOwnProperty
+        /*jslint forin:true*/
+        for (property in object) {
+            if (onlyOwn) {
+                if (object.hasOwnProperty(property)) {
+                    keys.push(property);
+                }
+            } else {
                 keys.push(property);
             }
-        } else {
-            keys.push(property);
         }
-    }
-    /*jslint forin:false*/
+        /*jslint forin:false*/
 
-    return keys;
-}
+        return keys;
+    }
 
     /**
      * This outputs an object with a base class reference to the given object. This is useful if
@@ -1094,12 +1094,12 @@ export class Type {
      * @returns {Object} An object with a base class reference to <tt>obj</tt>.
      */
     static clone(obj) {
-    var cObj: LooseObject = {};
+        var cObj: LooseObject = {};
 
-    cObj.prototype = obj;
+        cObj.prototype = obj;
 
-    return cObj;
-}
+        return cObj;
+    }
 
     /**
      * Embeds an existing object into another one just like {@link #clone} and copies the contents of the second object
@@ -1109,26 +1109,26 @@ export class Type {
      * @returns {Object} Copy of given object including some new/overwritten data from obj2.
      */
     static cloneAndCopy(obj, obj2) {
-    var r,
-        cObj = function () {
-            return undefined;
-        };
+        var r,
+            cObj = function () {
+                return undefined;
+            };
 
-    cObj.prototype = obj;
+        cObj.prototype = obj;
 
-    // no hasOwnProperty on purpose
-    /*jslint forin:true*/
-    /*jshint forin:true*/
+        // no hasOwnProperty on purpose
+        /*jslint forin:true*/
+        /*jshint forin:true*/
 
-    for (r in obj2) {
-        cObj[r] = obj2[r];
+        for (r in obj2) {
+            cObj[r] = obj2[r];
+        }
+
+        /*jslint forin:false*/
+        /*jshint forin:false*/
+
+        return cObj;
     }
-
-    /*jslint forin:false*/
-    /*jshint forin:false*/
-
-    return cObj;
-}
 
     /**
      * Recursively merges obj2 into obj1 in-place. Contrary to {@link JXG2#deepCopy} this won't create a new object
@@ -1185,45 +1185,45 @@ export class Type {
      * </script><pre>
      */
     static merge(obj1, obj2 = {}) {
-    var i, j, o, oo;
+        var i, j, o, oo;
 
-    for (i in obj2) {
-        if (obj2.hasOwnProperty(i)) {
-            o = obj2[i];
-            if (this.isArray(o)) {
-                if (!obj1[i]) {
-                    obj1[i] = [];
-                }
-
-                for (j = 0; j < o.length; j++) {
-                    oo = obj2[i][j];
-                    if (typeof obj2[i][j] === 'object') {
-                        obj1[i][j] = this.merge(obj1[i][j], oo);
-                    } else {
-                        obj1[i][j] = obj2[i][j];
+        for (i in obj2) {
+            if (obj2.hasOwnProperty(i)) {
+                o = obj2[i];
+                if (this.isArray(o)) {
+                    if (!obj1[i]) {
+                        obj1[i] = [];
                     }
-                }
-            } else if (typeof o === 'object') {
-                if (!obj1[i]) {
-                    obj1[i] = {};
-                }
 
-                obj1[i] = this.merge(obj1[i], o);
-            } else {
-                if (typeof obj1 === 'boolean') {
-                    // This is necessary in the following scenario:
-                    //   lastArrow == false
-                    // and call of
-                    //   setAttribute({lastArrow: {type: 7}})
-                    obj1 = {};
+                    for (j = 0; j < o.length; j++) {
+                        oo = obj2[i][j];
+                        if (typeof obj2[i][j] === 'object') {
+                            obj1[i][j] = this.merge(obj1[i][j], oo);
+                        } else {
+                            obj1[i][j] = obj2[i][j];
+                        }
+                    }
+                } else if (typeof o === 'object') {
+                    if (!obj1[i]) {
+                        obj1[i] = {};
+                    }
+
+                    obj1[i] = this.merge(obj1[i], o);
+                } else {
+                    if (typeof obj1 === 'boolean') {
+                        // This is necessary in the following scenario:
+                        //   lastArrow == false
+                        // and call of
+                        //   setAttribute({lastArrow: {type: 7}})
+                        obj1 = {};
+                    }
+                    obj1[i] = o;
                 }
-                obj1[i] = o;
             }
         }
-    }
 
-    return obj1;
-}
+        return obj1;
+    }
 
     /**
      * Creates a deep copy of an existing object, i.e. arrays or sub-objects are copied component resp.
@@ -1235,70 +1235,70 @@ export class Type {
      * @returns {Object} copy of obj or merge of obj and obj2.
      */
     static deepCopy(obj, obj2 = {}, toLower = false) {
-    var c, i, prop, i2;
+        var c, i, prop, i2;
 
-    toLower = toLower || false;
-    if (typeof obj !== 'object' || obj === null) {
-        return obj;
-    }
-
-    // Missing hasOwnProperty is on purpose in this function
-    if (this.isArray(obj)) {
-        c = [];
-        for (i = 0; i < obj.length; i++) {
-            prop = obj[i];
-            // Attention: typeof null === 'object'
-            if (prop !== null && typeof prop === 'object') {
-                // We certainly do not want to recurse into a JSXGraph object.
-                // This would for sure result in an infinite recursion.
-                // As alternative we copy the id of the object.
-                if (this.exists(prop.board)) {
-                    c[i] = prop.id;
-                } else {
-                    c[i] = this.deepCopy(prop, {}, toLower);
-                }
-            } else {
-                c[i] = prop;
-            }
+        toLower = toLower || false;
+        if (typeof obj !== 'object' || obj === null) {
+            return obj;
         }
-    } else {
-        c = {};
-        for (i in obj) {
-            if (obj.hasOwnProperty(i)) {
-                i2 = toLower ? i.toLowerCase() : i;
+
+        // Missing hasOwnProperty is on purpose in this function
+        if (this.isArray(obj)) {
+            c = [];
+            for (i = 0; i < obj.length; i++) {
                 prop = obj[i];
+                // Attention: typeof null === 'object'
                 if (prop !== null && typeof prop === 'object') {
+                    // We certainly do not want to recurse into a JSXGraph object.
+                    // This would for sure result in an infinite recursion.
+                    // As alternative we copy the id of the object.
                     if (this.exists(prop.board)) {
-                        c[i2] = prop.id;
+                        c[i] = prop.id;
                     } else {
-                        c[i2] = this.deepCopy(prop, {}, toLower);
+                        c[i] = this.deepCopy(prop, {}, toLower);
                     }
                 } else {
-                    c[i2] = prop;
+                    c[i] = prop;
+                }
+            }
+        } else {
+            c = {};
+            for (i in obj) {
+                if (obj.hasOwnProperty(i)) {
+                    i2 = toLower ? i.toLowerCase() : i;
+                    prop = obj[i];
+                    if (prop !== null && typeof prop === 'object') {
+                        if (this.exists(prop.board)) {
+                            c[i2] = prop.id;
+                        } else {
+                            c[i2] = this.deepCopy(prop, {}, toLower);
+                        }
+                    } else {
+                        c[i2] = prop;
+                    }
+                }
+            }
+
+            for (i in obj2) {
+                if (obj2.hasOwnProperty(i)) {
+                    i2 = toLower ? i.toLowerCase() : i;
+
+                    prop = obj2[i];
+                    if (prop !== null && typeof prop === 'object') {
+                        if (this.isArray(prop) || !this.exists(c[i2])) {
+                            c[i2] = this.deepCopy(prop, {}, toLower);
+                        } else {
+                            c[i2] = this.deepCopy(c[i2], prop, toLower);
+                        }
+                    } else {
+                        c[i2] = prop;
+                    }
                 }
             }
         }
 
-        for (i in obj2) {
-            if (obj2.hasOwnProperty(i)) {
-                i2 = toLower ? i.toLowerCase() : i;
-
-                prop = obj2[i];
-                if (prop !== null && typeof prop === 'object') {
-                    if (this.isArray(prop) || !this.exists(c[i2])) {
-                        c[i2] = this.deepCopy(prop, {}, toLower);
-                    } else {
-                        c[i2] = this.deepCopy(c[i2], prop, toLower);
-                    }
-                } else {
-                    c[i2] = prop;
-                }
-            }
-        }
+        return c;
     }
-
-    return c;
-}
 
     /**
      * In-place (deep) merging of attributes. Allows attributes like `{shadow: {enabled: true...}}`
@@ -1315,52 +1315,52 @@ export class Type {
      *
      */
     static mergeAttr(attr, special, toLower = true, ignoreUndefinedSpecials = false) {
-    var e, e2, o;
+        var e, e2, o;
 
-    toLower = toLower || true;
-    ignoreUndefinedSpecials = ignoreUndefinedSpecials || false;
+        toLower = toLower || true;
+        ignoreUndefinedSpecials = ignoreUndefinedSpecials || false;
 
-    for (e in special) {
-        if (special.hasOwnProperty(e)) {
-            e2 = (toLower) ? e.toLowerCase() : e;
-            // Key already exists, but not in lower case
-            if (e2 !== e && attr.hasOwnProperty(e)) {
-                if (attr.hasOwnProperty(e2)) {
-                    // Lower case key already exists - this should not happen
-                    // We have to unify the two key-value pairs
-                    // It is not clear which has precedence.
-                    this.mergeAttr(attr[e2], attr[e], toLower);
-                } else {
-                    attr[e2] = attr[e];
+        for (e in special) {
+            if (special.hasOwnProperty(e)) {
+                e2 = (toLower) ? e.toLowerCase() : e;
+                // Key already exists, but not in lower case
+                if (e2 !== e && attr.hasOwnProperty(e)) {
+                    if (attr.hasOwnProperty(e2)) {
+                        // Lower case key already exists - this should not happen
+                        // We have to unify the two key-value pairs
+                        // It is not clear which has precedence.
+                        this.mergeAttr(attr[e2], attr[e], toLower);
+                    } else {
+                        attr[e2] = attr[e];
+                    }
+                    delete attr[e];
                 }
-                delete attr[e];
-            }
 
-            o = special[e];
-            if (this.isObject(o) && o !== null &&
-                // Do not recurse into a document object or a JSXGraph object
-                !this.isDocumentOrFragment(o) && !this.exists(o.board) &&
-                // Do not recurse if a string is provided as "new String(...)"
-                typeof o.valueOf() !== 'string') {
-                if (attr[e2] === undefined || attr[e2] === null || !this.isObject(attr[e2])) {
-                    // The last test handles the case:
-                    //   attr.draft = false;
-                    //   special.draft = { strokewidth: 4}
-                    attr[e2] = {};
+                o = special[e];
+                if (this.isObject(o) && o !== null &&
+                    // Do not recurse into a document object or a JSXGraph object
+                    !this.isDocumentOrFragment(o) && !this.exists(o.board) &&
+                    // Do not recurse if a string is provided as "new String(...)"
+                    typeof o.valueOf() !== 'string') {
+                    if (attr[e2] === undefined || attr[e2] === null || !this.isObject(attr[e2])) {
+                        // The last test handles the case:
+                        //   attr.draft = false;
+                        //   special.draft = { strokewidth: 4}
+                        attr[e2] = {};
+                    }
+                    this.mergeAttr(attr[e2], o, toLower);
+                } else if (!ignoreUndefinedSpecials || this.exists(o)) {
+                    // Flat copy
+                    // This is also used in the cases
+                    //   attr.shadow = { enabled: true ...}
+                    //   special.shadow = false;
+                    // and
+                    //   special.anchor is a JSXGraph element
+                    attr[e2] = o;
                 }
-                this.mergeAttr(attr[e2], o, toLower);
-            } else if (!ignoreUndefinedSpecials || this.exists(o)) {
-                // Flat copy
-                // This is also used in the cases
-                //   attr.shadow = { enabled: true ...}
-                //   special.shadow = false;
-                // and
-                //   special.anchor is a JSXGraph element
-                attr[e2] = o;
             }
         }
     }
-}
 
     /**
      * Convert an object to a new object containing only
@@ -1374,33 +1374,33 @@ export class Type {
      * // return {radiuspoint: {visible: false}}
      */
     static keysToLowerCase(obj) {
-    var key, val,
-        keys = Object.keys(obj),
-        n = keys.length,
-        newObj = {};
+        var key, val,
+            keys = Object.keys(obj),
+            n = keys.length,
+            newObj = {};
 
-    if (typeof obj !== 'object') {
-        return obj;
-    }
+        if (typeof obj !== 'object') {
+            return obj;
+        }
 
-    while (n--) {
-        key = keys[n];
-        if (obj.hasOwnProperty(key)) {
-            // We recurse into an object only if it is
-            // neither a DOM node nor an JSXGraph object
-            val = obj[key];
-            if (typeof val === 'object' && val !== null &&
-                !this.isArray(val) &&
-                !this.exists(val.nodeType) &&
-                !this.exists(val.board)) {
-                newObj[key.toLowerCase()] = this.keysToLowerCase(val);
-            } else {
-                newObj[key.toLowerCase()] = val;
+        while (n--) {
+            key = keys[n];
+            if (obj.hasOwnProperty(key)) {
+                // We recurse into an object only if it is
+                // neither a DOM node nor an JSXGraph object
+                val = obj[key];
+                if (typeof val === 'object' && val !== null &&
+                    !this.isArray(val) &&
+                    !this.exists(val.nodeType) &&
+                    !this.exists(val.board)) {
+                    newObj[key.toLowerCase()] = this.keysToLowerCase(val);
+                } else {
+                    newObj[key.toLowerCase()] = val;
+                }
             }
         }
+        return newObj;
     }
-    return newObj;
-}
 
     /**
      * Generates an attributes object that is filled with default values from the Options object
@@ -1411,97 +1411,97 @@ export class Type {
      * @returns {Object} The resulting attributes object
      */
     static copyAttributes(attributes, options, ...s) {
-    var a, arg, i, len, o, isAvail,
-        primitives = {
-            circle: 1,
-            curve: 1,
-            foreignobject: 1,
-            image: 1,
-            line: 1,
-            point: 1,
-            polygon: 1,
-            text: 1,
-            ticks: 1,
-            integral: 1
-        };
+        var a, arg, i, len, o, isAvail,
+            primitives = {
+                circle: 1,
+                curve: 1,
+                foreignobject: 1,
+                image: 1,
+                line: 1,
+                point: 1,
+                polygon: 1,
+                text: 1,
+                ticks: 1,
+                integral: 1
+            };
 
-    len = arguments.length;
-    if (len < 3 || primitives[s[0]]) {
-        // Default options from Options.elements
-        a = Type.deepCopy(options.elements, null, true);
-    } else {
-        a = {};
-    }
-
-    // Only the layer of the main element is set.
-    if (len < 4 && this.exists(s) && this.exists(options.layer[s[0]])) {
-        a.layer = options.layer[s[0]];
-    }
-
-    // Default options from the specific element like 'line' in
-    //     copyAttribute(attributes, board.options, 'line')
-    // but also like in
-    //     Type.copyAttributes(attributes, board.options, 'view3d', 'az', 'slider');
-    o = options;
-    isAvail = true;
-    for (i = 2; i < len; i++) {
-        arg = arguments[i];
-        if (this.exists(o[arg])) {
-            o = o[arg];
+        len = arguments.length;
+        if (len < 3 || primitives[s[0]]) {
+            // Default options from Options.elements
+            a = Type.deepCopy(options.elements, null, true);
         } else {
-            isAvail = false;
-            break;
+            a = {};
         }
-    }
-    if (isAvail) {
-        a = Type.deepCopy(a, o, true);
-    }
 
-    // Merge the specific options given in the parameter 'attributes'
-    // into the default options.
-    // Additionally, we step into a sub-element of attribute like line.point1 -
-    // in case it is supplied as in
-    //     copyAttribute(attributes, board.options, 'line', 'point1')
-    // In this case we would merge attributes.point1 into the global line.point1 attributes.
-    o = (typeof attributes === 'object') ? this.keysToLowerCase(attributes) : {};
-    isAvail = true;
-    for (i = 3; i < len; i++) {
-        arg = arguments[i].toLowerCase();
-        if (this.exists(o[arg])) {
-            o = o[arg];
-        } else {
-            isAvail = false;
-            break;
+        // Only the layer of the main element is set.
+        if (len < 4 && this.exists(s) && this.exists(options.layer[s[0]])) {
+            a.layer = options.layer[s[0]];
         }
-    }
-    if (isAvail) {
-        this.mergeAttr(a, o, true);
-    }
 
-    if (arguments[2] === 'board') {
-        // For board attributes we are done now.
+        // Default options from the specific element like 'line' in
+        //     copyAttribute(attributes, board.options, 'line')
+        // but also like in
+        //     Type.copyAttributes(attributes, board.options, 'view3d', 'az', 'slider');
+        o = options;
+        isAvail = true;
+        for (i = 2; i < len; i++) {
+            arg = arguments[i];
+            if (this.exists(o[arg])) {
+                o = o[arg];
+            } else {
+                isAvail = false;
+                break;
+            }
+        }
+        if (isAvail) {
+            a = Type.deepCopy(a, o, true);
+        }
+
+        // Merge the specific options given in the parameter 'attributes'
+        // into the default options.
+        // Additionally, we step into a sub-element of attribute like line.point1 -
+        // in case it is supplied as in
+        //     copyAttribute(attributes, board.options, 'line', 'point1')
+        // In this case we would merge attributes.point1 into the global line.point1 attributes.
+        o = (typeof attributes === 'object') ? this.keysToLowerCase(attributes) : {};
+        isAvail = true;
+        for (i = 3; i < len; i++) {
+            arg = arguments[i].toLowerCase();
+            if (this.exists(o[arg])) {
+                o = o[arg];
+            } else {
+                isAvail = false;
+                break;
+            }
+        }
+        if (isAvail) {
+            this.mergeAttr(a, o, true);
+        }
+
+        if (arguments[2] === 'board') {
+            // For board attributes we are done now.
+            return a;
+        }
+
+        // Special treatment of labels
+        o = options;
+        isAvail = true;
+        for (i = 2; i < len; i++) {
+            arg = arguments[i];
+            if (this.exists(o[arg])) {
+                o = o[arg];
+            } else {
+                isAvail = false;
+                break;
+            }
+        }
+        if (isAvail && this.exists(o.label)) {
+            a.label = Type.deepCopy(o.label, a.label, true);
+        }
+        a.label = Type.deepCopy(options.label, a.label, true);
+
         return a;
     }
-
-    // Special treatment of labels
-    o = options;
-    isAvail = true;
-    for (i = 2; i < len; i++) {
-        arg = arguments[i];
-        if (this.exists(o[arg])) {
-            o = o[arg];
-        } else {
-            isAvail = false;
-            break;
-        }
-    }
-    if (isAvail && this.exists(o.label)) {
-        a.label = Type.deepCopy(o.label, a.label, true);
-    }
-    a.label = Type.deepCopy(options.label, a.label, true);
-
-    return a;
-}
 
     /**
      * Copy all prototype methods from object "superObject" to object
@@ -1514,15 +1514,15 @@ export class Type {
      * @private
      */
     static copyPrototypeMethods(subObject, superObject, constructorName) {
-    var key;
+        var key;
 
-    subObject.prototype[constructorName] = superObject.prototype.constructor;
-    for (key in superObject.prototype) {
-        if (superObject.prototype.hasOwnProperty(key)) {
-            subObject.prototype[key] = superObject.prototype[key];
+        subObject.prototype[constructorName] = superObject.prototype.constructor;
+        for (key in superObject.prototype) {
+            if (superObject.prototype.hasOwnProperty(key)) {
+                subObject.prototype[key] = superObject.prototype[key];
+            }
         }
     }
-}
 
     /**
      * Create a stripped down version of a JSXGraph element for cloning to the background.
@@ -1533,49 +1533,49 @@ export class Type {
      * @private
      */
     static getCloneObject(el) {
-    var obj, key,
-        copy: LooseObject = {};
+        var obj, key,
+            copy: LooseObject = {};
 
-    copy.id = el.id + "T" + el.numTraces;
-    el.numTraces += 1;
+        copy.id = el.id + "T" + el.numTraces;
+        el.numTraces += 1;
 
-    copy.coords = el.coords;
-    obj = this.deepCopy(el.visProp, el.visProp.traceattributes, true);
-    copy.visProp = {};
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            if (
-                key.indexOf('aria') !== 0 &&
-                key.indexOf('highlight') !== 0 &&
-                key.indexOf('attractor') !== 0 &&
-                key !== 'label' &&
-                key !== 'needsregularupdate' &&
-                key !== 'infoboxdigits'
-            ) {
-                copy.visProp[key] = el.eval(obj[key]);
+        copy.coords = el.coords;
+        obj = this.deepCopy(el.visProp, el.visProp.traceattributes, true);
+        copy.visProp = {};
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (
+                    key.indexOf('aria') !== 0 &&
+                    key.indexOf('highlight') !== 0 &&
+                    key.indexOf('attractor') !== 0 &&
+                    key !== 'label' &&
+                    key !== 'needsregularupdate' &&
+                    key !== 'infoboxdigits'
+                ) {
+                    copy.visProp[key] = el.eval(obj[key]);
+                }
             }
         }
+        copy.evalVisProp = function (val) {
+            return copy.visProp[val];
+        };
+        copy.eval = function (val) {
+            return val;
+        };
+
+        copy.visProp.layer = el.board.options.layer.trace;
+        copy.visProp.tabindex = null;
+        copy.visProp.highlight = false;
+        copy.board = el.board;
+        copy.elementClass = el.elementClass;
+
+        this.clearVisPropOld(copy);
+        copy.visPropCalc = {
+            visible: el.evalVisProp('visible')
+        };
+
+        return copy;
     }
-    copy.evalVisProp = function (val) {
-        return copy.visProp[val];
-    };
-    copy.eval = function (val) {
-        return val;
-    };
-
-    copy.visProp.layer = el.board.options.layer.trace;
-    copy.visProp.tabindex = null;
-    copy.visProp.highlight = false;
-    copy.board = el.board;
-    copy.elementClass = el.elementClass;
-
-    this.clearVisPropOld(copy);
-    copy.visPropCalc = {
-        visible: el.evalVisProp('visible')
-    };
-
-    return copy;
-}
 
 
     /**
@@ -1584,29 +1584,29 @@ export class Type {
      * @returns {GeometryElement}
      */
     static clearVisPropOld(el) {
-    el.visPropOld = {
-        cssclass: "",
-        cssdefaultstyle: "",
-        cssstyle: "",
-        fillcolor: "",
-        fillopacity: "",
-        firstarrow: false,
-        fontsize: -1,
-        lastarrow: false,
-        left: -100000,
-        linecap: "",
-        shadow: false,
-        strokecolor: "",
-        strokeopacity: "",
-        strokewidth: "",
-        tabindex: -100000,
-        transitionduration: 0,
-        top: -100000,
-        visible: null
-    };
+        el.visPropOld = {
+            cssclass: "",
+            cssdefaultstyle: "",
+            cssstyle: "",
+            fillcolor: "",
+            fillopacity: "",
+            firstarrow: false,
+            fontsize: -1,
+            lastarrow: false,
+            left: -100000,
+            linecap: "",
+            shadow: false,
+            strokecolor: "",
+            strokeopacity: "",
+            strokewidth: "",
+            tabindex: -100000,
+            transitionduration: 0,
+            top: -100000,
+            visible: null
+        };
 
-    return el;
-}
+        return el;
+    }
 
     /**
      * Checks if an object contains a key, whose value equals to val.
@@ -1615,18 +1615,18 @@ export class Type {
      * @returns {Boolean}
      */
     static isInObject(obj, val) {
-    var el;
+        var el;
 
-    for (el in obj) {
-        if (obj.hasOwnProperty(el)) {
-            if (obj[el] === val) {
-                return true;
+        for (el in obj) {
+            if (obj.hasOwnProperty(el)) {
+                if (obj[el] === val) {
+                    return true;
+                }
             }
         }
-    }
 
-    return false;
-}
+        return false;
+    }
 
     /**
      * Replaces all occurences of &amp; by &amp;amp;, &gt; by &amp;gt;, and &lt; by &amp;lt;.
@@ -1634,8 +1634,8 @@ export class Type {
      * @returns {String}
      */
     static escapeHTML(str) {
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
 
     /**
      * Eliminates all substrings enclosed by &lt; and &gt; and replaces all occurences of
@@ -1644,14 +1644,14 @@ export class Type {
      * @returns {String}
      */
     static unescapeHTML(str) {
-    // This regex is NOT insecure. We are replacing everything found with ''
-    /*jslint regexp:true*/
-    return str
-        .replace(/<\/?[^>]+>/gi, "")
-        .replace(/&amp;/g, "&")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">");
-}
+        // This regex is NOT insecure. We are replacing everything found with ''
+        /*jslint regexp:true*/
+        return str
+            .replace(/<\/?[^>]+>/gi, "")
+            .replace(/&amp;/g, "&")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">");
+    }
 
     /**
      * Makes a string lower case except for the first character which will be upper case.
@@ -1659,8 +1659,8 @@ export class Type {
      * @returns {String} The capitalized string.
      */
     static capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
-}
+        return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
+    }
 
     /**
      * Make numbers given as strings nicer by removing all unnecessary leading and trailing zeroes.
@@ -1668,19 +1668,19 @@ export class Type {
      * @returns {String}
      */
     static trimNumber(str) {
-    str = str.replace(/^0+/, "");
-    str = str.replace(/0+$/, "");
+        str = str.replace(/^0+/, "");
+        str = str.replace(/0+$/, "");
 
-    if (str[str.length - 1] === "." || str[str.length - 1] === ",") {
-        str = str.slice(0, -1);
+        if (str[str.length - 1] === "." || str[str.length - 1] === ",") {
+            str = str.slice(0, -1);
+        }
+
+        if (str[0] === "." || str[0] === ",") {
+            str = "0" + str;
+        }
+
+        return str;
     }
-
-    if (str[0] === "." || str[0] === ",") {
-        str = "0" + str;
-    }
-
-    return str;
-}
 
     /**
      * Filter an array of elements.
@@ -1689,63 +1689,63 @@ export class Type {
      * @returns {Array}
      */
     static filterElements(list, filter) {
-    var i,
-        f,
-        item,
-        flower,
-        value,
-        visPropValue,
-        pass,
-        l = list.length,
-        result = [];
+        var i,
+            f,
+            item,
+            flower,
+            value,
+            visPropValue,
+            pass,
+            l = list.length,
+            result = [];
 
-    if (this.exists(filter) && typeof filter !== "function" && typeof filter !== 'object') {
-        return result;
-    }
+        if (this.exists(filter) && typeof filter !== "function" && typeof filter !== 'object') {
+            return result;
+        }
 
-    for (i = 0; i < l; i++) {
-        pass = true;
-        item = list[i];
+        for (i = 0; i < l; i++) {
+            pass = true;
+            item = list[i];
 
-        if (typeof filter === 'object') {
-            for (f in filter) {
-                if (filter.hasOwnProperty(f)) {
-                    flower = f.toLowerCase();
+            if (typeof filter === 'object') {
+                for (f in filter) {
+                    if (filter.hasOwnProperty(f)) {
+                        flower = f.toLowerCase();
 
-                    if (typeof item[f] === 'function') {
-                        value = item[f]();
-                    } else {
-                        value = item[f];
-                    }
+                        if (typeof item[f] === 'function') {
+                            value = item[f]();
+                        } else {
+                            value = item[f];
+                        }
 
-                    if (item.visProp && typeof item.visProp[flower] === 'function') {
-                        visPropValue = item.visProp[flower]();
-                    } else {
-                        visPropValue = item.visProp && item.visProp[flower];
-                    }
+                        if (item.visProp && typeof item.visProp[flower] === 'function') {
+                            visPropValue = item.visProp[flower]();
+                        } else {
+                            visPropValue = item.visProp && item.visProp[flower];
+                        }
 
-                    if (typeof filter[f] === 'function') {
-                        pass = filter[f](value) || filter[f](visPropValue);
-                    } else {
-                        pass = value === filter[f] || visPropValue === filter[f];
-                    }
+                        if (typeof filter[f] === 'function') {
+                            pass = filter[f](value) || filter[f](visPropValue);
+                        } else {
+                            pass = value === filter[f] || visPropValue === filter[f];
+                        }
 
-                    if (!pass) {
-                        break;
+                        if (!pass) {
+                            break;
+                        }
                     }
                 }
+            } else if (typeof filter === 'function') {
+                pass = filter(item);
             }
-        } else if (typeof filter === 'function') {
-            pass = filter(item);
+
+            if (pass) {
+                result.push(item);
+            }
         }
 
-        if (pass) {
-            result.push(item);
-        }
+        return result;
     }
-
-    return result;
-}
 
     /**
      * Remove all leading and trailing whitespaces from a given string.
@@ -1753,12 +1753,12 @@ export class Type {
      * @returns {String}
      */
     static trim(str) {
-    // str = str.replace(/^\s+/, '');
-    // str = str.replace(/\s+$/, '');
-    //
-    // return str;
-    return str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
-}
+        // str = str.replace(/^\s+/, '');
+        // str = str.replace(/\s+$/, '');
+        //
+        // return str;
+        return str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
+    }
 
     /**
      * Convert a floating point number to a string integer + fraction.
@@ -1772,36 +1772,36 @@ export class Type {
      * @see Geometry.decToFraction
      */
     static toFraction(x, useTeX, order = 0.001) {
-    var arr = JSXMath.decToFraction(x, order),
-        str = '';
+        var arr = JSXMath.decToFraction(x, order),
+            str = '';
 
-    if (arr[1] === 0 && arr[2] === 0) {
-        // 0
-        str += '0';
-    } else {
-        // Sign
-        if (arr[0] < 0) {
-            str += '-';
-        }
-        if (arr[2] === 0) {
-            // Integer
-            str += arr[1];
-        } else if (!(arr[2] === 1 && arr[3] === 1)) {
-            // Proper fraction
-            if (arr[1] !== 0) {
-                // Absolute value larger than 1
-                str += arr[1] + ' ';
+        if (arr[1] === 0 && arr[2] === 0) {
+            // 0
+            str += '0';
+        } else {
+            // Sign
+            if (arr[0] < 0) {
+                str += '-';
             }
-            // Add fractional part
-            if (useTeX === true) {
-                str += '\\frac{' + arr[2] + '}{' + arr[3] + '}';
-            } else {
-                str += arr[2] + '/' + arr[3];
+            if (arr[2] === 0) {
+                // Integer
+                str += arr[1];
+            } else if (!(arr[2] === 1 && arr[3] === 1)) {
+                // Proper fraction
+                if (arr[1] !== 0) {
+                    // Absolute value larger than 1
+                    str += arr[1] + ' ';
+                }
+                // Add fractional part
+                if (useTeX === true) {
+                    str += '\\frac{' + arr[2] + '}{' + arr[3] + '}';
+                } else {
+                    str += arr[2] + '/' + arr[3];
+                }
             }
         }
+        return str;
     }
-    return str;
-}
 
     /**
      * Concat array src to array dest.
@@ -1815,13 +1815,13 @@ export class Type {
      * @returns Array
      */
     static concat(dest, src) {
-    var i,
-        le = src.length;
-    for (i = 0; i < le; i++) {
-        dest.push(src[i]);
+        var i,
+            le = src.length;
+        for (i = 0; i < le; i++) {
+            dest.push(src[i]);
+        }
+        return dest;
     }
-    return dest;
-}
 
     /**
      * Convert HTML tags to entities or use html_sanitize if the google caja html sanitizer is available.
@@ -1830,24 +1830,24 @@ export class Type {
      * @returns {String} Sanitized string
      */
     static sanitizeHTML(str, caja = false) {
-    if (typeof (window as any).html_sanitize === "function" && caja) {
-        return (window as any).html_sanitize(
-            str,
-            function () {
-                return undefined;
-            },
-            function (id) {
-                return id;
-            }
-        );
-    }
+        if (typeof (window as any).html_sanitize === "function" && caja) {
+            return (window as any).html_sanitize(
+                str,
+                function () {
+                    return undefined;
+                },
+                function (id) {
+                    return id;
+                }
+            );
+        }
 
-    if (str && typeof str === 'string') {
-        str = str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
+        if (str && typeof str === 'string') {
+            str = str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
 
-    return str;
-}
+        return str;
+    }
 
     /**
      * If <tt>s</tt> is a slider, it returns the sliders value, otherwise it just returns the given value.
@@ -1855,12 +1855,12 @@ export class Type {
      * @returns {*} s.Value() if s is an element of type slider, s otherwise
      */
     static evalSlider(s) {
-    if (s && s.type === OBJECT_TYPE.GLIDER && typeof s.Value === 'function') {
-        return s.Value();
-    }
+        if (s && s.type === OBJECT_TYPE.GLIDER && typeof s.Value === 'function') {
+            return s.Value();
+        }
 
-    return s;
-}
+        return s;
+    }
 
     /**
      * Convert a string containing a MAXIMA /STACK expression into a JSXGraph / JessieCode string
@@ -1884,22 +1884,22 @@ export class Type {
      * @returns String
      */
     static stack2jsxgraph(str) {
-    var t;
+        var t;
 
-    t = str.
-        replace(/%pi/g, 'PI').
-        replace(/%e/g, 'EULER').
-        replace(/%phi/g, '1.618033988749895').
-        replace(/%gamma/g, '0.5772156649015329').
-        trim();
+        t = str.
+            replace(/%pi/g, 'PI').
+            replace(/%e/g, 'EULER').
+            replace(/%phi/g, '1.618033988749895').
+            replace(/%gamma/g, '0.5772156649015329').
+            trim();
 
-    // String containing array -> array containing strings
-    if (t[0] === '[' && t[t.length - 1] === ']') {
-        t = t.slice(1, -1).split(/\s*,\s*/);
+        // String containing array -> array containing strings
+        if (t[0] === '[' && t[t.length - 1] === ']') {
+            t = t.slice(1, -1).split(/\s*,\s*/);
+        }
+
+        return t;
     }
-
-    return t;
-}
 
 
     /**
@@ -1908,31 +1908,75 @@ export class Type {
      * @returns {Object} The resulting visProp object
      */
     static initVisProps(...s) { //: LooseObject[]) {
-    // options is ALWAYS the Options object but lowercase
-    // if (dbug) console.warn(`%c type: copyAttibutes(attributes,  s='${JSON.stringify(s).substring(0, 30)}' )'`, dbugColor, s)
+        // options is ALWAYS the Options object but lowercase
+        // if (dbug) console.warn(`%c type: copyAttibutes(attributes,  s='${JSON.stringify(s).substring(0, 30)}' )'`, dbugColor, s)
 
-    // tbtb - what to do with this?
-    let primitives = {
-        circle: 1,
-        curve: 1,
-        foreignobject: 1,
-        image: 1,
-        line: 1,
-        point: 1,
-        polygon: 1,
-        text: 1,
-        ticks: 1,
-        integral: 1
-    };
+        // tbtb - what to do with this?
+        let primitives = {
+            circle: 1,
+            curve: 1,
+            foreignobject: 1,
+            image: 1,
+            line: 1,
+            point: 1,
+            polygon: 1,
+            text: 1,
+            ticks: 1,
+            integral: 1
+        };
 
 
-    let a: LooseObject = {}
-    s.map((visProps) => {
-        this.mergeAttr(a, visProps, true)
-    })
+        // let a: LooseObject = {}
+        // s.map((visProps) => {
+        //     Object.assign(a, Type.simpleClone(visProps));
+        // })
 
-    return a;
-}
+        let a: LooseObject = {}
+        s.map((visProps) => {
+            this.mergeAttr(a, visProps, true)
+        })
+
+    // console.warn('initVisProps',Type.getObjectDiff(a,b),a,b)
+        return a;
+    }
+
+    /**
+     * Simple object cloning
+     */
+    static simpleClone(obj: LooseObject) {   // https://stackoverflow.com/questions/728360/how-do-i-correctly-clone-a-javascript-object
+        var copy;
+
+        // Handle the 3 simple types, and null or undefined
+        if (null == obj || "object" != typeof obj) return obj;
+
+        // Handle Date
+        if (obj instanceof Date) {
+            copy = new Date();
+            copy.setTime(obj.getTime());
+            return copy;
+        }
+
+        // Handle Array
+        if (obj instanceof Array) {
+            copy = [];
+            for (var i = 0, len = obj.length; i < len; i++) {
+                copy[i] = Type.simpleClone(obj[i]);
+            }
+            return copy;
+        }
+
+        // Handle Object
+        if (obj instanceof Object) {
+            copy = {};
+            for (var attr in obj) {
+                if (obj.hasOwnProperty(attr)) copy[attr] = Type.simpleClone(obj[attr]);
+            }
+            return copy;
+        }
+
+        throw new Error("Unable to copy obj! Its type isn't supported.");
+    }
+
 
     /**
      * Simple DIFF for two objects, helpful for debugging
@@ -1941,45 +1985,45 @@ export class Type {
      * @returns
      */
     static getObjectDiff(a: object, b: object): object {
-    const changes = {};
+        const changes = {};
 
-    // Check current object's properties
-    for (const [key, value] of Object.entries(b)) {
-        if (!(key in a)) {
-            changes[key] = {
-                expect: undefined,
-                found: value
-            };
-            continue;
+        // Check current object's properties
+        for (const [key, value] of Object.entries(b)) {
+            if (!(key in a)) {
+                changes[key] = {
+                    expect: undefined,
+                    found: value
+                };
+                continue;
+            }
+
+            const originalValue = a[key];
+            const currentValue = value;
+
+            // Handle different types of comparisons
+            if (
+                originalValue !== currentValue &&
+                String(originalValue) !== String(currentValue) &&
+                JSON.stringify(originalValue) !== JSON.stringify(currentValue)
+            ) {
+                changes[key] = {
+                    expect: originalValue,
+                    found: currentValue
+                };
+            }
         }
 
-        const originalValue = a[key];
-        const currentValue = value;
-
-        // Handle different types of comparisons
-        if (
-            originalValue !== currentValue &&
-            String(originalValue) !== String(currentValue) &&
-            JSON.stringify(originalValue) !== JSON.stringify(currentValue)
-        ) {
-            changes[key] = {
-                expect: originalValue,
-                found: currentValue
-            };
+        // Check for removed properties
+        for (const key of Object.keys(a)) {
+            if (!(key in b)) {
+                changes[key] = {
+                    expect: a[key],
+                    found: undefined
+                };
+            }
         }
+
+        return changes;
     }
-
-    // Check for removed properties
-    for (const key of Object.keys(a)) {
-        if (!(key in b)) {
-            changes[key] = {
-                expect: a[key],
-                found: undefined
-            };
-        }
-    }
-
-    return changes;
-}
 
 }

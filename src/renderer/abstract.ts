@@ -1,5 +1,5 @@
-const dbug = (elem/*:GeometryElement*/) => elem && elem.id === "jxgBoard1L9";
-const dbugColor = `color:red;background-color:#00ffc0`;
+const dbug = (elem) => elem && elem.id === "jxgBoard1L9";
+const dbugColor = `color:white;background-color:#0080ff`;
 
 /*
     Copyright 2008-2025
@@ -745,12 +745,10 @@ export abstract class AbstractRenderer {
         if (dbug(el))
             console.warn(`%c abstract: updateLinewithEndings(${el.id}l, ${JSON.stringify(c1.scrCoords)},${JSON.stringify(c2.scrCoords)})`, dbugColor)
 
-
         margin = el.evalVisProp('margin');
 
-
-        // tbtb  ERROR HERE:   Geometry.calcStraight(el, c1, c2, margin);
-        console.warn('fix Geometry.calcStraight !!  it mangles coords')
+        // Geometry.calcStraight(el, c1, c2, margin);
+        console.warn('%c Abstract: fix Geometry.calcStraight !!  it mangles coords',dbugColor)
 
         this.handleTouchpoints(el, c1, c2, arrowData);
 

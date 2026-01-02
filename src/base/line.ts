@@ -133,7 +133,8 @@ export class Line extends GeometryElement {
         this.elementGetLabelAnchor = () => this.getLabelAnchor();
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
-
+        this.elType = 'line';
+        this.visProp = Type.initVisProps(Options.board, Options.elements, Options.line, attributes)
 
         this.point1 = this.board.select(parents[0])
         this.point2 = this.board.select(parents[1]);

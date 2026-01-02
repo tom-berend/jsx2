@@ -120,7 +120,7 @@ export class Polygon extends GeometryElement {
 
 
         // let attr_line = Type.copyAttributes(attributes, board.options, "polygon", 'borders');
-        let attr_line= Type.initVisProps(Options.line, Options.polygon.borders, attributes)
+        let attr_line= Type.initVisProps(Options.elements, Options.line, Options.polygon.borders, attributes)
 
         console.log('attr_line',attr_line)
         this.attr_line = attr_line;

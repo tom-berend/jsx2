@@ -48,6 +48,7 @@ import { Numerics } from "./numerics.js";
 import { Type } from "../utils/type.js";
 import { Expect } from "../utils/expect.js";
 import { Board } from "../base/board.js";
+import { GeometryElement } from "../base/element.js";
 
 /**
  * Math.Geometry namespace definition. This namespace holds geometrical algorithms,
@@ -640,7 +641,7 @@ export class Geometry {
      *
      * @returns {Number}
      */
-    static signedPolygon(p, sort=true) {
+    static signedPolygon(p, sort = true) {
         var i,
             N,
             A = 0,
@@ -1183,7 +1184,7 @@ export class Geometry {
      * @see Line
      * @see JXG2.Line
      */
-    static calcStraight(el, point1, point2, margin) {
+    static calcStraight(el: GeometryElement, point1: Coords, point2: Coords, margin = 10) {
         var takePoint1,
             takePoint2,
             intersection,
@@ -1193,11 +1194,8 @@ export class Geometry {
             straightLast,
             c, p1, p2;
 
-        if (!Type.exists(margin)) {
-            // Enlarge the drawable region slightly. This hides the small sides
-            // of thick lines in most cases.
-            margin = 10;
-        }
+        // Margin enlarged the drawable region slightly. This hides the small sides
+        // of thick lines in most cases.
 
         straightFirst = el.evalVisProp('straightfirst');
         straightLast = el.evalVisProp('straightlast');
@@ -1323,13 +1321,13 @@ export class Geometry {
         }
 
         if (p1) {
-            //point1.setCoordinates(COORDS_BY.USER, p1.usrCoords.slice(1));
-            point1.setCoordinates(COORDS_BY.USER, p1.usrCoords);
+            point1.setCoordinates(COORDS_BY.USER, p1.usrCoords.slice(1));
+            // point1.setCoordinates(COORDS_BY.USER, p1.usrCoords);
         }
 
         if (p2) {
-            //point2.setCoordinates(COORDS_BY.USER, p2.usrCoords.slice(1));
-            point2.setCoordinates(COORDS_BY.USER, p2.usrCoords);
+            point2.setCoordinates(COORDS_BY.USER, p2.usrCoords.slice(1));
+            // point2.setCoordinates(COORDS_BY.USER, p2.usrCoords);
         }
     }
 
@@ -1672,7 +1670,7 @@ export class Geometry {
      *                           regarded outside if the winding number is zero,
      *                           inside otherwise.
      */
-    static windingNumber(usrCoords, path, doNotClosePath=false) {
+    static windingNumber(usrCoords, path, doNotClosePath = false) {
         var wn = 0,
             le = path.length,
             x = usrCoords[1],
@@ -1820,7 +1818,7 @@ export class Geometry {
      * </script><pre>
      *
      */
-    static pnpoly(x_in:number, y_in:number, path, coord_type:COORDS_BY, board:Board) {
+    static pnpoly(x_in: number, y_in: number, path, coord_type: COORDS_BY, board: Board) {
         var i, j, vi, vj, len,
             x, y, crds,
             v = path,

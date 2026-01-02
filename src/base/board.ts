@@ -876,7 +876,7 @@ export class Board extends Events {
 
         // since this.infobox should never be null
         // this.infobox = new Text(this, [0, 0], {}, '[0,0]')
-        this.infobox = new Text(this, [0, 0, '[0,0]'], {})
+        this.infobox = new Text(this, [0, 0, '[0,0]'], {islabel:false})
 
         this.displayInfobox(false)
 

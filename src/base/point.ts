@@ -104,7 +104,8 @@ export class Point extends CoordsElement {
 
 
         this.elType = 'point';
-        this.visProp = Type.initVisProps(Options.board, Options.elements, Options.point, attributes)
+        this.visProp = Type.initVisProps(Options.elements, Options.point, attributes)
+
 
         /* Register point on board. */
         this.id = this.board.setId(this, 'P');
