@@ -43,7 +43,7 @@ const dbugColor = `color:red;background-color:blue`;
 import { Options } from "../options.js";
 import { JSXMath } from "../math/math.js";
 import { Geometry } from "../math/geometry.js";
-import { Numerics  } from "../math/numerics.js";
+import { Numerics } from "../math/numerics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { GeometryElement } from "./element.js";
 import { Type } from "../utils/type.js";
@@ -115,7 +115,10 @@ export class Point extends CoordsElement {
 
         this.board.renderer.drawPoint(this);
 
-        this.element = this.board.select(attributes['anchor']);
+
+        console.log(this.evalVisProp('anchor'))
+        if (this.evalVisProp('anchor'))
+            this.element = this.board.select(this.evalVisProp('anchor'));
 
         this.coordsElementInit(parents, this.visProp)
 
@@ -729,7 +732,7 @@ export function createGlider(board, parents, attributes) {
  *   var ipex1_i = ipex1_board.create('intersection', [ipex1_c1, ipex1_l1, 0]);
  * </script><pre>
  */
-export function createIntersectionPoint (board, parents, attributes) {
+export function createIntersectionPoint(board, parents, attributes) {
     var el, el1, el2, func,
         i, j,
         attr = Type.copyAttributes(attributes, board.options, 'intersection');

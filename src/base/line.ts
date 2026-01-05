@@ -61,6 +61,7 @@ import { Point, createPoint } from "../base/point.js";
 import { Text } from "../base/text.js";
 import { Type } from "../utils/type.js";
 import { CoordsElement } from "../base/coordselement.js";
+import { LooseObject } from "../interfaces.js";
 
 /**
  * The Line class is a basic class for all kind of line objects, e.g. line, arrow, and axis. It is usually defined by two points and can
@@ -136,14 +137,9 @@ export class Line extends GeometryElement {
         this.elType = 'line';
         this.visProp = Type.initVisProps(Options.board, Options.elements, Options.line, attributes)
 
-        this.point1 = this.board.select(parents[0])
-        this.point2 = this.board.select(parents[1]);
-
-
-        /* Register line at board */
-        this.id = this.board.setId(this, 'L');
-        this.board.renderer.drawLine(this);
-        this.board.finalizeAdding(this);
+        let points = Type.providePoints(board,parents,attributes)
+        this.point1 = points[0]
+        this.point2 = points[1]
 
         this.elType = 'line';
 
@@ -165,6 +161,12 @@ export class Line extends GeometryElement {
         }
 
         this.inherits.push(this.point1, this.point2);
+
+                /* Register line at board */
+        this.id = this.board.setId(this, 'L');
+        this.board.renderer.drawLine(this);
+        this.board.finalizeAdding(this);
+
 
         this.updateStdform(); // This is needed in the following situation:
         // * the line is defined by three coordinates
@@ -1323,8 +1325,8 @@ export function createLine(board, parents, attributes) {
 
         if (Array.isArray(parents[0]) && parents[0].length > 1) {
             p1 = board.create("point", parents[0], attr);
-        } else if (Type.isString(parents[0]) || Type.isPoint(parents[0])) {
-            p1 = board.select(parents[0]);
+        } else if (Type.isPoint(parents[0])) {
+            p1 = parents[0];
         } else if (Type.isFunction(parents[0]) && Type.isPoint(parents[0]())) {
             p1 = parents[0]();
             constrained = true;
@@ -1355,8 +1357,8 @@ export function createLine(board, parents, attributes) {
             p2 = board.create("point", [parents[0].point2, parents[1]], attr);
         } else if (Array.isArray(parents[1]) && parents[1].length > 1) {
             p2 = board.create("point", parents[1], attr);
-        } else if (Type.isString(parents[1]) || Type.isPoint(parents[1])) {
-            p2 = board.select(parents[1]);
+        } else if (Type.isPoint(parents[1])) {
+            p2 = parents[1];
         } else if (Type.isFunction(parents[1]) && Type.isPoint(parents[1]())) {
             p2 = parents[1]();
             constrained = true;
@@ -1604,11 +1606,12 @@ export function createLine(board, parents, attributes) {
  * </script><pre>
  *
  */
-export function createSegment(board, parents, attributes) {
+export function createSegment(board, parents, attributes:LooseObject={}) {
     var el, attr;
 
     attributes.straightFirst = false;
     attributes.straightLast = false;
+
     // attr = Type.copyAttributes(attributes, board.options, 'segment');
 
     el = createLine(board, parents.slice(0, 2), attributes);

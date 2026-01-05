@@ -117,6 +117,8 @@ import { MeasureMemoryOptions } from "vm";
 // Board and GeometryElement extend Events.  CoordsElement extends Coords.
 
 
+// NOTE: a class is a custom object which is slightly different from an object literal.
+//   but there is no different for the static values, which ARE object literals.
 
 export class Options {
 
@@ -1510,14 +1512,9 @@ export class Options {
 
     /* special segment options */
     static segment: SegmentOptions = {
-        /**#@+
-         * @visprop
-         */
-
         label: {
             position: 'top'
         }
-        /**#@-*/
     }
 
     static semicircle: SemicircleOptions = {

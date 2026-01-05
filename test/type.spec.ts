@@ -1,4 +1,6 @@
 import { Type } from '../src/utils/type.js';
+import {Options} from '../src/options.js';
+
 
 
 // import { Board } from '../src/base/board.js';
@@ -143,6 +145,7 @@ describe('copyAttributes(attr, special, toLower, ignoreUndefinedSpecials)', () =
         expect(z1).toEqual({ enabled: false, compile: true })
     });
 });
+
 describe('getObjectDiff(a:object, b:object): object)', () => {
     it('Generates an attributes object overwritten by the user specified attributes.', () => {
         let a = { a: true, b: false, c: { d: true } }
@@ -156,3 +159,72 @@ describe('getObjectDiff(a:object, b:object): object)', () => {
     });
 });
 
+
+describe('test EXISTS )', () => {
+    it('exists() only tests for null and undefined', () => {
+        let a: any
+        expect(Type.exists(a)).toBe(false)  // undefined
+        a = undefined
+        expect(Type.exists(a)).toBe(false)  // explicitly set to undefined
+        a = null
+        expect(Type.exists(a)).toBe(false)
+
+        a = () => true
+        expect(Type.exists(a)).toBe(true)
+        a = {}
+        expect(Type.exists(a)).toBe(true)
+        a = 0
+        expect(Type.exists(a)).toBe(true)
+        a = ''
+        expect(Type.exists(a)).toBe(true)
+    });
+});
+
+
+describe('simpleClone()', () => {
+    it('creates a deepcopy of an object', () => {
+        expect(Type.cloneToLowerCase({})).toStrictEqual({})
+        {
+            let original = { a1: 1, a2: 2 }     // basic clone of object, including test that original doesn't change
+            let a = Type.cloneToLowerCase(original)
+            a.a2 = 3
+            expect(a.a2).toBe(3)  // copy should look like original
+            expect(original.a2).toBe(2)    // original should not change
+        }
+        {
+            let original = { a1: [1, 2] }       //  object contains an array
+            let a = Type.cloneToLowerCase(original)
+            a.a1[1] = 3
+            expect(a.a1[1]).toBe(3)
+            expect(original.a1[1]).toBe(2)    // should not change
+
+        }
+        {
+            let original = { a1: {a2:1, a3:2} }       //  object contains an array
+            let a = Type.cloneToLowerCase(original)
+            a.a1.a2 = 3
+            expect(a.a1.a2).toBe(3)
+            expect(original.a1.a2).toBe(1)    // should not change
+        }
+    });
+});
+
+
+
+describe('initVisProps()', () => {
+    it('creates a new object by merging copyies of successive objects', () => {
+        let a = Type.initVisProps()
+        expect(a).toStrictEqual({}) // passed nothing, still returns an object
+        a = {a1:1,a2:2}
+        expect(Type.initVisProps(a)).toStrictEqual({a1:1,a2:2}) // simple copy
+        let b = {a1:2, a3:3}
+        expect(Type.initVisProps(a,b)).toStrictEqual({a1:2,a2:2,a3:3}) // copies b over a
+        let c = {a1:4, c1 :{a1:5}}
+        expect(Type.initVisProps(a,c)).toStrictEqual({a1:4,a2:2,c1:{a1:5}}) // copy with depth
+        expect(Type.initVisProps(a,c.c1)).toStrictEqual({a1:5,a2:2}) // copy with partial !!
+
+        // try with real options.
+        expect(Type.initVisProps(Options.jc)).toStrictEqual({enabled: true, compile: true})
+        expect(Type.initVisProps(Options.jc,{COMPILE:5})).toStrictEqual({enabled: true, compile: 5})
+    });
+});

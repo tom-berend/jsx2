@@ -143,8 +143,8 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
         let coordinates = parents.slice(0, -1)
         this.relativeCoords = new Coords(COORDS_BY.USER, coordinates, board, true, this)  // used by transforms
 
-        this.element = this.board.select(attributes['anchor']);
-        this.addAnchor(this.coords.scrCoords, attributes['islabel'])
+        this.element = this.evalVisProp('anchor');
+        this.addAnchor(this.coords.scrCoords, this.evalVisProp('islabel'))
 
 
 
@@ -187,10 +187,6 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
 
         let tmp;
 
-        // TODO: what was this ???
-        this.element = this.board.select(this.visProp['anchor']);
-        // this.coordsConstructor(coords, this.evalVisProp('islabel'));
-
         // // this.content = "";
         // this.plaintext = "";
         // this.plaintextOld = "";
@@ -217,7 +213,7 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
 
         // Set attribute visible to true. This is necessary to
         // create all sub-elements for button, input and checkbox
-        tmp = this.visProp['visible'];
+        tmp = this.evalVisProp('visible');
         this.visProp['visible'] = true;
         this.setText(this.content);
         // Restore the correct attribute visible.

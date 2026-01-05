@@ -876,7 +876,7 @@ export class Board extends Events {
 
         // since this.infobox should never be null
         // this.infobox = new Text(this, [0, 0], {}, '[0,0]')
-        this.infobox = new Text(this, [0, 0, '[0,0]'], {islabel:false})
+        this.infobox = new Text(this, [0, 0, '[0,0]'], { islabel: false })
 
         this.displayInfobox(false)
 
@@ -4206,6 +4206,11 @@ export class Board extends Events {
             return false;
         }
 
+        // Tab key should be handled by the browser
+        if (evt.keyCode === 9) {
+            return false;
+        }
+
         // dx = Math.round(dx * u) / u;
         // dy = Math.round(dy * u) / u;
 
@@ -4753,6 +4758,8 @@ export class Board extends Events {
             vpsi = el.evalVisProp('showinfobox');
 
         // tbtb - infobox change all this.infobox['thing'] to infobox.thing when Text is converted
+        console.error('need to add infobox back in')
+        return;
 
         if ((!Type.evaluate(this.attr.showinfobox) && vpsi === 'inherit') || !vpsi) {
             return this;
@@ -5931,14 +5938,12 @@ export class Board extends Events {
 
     /**
      * Runs through all elements and calls their update() method.
-     * @param {JXG2.GeometryElement} drag Element that caused the update.
+     * @param {JXG2.GeometryElement} dragId Element that caused the update.
      * @returns {JXG2.Board} Reference to the board
      */
-    updateElements(drag) {
+    updateElements(dragId:string) {
         var el, pEl;
         //var childId, i = 0;
-
-        drag = this.select(drag);
 
         /*
         if (Type.exists(drag)) {
@@ -5961,13 +5966,14 @@ export class Board extends Events {
             // other elements are updated.
             // The difference lies in the treatment of gliders and points based on transformations.
             pEl.elementUpdate()
-            pEl.elementUpdate(!Type.exists(drag) || pEl.id !== drag.id).updateVisibility();
+            pEl.elementUpdate(!Type.exists(dragId) || pEl.id !== dragId)
+            pEl.updateVisibility();
         }
 
         // update groups last
         for (el in this.groups) {
             if (this.groups.hasOwnProperty(el)) {
-                this.groups[el].elementUpdate(drag);
+                this.groups[el].elementUpdate(dragId);
             }
         }
 
@@ -6218,7 +6224,7 @@ export class Board extends Events {
      * @param {JXG2.GeometryElement} [drag] Element that caused the update.
      * @returns {JXG2.Board} Reference to the board
      */
-    update(drag? /*: GeometryElement*/) {
+    update(dragID?:string) {
         var i, len, b, insert, storeActiveEl;
 
         if (this.inUpdate || this.isSuspendedUpdate) {
@@ -6240,8 +6246,8 @@ export class Board extends Events {
             insert = this.renderer.removeToInsertLater(this.renderer.svgRoot);
         }
 
-        if (drag !== undefined)
-            this.prepareUpdate(drag).updateElements(drag).updateConditions();
+        if (dragID !== undefined)
+            this.prepareUpdate(dragID).updateElements(dragID).updateConditions();
         else
             console.warn('Board.update() without specifying element')
 
@@ -7234,8 +7240,10 @@ export class Board extends Events {
             l,
             s = str;
 
-        if (s === null) {
-            return s;
+        if (s === null || s === undefined) return null;
+
+        if (typeof s !== 'string') {
+            throw new Error(`board.select() not a string: ${typeof s}`)
         }
 
         // It's a string, most likely an id or a name.
@@ -7274,10 +7282,14 @@ export class Board extends Events {
             s = null;
         }
 
-        return s;
-
         if (s === null)
             console.error(`select(${str}) returns null`)
+
+        if ( Type.exists(s['id']))
+        console.warn(`%c board: select(str:'${str}') returns '${s == null ? 'null' : s['id']}`, dbugColor)
+
+        return s;
+
 
         return s;
     }

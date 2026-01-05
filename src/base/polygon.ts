@@ -32,7 +32,7 @@
 /*global JXG2:true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { OBJECT_CLASS, OBJECT_TYPE,COORDS_BY } from "./constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "./constants.js";
 import { Coords } from "./coords.js";
 import { Statistics } from "../math/statistics.js";
 import { Geometry } from "../math/geometry.js";
@@ -70,6 +70,7 @@ export class Polygon extends GeometryElement {
 
         let i, l, len, j, p
 
+        attributes = {}
 
 
         this.elementUpdate = () => this.update();
@@ -79,8 +80,7 @@ export class Polygon extends GeometryElement {
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
         this.elType = 'polygon';
-        this.visProp = Type.initVisProps(Options.board, Options.elements, Options.point, Options.line, Options.polygon, attributes)
-        console.log('visProp',this.visProp)
+        this.visProp = Type.initVisProps(Options.board, Options.elements, Options.point, Options.line, Options.segment, Options.polygon, attributes)
 
         this.withLines = this.evalVisProp('withlines');
 
@@ -93,67 +93,68 @@ export class Polygon extends GeometryElement {
          */
         this.vertices = [];
         for (i = 0; i < vertices.length; i++) {
-            this.vertices[i] = this.board.select(vertices[i]);
+            this.vertices[i] = vertices[i];
 
-            // The _is_new flag is replaced by _is_new_pol.
-            // Otherwise, the polygon would disappear if the last border element
-            // is removed (and the point has been provided by coordinates)
-            if (this.vertices[i]._is_new) {
-                delete this.vertices[i]._is_new;
-                this.vertices[i]._is_new_pol = true;
+            //     // The _is_new flag is replaced by _is_new_pol.
+            //     // Otherwise, the polygon would disappear if the last border element
+            //     // is removed (and the point has been provided by coordinates)
+            //     if (this.vertices[i]._is_new) {
+            //         delete this.vertices[i]._is_new;
+            //         this.vertices[i]._is_new_pol = true;
+            //     }
+            // }
+
+            // Close the polygon
+            if (
+                this.vertices.length > 0 &&
+                this.vertices[this.vertices.length - 1].id !== this.vertices[0].id
+            ) {
+                this.vertices.push(this.vertices[0]);
             }
-        }
 
-        // Close the polygon
-        if (
-            this.vertices.length > 0 &&
-            this.vertices[this.vertices.length - 1].id !== this.vertices[0].id
-        ) {
-            this.vertices.push(this.vertices[0]);
-        }
-
-        /**
-         * References to the border lines (edges) of the polygon.
-         * @type Array
-         */
-        this.borders = [];
+            /**
+             * References to the border lines (edges) of the polygon.
+             * @type Array
+             */
+            this.borders = [];
 
 
-        // let attr_line = Type.copyAttributes(attributes, board.options, "polygon", 'borders');
-        let attr_line= Type.initVisProps(Options.elements, Options.line, Options.polygon.borders, attributes)
+            // let attr_line = Type.copyAttributes(attributes, board.options, "polygon", 'borders');
+            let attr_line = Type.initVisProps(Options.polygon.borders, attributes)
 
-        console.log('attr_line',attr_line)
-        this.attr_line = attr_line;
 
-        if (this.withLines) {
-            len = this.vertices.length - 1;
-            for (j = 0; j < len; j++) {
-                // This sets the "correct" labels for the first triangle of a construction.
-                i = (j + 1) % len;
-                attr_line.id = attr_line.ids && attr_line.ids[i];
-                attr_line.name = attr_line.names && attr_line.names[i];
-                attr_line.strokecolor =
-                    (Type.isArray(attr_line.colors) &&
-                        attr_line.colors[i % attr_line.colors.length]) ||
-                    attr_line.strokecolor;
+            if (this.withLines) {
+                len = this.parents.length - 1;
+                for (j = 0; j < len; j++) {
+                    // This sets the "correct" labels for the first triangle of a construction.
+                    i = (j + 1) % len;
+                    attr_line.id = attr_line.ids && attr_line.ids[i];
+                    attr_line.name = attr_line.names && attr_line.names[i];
+                    attr_line.strokecolor =
+                        (Type.isArray(attr_line.colors) &&
+                            attr_line.colors[i % attr_line.colors.length]) ||
+                        attr_line.strokecolor;
 
-                attr_line.visible = Type.exists(attributes.borders.visible)
-                    ? attributes.borders.visible
-                    : attributes.visible;
 
-                if (attr_line.strokecolor === false) {
-                    attr_line.strokecolor = 'none';
+                    attr_line.visible = (Type.exists(attributes.borders) && Type.exists(attributes.borders.visible))
+                        ? attributes.borders.visible
+                        : attributes.visible ?? true;
+
+                    if (attr_line.strokecolor === false) {
+                        attr_line.strokecolor = 'none';
+                    }
+
+                    // l = createSegment(this.board, [this.vertices[i], this.vertices[i + 1]], attr_line)
+                    l = createSegment(this.board, [this.parents[i], this.parents[i + 1]], {})
+
+                    l.dump = false;
+                    this.borders[i] = l;
+                    l.parentPolygon = this;
+                    this.addChild(l);
                 }
-
-                l = createSegment(this.board, [this.vertices[i], this.vertices[i + 1]], attr_line)
-
-                l.dump = false;
-                this.borders[i] = l;
-                l.parentPolygon = this;
-                this.addChild(l);
             }
-        }
 
+        }
         this.inherits.push(this.vertices, this.borders);
 
         // Register polygon at board
@@ -165,7 +166,7 @@ export class Polygon extends GeometryElement {
         // or
         // - add  points (supplied as coordinate arrays by the user and created by Type.providePoints) as children to the polygon
         for (i = 0; i < this.vertices.length - 1; i++) {
-            p = this.board.select(this.vertices[i]);
+            p = this.vertices[i];
             if (Type.exists(p._is_new_pol)) {
                 this.addChild(p);
                 delete p._is_new_pol;
@@ -173,6 +174,8 @@ export class Polygon extends GeometryElement {
                 p.addChild(this);
             }
         }
+
+
 
         this.board.renderer.drawPolygon(this);
         this.board.finalizeAdding(this);
@@ -236,10 +239,10 @@ export class Polygon extends GeometryElement {
      */
 
 
-    update(){
+    update() {
     }
 
-    pnpoly(x_in, y_in, coord_type=COORDS_BY_SCREEN) {
+    pnpoly(x_in, y_in, coord_type = COORDS_BY_SCREEN) {
         return Geometry.pnpoly(x_in, y_in, this.vertices, coord_type, this.board);
     }
 
@@ -250,7 +253,7 @@ export class Polygon extends GeometryElement {
      * @returns {Boolean} Returns true, if (x,y) is inside or at the boundary the polygon, otherwise false.
      */
     hasPoint(x, y) {
-        var i, len;
+        let i, len;
 
         if (this.evalVisProp('hasinnerpoints')) {
             // All points of the polygon trigger hasPoint: inner and boundary points
@@ -1257,38 +1260,43 @@ export function createPolygon(board, parents, attributes) {
         attr_points,
         is_transform = false;
 
-    attr = Type.copyAttributes(attributes, board.options, 'polygon');
-    obj = board.select(parents[0]);
+    // tbtb - handle a function returning an array of coordinate arrays
+
+
+    let vertices = Type.providePoints(board, parents, attributes, "polygon", ["vertices"]);
+
+    attr = Type.initVisProps('polygon', attributes);
+
+    obj = points[0];
     if (obj === null) {
         // This is necessary if the original polygon is defined in another board.
         obj = parents[0];
     }
-    if (
-        Type.isObject(obj) &&
-        obj.type === OBJECT_TYPE.POLYGON &&
-        Type.isTransformationOrArray(parents[1])
-    ) {
-        is_transform = true;
-        le = obj.vertices.length - 1;
-        attr_points = Type.copyAttributes(attributes, board.options, "polygon", 'vertices');
-        for (i = 0; i < le; i++) {
-            if (attr_points.withlabel) {
-                attr_points.name =
-                    obj.vertices[i].name === "" ? "" : obj.vertices[i].name + "'";
-            }
-            points.push(board.create("point", [obj.vertices[i], parents[1]], attr_points));
-        }
-    } else {
-        points = Type.providePoints(board, parents, attributes, "polygon", ["vertices"]);
-        if (points === false) {
-            throw new Error(
-                "JSXGraph: Can't create polygon / polygonalchain with parent types other than 'point' and 'coordinate arrays' or a function returning an array of coordinates. Alternatively, a polygon and a transformation can be supplied"
-            );
-        }
-    }
+
+    // if (
+    //     Type.isObject(obj) &&
+    //     obj.type === OBJECT_TYPE.POLYGON &&
+    //     Type.isTransformationOrArray(parents[1])
+    // ) {
+    //     is_transform = true;
+    //     le = obj.vertices.length - 1;
+    //     attr_points = Type.copyAttributes(attributes, board.options, "polygon", 'vertices');
+    //     for (i = 0; i < le; i++) {
+    //         if (attr_points.withlabel) {
+    //             attr_points.name =
+    //                 obj.vertices[i].name === "" ? "" : obj.vertices[i].name + "'";
+    //         }
+    //         points.push(vertices[i]);
+    //     }
+    // } else {
+    //         throw new Error(
+    //             "JSXGraph: Can't create polygon / polygonalchain with parent types other than 'point' and 'coordinate arrays' or a function returning an array of coordinates. Alternatively, a polygon and a transformation can be supplied"
+    //         );
+    // }
 
     attr = Type.copyAttributes(attributes, board.options, 'polygon');
-    el = new Polygon(board, points, attr);
+    // el = new Polygon(board, points, attr);
+    el = new Polygon(board, vertices, {});
     el.isDraggable = true;
 
     // Put the points to their position
@@ -1401,11 +1409,11 @@ export function createRegularPolygon(board, parents, attributes) {
     p = Type.providePoints(board, parents.slice(0, len), attributes, "regularpolygon", [
         "vertices"
     ]);
-    if (p === false) {
-        throw new Error(
-            "JSXGraph: Can't create regular polygon with parent types other than 'point' and 'coordinate arrays' or a function returning an array of coordinates"
-        );
-    }
+    // if (p === false) {
+    //     throw new Error(
+    //         "JSXGraph: Can't create regular polygon with parent types other than 'point' and 'coordinate arrays' or a function returning an array of coordinates"
+    //     );
+    // }
 
     attr = Type.copyAttributes(attributes, board.options, "regularpolygon", 'vertices');
     for (i = 2; i < n; i++) {
@@ -1564,7 +1572,7 @@ export function createParallelogram(board, parents, attributes) {
         attr_pp;
 
     points = Type.providePoints(board, parents, attributes, "polygon", ["vertices"]);
-    if (points === false || points.length < 3) {
+    if (points.length < 3) {
         throw new Error(
             "JSXGraph: Can't create parallelogram with parent types other than 'point' and 'coordinate arrays' or a function returning an array of coordinates."
         );

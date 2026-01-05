@@ -482,7 +482,7 @@ export class Type {
      * @param {Array} attrArray List of subtype attributes for the newly created points. The list of subtypes is mapped to the list of new points.
      * @returns {Array} List of newly created {@link JXG2.Point} elements or false if not all returned elements are points.
      */
-    static providePoints(board, parents, attributes, attrClass?, attrArray?): Point[] | false {
+    static providePoints(board, parents, attributes, attrClass?, attrArray?): Point[]  {
         var i,
             j,
             len,
@@ -521,13 +521,11 @@ export class Type {
                     points.push(board.create("point", [parents[i]], attr));
                     points[points.length - 1]._is_new = true;
                 }
-            } else {
-                points.push(board.select(parents[i]));
+            } else {  // must be a point
+                // points.push(board.select(parents[i]));
+                points.push(parents[i]);
             }
 
-            if (!this.isPoint(points[i])) {
-                return false;
-            }
         }
 
         return points;
@@ -1936,45 +1934,39 @@ export class Type {
             this.mergeAttr(a, visProps, true)
         })
 
-    // console.warn('initVisProps',Type.getObjectDiff(a,b),a,b)
+        // console.warn('initVisProps',Type.getObjectDiff(a,b),a,b)
         return a;
     }
 
     /**
-     * Simple object cloning
+     * Simple object cloning,  handles [string, number, boolean, null, undefined
      */
-    static simpleClone(obj: LooseObject) {   // https://stackoverflow.com/questions/728360/how-do-i-correctly-clone-a-javascript-object
-        var copy;
+    static cloneToLowerCase(obj: LooseObject | string) {
 
-        // Handle the 3 simple types, and null or undefined
-        if (null == obj || "object" != typeof obj) return obj;
+        if (obj === null) return obj
+        if (obj === undefined) return obj
+        if (typeof obj === 'number' || typeof obj === 'boolean') return obj
+        if (typeof obj === 'string') return obj.toLowerCase()
 
-        // Handle Date
-        if (obj instanceof Date) {
-            copy = new Date();
-            copy.setTime(obj.getTime());
-            return copy;
-        }
 
-        // Handle Array
-        if (obj instanceof Array) {
-            copy = [];
-            for (var i = 0, len = obj.length; i < len; i++) {
-                copy[i] = Type.simpleClone(obj[i]);
+        if (Array.isArray(obj)) {       // warning: only copies iterable values
+            let copy = [];
+            for (let i = 0; i < obj.length; i++) {
+                copy[i] = Type.cloneToLowerCase(obj[i]);
             }
             return copy;
         }
 
-        // Handle Object
-        if (obj instanceof Object) {
-            copy = {};
-            for (var attr in obj) {
-                if (obj.hasOwnProperty(attr)) copy[attr] = Type.simpleClone(obj[attr]);
+        if (typeof obj === 'object') {      // we have already tested for null and array
+            let copy = {};
+            for (let i in obj) {
+                if (i in obj) // Object.hasOwn(obj,i))
+                    copy[i] = Type.cloneToLowerCase(obj[i]);
             }
             return copy;
         }
 
-        throw new Error("Unable to copy obj! Its type isn't supported.");
+        throw new Error("Should never get here");
     }
 
 

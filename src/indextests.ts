@@ -1,5 +1,6 @@
 import { Board } from "./base/board.js";
 import { JSXGraph } from "./jsxgraph.js"
+import { Type } from "./utils/type.js";
 
 // import * as THREE from 'three';
 // import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -19,16 +20,17 @@ export class IndexTests {
 
     constructor() {
 
+
         this.initBoard()
 
-        // this.point()
-        // this.text()
+        this.point()
+        this.text()
         this.line()
         // this.circle()
         // this.curve()
         // this.widgets()
         // this.image()
-        // this.polygon()
+        this.polygon()
     }
 
     initBoard() {
@@ -53,7 +55,7 @@ export class IndexTests {
     point() {
         this.boards.map((board) => {
             let a = board.create('point', [1, 3])
-            // board.create('point', [() => a.X() + 1, () => a.Y() + 1], { name: 'locked to A', strokecolor: 'blue' })
+            board.create('point', [() => a.X() + 1, () => a.Y() + 1], { name: 'locked to A', strokecolor: 'blue' })
         })
     }
     text() {
@@ -69,6 +71,8 @@ export class IndexTests {
             let p2 = board.create('point', [-4, -3])
             board.create('segment', [p1, p2], { strokecolor: 'blue' })
 
+            let p3 = board.create('point', [-3, -4])
+            board.create('segment', [p2, p3], { strokecolor: 'green' })
 
             // circle and radius
             board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
@@ -106,6 +110,7 @@ export class IndexTests {
             var p4 = board.create('point', [-6, -6]);
 
             var pol = board.create('polygon', [p1, p2, p3, p4]);
+
         })
     }
 }
