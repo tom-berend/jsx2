@@ -133,7 +133,7 @@ export class Point extends CoordsElement {
         this.needsUpdate = true;
 
         // if(dbug(this))
-        console.warn(`%c new Point(${JSON.stringify(parents).substring(0, 30)},${JSON.stringify(attributes).substring(0, 30)})`, dbugColor, this)
+        console.warn(`%c new Point(${this.id}  ${JSON.stringify(parents).substring(0, 30)},${JSON.stringify(attributes).substring(0, 30)})`, dbugColor, this)
     }
 
     // documented in GeometryElement

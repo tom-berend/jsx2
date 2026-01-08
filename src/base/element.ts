@@ -1611,7 +1611,7 @@ export class GeometryElement extends Events {
         if (!this.evalVisProp('needsregularupdate')) {
             this.board.fullUpdate();
         } else {
-            this.board.update(this);
+            this.board.update(this.id);
         }
         if (this.elementClass === OBJECT_CLASS.TEXT) {
             this['updateSize']();  // really belongs in Text

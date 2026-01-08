@@ -8,26 +8,35 @@
     <script type="text/javascript" src="../jsxgraph/distrib/jsxgraphcore.js"></script>
 
     <script type='module' src="../jsx2/build/jsxgraph.js"></script>
+
+    <!-- <script type="importmap">
+             {
+              "imports": {
+                "three": "../jx2/build/three.module.js",
+              }
+            }
+    </script> -->
+
+
     <script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.182.0/examples/jsm/"
-  }
-}
+   {
+     "imports": {
+        "three": "http://localhost/jsx2/node_modules/three/build/three.module.js",
+        "three/addons/": "http://localhost/jsx2/node_modules/three/examples/jsm/"
+     }
+   }
 </script>
+
+
+
 </head>
 
 <body>
     <div style="margin:45px;">
-        <div id="box" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>
+        <div id="box1" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>
         <div id="box2" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>
         <div id="box3" class="jxgbox" style="width:500px; aspect-ratio: 1/1;">
             <canvas id="canvas3" style="height:640;width:480;">
-            </canvas>
-        </div>
-        <div id="box4" class="jxgbox" style="width:500px; aspect-ratio: 1/1;">
-            <canvas id="canvas4" style="height:640;width:480;">
             </canvas>
         </div>
 

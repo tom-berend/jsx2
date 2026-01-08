@@ -137,14 +137,14 @@ export class Line extends GeometryElement {
         this.elType = 'line';
         this.visProp = Type.initVisProps(Options.board, Options.elements, Options.line, attributes)
 
-        let points = Type.providePoints(board,parents,attributes)
+        let points = Type.providePoints(board, parents, attributes)
         this.point1 = points[0]
         this.point2 = points[1]
 
         this.elType = 'line';
 
         if (dbug(this))
-            console.warn(`%c new line ${parents}  for ${this.id})`, dbugColor)
+            console.warn(`%c new line ${parents}  for ${this.id})`, dbugColor, this)
 
         /* Add line as child to defining points */
         if (this.point1._is_new) {
@@ -162,7 +162,7 @@ export class Line extends GeometryElement {
 
         this.inherits.push(this.point1, this.point2);
 
-                /* Register line at board */
+        /* Register line at board */
         this.id = this.board.setId(this, 'L');
         this.board.renderer.drawLine(this);
         this.board.finalizeAdding(this);
@@ -175,6 +175,11 @@ export class Line extends GeometryElement {
 
         // create Label
         this.createLabel();
+
+        // if (dbug(this))
+            console.warn(`%c new Line(${this.id} ${parents[0].id} ${parents[1].id}`, dbugColor)
+            // console.warn(`%c new Line(${this.id}  ${JSON.stringify(parents).substring(0, 30)},${JSON.stringify(attributes).substring(0, 30)})`, dbugColor, this)
+
 
         this.methodMap = Type.deepCopy(this.methodMap, {
             point1: "point1",
@@ -1606,7 +1611,7 @@ export function createLine(board, parents, attributes) {
  * </script><pre>
  *
  */
-export function createSegment(board, parents, attributes:LooseObject={}) {
+export function createSegment(board, parents, attributes: LooseObject = {}) {
     var el, attr;
 
     attributes.straightFirst = false;

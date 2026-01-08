@@ -46,7 +46,7 @@ import { Board } from "./base/board.js";
 import FileReader from "./reader/file.js";
 import { Options } from "./options.js";
 import { SVGRenderer } from "./renderer/svg.js";
-import VMLRenderer from "./renderer/vml.js";
+import { WebGLRenderer } from "./renderer/webgl.js";
 import CanvasRenderer from "./renderer/canvas.js";
 import NoRenderer from "./renderer/no.js";
 
@@ -54,7 +54,7 @@ import './index.js'
 import { LooseObject } from "./interfaces.js";
 
 
-const original:LooseObject = { name: "MDN" };
+const original: LooseObject = { name: "MDN" };
 original.itself = original;
 
 // Clone it
@@ -160,8 +160,8 @@ export class JSXGraph {
         // create the renderer
         if (attrRenderer === 'svg') {
             renderer = new SVGRenderer(boxid, dim);
-        } else if (attrRenderer === 'vml') {
-            renderer = new VMLRenderer(boxid);
+        } else if (attrRenderer === 'webgl') {
+            renderer = new WebGLRenderer(boxid, dim);
         } else if (attrRenderer === 'canvas') {
             renderer = new CanvasRenderer(boxid, dim);
         } else {
@@ -582,9 +582,13 @@ export class JSXGraph {
 
         // Create the board.
         // board.options will contain the user supplied board attributes
+
+
+        let rendererType = Type.exists(attributes['renderer']) ? attributes['renderer'] : 'svg';
+
         board = new Board(
             box,
-            renderer,
+            rendererType,
             attr.id,
             [originX, originY],
             /*attr.zoomfactor * */ attr.zoomx,

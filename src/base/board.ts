@@ -58,6 +58,7 @@ import { Events } from '../utils/event.js';
 import { Env } from '../utils/env.js';
 // import Composition from './composition.js';
 import { SVGRenderer } from '../renderer/svg.js';
+import { WebGLRenderer } from '../renderer/webgl.js';
 import { JSXMath } from '../math/math.js';
 import { Statistics } from '../math/statistics.js';
 import { AbstractRenderer } from '../renderer/abstract.js';
@@ -683,7 +684,7 @@ export class Board extends Events {
 
     constructor(
         containerName: string,
-        rendererType: 'svg' | 'canvas' | 'no' | 'auto' = 'svg',
+        rendererType: 'svg' | 'webgl' | 'canvas' | 'no' | 'auto' = 'svg',
         id?: string,
         origin: number[] = [0, 0],
         zoomX: number = 1,
@@ -5941,7 +5942,7 @@ export class Board extends Events {
      * @param {JXG2.GeometryElement} dragId Element that caused the update.
      * @returns {JXG2.Board} Reference to the board
      */
-    updateElements(dragId:string) {
+    updateElements(dragId: string) {
         var el, pEl;
         //var childId, i = 0;
 
@@ -6224,7 +6225,7 @@ export class Board extends Events {
      * @param {JXG2.GeometryElement} [drag] Element that caused the update.
      * @returns {JXG2.Board} Reference to the board
      */
-    update(dragID?:string) {
+    update(dragID?: string) {
         var i, len, b, insert, storeActiveEl;
 
         if (this.inUpdate || this.isSuspendedUpdate) {
@@ -7285,8 +7286,8 @@ export class Board extends Events {
         if (s === null)
             console.error(`select(${str}) returns null`)
 
-        if ( Type.exists(s['id']))
-        console.warn(`%c board: select(str:'${str}') returns '${s == null ? 'null' : s['id']}`, dbugColor)
+        if (Type.exists(s['id']))
+            console.warn(`%c board: select(str:'${str}') returns '${s == null ? 'null' : s['id']}`, dbugColor)
 
         return s;
 
@@ -8352,6 +8353,10 @@ export class Board extends Events {
             case 'auto':
             case 'svg':
                 return this.renderer = new SVGRenderer(containerName, dim)
+                break;
+
+            case 'webgl':
+                return this.renderer = new WebGLRenderer(containerName, dim)
                 break;
 
             default:

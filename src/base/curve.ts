@@ -1461,7 +1461,7 @@ export class Curve extends GeometryElement {
                 delta = [where[0] - p.usrCoords[1], where[1] - p.usrCoords[2]];
             }
             this.setPosition(COORDS_BY.USER, delta);
-            return this.board.update(this);
+            return this.board.update(this.id);
         }
         return this;
     }

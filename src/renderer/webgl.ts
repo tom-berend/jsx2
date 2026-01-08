@@ -1,5 +1,5 @@
 const dbug = (elem?) => false//elem && elem.id === "jxgBoard1L9"
-const dbugColor = `color:blue;background-color:#ffc0c0`;
+const dbugColor = `color:blue;background-color:#c0ffc0`;
 
 /*
     Copyright 2008-2025
@@ -50,12 +50,19 @@ import { Env } from "../utils/env.js"
 import { GeometryElement } from "../base/element.js";
 import { Text } from "../base/text.js"
 import { Dim, SVGType } from "../interfaces.js"
+import { genUUID } from "../utils/uuid.js";
+
+ import * as THREE from 'three'
+
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
 
 
 /**
- * Uses SVG to implement the rendering methods defined in {@link JXG2.AbstractRenderer}.
+ * Uses WebGL to implement the rendering methods defined in {@link JXG2.AbstractRenderer}.
  * @class JXG2.SVGRenderer
- * @augments JXG2.AbstractRenderer
+ * @augments AbstractRenderer
  * @param {Node} container Reference to a DOM node containing the board.
  * @param {Object} dim The dimensions of the board
  * @param {Number} dim.width
@@ -67,11 +74,11 @@ import { Dim, SVGType } from "../interfaces.js"
 
 
 
-export class SVGRenderer extends AbstractRenderer {
+export class WebGLRenderer extends AbstractRenderer {
 
 
     // docstring in AbstractRenderer
-    type = "svg";
+    type = "webgl";
 
     isSafari: boolean
 
@@ -95,14 +102,18 @@ export class SVGRenderer extends AbstractRenderer {
     xlinkNamespace = "http://www.w3.org/1999/xlink";
 
 
+
+    public canvasRoot
+    public canvasId
+    public canvasNamespace
+    public context
+
     constructor(containerName: string | HTMLDivElement, dim: Dim) {  // width height
         super()
 
-        if (dbug()) console.log(`%c svg: constructor(container:${containerName},dim:'${JSON.stringify(dim)}'`, dbugColor)
+        if (dbug()) console.log(`%c webgl: constructor(container:${containerName},dim:'${JSON.stringify(dim)}'`, dbugColor)
 
-
-        // https://stackoverflow.com/questions/7944460/detect-safari-browser
-        this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        this.canvasId = 'webgl_canvas'
 
         if (typeof containerName == 'string') {
             let container = document.getElementById(containerName) as HTMLDivElement
@@ -115,25 +126,95 @@ export class SVGRenderer extends AbstractRenderer {
             this.container = containerName
         }
 
-        // check once here instead of in every call
-        this.assertNonNullish(this.container, `expected container with id: '${containerName}'`)
+        this.container.style.userSelect = 'none';
 
-        // prepare the div container and the svg root node for use with JSXGraph
-        this.container.style.userSelect = "none";
-
-        this.container.style.overflow = "hidden";
+        this.container.style.overflow = 'hidden';
         if (this.container.style.position === "") {
-            this.container.style.position = "relative";
+            this.container.style.position = 'relative';
         }
 
-        this.svgRoot = this.container.ownerDocument.createElementNS(this.svgNamespace, "svg");
-        (this.svgRoot as SVGSVGElement).style.overflow = "hidden";
-        (this.svgRoot as SVGSVGElement).style.display = "block";
-        this.resize(dim.width, dim.height);
+        if (Env.isBrowser()) {
+            this.container.innerHTML = [
+                '<canvas id="', this.canvasId, '" width="', dim.width, 'px" height="', dim.height, 'px"></canvas>'
+            ].join("");
+            this.canvasRoot = this.container.ownerDocument.getElementById(this.canvasId);
+            this.canvasRoot.style.display = 'block';
+            this.context = this.canvasRoot.getContext('webgl2');    // TODO: check if only version 1 available?
+            // } else if (Env.isNode()) {
+            //     try {
+            //         this.canvasRoot = createCanvas(500, 500);
+            //         this.context = this.canvasRoot.getContext('2d');
+            //     } catch (err) {
+            //         throw new Error('JXG2.createCanvas not available.\n' +
+            //             'Install the npm package `canvas`\n' +
+            //             'and call:\n' +
+            //             '    import { createCanvas } from "canvas.js"\n' +
+            //             '    JXG2.createCanvas = createCanvas;\n');
+            //     }
+            // }
+        };
 
-        //this.svgRoot.setAttributeNS(null, 'shape-rendering', 'crispEdge'); //'optimizeQuality'); //geometricPrecision');
 
-        this.jsxAppendChild(this.container, this.svgRoot) // this.container.appendChild(this.svgRoot);
+
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        let canvasRef = document.getElementById(this.canvasId) as HTMLCanvasElement;
+        const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef });
+        renderer.setSize(canvasRef.width, canvasRef.height) //window.innerWidth, window.innerHeight);
+
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        camera.position.z = 3;
+
+        let animate = () => {
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        renderer.setAnimationLoop(animate);
+
+
+return;
+
+
+
+        // // https://stackoverflow.com/questions/7944460/detect-safari-browser
+        // this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+        // this.type = 'webgl';
+
+        // this.canvasRoot = null;
+        // this.suspendHandle = null;
+        // this.canvasId = genUUID('webgl');
+
+        // this.canvasNamespace = null;
+
+
+
+        // ////////////////////////////////////
+
+
+
+        /**
+        * The <tt>defs</tt> element is a container element to reference reusable SVG elements.
+        * @type Node
+        * @see https://www.w3.org/TR/SVG2/struct.html#DefsElement
+        */
+        this.defs = this.container.ownerDocument.createElementNS(this.svgNamespace, "defs");
+        this.jsxAppendChild(this.svgRoot, this.defs) // this.svgRoot.appendChild(this.defs);
+
+
+        /* Default shadow filter */
+        this.defs.appendChild(this.createShadowFilter(this.uniqName('f1'), 'none', 1, 0.1, 3, [5, 5]));
+
+
+
+
 
 
         /**
@@ -178,14 +259,17 @@ export class SVGRenderer extends AbstractRenderer {
         }
 
 
+
     }
+
+
 
 
     /** TypeScript magic - see https://mariusschulz.com/blog/assertion-functions-in-typescript */
     assertNonNullish<TValue>(value: TValue, message: string): asserts value is NonNullable<TValue> {
-        if (value === null || value === undefined) {
-            throw Error(message);
-        }
+        // if (value === null || value === undefined) {
+        //     throw Error(message);
+        // }
     }
 
     /**
@@ -686,7 +770,7 @@ export class SVGRenderer extends AbstractRenderer {
 
         this.assertNonNullish(this.container, 'expected container')
 
-        if (dbug()) console.log(`%c svg: displayCopyright(str: ${str},fontsize: ${fontsize})`, dbugColor)
+        if (dbug()) console.log(`%c webgl: displayCopyright(str: ${str},fontsize: ${fontsize})`, dbugColor)
 
         node = this.createPrim("text", 'licenseText');
         node.setAttributeNS(null, 'x', x + 'px');
@@ -742,7 +826,7 @@ export class SVGRenderer extends AbstractRenderer {
         // console.log('drawInternalText', el)
         var node = this.createPrim("text", el.id);
 
-        if (dbug(el)) console.log(`%c svg: drawInternalText(el) ${el.id}`, dbugColor, el)
+        if (dbug(el)) console.log(`%c webgl: drawInternalText(el) ${el.id}`, dbugColor, el)
 
 
         // node.setAttributeNS(null, "style", "alignment-baseline:middle"); // Not yet supported by Firefox
@@ -773,7 +857,7 @@ export class SVGRenderer extends AbstractRenderer {
             ev_ax = el.getAnchorX(),
             ev_ay = el.getAnchorY();
 
-        if (dbug(el)) console.log(`%c svg: updateInternalText(${el.id})`, dbugColor)
+        if (dbug(el)) console.log(`%c webgl: updateInternalText(${el.id})`, dbugColor)
 
 
         css = el.evalVisProp('cssclass');
@@ -788,7 +872,7 @@ export class SVGRenderer extends AbstractRenderer {
             if (el.visPropOld.left !== ev_ax + v) {
                 el.rendNode.setAttributeNS(null, "x", v + "px");
 
-                if (dbug(el)) console.log(`%c svg: updateInternalText/[x,y] x:${v + 'px'}`, dbugColor, el)
+                if (dbug(el)) console.log(`%c webgl: updateInternalText/[x,y] x:${v + 'px'}`, dbugColor, el)
 
                 if (ev_ax === "left") {
                     el.rendNode.setAttributeNS(null, "text-anchor", "start");
@@ -805,7 +889,7 @@ export class SVGRenderer extends AbstractRenderer {
             if (el.visPropOld.top !== ev_ay + v) {
                 el.rendNode.setAttributeNS(null, "y", v + this.vOffsetText * 0.5 + "px");
 
-                if (dbug(el)) console.log(`%c svg: updateInternalText/[x,y] y:${v + this.vOffsetText * 0.5 + 'px'}`, dbugColor, el)
+                if (dbug(el)) console.log(`%c webgl: updateInternalText/[x,y] y:${v + this.vOffsetText * 0.5 + 'px'}`, dbugColor, el)
 
                 // Not supported by IE, edge
                 // el.rendNode.setAttributeNS(null, "dy", "0");
@@ -884,8 +968,8 @@ export class SVGRenderer extends AbstractRenderer {
             cx, cy,
             len = t.length;
 
-        if (dbug(el)) console.log(`%c svg: transformRect(el,t)' ${el.id}`, dbugColor, el)
-        if (t.length > 0 && dbug(el)) console.log(`%c svg: ${JSON.stringify(t)}`, dbugColor)
+        if (dbug(el)) console.log(`%c webgl: transformRect(el,t)' ${el.id}`, dbugColor, el)
+        if (t.length > 0 && dbug(el)) console.log(`%c webgl: ${JSON.stringify(t)}`, dbugColor)
 
         if (len > 0) {
             node = el.rendNode;
@@ -1004,7 +1088,7 @@ export class SVGRenderer extends AbstractRenderer {
      */
     appendChildPrim(node: Node, level: number = 0) {  // trace nodes have level not set
 
-        if (dbug()) console.log(`%c svg: appendChildPrim: node:${node.nodeName}, level:${level},'`, dbugColor)
+        if (dbug()) console.log(`%c webgl: appendChildPrim: node:${node.nodeName}, level:${level},'`, dbugColor)
 
         if (typeof level !== 'number') {      // someone is misbehaving
             console.warn('level is not a number', (typeof level))
@@ -1028,7 +1112,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @returns {Node} Reference to the created node.
      */
     createPrim(type: SVGType, id: string): HTMLElement {
-        if (dbug()) console.warn(`%c svg: createPrim(type:${type},id:'${id}'`, dbugColor)
+        if (dbug()) console.warn(`%c webgl: createPrim(type:${type},id:'${id}'`, dbugColor)
 
         let node = this.container.ownerDocument.createElementNS(this.svgNamespace, type) as HTMLElement
         node.setAttributeNS(null, "id", this.uniqName(id));
@@ -1158,7 +1242,7 @@ export class SVGRenderer extends AbstractRenderer {
     updateEllipsePrim(node: HTMLElement, x: number, y: number, rx: number, ry: number) {
         var huge = 1000000;
 
-        if (dbug()) console.log(`%c svg: updateEllipsePrim(node, x:${x}, y:${y}, rx:${rx}, ry:${ry} )`, dbugColor, node)
+        if (dbug()) console.log(`%c webgl: updateEllipsePrim(node, x:${x}, y:${y}, rx:${rx}, ry:${ry} )`, dbugColor, node)
 
         huge = 200000; // IE
         // webkit does not like huge values if the object is dashed
@@ -1603,7 +1687,7 @@ export class SVGRenderer extends AbstractRenderer {
 
     display(el/*: GeometryElement*/, show: boolean) {
         if (dbug(el))
-            console.warn(`%c svg: display(${el.id}, show=${show})`, dbugColor)
+            console.warn(`%c webgl: display(${el.id}, show=${show})`, dbugColor)
 
         if (el) {
             el.visPropOld.visible = show;
@@ -1868,7 +1952,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Number} opacity Opacity of the fill color. Must be between 0 and 1.
      */
     setObjectStrokeColor(el, color: any, opacity) {
-        if (dbug(el)) console.warn(`%c svg: setObjectSrokeColor(el, color:${color},opacity:'${opacity}'`, dbugColor)
+        if (dbug(el)) console.warn(`%c webgl: setObjectSrokeColor(el, color:${color},opacity:'${opacity}'`, dbugColor)
 
         var rgba = color,
             c, rgbo,
@@ -2275,6 +2359,8 @@ export class SVGRenderer extends AbstractRenderer {
       * @see JXG2.AbstractRenderer#unsuspendRedraw
       */
     suspendRedraw() {
+                return // neutered //tbtb
+
         // It seems to be important for the Linux version of firefox
         this.suspendHandle = (this.svgRoot as SVGSVGElement).suspendRedraw(10000);
     }
@@ -2284,6 +2370,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.AbstractRenderer#suspendRedraw
      */
     unsuspendRedraw() {
+        return // neutered //tbtb
         (this.svgRoot as SVGSVGElement).unsuspendRedraw(this.suspendHandle);
 
     }
@@ -2294,6 +2381,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Number} h New height
      */
     resize(w: number, h: number) {
+        return // neutered //tbtb
         this.assertNonNullish(this.svgRoot, "Expected a node")
 
         this.svgRoot.setAttribute("width", w.toString());
@@ -2849,7 +2937,8 @@ export class SVGRenderer extends AbstractRenderer {
     /** proxy for appendChild, enables debugging and mocks */
     jsxAppendChild(parent: Node, child: Node) {
         // console.warn('appendChild',parent,child)
-        parent.appendChild(child)
+        // parent.appendChild(child)
     }
+
 
 }

@@ -1640,7 +1640,8 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      * @private
      */
     addAnchor(coordinates, isLabel: boolean) {
-        console.log(`%c coordsElements addAnchor(${JSON.stringify(coordinates)},${isLabel})`, dbugColor)
+        if (dbug(this))
+            console.log(`%c coordsElements addAnchor(${JSON.stringify(coordinates)},${isLabel})`, dbugColor)
 
         if (isLabel) {
             this.relativeCoords = new Coords(
@@ -2574,8 +2575,8 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     // new version
     public coordsElementInit(coords: any[] /*coords part of parents */, attr1?, attr2?) {
 
-        // if (dbug(this))
-            console.warn(`%c coordselements: INIT ${JSON.stringify(coords)}`, dbugColor, attr1, attr2)
+        if (dbug(this))
+        console.warn(`%c coordselements: INIT ${JSON.stringify(coords)}`, dbugColor, attr1, attr2)
 
         let isConstrained = false
 

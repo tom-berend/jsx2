@@ -1,3 +1,5 @@
+let dbug = (elem) => elem && elem.id === "jxgBoard1L9"
+const dbugColor = `color:black;background-color:#ffff0f`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -60,6 +62,15 @@ import { COORDS_BY_SCREEN } from "../index.js";
  */
 export class Polygon extends GeometryElement {
 
+    /**
+     * References to the points defining the polygon. The last vertex is the same as the first vertex.
+     * Compared to the 3D {@link JXG2.Polygon3D#vertices}, it contains one point more, i.e. for a quadrangle
+     * 'vertices' contains five points, the last one being
+     * a copy of the first one. In a 3D quadrangle, 'vertices' will contain four points.
+     * @type Array
+     */
+    vertices = [];
+
     public withLines: boolean
     public attr_line
     public borders
@@ -69,8 +80,8 @@ export class Polygon extends GeometryElement {
         super(board, attributes, OBJECT_TYPE.POLYGON, OBJECT_CLASS.AREA);
 
         let i, l, len, j, p
-
-        attributes = {}
+        // Register polygon at board
+        this.id = this.board.setId(this, 'Py');
 
 
         this.elementUpdate = () => this.update();
@@ -84,14 +95,6 @@ export class Polygon extends GeometryElement {
 
         this.withLines = this.evalVisProp('withlines');
 
-        /**
-         * References to the points defining the polygon. The last vertex is the same as the first vertex.
-         * Compared to the 3D {@link JXG2.Polygon3D#vertices}, it contains one point more, i.e. for a quadrangle
-         * 'vertices' contains five points, the last one being
-         * a copy of the first one. In a 3D quadrangle, 'vertices' will contain four points.
-         * @type Array
-         */
-        this.vertices = [];
         for (i = 0; i < vertices.length; i++) {
             this.vertices[i] = vertices[i];
 
@@ -111,6 +114,7 @@ export class Polygon extends GeometryElement {
             ) {
                 this.vertices.push(this.vertices[0]);
             }
+        }
 
             /**
              * References to the border lines (edges) of the polygon.
@@ -118,13 +122,12 @@ export class Polygon extends GeometryElement {
              */
             this.borders = [];
 
-
             // let attr_line = Type.copyAttributes(attributes, board.options, "polygon", 'borders');
             let attr_line = Type.initVisProps(Options.polygon.borders, attributes)
 
-
+/*
             if (this.withLines) {
-                len = this.parents.length - 1;
+                len = vertices.length - 1;
                 for (j = 0; j < len; j++) {
                     // This sets the "correct" labels for the first triangle of a construction.
                     i = (j + 1) % len;
@@ -145,7 +148,8 @@ export class Polygon extends GeometryElement {
                     }
 
                     // l = createSegment(this.board, [this.vertices[i], this.vertices[i + 1]], attr_line)
-                    l = createSegment(this.board, [this.parents[i], this.parents[i + 1]], {})
+
+                    l = createSegment(this.board, [vertices[j], vertices[j + 1]], attr_line)
 
                     l.dump = false;
                     this.borders[i] = l;
@@ -153,13 +157,10 @@ export class Polygon extends GeometryElement {
                     this.addChild(l);
                 }
             }
+*/
 
-        }
         this.inherits.push(this.vertices, this.borders);
 
-        // Register polygon at board
-        // This needs to be done BEFORE the points get this polygon added in their descendants list
-        this.id = this.board.setId(this, 'Py');
 
         // Add dependencies: either
         // - add polygon as child to an existing point
@@ -184,6 +185,9 @@ export class Polygon extends GeometryElement {
 
         // create label
         this.createLabel();
+
+        // if (dbug(this))
+        console.warn(`%c new Polygon(${this.id} `, dbugColor, this)
 
         this.methodMap = Type.deepCopy(this.methodMap, {
             borders: "borders",
@@ -1263,15 +1267,15 @@ export function createPolygon(board, parents, attributes) {
     // tbtb - handle a function returning an array of coordinate arrays
 
 
-    let vertices = Type.providePoints(board, parents, attributes, "polygon", ["vertices"]);
+    let vAttributes = Type.exists(attributes['vertices']) ? attributes['vertices'] : {}
+    let vertices = Type.providePoints(board, parents, vAttributes);
 
-    attr = Type.initVisProps('polygon', attributes);
 
     obj = points[0];
-    if (obj === null) {
-        // This is necessary if the original polygon is defined in another board.
-        obj = parents[0];
-    }
+    // if (obj === null) {
+    //     // This is necessary if the original polygon is defined in another board.
+    //     obj = parents[0];
+    // }
 
     // if (
     //     Type.isObject(obj) &&
@@ -1294,9 +1298,8 @@ export function createPolygon(board, parents, attributes) {
     //         );
     // }
 
-    attr = Type.copyAttributes(attributes, board.options, 'polygon');
     // el = new Polygon(board, points, attr);
-    el = new Polygon(board, vertices, {});
+    el = new Polygon(board, vertices, attributes);
     el.isDraggable = true;
 
     // Put the points to their position

@@ -2,7 +2,6 @@ import { Board } from "./base/board.js";
 import { JSXGraph } from "./jsxgraph.js"
 import { Type } from "./utils/type.js";
 
-// import * as THREE from 'three';
 // import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
@@ -13,8 +12,7 @@ export class IndexTests {
 
     old = true  // turn on and off boards
     new = true
-    three = false
-    webgl = false
+    webgl = true
 
     boards = []
 
@@ -23,9 +21,9 @@ export class IndexTests {
 
         this.initBoard()
 
-        this.point()
-        this.text()
-        this.line()
+        // this.point()
+        // this.text()
+        // this.line()
         // this.circle()
         // this.curve()
         // this.widgets()
@@ -39,17 +37,19 @@ export class IndexTests {
             // axis: true,
             shownavigation: false,
             showcopyright: false,
-            showinfobox: false,
+            showinfobox: false
         }
 
         if (this.new)
-            this.boards.push(JSXGraph.initBoard(
-                'box', attr));
+            this.boards.push(JSXGraph.initBoard('box1', attr));
 
         if (this.old)
-            this.boards.push((window as any).JXG.JSXGraph.initBoard(
-                'box2', attr));
+            this.boards.push((window as any).JXG.JSXGraph.initBoard('box2', attr));
 
+        if (this.webgl) {
+            attr['renderer'] = 'webgl'
+            this.boards.push(JSXGraph.initBoard('box3', attr));
+        }
     }
 
     point() {
@@ -65,7 +65,7 @@ export class IndexTests {
     }
     line() {
         this.boards.map((board) => {
-            board.create('segment', [[-3, -2], [-4, -2]], { strokecolor: 'green' })
+            // board.create('segment', [[-3, -2], [-4, -2]], { strokecolor: 'green' })
 
             let p1 = board.create('point', [-3, -3])
             let p2 = board.create('point', [-4, -3])
@@ -74,8 +74,7 @@ export class IndexTests {
             let p3 = board.create('point', [-3, -4])
             board.create('segment', [p2, p3], { strokecolor: 'green' })
 
-            // circle and radius
-            board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
+            // board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
         })
     }
     circle() {
