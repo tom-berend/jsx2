@@ -35,6 +35,7 @@ if (empty($_REQUEST)) {
     // no - show list of files in src directory
     $files = scandir("./build/learn_three");
     foreach ($files as $file) {
+        // echo $file,'<br>';
         if ($file == '.' or $file == '..')  // don't want these
             continue;
         if (substr($file, -3, 3) !== '.js')    // only .js files
