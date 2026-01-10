@@ -3,7 +3,7 @@ import { scene, camera, renderer, startwebgl } from './startwebgl.js';
 startwebgl();
 
 let geometry = new THREE.BoxGeometry(5, 5, 5);
-let material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+let material = new THREE.MeshBasicMaterial({ color: 0xff0000,opacity:.2,transparent:true });
 let mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 

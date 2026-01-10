@@ -56,9 +56,19 @@ export function startwebgl(divId?: string, attributes?: StartWebGLAttributes) {
         }
     });
 
-    camera.position.set(0, 0, 20);
+    camera.position.set(0, 0, 30);
     camera.lookAt(0, 0, 0);
     scene.add(camera);
+
+////////////////////
+
+    let groundGeometry = new THREE.BoxGeometry(20, 20, 0.1);
+    let groundMaterial = new THREE.MeshBasicMaterial({ color: 'aliceblue' });
+
+    let ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.receiveShadow = true;
+    ground.position.z = - 0.25;
+    scene.add(ground)
 
     var controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;

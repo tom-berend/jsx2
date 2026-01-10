@@ -32,80 +32,24 @@ const line2 = new THREE.Line(geo2, material)
 scene.add(line1, line2)
 
 
-// nothing further works...
+////////////  creating lines from TUBES //////////
 
-
-// lets try with a Path
-points = points.map((p) => new THREE.Vector3(p.x + 1, p.y + 1, p.z + 1));
-
-const path = new THREE.Path();
-path.moveTo(points[0].X, points[0].Y)
-path.lineTo(points[1].X, points[1].Y)
-path.lineTo(points[2].X, points[2].Y)
-
-const pGeometry = new THREE.BufferGeometry().setFromPoints(path.getPoints());
-const pMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-const pathLine = new THREE.Line(pGeometry, pMaterial);
-scene.add(pathLine);
-
-
-scene.add( pathLine)
+myLine([-2, 1], [2, 5], 'red', .004)
+myLine([-2, 1], [2, 5], 'blue', .007)
+myLine([-2, 0], [2, 4], 'red', .02)
+myLine([-2, -1], [2, 3], 'blue', .03)
+myLine([-2, -2], [2, 2], 'red', .05)
+myLine([-2, -3], [2, 1], 'green', .07)
+myLine([-2, -4], [2, 0], 'crimson', .1)
+myLine([-2, -5], [2, -1], 'blue', .13)
 
 
 
+function myLine(start: number[], end: number[], color: string = 'blue', strokewidth: number = .05, opacity: number = 1) {
+    let path = new THREE.LineCurve3(new THREE.Vector3(start[0], start[1], 0), new THREE.Vector3(end[0], end[1], 0))
 
-///////// polygon /////
-
-let polyPoints = []     // reuse points for 2D polygon
-polyPoints.push(new THREE.Vector2(-5, -6));
-polyPoints.push(new THREE.Vector2(-5, -7));
-polyPoints.push(new THREE.Vector2(-4, -5));
-polyPoints.push(new THREE.Vector2(-6, -6));
-
-
-//  2D polygon
-const polyShape = new THREE.Shape()
-    .moveTo(polyPoints[0].X, polyPoints[0].Y)
-    .lineTo(polyPoints[1].X, polyPoints[1].Y)
-    .lineTo(polyPoints[2].X, polyPoints[2].Y)
-    .lineTo(polyPoints[3].X, polyPoints[3].Y)
-    .lineTo(polyPoints[0].X, polyPoints[0].Y)
-
-const geoPoly = new THREE.ShapeGeometry(polyShape);
-const matPoly = new THREE.MeshBasicMaterial({ color: 'blue', side: THREE.DoubleSide });
-const mesPoly = new THREE.Mesh(geoPoly, matPoly);
-scene.add(mesPoly);
-
-renderer.render(scene, camera);
-
-// //  2D circle
-// const arcShape = new THREE.Shape()
-//     .moveTo(5, 1).lineTo(6, 1).lineTo(6, 2)
-//     .absarc(1, 1, 4, 0, Math.PI * 2, false);
-// const geoHeart = new THREE.ShapeGeometry(arcShape);
-// const matHeart = new THREE.MeshBasicMaterial({ color: 'blue', side: THREE.DoubleSide });
-// const meshHeart = new THREE.Mesh(geoHeart, matHeart);
-// scene.add(meshHeart);
-
-
-
-
-// generate a shape from the points
-let shape = new THREE.Shape();
-
-shape.moveTo(points[0][0], points[0][1]);
-for (let i = 0; i < points.length; i++)
-    shape.lineTo(points[i][0], points[i][1]);
-shape.lineTo(points[0][0], points[0][1]);    // close the polygon
-
-let polyGeometry = new THREE.ShapeGeometry(shape)
-let polyMaterial = new THREE.MeshBasicMaterial({ color: 'blue', side: THREE.DoubleSide })
-
-let polyMesh = new THREE.Mesh(polyGeometry, polyMaterial)
-
-scene.add(polyMesh);
-
-camera.position.set(0, 0, 100);
-camera.lookAt(0, 0, 0);
-
-renderer.render(scene, camera);
+    const geometry = new THREE.TubeGeometry(path, 1, strokewidth, 8, false);  // closed must be false
+    const material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+}

@@ -2,12 +2,6 @@
 
 import * as THREE from 'three'
 import { scene, camera, renderer, startwebgl } from './startwebgl.js';
-// @ts-ignore
-import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
-// @ts-ignore
-import { Line2 } from 'three/addons/lines/Line2.js';
-// @ts-ignore
-import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 
 startwebgl();
 
@@ -25,11 +19,12 @@ let polygon = new THREE.Mesh(polyGeometry,
     new THREE.MeshBasicMaterial({ color: "yellow", side: THREE.DoubleSide }))
 
 // border lines
-let closed = coordinates.slice()
-closed.push(coordinates[0])
-let borderShape = new THREE.BufferGeometry().setFromPoints(
-    closed.map((coord) => new THREE.Vector3(coord[0], coord[1], 0)))  // 3D !!
-let borders = new THREE.Line(borderShape, new THREE.LineBasicMaterial({ color: 'blue' }))
+let borders = [];
+for (let i = 0; i < coordinates.length-1; i++) {
+    borders.push(myLine(coordinates[i], coordinates[i + 1], 'blue', .007))
+}
+borders.push(myLine(coordinates[0], coordinates[coordinates.length-1], 'blue', .007))  // close polygon
+
 
 // vertices
 let vertexCoords = coordinates.slice()
@@ -41,4 +36,34 @@ let vertices = vertexCoords.map((coord) => {
     return v;
 })
 
-scene.add(polygon, borders,...vertices);
+scene.add(polygon, ...borders, ...vertices);
+
+
+/////////////////////
+let path = coordinates.map((p) => (p.x + 5, p.y + 5));
+
+
+const arcShape = new THREE.Shape()
+    .moveTo(5, 1)
+    .lineTo(3, 1).lineTo(1, 7).lineTo(2, 3)
+
+
+// .absarc( 1, 1, 4, 0, Math.PI * 2, false );
+const geometry = new THREE.ShapeGeometry(arcShape);
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+const mesh = new THREE.Mesh(geometry, material);
+mesh.rotateX(.2)
+mesh.rotateY(.2)
+scene.add(mesh);
+
+
+
+function myLine(start: number[], end: number[], color: string = 'blue', strokewidth: number = .05, opacity: number = 1) {
+    console.log(start,end)
+    let path = new THREE.LineCurve3(new THREE.Vector3(start[0], start[1], 0), new THREE.Vector3(end[0], end[1], 0))
+
+    const geometry = new THREE.TubeGeometry(path, 1, strokewidth, 8, false);  // closed must be false
+    const material = new THREE.MeshBasicMaterial({ color: color, opacity: 1, transparent: true });
+    const mesh = new THREE.Mesh(geometry, material);
+    return mesh
+}
