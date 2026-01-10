@@ -1,7 +1,7 @@
 // addapted from https://github.com/vasturiano/three-spritetext
 // downloaded 10-Jan-2026
 // converted to TS, ES6 module
-// TODO: buy him a coffee
+// sent him $20USD 'buy me a coffee'
 
 
 import * as THREE from 'three'
@@ -29,19 +29,14 @@ export class SpriteText extends THREE.Sprite {
     private _fontWeight = 'normal';
 
     constructor(text = '', textHeight = 10, color = 'rgba(255, 255, 255, 1)') {
-        // super(new THREE.SpriteMaterial());
         super()
 
         this._text = `${text}`
-        console.log(this._canvas)
         this._textHeight = textHeight;
         this._color = color;
 
         this._canvas = document.createElement('canvas');
         this._genCanvas();
-
-
-
     }
 
     get text() { return this._text; }
@@ -203,9 +198,9 @@ export class SpriteText extends THREE.Sprite {
         this.scale.set(yScale * canvas.width / canvas.height, yScale, 0);
     }
 
-    // clone() {
-    //     return new SpriteText(this.text, this.textHeight, this.color).copy(this);
-    // }
+    clone(recursive = true):any {
+        return new SpriteText(this.text, this.textHeight, this.color).copy(this);
+    }
 
     copy(source) {
         THREE.Sprite.prototype.copy.call(this, source);
