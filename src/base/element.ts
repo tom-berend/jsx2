@@ -382,12 +382,12 @@ export class GeometryElement extends Events {
     // Problem is that in normal inheritance, this object doesn't know which child method to call.
     // To untangle, we start with these closures, which direct 'this.elementUpdate()' to
     // the CORRECT element.update().
-    elementUpdate = () =>         console.error(`add to constructor: 'this.elementUpdate = ()=>this.update();'`)
+    elementUpdate = () => console.error(`add to constructor: 'this.elementUpdate = ()=>this.update();'`)
     elementUpdateRenderer = () => console.error(`add to constructor: 'this.elementUpdateRenderer = ()=>this.updateRenderer();'`)
 
-    elementCreateLabel = () =>    console.error(`add to constructor: 'this.elementCreateLabel = ()=>this.update();'`)
+    elementCreateLabel = () => console.error(`add to constructor: 'this.elementCreateLabel = ()=>this.update();'`)
     elementGetLabelAnchor = () => console.error(`add to constructor: 'this.elementGetLabelAnchor = ()=>this.update();'`)
-    elementGetTextAnchor = () =>  console.error(`add to constructor: 'this.elementGetTextAnchor = ()=>this.update();'`)
+    elementGetTextAnchor = () => console.error(`add to constructor: 'this.elementGetTextAnchor = ()=>this.update();'`)
 
     constructor(board: Board, attributes: LooseObject, otype: OBJECT_TYPE, oclass: OBJECT_CLASS) {
         super()
@@ -1742,7 +1742,6 @@ export class GeometryElement extends Events {
             }
         }
 
-        console.assert(val !== undefined, `missing visProp "${key}" in ${this.id}`)
         return val;
     }
 
@@ -2389,7 +2388,7 @@ export class GeometryElement extends Events {
      *    the visible board, but the distance between the two points stays constant.
      * @returns {JXG2.GeometryElement} Reference to this element
      */
-    handleSnapToGrid(force = true, fromParent = true) {
+    handleSnapToGrid(force = false, fromParent = true) {
         var x, y, rx, ry, rcoords,
             mi, ma,
             boardBB, res, sX, sY,

@@ -28,8 +28,10 @@
  */
 /*global JXG2:true, define: true*/
 
-import {JXG2} from "../jxg.js";
-import {Type} from "../utils/type.js";
+import { Type } from "../utils/type.js";
+import { GeometryElement } from "../base/element.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
+import { Options } from "../options.js"
 
 /**
  * Constructs a new GeometryElement3D object.
@@ -39,17 +41,8 @@ import {Type} from "../utils/type.js";
  *
  * @param {string} elType
  */
-JXG2.GeometryElement3D = function (view, elType) {
-    this.elType = elType;
-
-    /**
-     * Pointer to the view3D in which the element is constructed
-     * @type JXG2.View3D
-     * @private
-     */
-    this.view = view;
-
-    this.id = this.view.board.setId(this, elType);
+export class GeometryElement3D extends GeometryElement {
+    public zIndex
 
     /**
      * Link to the 2D element(s) used to visualize the 3D element
@@ -57,12 +50,12 @@ JXG2.GeometryElement3D = function (view, elType) {
      *
      * @type Array
      * @description JXG2.GeometryElement,Array
-     * @private
+     *
      *
      * @example
      *   p.element2D;
      */
-    this.element2D = null;
+    element2D = null;
 
     /**
      * If this property exists (and is true) the element is a 3D element.
@@ -70,20 +63,35 @@ JXG2.GeometryElement3D = function (view, elType) {
      * @type Boolean
      * @private
      */
-    this.is3D = true;
+    private is3D = true;
 
-    this.zIndex = 0.0;
 
-    this.view.objects[this.id] = this;
+    constructor(view, elType) {
+        super(view.board, {}, OBJECT_TYPE.POINT3D, OBJECT_CLASS._3D)
 
-    if (this.name !== "") {
-        this.view.elementsByName[this.name] = this;
+        this.elType = elType;
+
+        /**
+         * Pointer to the view3D in which the element is constructed
+         * @type JXG2.View3D
+         * @private
+         */
+        this.view = view;
+
+        this.id = this.view.board.setId(this, elType);
+
+
+        this.zIndex = 0.0;
+
+        this.view.objects[this.id] = this;
+
+        if (typeof this.name == 'string' && this.name !== "") {
+            this.view.elementsByName[this.name] = this;
+        }
     }
-};
 
-JXG2.extend(JXG2.GeometryElement3D.prototype, {
 
-    setAttr2D: function(attr3D) {
+    setAttr2D(attr3D) {
         var attr2D = attr3D;
 
         attr2D.name = this.name;
@@ -91,12 +99,12 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
         attr2D.id = null; // The 2D element's id may not be controlled by the user.
 
         return attr2D;
-    },
+    }
 
     // Documented in element.js
-    setAttribute: function(attr) {
+    setAttribute(attr):this {
         var i, key, value, arg, pair,
-        attributes = {};
+            attributes = {};
 
         // Normalize the user input
         for (i = 0; i < arguments.length; i++) {
@@ -107,7 +115,7 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
                 attributes[Type.trim(pair[0])] = Type.trim(pair[1]);
             } else if (!Type.isArray(arg)) {
                 // pairRaw consists of objects of the form {key1:value1,key2:value2,...}
-                JXG2.extend(attributes, arg);
+                throw new Error ('    extend(attributes, arg);  ?? ')
             } else {
                 // pairRaw consists of array [key,value]
                 attributes[arg[0]] = arg[1];
@@ -123,11 +131,11 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
                     case "stepsu":
                     case "stepsv":
                         if (Type.exists(this.visProp[key]) &&
-                        (!JXG2.Validator[key] ||
-                            (JXG2.Validator[key] && JXG2.Validator[key](value)) ||
-                            (JXG2.Validator[key] &&
-                                Type.isFunction(value) &&
-                                JXG2.Validator[key](value())))
+                            (!Options.Validator[key] ||
+                                (Options.Validator[key] && Options.Validator[key](value)) ||
+                                (Options.Validator[key] &&
+                                    Type.isFunction(value) &&
+                                    Options.Validator[key](value())))
                         ) {
                             value =
                                 value.toLowerCase && value.toLowerCase() === "false"
@@ -135,7 +143,7 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
                                     : value;
                             this._set(key, value);
                         }
-                    break;
+                        break;
                     default:
                         if (Type.exists(this.element2D)) {
                             this.element2D.setAttribute(attributes);
@@ -143,10 +151,11 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
                 }
             }
         }
-    },
+        return this
+    }
 
     // Documented in element.js
-    getAttribute: function(key) {
+    getAttribute(key) {
         var result;
         key = key.toLowerCase();
 
@@ -164,10 +173,10 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
         }
 
         return result;
-    },
+    }
 
     // Documented in element.js
-    getAttributes: function() {
+    getAttributes() {
         var attr = {},
             i, key,
             attr3D = ['numberpointshigh', 'stepsu', 'stepsv'],
@@ -185,7 +194,7 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
         }
 
         return attr;
-    },
+    }
 
     // /**
     //  * Add transformations to this element.
@@ -194,7 +203,7 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
     //  * or an array of {@link JXG2.Transformation}s.
     //  * @returns {JXG2.CoordsElement} Reference to itself.
     //  */
-    addTransformGeneric: function (el, transform) {
+    addTransformGeneric(el, transform) {
         var i,
             list = Type.isArray(transform) ? transform : [transform],
             len = list.length;
@@ -209,7 +218,7 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
         }
 
         return this;
-    },
+    }
 
     /**
      * Set position of the 2D element. This is a
@@ -218,9 +227,9 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
      * @private
      * @see JXG2.GeometryElement#setPosition
      */
-    setPosition2D: function(t) {
+    setPosition2D(t) {
         /* stub */
-    },
+    }
 
     /**
      * Project a 3D point to this element and update point.position.
@@ -230,13 +239,12 @@ JXG2.extend(JXG2.GeometryElement3D.prototype, {
      * p = [X(u, v), Z(u, v), Z(u, v)].
      * @returns {Array} 3D coordinates of the projected point with homogeneous coordinates of the form [1, x, y, z].
      */
-    projectCoords: function(p, params) {
+    projectCoords(p, params) {
         /* stub */
-    },
+    }
 
     // Documented in element.js
-    remove: function() {}
+    remove():this { return this }
 
-});
+}
 
-export default JXG2.GeometryElement3D;

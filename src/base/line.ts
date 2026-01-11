@@ -125,7 +125,7 @@ export class Line extends GeometryElement {
 
 
 
-    constructor(board, parents, attributes) {
+    constructor(board, p1, p2, attributes) {
         super(board, attributes, OBJECT_TYPE.LINE, OBJECT_CLASS.LINE);
 
         this.elementUpdate = () => this.update();
@@ -137,14 +137,14 @@ export class Line extends GeometryElement {
         this.elType = 'line';
         this.visProp = Type.initVisProps(Options.board, Options.elements, Options.line, attributes)
 
-        let points = Type.providePoints(board, parents, attributes)
-        this.point1 = points[0]
-        this.point2 = points[1]
+        // let points = Type.providePoints(board, [p1,p2], attributes)
+        this.point1 = this.board.select(p1.id);
+        this.point2 = this.board.select(p2.id);
 
         this.elType = 'line';
 
         if (dbug(this))
-            console.warn(`%c new line ${parents}  for ${this.id})`, dbugColor, this)
+            console.warn(`%c new line [${p1.id},${p2.id}]  for ${this.id})`, dbugColor, this)
 
         /* Add line as child to defining points */
         if (this.point1._is_new) {
@@ -153,6 +153,7 @@ export class Line extends GeometryElement {
         } else {
             this.point1.addChild(this);
         }
+
         if (this.point2._is_new) {
             this.addChild(this.point2);
             delete this.point2._is_new;
@@ -174,11 +175,7 @@ export class Line extends GeometryElement {
         // * and board.suspendUpdate() has been called.
 
         // create Label
-        this.createLabel();
-
-        // if (dbug(this))
-            console.warn(`%c new Line(${this.id} ${parents[0].id} ${parents[1].id}`, dbugColor)
-            // console.warn(`%c new Line(${this.id}  ${JSON.stringify(parents).substring(0, 30)},${JSON.stringify(attributes).substring(0, 30)})`, dbugColor, this)
+        this.elementCreateLabel();
 
 
         this.methodMap = Type.deepCopy(this.methodMap, {
@@ -1329,7 +1326,7 @@ export function createLine(board, parents, attributes) {
         attr = Type.copyAttributes(attributes, board.options, "line", 'point1');
 
         if (Array.isArray(parents[0]) && parents[0].length > 1) {
-            p1 = board.create("point", parents[0], attr);
+            p1 = createPoint(board, parents[0], attr);
         } else if (Type.isPoint(parents[0])) {
             p1 = parents[0];
         } else if (Type.isFunction(parents[0]) && Type.isPoint(parents[0]())) {
@@ -1359,7 +1356,7 @@ export function createLine(board, parents, attributes) {
         // point 2 given by coordinates
         attr = Type.copyAttributes(attributes, board.options, "line", 'point2');
         if (doTransform) {
-            p2 = board.create("point", [parents[0].point2, parents[1]], attr);
+            p2 = createPoint(board, [parents[0].point2, parents[1]], attr)
         } else if (Array.isArray(parents[1]) && parents[1].length > 1) {
             p2 = board.create("point", parents[1], attr);
         } else if (Type.isPoint(parents[1])) {
@@ -1386,7 +1383,7 @@ export function createLine(board, parents, attributes) {
         }
 
         attr = Type.copyAttributes(attributes, board.options, 'line');
-        el = new Line(board, [p1, p2], attr);
+        el = new Line(board, p1, p2, attr);
 
         if (constrained) {
             el.constrained = true;
@@ -1476,7 +1473,7 @@ export function createLine(board, parents, attributes) {
         p1.prepareUpdate().elementUpdate();
         p2.prepareUpdate().elementUpdate();
         attr = Type.copyAttributes(attributes, board.options, 'line');
-        el = new Line(board, [p1, p2], attr);
+        el = new Line(board, p1, p2, attr);
         // Not yet working, because the points are not draggable.
         el.isDraggable = isDraggable;
         el.setParents([p1, p2]);
@@ -1491,7 +1488,7 @@ export function createLine(board, parents, attributes) {
     ) {
         ps = parents[0]();
         attr = Type.copyAttributes(attributes, board.options, 'line');
-        el = new Line(board, [ps[0], ps[1]], attr);
+        el = new Line(board, ps[0], ps[1], attr);
         el.constrained = true;
         el.funps = parents[0];
         el.setParents(ps);
@@ -1532,7 +1529,7 @@ export function createLine(board, parents, attributes) {
         ], attr);
 
         attr = Type.copyAttributes(attributes, board.options, 'line');
-        el = new Line(board, [p1, p2], attr);
+        el = new Line(board, p1, p2, attr);
 
         el.constrained = true;
         el.funps = parents[0];
@@ -1710,7 +1707,7 @@ export function createArrow(board, parents, attributes) {
     attributes.straightFirst = false;
     attributes.straightLast = false;
     attr = Type.copyAttributes(attributes, board.options, 'arrow');
-    el = board.create("line", parents, attr);
+    el = createLine(board, parents, attr);
     //el.setArrow(false, true);
     el.type = OBJECT_TYPE.VECTOR;
     el.elType = 'arrow';

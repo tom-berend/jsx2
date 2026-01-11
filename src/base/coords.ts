@@ -1,4 +1,4 @@
-const dbug = (elem) => elem && elem.id === "jxgBoard1L9";
+const dbug = (elem) => false //elem && elem.id === "jxgBoard1L9";
 const dbugColor = `color:black;background-color:white`;
 
 // TODO: need a way to mark Coord as invalid.   Geometry often sends [0, NaN, NaN] or Coords
@@ -81,6 +81,8 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
 
     public _t:number = 0    // this is used in Plot.  need to document
 
+    public length = 0       // used in Point3D, text3D, statistics, cinderella
+
     /**
      * Constructs a new Coordinates object.
      * @class This is the Coordinates class.
@@ -108,7 +110,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
         this.board = board
         this.method = method
 
-        if (method == -COORDS_BY.USER) {
+        if (method === COORDS_BY.USER) {
             this.usrCoords = [1, coordinates[0], coordinates[1]]
             this.usr2screen()
         } else {

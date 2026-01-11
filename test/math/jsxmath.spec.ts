@@ -29,7 +29,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-import { JSXMath } from '../../src/math/jsxmath.js';
+import { JSXMath } from '../../src/math/math.js';
 
 describe("Test JSXMath", function () {
     it("Matrices, vectors", function () {

@@ -495,10 +495,10 @@ export abstract class AbstractRenderer {
      * @see JXG2.Line
      * @see JXG2.AbstractRenderer#drawLine
      */
-    updateLine(el) {
-
+    updateLine(el:GeometryElement) {
         if (dbug(el))
             console.warn(`%c abstract: _updateLine(${el.id})`, dbugColor)
+
 
 
         this._updateVisual(el);
@@ -571,6 +571,7 @@ export abstract class AbstractRenderer {
 
         // Get information if there are arrow heads and how large they are.
         arrowData = this.getArrowHeadData(el, w, hl);
+        // console.log(`UpdatePathWithArrowHeads`,el.coords.scrCoords)
 
         // Create the SVG nodes if necessary
         this.makeArrows(el, arrowData);
@@ -739,19 +740,13 @@ export abstract class AbstractRenderer {
             // useTotalLength = true,
             margin = null;
 
-        c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board, true);
-        c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board, true);
-
-        if (dbug(el))
-            console.warn(`%c abstract: updateLinewithEndings(${el.id}l, ${JSON.stringify(c1.scrCoords)},${JSON.stringify(c2.scrCoords)})`, dbugColor)
+        c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board);
+        c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
 
         margin = el.evalVisProp('margin');
-
-        // Geometry.calcStraight(el, c1, c2, margin);
-        console.warn('%c Abstract: fix Geometry.calcStraight !!  it mangles coords',dbugColor)
+        Geometry.calcStraight(el, c1, c2, margin);
 
         this.handleTouchpoints(el, c1, c2, arrowData);
-
         this.getPositionArrowHead(el, c1, c2, arrowData);
 
         this.updateLinePrim(

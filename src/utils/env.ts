@@ -43,9 +43,9 @@ const dbugColor = `color:blue;background-color:#c0feac`;
  */
 
 // import { JXG2 } from "../Env.js";
-import  {Type}  from "./type.js";
+import { Type } from "./type.js";
 import { LooseObject } from "../interfaces.js";
-import {GeometryElement}  from "../base/element.js";
+import { GeometryElement } from "../base/element.js";
 import { Board } from '../base/board.js'
 
 
@@ -512,7 +512,7 @@ export class Env {
     static removeEvent(obj, type, fn, owner) {
         var i;
 
-        console.log('removeEvent', type)
+        // console.log('removeEvent', type)
 
         if (!Type.exists(owner)) {
             Env.debug("no such owner");
@@ -531,24 +531,13 @@ export class Env {
 
         i = Type.indexOf(owner["x_internal" + type], fn, "origin");
 
+
         if (i === -1) {
-            Env.debug("removeEvent: no such event function in internal list: " + type);
+           //tbtb  Env.debug("removeEvent: no such event function in internal list: " + type);
             return;
         }
 
-        try {
-            // Non-IE browser
-            if (Type.exists(obj) && Type.exists(obj.removeEventListener)) {
-                obj.removeEventListener(type, owner["x_internal" + type][i], false);
-            }
-
-            // IE
-            if (Type.exists(obj) && Type.exists(obj.detachEvent)) {
-                obj.detachEvent("on" + type, owner["x_internal" + type][i]);
-            }
-        } catch (e) {
-            Env.debug("removeEvent: event not registered in browser: (" + type + " -- " + fn + ")");
-        }
+        obj.removeEventListener(type, owner["x_internal" + type][i], false);
 
         owner["x_internal" + type].splice(i, 1);
     }

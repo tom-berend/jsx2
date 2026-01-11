@@ -1187,7 +1187,6 @@ export class SVGRenderer extends AbstractRenderer {
     updateLinePrim(node, p1x, p1y, p2x, p2y) {
         var huge = 1000000;
 
-        console.warn('updateLinePrim', p1x, p1y, p2x, p2y)
         huge = 200000; //IE
         if (!isNaN(p1x + p1y + p2x + p2y)) {
             // webkit does not like huge values if the object is dashed

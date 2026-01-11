@@ -1,5 +1,5 @@
 let dbug = (elem) => false //elem && elem.id === 'jxgBoard1P3'
-const dbugColor = `color:red;background-color:blue`;
+const dbugColor = `color:red;background-color:lightblue`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -93,8 +93,8 @@ import { Env } from "../utils/env.js";
 export class Point extends CoordsElement {
 
 
-    constructor(board: Board, parents: any[], attributes: LooseObject = {}) {
-        super(board, COORDS_BY_USER, parents, attributes, OBJECT_TYPE.POINT, OBJECT_CLASS.POINT)
+    constructor(board: Board, coordinates: number[], attributes: LooseObject = {}) {
+        super(board, COORDS_BY_USER, coordinates, attributes, OBJECT_TYPE.POINT, OBJECT_CLASS.POINT)
 
         this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
@@ -103,37 +103,34 @@ export class Point extends CoordsElement {
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
 
+        if (dbug(this))
+            console.warn(`%c create Point ${this.id}`, dbugColor, coordinates)
+
         this.elType = 'point';
         this.visProp = Type.initVisProps(Options.elements, Options.point, attributes)
-
 
         /* Register point on board. */
         this.id = this.board.setId(this, 'P');
 
-        if (dbug(this))
-            console.warn(`%c create Point,${JSON.stringify(parents).substring(0, 100)}) ${this.id}`, dbugColor)
 
         this.board.renderer.drawPoint(this);
-
-
-        console.log(this.evalVisProp('anchor'))
-        if (this.evalVisProp('anchor'))
-            this.element = this.board.select(this.evalVisProp('anchor'));
-
-        this.coordsElementInit(parents, this.visProp)
-
-        if (!this.isDraggable)
-            this.addConstraint(parents)
-
         this.board.finalizeAdding(this);
+
+        this.coordsElementInit(coordinates, this.visProp)
 
         this.createGradient();
         this.createLabel();
 
-        this.needsUpdate = true;
+        if (this.evalVisProp('anchor'))
+            this.element = this.board.select(this.evalVisProp('anchor'));
 
-        // if(dbug(this))
-        console.warn(`%c new Point(${this.id}  ${JSON.stringify(parents).substring(0, 30)},${JSON.stringify(attributes).substring(0, 30)})`, dbugColor, this)
+        if (!this.isDraggable)
+            this.addConstraint(coordinates)
+
+
+
+        if (dbug(this))
+            console.warn(`%c new Point(${this.id}`, dbugColor, this.coords) //  ${JSON.stringify(parents).substring(0, 30)},${JSON.stringify(attributes).substring(0, 30)})`, dbugColor, this)
     }
 
     // documented in GeometryElement
@@ -527,8 +524,6 @@ export class Point extends CoordsElement {
             } else {
                 plainName = this.name;
             }
-
-            console.log('createLabel ', this.X(), this.Y(), plainName)
 
             this.label = new Text(this.board, [() => this.X(), () => this.Y(), plainName], attr);
 

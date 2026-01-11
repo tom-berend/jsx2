@@ -158,7 +158,7 @@ export class JSXMath {
      * @param {Number} [init=0] Initial value for each coefficient
      * @returns {Array} An array of length <tt>n</tt>
      */
-    static vector(n, init) {
+    static vector(n, init = 0) {
         var r, i;
 
         init = init || 0;
@@ -179,7 +179,7 @@ export class JSXMath {
      * @returns {Array} A <tt>n</tt> times <tt>m</tt>-matrix represented by a
      * two-dimensional array. The inner arrays hold the columns, the outer array holds the rows.
      */
-    static matrix(n, m, init = 0) {
+    static matrix(n, m?, init = 0) {
         var r, i, j;
 
         init = init || 0;
@@ -637,7 +637,7 @@ export class JSXMath {
      * @param {Number} n
      * @returns {Number} n! = n*(n-1)*...*2*1
      */
-    // factorial: memoizer(function(n) {
+    // factorial(n) {
     //     if (n < 0) {
     //         return NaN;
     //     }
@@ -649,7 +649,7 @@ export class JSXMath {
     //     }
 
     //     return n * this.factorial(n - 1);
-    // }),
+    // }
 
     static factorial(n: number) {   // imple iterative
         if (n === 0 || n === 1) {

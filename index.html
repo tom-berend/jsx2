@@ -4,34 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <title>JSXGraph3D Example</title>
-    <link rel="stylesheet" type="text/css" href="../jsxgraph/distrib/jsxgraph.css">
-    <script type="text/javascript" src="../jsxgraph/distrib/jsxgraphcore.js"></script>
-
-    <script type='module' src="../jsx2/build/jsxgraph.js"></script>
-
-    <!-- <script type="importmap">
-             {
-              "imports": {
-                "three": "../jx2/build/three.module.js",
-              }
-            }
-    </script> -->
-
+    <link rel="stylesheet" type="text/css" href="http://localhost/jsxgraph/distrib/jsxgraph.css">
+    <script type="text/javascript" src="http://localhost/jsxgraph/distrib/jsxgraphcore.js"></script>
 
     <script type="importmap">
-   {
-     "imports": {
+        {
+            "imports": {
         "three": "http://localhost/jsx2/node_modules/three/build/three.module.js",
         "three/addons/": "http://localhost/jsx2/node_modules/three/examples/jsm/"
-     }
-   }
+    }
+}
 </script>
 
+<script type='module' src="../jsx2/build/jsxgraph.js"></script>
 
 
 </head>
 
 <body>
+
+    <script type="module">
+        import { IndexTests,runTests } from "./build/indextests.js"
+        window.runTests = runTests
+        window.runTests()
+    </script>
+
+
+<button type="button" onclick="runTests('text')">Text</button>
+<button type="button" onclick="runTests('point')">Point</button>
+<button type="button" onclick="runTests('line')">Line</button>
+
     <div style="margin:45px;">
         <div id="box1" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>
         <div id="box2" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>
@@ -41,15 +43,6 @@
         </div>
 
     </div>
-    <script type="module">
-
-        import { IndexTests } from "./build/indextests.js"
-
-        window.onload = function () {
-            let tests = new IndexTests()
-        };
-
-    </script>
 </body>
 
 </html>

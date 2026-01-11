@@ -5271,6 +5271,7 @@ export class Board extends Events {
             gridY = Type.evaluate(this.options.grid.gridY),
             x, y;
 
+
         if (!Array.isArray(gridStep)) {
             gridStep = [gridStep, gridStep];
         }
@@ -7244,7 +7245,7 @@ export class Board extends Events {
         if (s === null || s === undefined) return null;
 
         if (typeof s !== 'string') {
-            throw new Error(`board.select() not a string: ${typeof s}`)
+            console.error(`board.select() not a string: ${typeof s}`)
         }
 
         // It's a string, most likely an id or a name.
