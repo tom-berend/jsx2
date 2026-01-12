@@ -38,7 +38,7 @@ import { Extrapolate } from "./extrapolate.js";
 import { Numerics } from "./numerics.js";
 import { Statistics } from "./statistics.js";
 import { Geometry } from "./geometry.js";
-import IntervalArithmetic from "./ia.js";
+import { IntervalArithmetic } from "./ia.js";
 import { Type } from "../utils/type.js";
 import { Env } from "../utils/env.js";
 
@@ -580,7 +580,7 @@ export class Plot {
      *                 the segment [a,b] is regarded as straight line.
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    static _plotRecursive_v2(curve:Curve, a, ta, b, tb, depth, delta) {
+    static _plotRecursive_v2(curve: Curve, a, ta, b, tb, depth, delta) {
         var tc,
             c,
             ds,
@@ -670,7 +670,7 @@ export class Plot {
      * @param {Number} ma Right bound of curve
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    static updateParametricCurve_v2(curve:Curve, mi, ma) {
+    static updateParametricCurve_v2(curve: Curve, mi, ma) {
         var ta, tb,
             a, b,
             suspendUpdate = false,
@@ -771,7 +771,7 @@ export class Plot {
      * @param {*} limes
      * @private
      */
-    static _insertLimesPoint(curve:Curve, pnt, t, depth, limes) {
+    static _insertLimesPoint(curve: Curve, pnt, t, depth, limes) {
         var p0, p1, p2;
 
         // Ignore jump point if it follows limes
@@ -832,7 +832,7 @@ export class Plot {
      * @param {JXG2.Curve} curve JSXGraph curve element
      * @param {JXG2.Coords} pnt Coords to add to the list of points
      */
-    static _insertPoint(curve:Curve, pnt, t, depth, limes) {
+    static _insertPoint(curve: Curve, pnt, t, depth, limes) {
         var last_is_real = !isNaN(Plot._lastScrCrds[1] + Plot._lastScrCrds[2]), // The last point was real
             point_is_real = !isNaN(pnt[1] + pnt[2]), // New point is real point
             cw = curve.board.canvasWidth,
@@ -1420,7 +1420,7 @@ export class Plot {
      * @param {Number} ma Right bound of curve
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    static updateParametricCurve_v3(curve:Curve, mi, ma) {
+    static updateParametricCurve_v3(curve: Curve, mi, ma) {
         var ta,
             tb,
             a,
@@ -1609,7 +1609,7 @@ export class Plot {
         return { smooth: smooth, groups: groups, types: types };
     }
 
-    static findComponents(curve, mi, ma, safariteps) {
+    static findComponents(curve:Curve, mi, ma, safariteps) {
         var i, t, h,
             x, y,
             components = [],
@@ -1734,7 +1734,7 @@ export class Plot {
         return recip[0][idx + 1] + (t - t_values[idx + 1]) / (recip[1][idx + 1] + v);
     }
 
-    static differenceMethodExperiments(component, curve:Curve) {
+    static differenceMethodExperiments(component, curve: Curve) {
         var i,
             level,
             le,
@@ -1924,7 +1924,7 @@ export class Plot {
         ];
     }
 
-    static differenceMethod(component, curve:Curve) {
+    static differenceMethod(component, curve: Curve) {
         var i,
             level,
             le,
@@ -2036,7 +2036,7 @@ export class Plot {
         return [criticalPoints, x_table, y_table, degree_x, degree_y];
     }
 
-    static _insertPoint_v4(curve:Curve, crds, t, doLog?) {
+    static _insertPoint_v4(curve: Curve, crds, t, doLog?) {
         var p,
             prev = null,
             x,
@@ -2064,7 +2064,7 @@ export class Plot {
         curve.points.push(p);
     }
 
-    static getInterval(curve, ta, tb) {
+    static getInterval(curve:Curve, ta:number, tb:number) {  // ta & tb are limits, eg: boundingbox
         var t_int,
             // x_int,
             y_int;
@@ -2073,12 +2073,15 @@ export class Plot {
         IntervalArithmetic.disable();
 
         t_int = IntervalArithmetic.Interval(ta, tb);
-        curve.board.mathLib = IntervalArithmetic;
-        curve.board.mathLibJXG = IntervalArithmetic;
+
+        // curve.board.mathLib = IntervalArithmetic;   // used by JessieCode
+        // curve.board.mathLibJXG = IntervalArithmetic;
+
         // x_int = curve.X(t_int, true);
         y_int = curve.Y(t_int, true);
-        curve.board.mathLib = Math;
-        curve.board.mathLibJXG = JSXMath;
+
+        // curve.board.mathLib = Math;      // used by JessieCode   //tbtb
+        // curve.board.mathLibJXG = JSXMath;
 
         //console.log(x_int, y_int);
         return y_int;
@@ -2398,7 +2401,7 @@ export class Plot {
      */
     criticalThreshold: 1000
 
-    static plot_v4(curve, ta, tb) {
+    static plot_v4(curve: Curve, ta: number, tb: number) {  // ta and tb might be the boundingbox limits
         var i,
             // j,
             le,
@@ -2564,7 +2567,7 @@ export class Plot {
      * @param {Number} ma Right bound of curve
      * @returns {JXG2.Curve} Reference to the curve object.
      */
-    static updateParametricCurve_v4(curve, mi, ma) {
+    static updateParametricCurve_v4(curve: Curve, mi, ma) {
         var ta, tb, w2, bbox;
 
         if (curve.xterm === 'x') {

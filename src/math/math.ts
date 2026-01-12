@@ -205,7 +205,7 @@ export class JSXMath {
      * @returns {Array} A square matrix of length <tt>n</tt> with all coefficients equal to 0 except a_(i,i), i out of (1, ..., n), if <tt>m</tt> is undefined or not a number
      * or a <tt>n</tt> times <tt>m</tt>-matrix with a_(i,j) = 0 and a_(i,i) = 1 if m is a number.
      */
-    static identity(n, m) {
+    static identity(n, m?) {
         var r, i;
 
         if (m === undef && typeof m !== 'number') {
@@ -677,31 +677,7 @@ export class JSXMath {
      * @param {Number} k Fraction will be ignored
      * @returns {Number} The binomial coefficient n over k
      */
-    // binomial: memoizer(function(n, k) {
-    //     var b, i;
-
-    //     if (k > n || k < 0) {
-    //         return NaN;
-    //     }
-
-    //     k = Math.round(k);
-    //     n = Math.round(n);
-
-    //     if (k === 0 || k === n) {
-    //         return 1;
-    //     }
-
-    //     b = 1;
-
-    //     for (i = 0; i < k; i++) {
-    //         b *= n - i;
-    //         b /= i + 1;
-    //     }
-
-    //     return b;
-    // }),
-
-    static binomial(n, k) {
+    static binomial(n:number, k:number) {
         // Check if inputs are valid numbers
         if (typeof n !== 'number' || typeof k !== 'number' || isNaN(n) || isNaN(k)) {
             return NaN;

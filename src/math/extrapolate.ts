@@ -30,7 +30,6 @@
 /*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG2 } from "../jxg.js"
 import { JSXMath } from "./math.js";
 
 /**
@@ -40,9 +39,11 @@ import { JSXMath } from "./math.js";
  * @namespace
  */
 
+
 export class Extrapolate {
-    upper = 15
-    infty = 1e4
+
+    static upper = 15
+    static infty = 1e4
 
     /**
      * Wynn's epsilon algorithm. Ported from the FORTRAN version in

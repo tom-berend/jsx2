@@ -34,9 +34,9 @@ import { JSXMath } from '../../src/math/math.js';
 describe("Test JSXMath", function () {
     it("Matrices, vectors", function () {
         var A = [
-                [2, 1],
-                [1, 3]
-            ],
+            [2, 1],
+            [1, 3]
+        ],
             b = [4, 5];
 
         expect(JSXMath.matVecMult(A, b)).toEqual([13, 19]);
@@ -116,13 +116,16 @@ describe("Test JSXMath", function () {
         expect(JSXMath.factorial(4)).toEqual(24);
         expect(JSXMath.factorial(4.312)).toEqual(24);
         expect(JSXMath.factorial(5)).toEqual(120);
-        expect(JSXMath.factorial(-2)).toBeNaN();
+        const wrap = () => JSXMath.factorial(-2)  // like this to catch errors
+        expect(wrap).toThrow(Error);
     });
 
     it("Binomial", function () {
         expect(JSXMath.binomial(5, 3)).toEqual(10);
         expect(JSXMath.binomial(5.1, 3.14152)).toEqual(10);
-        expect(JSXMath.binomial(2, -2)).toBeNaN();
+        //https://math.stackexchange.com/questions/1763527/binomial-coefficient-where-k-n
+        expect(JSXMath.binomial(2, 3)).toEqual(0)  // tbtb was toBeNaN();
+        expect(JSXMath.binomial(2, -2)).toEqual(0)  // tbtb was toBeNaN();
     });
 
     it("Pow", function () {
@@ -149,10 +152,10 @@ describe("Test JSXMath", function () {
 
     it("Matrix inverse", function () {
         var A = [
-                [2, 0, 0],
-                [0, 4, 0],
-                [0, 0, 8]
-            ],
+            [2, 0, 0],
+            [0, 4, 0],
+            [0, 0, 8]
+        ],
             i,
             j;
 

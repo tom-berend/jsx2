@@ -39,12 +39,12 @@
  */
 
 import { JXG2 } from "../jxg.js";
-import {Options} from "../options.js";
+import { Options } from "../options.js";
 import { GeometryElement } from "./element.js";
 import { Coords } from "../base/coords.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
-import GeonextParser from "../parser/geonext.js";
+// import GeonextParser from "../parser/geonext.js";
 import { Type } from "../utils/type.js";
 
 /**
@@ -180,9 +180,9 @@ export class Circle extends GeometryElement {
             this.radius = this.circle.Radius();
         }
 
-                this.visProp = Type.initVisProps(Options.board, Options.elements, Options.circle, attributes)
-                console.log(this.visProp)
-                console.log(this.board.options)
+        this.visProp = Type.initVisProps(Options.board, Options.elements, Options.circle, attributes)
+        console.log(this.visProp)
+        console.log(this.board.options)
 
 
         // create Label
@@ -533,7 +533,7 @@ export class Circle extends GeometryElement {
      */
     notifyParents(contentStr) {
         if (Type.isString(contentStr)) {
-            GeonextParser.findDependencies(this, contentStr, this.board);
+            throw new Error('      GeonextParser.findDependencies(this, contentStr, this.board);  ???')
         }
     }
 
@@ -862,7 +862,7 @@ export class Circle extends GeometryElement {
 
     }
 
-    updateRadius():number {
+    updateRadius(): number {
         if (this.method === 'pointRadius') {
 
 

@@ -30,186 +30,194 @@
 /*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG2 } from "../jxg.js";
 import { JSXMath } from "./math.js";
 import { Type } from "../utils/type.js";
 
-if (JXG2.JSXMath === undefined)
-    JXG2.JSXMath = {}
 
-JXG2.JSXMath.DoubleBits = function () {
-    var DOUBLE_VIEW = new Float64Array(1),
-        UINT_VIEW = new Uint32Array(DOUBLE_VIEW.buffer),
-        doubleBitsLE,
-        toDoubleLE,
-        lowUintLE,
-        highUintLE,
-        // doubleBits,
-        // toDouble,
-        // lowUint,
-        // highUint,
-        // hasTypedArrays = false,
-        doubleBitsBE,
-        toDoubleBE,
-        lowUintBE,
-        highUintBE,
-        piLow;
+export class DoubleBits {
 
-    if (Float64Array !== undefined) {
-        DOUBLE_VIEW[0] = 1.0;
-        // hasTypedArrays = true;
-        if (UINT_VIEW[1] === 0x3ff00000) {
-            // Use little endian
-            doubleBitsLE = function (n) {
-                DOUBLE_VIEW[0] = n;
-                return [UINT_VIEW[0], UINT_VIEW[1]];
-            };
-            toDoubleLE = function (lo, hi) {
-                UINT_VIEW[0] = lo;
-                UINT_VIEW[1] = hi;
-                return DOUBLE_VIEW[0];
-            };
+    hi: Function
+    lo: Function
+    pack: Function
+    doubleBits: Function   // tbtb figure out what IA means by doublebits
+    // probably not relevant to modern javascript
 
-            lowUintLE = function (n) {
-                DOUBLE_VIEW[0] = n;
-                return UINT_VIEW[0];
-            };
+    constructor() {
+        var DOUBLE_VIEW = new Float64Array(1), UINT_VIEW = new Uint32Array(DOUBLE_VIEW.buffer),
+            doubleBitsLE,
+            toDoubleLE,
+            lowUintLE,
+            highUintLE,
+            // doubleBits,
+            // toDouble,
+            // lowUint,
+            // highUint,
+            // hasTypedArrays = false,
+            doubleBitsBE,
+            toDoubleBE,
+            lowUintBE,
+            highUintBE,
+            piLow;
 
-            highUintLE = function (n) {
-                DOUBLE_VIEW[0] = n;
-                return UINT_VIEW[1];
-            };
+        if (Float64Array !== undefined) {
+            DOUBLE_VIEW[0] = 1.0;
+            // hasTypedArrays = true;
+            if (UINT_VIEW[1] === 0x3ff00000) {
+                // Use little endian
+                doubleBitsLE = function (n) {
+                    DOUBLE_VIEW[0] = n;
+                    return [UINT_VIEW[0], UINT_VIEW[1]];
+                };
+                toDoubleLE = function (lo, hi) {
+                    UINT_VIEW[0] = lo;
+                    UINT_VIEW[1] = hi;
+                    return DOUBLE_VIEW[0];
+                };
 
-            this.doubleBits = doubleBitsLE;
-            this.pack = toDoubleLE;
-            this.lo = lowUintLE;
-            this.hi = highUintLE;
-        } else if (UINT_VIEW[0] === 0x3ff00000) {
-            // Use big endian
-            doubleBitsBE = function (n) {
-                DOUBLE_VIEW[0] = n;
-                return [UINT_VIEW[1], UINT_VIEW[0]];
-            };
+                lowUintLE = function (n) {
+                    DOUBLE_VIEW[0] = n;
+                    return UINT_VIEW[0];
+                };
 
-            toDoubleBE = function (lo, hi) {
-                UINT_VIEW[1] = lo;
-                UINT_VIEW[0] = hi;
-                return DOUBLE_VIEW[0];
-            };
+                highUintLE = function (n) {
+                    DOUBLE_VIEW[0] = n;
+                    return UINT_VIEW[1];
+                };
 
-            lowUintBE = function (n) {
-                DOUBLE_VIEW[0] = n;
-                return UINT_VIEW[1];
-            };
+                this.doubleBits = doubleBitsLE;
+                this.pack = toDoubleLE;
+                this.lo = lowUintLE;
+                this.hi = highUintLE;
+            } else if (UINT_VIEW[0] === 0x3ff00000) {
+                // Use big endian
+                doubleBitsBE = function (n) {
+                    DOUBLE_VIEW[0] = n;
+                    return [UINT_VIEW[1], UINT_VIEW[0]];
+                };
 
-            highUintBE = function (n) {
-                DOUBLE_VIEW[0] = n;
-                return UINT_VIEW[0];
-            };
+                toDoubleBE = (lo, hi) => {
+                    UINT_VIEW[1] = lo;
+                    UINT_VIEW[0] = hi;
+                    return DOUBLE_VIEW[0];
+                };
 
-            this.doubleBits = doubleBitsBE;
-            this.pack = toDoubleBE;
-            this.lo = lowUintBE;
-            this.hi = highUintBE;
-            // } else {
-            //     hasTypedArrays = false;
-        }
-    }
+                lowUintBE = function (n) {
+                    DOUBLE_VIEW[0] = n;
+                    return UINT_VIEW[1];
+                };
 
-    // if (!hasTypedArrays) {
-    //     var buffer = new Buffer(8)
-    //     doubleBits = function(n) {
-    //         buffer.writeDoubleLE(n, 0, true);
-    //         return [buffer.readUInt32LE(0, true), buffer.readUInt32LE(4, true)];
-    //     };
+                highUintBE = function (n) {
+                    DOUBLE_VIEW[0] = n;
+                    return UINT_VIEW[0];
+                };
 
-    //     toDouble = function(lo, hi) {
-    //         buffer.writeUInt32LE(lo, 0, true);
-    //         buffer.writeUInt32LE(hi, 4, true);
-    //         return buffer.readDoubleLE(0, true);
-    //     };
-    //     lowUint = function(n) {
-    //         buffer.writeDoubleLE(n, 0, true);
-    //         return buffer.readUInt32LE(0, true);
-    //     };
-
-    //     highUint = function(n) {
-    //         buffer.writeDoubleLE(n, 0, true);
-    //         return buffer.readUInt32LE(4, true);
-    //     };
-
-    //     this.doubleBits = doubleBits;
-    //     this.pack = toDouble;
-    //     this.lo = lowUint;
-    //     this.hi = highUint;
-    // }
-};
-
-JXG2.extend(
-    JXG2.JSXMath.DoubleBits.prototype,
-    /** @lends JXG2.JSXMath.DoubleBits.prototype */ {
-        sign: function (n) {
-            return this.hi(n) >>> 31;
-        },
-
-        exponent: function (n) {
-            var b = this.hi(n);
-            return ((b << 1) >>> 21) - 1023;
-        },
-
-        fraction: function (n) {
-            var lo = this.lo(n),
-                hi = this.hi(n),
-                b = hi & ((1 << 20) - 1);
-
-            if (hi & 0x7ff00000) {
-                b += 1 << 20;
+                this.doubleBits = doubleBitsBE;
+                this.pack = toDoubleBE;
+                this.lo = lowUintBE;
+                this.hi = highUintBE;
+                // } else {
+                //     hasTypedArrays = false;
             }
-            return [lo, b];
-        },
-
-        denormalized: function (n) {
-            var hi = this.hi(n);
-            return !(hi & 0x7ff00000);
         }
-    }
-);
 
-var doubleBits = new JXG2.JSXMath.DoubleBits(),
-    /**
-     * Interval for interval arithmetics. Consists of the properties
-     * <ul>
-     *  <li>lo
-     *  <li>hi
-     * </ul>
-     * @name JXG2.JSXMath.Interval
-     * @type Object
-     */
-    MatInterval = function (lo, hi) {
+
+        // if (!hasTypedArrays) {
+        //     var buffer = new Buffer(8)
+        //     doubleBits = function(n) {
+        //         buffer.writeDoubleLE(n, 0, true);
+        //         return [buffer.readUInt32LE(0, true), buffer.readUInt32LE(4, true)];
+        //     };
+
+        //     toDouble = function(lo, hi) {
+        //         buffer.writeUInt32LE(lo, 0, true);
+        //         buffer.writeUInt32LE(hi, 4, true);
+        //         return buffer.readDoubleLE(0, true);
+        //     };
+        //     lowUint = function(n) {
+        //         buffer.writeDoubleLE(n, 0, true);
+        //         return buffer.readUInt32LE(0, true);
+        //     };
+
+        //     highUint = function(n) {
+        //         buffer.writeDoubleLE(n, 0, true);
+        //         return buffer.readUInt32LE(4, true);
+        //     };
+
+        //     this.doubleBits = doubleBits;
+        //     this.pack = toDouble;
+        //     this.lo = lowUint;
+        //     this.hi = highUint;
+        // }
+    };
+
+    sign(n) {
+        return this.hi(n) >>> 31;
+    }
+
+    exponent(n) {
+        var b = this.hi(n);
+        return ((b << 1) >>> 21) - 1023;
+    }
+
+    fraction(n) {
+        var lo = this.lo(n),
+            hi = this.hi(n),
+            b = hi & ((1 << 20) - 1);
+
+        if (hi & 0x7ff00000) {
+            b += 1 << 20;
+        }
+        return [lo, b];
+    }
+
+    denormalized(n) {
+        var hi = this.hi(n);
+        return !(hi & 0x7ff00000);
+    }
+
+}
+
+
+/**
+ * Interval for interval arithmetics. Consists of the properties
+ * <ul>
+ *  <li>lo
+ *  <li>hi
+ * </ul>
+ * @name JXG2.JSXMath.Interval
+ * @type Object
+ */
+export class MatInterval {
+    public hi: number
+    public lo: number
+
+    constructor(lo?, hi?) {
         if (lo !== undefined && hi !== undefined) {
             // possible cases:
             // - Interval(1, 2)
             // - Interval(Interval(1, 1), Interval(2, 2))     // singletons are required
-            if (JSXMath.IntervalArithmetic.isInterval(lo)) {
-                if (!JSXMath.IntervalArithmetic.isSingleton(lo)) {
-                    throw new TypeError(
-                        "JXG2.JSXMath.IntervalArithmetic: interval `lo` must be a singleton"
-                    );
-                }
-                this.lo = lo.lo;
-            } else {
+
+
+            // tbtb not here !!if (IntervalArithmetic.isInterval(lo)) {
+            // tbtb not here !!    if (!IntervalArithmetic.isSingleton(lo)) {
+            // tbtb not here !!        throw new TypeError(
+            // tbtb not here !!            "IntervalArithmetic: interval `lo` must be a singleton"
+            // tbtb not here !!        );
+            // tbtb not here !!    }
+            // tbtb not here !!    this.lo = lo.lo;
+            // tbtb not here !!} else {
                 this.lo = lo;
-            }
-            if (JSXMath.IntervalArithmetic.isInterval(hi)) {
-                if (!JSXMath.IntervalArithmetic.isSingleton(hi)) {
-                    throw new TypeError(
-                        "JXG2.JSXMath.IntervalArithmetic: interval `hi` must be a singleton"
-                    );
-                }
-                this.hi = hi.hi;
-            } else {
+            // tbtb not here !! }
+            // tbtb not here !! if (IntervalArithmetic.isInterval(hi)) {
+            // tbtb not here !!     if (!IntervalArithmetic.isSingleton(hi)) {
+            // tbtb not here !!         throw new TypeError(
+            // tbtb not here !!             "IntervalArithmetic: interval `hi` must be a singleton"
+            // tbtb not here !!         );
+            // tbtb not here !!     }
+            // tbtb not here !!     this.hi = hi.hi;
+            // tbtb not here !! } else {
                 this.hi = hi;
-            }
+            // }
         } else if (lo !== undefined) {
             // possible cases:
             // - Interval([1, 2])
@@ -227,26 +235,25 @@ var doubleBits = new JXG2.JSXMath.DoubleBits(),
         }
     };
 
-JXG2.extend(MatInterval.prototype, {
-    print: function () {
+    print() {
         console.log("[", this.lo, this.hi, "]");
-    },
+    }
 
-    set: function (lo, hi) {
+    set(lo, hi) {
         this.lo = lo;
         this.hi = hi;
         return this;
-    },
+    }
 
-    bounded: function (lo, hi) {
-        return this.set(JSXMath.IntervalArithmetic.prev(lo), JSXMath.IntervalArithmetic.next(hi));
-    },
+    bounded(lo, hi) {
+        return this.set(IntervalArithmetic.prev(lo), IntervalArithmetic.next(hi));
+    }
 
-    boundedSingleton: function (v) {
+    boundedSingleton(v) {
         return this.bounded(v, v);
-    },
+    }
 
-    assign: function (lo, hi) {
+    assign(lo, hi) {
         if (typeof lo !== "number" || typeof hi !== 'number') {
             throw new TypeError("JXG2.JSXMath.Interval#assign: arguments must be numbers");
         }
@@ -254,42 +261,46 @@ JXG2.extend(MatInterval.prototype, {
             return this.setEmpty();
         }
         return this.set(lo, hi);
-    },
+    }
 
-    setEmpty: function () {
+    setEmpty() {
         return this.set(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY);
-    },
+    }
 
-    setWhole: function () {
+    setWhole() {
         return this.set(Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
-    },
+    }
 
-    open: function (lo, hi) {
-        return this.assign(JSXMath.IntervalArithmetic.next(lo), JSXMath.IntervalArithmetic.prev(hi));
-    },
+    open(lo, hi) {
+        return this.assign(IntervalArithmetic.next(lo), IntervalArithmetic.prev(hi));
+    }
 
-    halfOpenLeft: function (lo, hi) {
-        return this.assign(JSXMath.IntervalArithmetic.next(lo), hi);
-    },
+    halfOpenLeft(lo, hi) {
+        return this.assign(IntervalArithmetic.next(lo), hi);
+    }
 
-    halfOpenRight: function (lo, hi) {
-        return this.assign(lo, JSXMath.IntervalArithmetic.prev(hi));
-    },
+    halfOpenRight(lo, hi) {
+        return this.assign(lo, IntervalArithmetic.prev(hi));
+    }
 
-    toArray: function () {
+    toArray() {
         return [this.lo, this.hi];
-    },
+    }
 
-    clone: function () {
+    clone() {
         return new MatInterval().set(this.lo, this.hi);
     }
-});
+}
+
+
+
+
 
 /**
  * Object for interval arithmetics.
- * @name JXG2.JSXMath.IntervalArithmetic
+ * @name JXG2.IntervalArithmetic
  * @namespace
- * @exports JSXMath.IntervalArithmetic as JXG2.JSXMath.IntervalArithmetic
+ * @exports IntervalArithmetic as JXG2.IntervalArithmetic
  *
  * @description
  * Interval arithmetic is a technique used to mitigate rounding and measurement errors in mathematical computation
@@ -301,32 +312,65 @@ JXG2.extend(MatInterval.prototype, {
  * so 0.9995 ≤ L ≤ 1.0005, the other nominally as W=2 so the interval is [1.9995, 2.0005].
  *
  * <pre>
- * let L = JXG2.JSXMath.IntervalArithmetic.Interval(0.9995, 1.0005)
- * let W = JXG2.JSXMath.IntervalArithmetic.Interval(1.9995, 2.0005)
+ * let L = JXG2.IntervalArithmetic.Interval(0.9995, 1.0005)
+ * let W = JXG2.IntervalArithmetic.Interval(1.9995, 2.0005)
  *
- * let A = JXG2.JSXMath.IntervalArithmetic.mul(L, W)
+ * let A = JXG2.IntervalArithmetic.mul(L, W)
  *
  * console.log('area:', A) // {hi: 2.0015002500000003, lo: 1.99850025}
  * </pre>
  *
  */
-JXG2.JSXMath.IntervalArithmetic = {
-    Interval: function (lo, hi) {
-        return new MatInterval(lo, hi);
-    },
 
-    isInterval: function (i) {
+export class IntervalArithmetic extends DoubleBits {
+
+    /*
+     * Constants
+     */
+    static piLow = (3373259426.0 + 273688.0 / (1 << 21)) / (1 << 30)
+    static piHigh = (3373259426.0 + 273689.0 / (1 << 21)) / (1 << 30)
+    static piHalfLow = ((3373259426.0 + 273688.0 / (1 << 21)) / (1 << 30)) * 0.5
+    static piHalfHigh = ((3373259426.0 + 273689.0 / (1 << 21)) / (1 << 30)) * 0.5
+    static piTwiceLow = ((3373259426.0 + 273688.0 / (1 << 21)) / (1 << 30)) * 2
+    static piTwiceHigh = ((3373259426.0 + 273689.0 / (1 << 21)) / (1 << 30)) * 2
+
+    static doubleBits = new DoubleBits()
+
+    static PI = new MatInterval(
+        IntervalArithmetic.piLow,
+        IntervalArithmetic.piHigh
+    );
+    static PI_HALF = new MatInterval(
+        IntervalArithmetic.piHalfLow,
+        IntervalArithmetic.piHalfHigh
+    );
+    static PI_TWICE = new MatInterval(
+        IntervalArithmetic.piTwiceLow,
+        IntervalArithmetic.piTwiceHigh
+    );
+    static ZERO = new MatInterval(0);
+    static ONE = new MatInterval(1);
+    static WHOLE = new MatInterval().setWhole();
+    static EMPTY = new MatInterval().setEmpty();
+
+
+    static Interval(lo: number, hi?: number): MatInterval {
+        return new MatInterval(lo, hi);
+    }
+
+
+    static isInterval(i: MatInterval) {
         return (
             i !== null &&
             typeof i === "object" &&
             typeof i.lo === "number" &&
             typeof i.hi === "number"
         );
-    },
+    }
 
-    isSingleton: function (i) {
+    static isSingleton(i: MatInterval) {
         return i.lo === i.hi;
-    },
+    }
 
     /*
      * Arithmetics
@@ -339,7 +383,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval|Number} y
      * @returns JXG2.JSXMath.Interval
      */
-    add: function (x, y) {
+    static add(x, y) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
@@ -347,7 +391,7 @@ JXG2.JSXMath.IntervalArithmetic = {
             y = this.Interval(y);
         }
         return new MatInterval(this.addLo(x.lo, y.lo), this.addHi(x.hi, y.hi));
-    },
+    }
 
     /**
      * Subtraction
@@ -356,7 +400,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval|Number} y
      * @returns JXG2.JSXMath.Interval
      */
-    sub: function (x, y) {
+    static sub(x, y) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
@@ -364,7 +408,7 @@ JXG2.JSXMath.IntervalArithmetic = {
             y = this.Interval(y);
         }
         return new MatInterval(this.subLo(x.lo, y.hi), this.subHi(x.hi, y.lo));
-    },
+    }
 
     /**
      * Multiplication
@@ -373,7 +417,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval|Number} y
      * @returns JXG2.JSXMath.Interval
      */
-    mul: function (x, y) {
+    static mul(x, y) {
         var xl, xh, yl, yh, out;
 
         if (Type.isNumber(x)) {
@@ -397,7 +441,7 @@ JXG2.JSXMath.IntervalArithmetic = {
                 if (yl < 0) {
                     if (yh > 0) {
                         // mixed * mixed
-                        out.lo = Math.min(this.mulLo(xl, yh), this.mulLo(xh, yl));
+                        out.lo = Math.min(IntervalArithmetic.mulLo(xl, yh), this.mulLo(xh, yl));
                         out.hi = Math.max(this.mulHi(xl, yl), this.mulHi(xh, yh));
                     } else {
                         // mixed * negative
@@ -468,7 +512,7 @@ JXG2.JSXMath.IntervalArithmetic = {
             }
         }
         return out;
-    },
+    }
 
     /**
      * Division
@@ -477,7 +521,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval|Number} y
      * @returns JXG2.JSXMath.Interval
      */
-    div: function (x, y) {
+    static div(x, y) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
@@ -501,7 +545,7 @@ JXG2.JSXMath.IntervalArithmetic = {
             return this.EMPTY.clone();
         }
         return this.divNonZero(x, y);
-    },
+    }
 
     /**
      * Return +x (i.e. identity)
@@ -509,9 +553,9 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    positive: function (x) {
+    static positive(x) {
         return new MatInterval(x.lo, x.hi);
-    },
+    }
 
     /**
      * Return -x
@@ -519,12 +563,12 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    negative: function (x) {
+    static negative(x) {
         if (Type.isNumber(x)) {
             return new MatInterval(-x);
         }
         return new MatInterval(-x.hi, -x.lo);
-    },
+    }
 
     /*
      * Utils
@@ -535,27 +579,27 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} i
      * @returns Boolean
      */
-    isEmpty: function (i) {
+    static isEmpty(i) {
         return i.lo > i.hi;
-    },
+    }
 
     /**
      * Test if interval is (-Infinity, Infinity).
      * @param {JXG2.JSXMath.Interval} i
      * @returns Boolean
      */
-    isWhole: function (i) {
+    static isWhole(i) {
         return i.lo === -Infinity && i.hi === Infinity;
-    },
+    }
 
     /**
      * Test if interval contains 0.
      * @param {JXG2.JSXMath.Interval} i
      * @returns Boolean
      */
-    zeroIn: function (i) {
+    static zeroIn(i) {
         return this.hasValue(i, 0);
-    },
+    }
 
     /**
      * Test if interval contains a specific value.
@@ -563,12 +607,12 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {Number} value
      * @returns Boolean
      */
-    hasValue: function (i, value) {
+    static hasValue(i, value) {
         if (this.isEmpty(i)) {
             return false;
         }
         return i.lo <= value && value <= i.hi;
-    },
+    }
 
     /**
      * Test if interval x contains interval y.
@@ -576,12 +620,12 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
-    hasInterval: function (x, y) {
+    static hasInterval(x, y) {
         if (this.isEmpty(x)) {
             return true;
         }
         return !this.isEmpty(y) && y.lo <= x.lo && x.hi <= y.hi;
-    },
+    }
 
     /**
      * Test if intervals x and y have non-zero intersection.
@@ -589,12 +633,12 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
-    intervalsOverlap: function (x, y) {
+    static intervalsOverlap(x, y) {
         if (this.isEmpty(x) || this.isEmpty(y)) {
             return false;
         }
         return (x.lo <= y.lo && y.lo <= x.hi) || (y.lo <= x.lo && x.lo <= y.hi);
-    },
+    }
 
     /*
      * Division
@@ -605,7 +649,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} y
      * @returns JXG2.JSXMath.Interval
      */
-    divNonZero: function (x, y) {
+    static divNonZero(x, y) {
         var xl = x.lo,
             xh = x.hi,
             yl = y.lo,
@@ -638,7 +682,7 @@ JXG2.JSXMath.IntervalArithmetic = {
             }
         }
         return out;
-    },
+    }
 
     /**
      * @private
@@ -646,7 +690,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} y
      * @returns JXG2.JSXMath.Interval
      */
-    divPositive: function (x, v) {
+    static divPositive(x, v) {
         if (x.lo === 0 && x.hi === 0) {
             return x;
         }
@@ -662,7 +706,7 @@ JXG2.JSXMath.IntervalArithmetic = {
         }
         // positive / v
         return new MatInterval(this.divLo(x.lo, v), Number.POSITIVE_INFINITY);
-    },
+    }
 
     /**
      * @private
@@ -670,7 +714,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} y
      * @returns JXG2.JSXMath.Interval
      */
-    divNegative: function (x, v) {
+    static divNegative(x, v) {
         if (x.lo === 0 && x.hi === 0) {
             return x;
         }
@@ -686,19 +730,19 @@ JXG2.JSXMath.IntervalArithmetic = {
         }
         // positive / v
         return new MatInterval(Number.NEGATIVE_INFINITY, this.divHi(x.lo, v));
-    },
+    }
 
     /**
      * @private
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    divZero: function (x) {
+    static divZero(x) {
         if (x.lo === 0 && x.hi === 0) {
             return x;
         }
         return this.WHOLE;
-    },
+    }
 
     /*
      * Algebra
@@ -709,7 +753,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval|Number} y
      * @returns JXG2.JSXMath.Interval
      */
-    fmod: function (x, y) {
+    static fmod(x, y) {
         var yb, n;
         if (Type.isNumber(x)) {
             x = this.Interval(x);
@@ -729,14 +773,14 @@ JXG2.JSXMath.IntervalArithmetic = {
         }
         // x mod y = x - n * y
         return this.sub(x, this.mul(y, new MatInterval(n)));
-    },
+    }
 
     /**
      * 1 / x
      * @param {JXG2.JSXMath.Interval|Number} x
      * @returns JXG2.JSXMath.Interval
      */
-    multiplicativeInverse: function (x) {
+    static multiplicativeInverse(x) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
@@ -761,7 +805,7 @@ JXG2.JSXMath.IntervalArithmetic = {
         }
         // [positive, positive]
         return new MatInterval(this.divLo(1, x.hi), this.divHi(1, x.lo));
-    },
+    }
 
     /**
      * x<sup>power</sup>
@@ -769,7 +813,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval|Number} power
      * @returns JXG2.JSXMath.Interval
      */
-    pow: function (x, power) {
+    static pow(x, power) {
         var yl, yh;
 
         if (Type.isNumber(x)) {
@@ -831,19 +875,19 @@ JXG2.JSXMath.IntervalArithmetic = {
             "power is not an integer, you should use nth-root instead, returning an empty interval"
         );
         return this.EMPTY.clone();
-    },
+    }
 
     /**
      * sqrt(x)
      * @param {JXG2.JSXMath.Interval|Number} x
      * @returns JXG2.JSXMath.Interval
      */
-    sqrt: function (x) {
+    static sqrt(x) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
         return this.nthRoot(x, 2);
-    },
+    }
 
     /**
      * x<sup>1/n</sup>
@@ -851,7 +895,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {Number} n
      * @returns JXG2.JSXMath.Interval
      */
-    nthRoot: function (x, n) {
+    static nthRoot(x, n) {
         var power, yl, yh, yp, yn;
 
         if (Type.isNumber(x)) {
@@ -897,7 +941,7 @@ JXG2.JSXMath.IntervalArithmetic = {
         }
         // [positive, positive]
         return new MatInterval(this.powLo(x.lo, power), this.powHi(x.hi, power));
-    },
+    }
 
     /*
      * Misc
@@ -907,7 +951,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval|Number} x
      * @returns JXG2.JSXMath.Interval
      */
-    exp: function (x) {
+    static exp(x) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
@@ -915,14 +959,14 @@ JXG2.JSXMath.IntervalArithmetic = {
             return this.EMPTY.clone();
         }
         return new MatInterval(this.expLo(x.lo), this.expHi(x.hi));
-    },
+    }
 
     /**
      * Natural log
      * @param {JXG2.JSXMath.Interval|Number} x
      * @returns JXG2.JSXMath.Interval
      */
-    log: function (x) {
+    static log(x) {
         var l;
         if (Type.isNumber(x)) {
             x = this.Interval(x);
@@ -932,16 +976,16 @@ JXG2.JSXMath.IntervalArithmetic = {
         }
         l = x.lo <= 0 ? Number.NEGATIVE_INFINITY : this.logLo(x.lo);
         return new MatInterval(l, this.logHi(x.hi));
-    },
+    }
 
     /**
-     * Natural log, alias for {@link JXG2.JSXMath.IntervalArithmetic#log}.
+     * Natural log, alias for {@link JXG2.IntervalArithmetic#log}.
      * @param {JXG2.JSXMath.Interval|Number} x
      * @returns JXG2.JSXMath.Interval
      */
-    ln: function (x) {
+    static ln(x) {
         return this.log(x);
-    },
+    }
 
     // export const LOG_EXP_10 = this.log(new MatInterval(10, 10))
     // export const LOG_EXP_2 = log(new MatInterval(2, 2))
@@ -950,24 +994,24 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval|Number} x
      * @returns JXG2.JSXMath.Interval
      */
-    log10: function (x) {
+    static log10(x) {
         if (this.isEmpty(x)) {
             return this.EMPTY.clone();
         }
         return this.div(this.log(x), this.log(new MatInterval(10, 10)));
-    },
+    }
 
     /**
      * Logarithm to base 2.
      * @param {JXG2.JSXMath.Interval|Number} x
      * @returns JXG2.JSXMath.Interval
      */
-    log2: function (x) {
+    static log2(x) {
         if (this.isEmpty(x)) {
             return this.EMPTY.clone();
         }
         return this.div(this.log(x), this.log(new MatInterval(2, 2)));
-    },
+    }
 
     /**
      * Hull of intervals x and y
@@ -975,7 +1019,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} y
      * @returns JXG2.JSXMath.Interval
      */
-    hull: function (x, y) {
+    static hull(x, y) {
         var badX = this.isEmpty(x),
             badY = this.isEmpty(y);
         if (badX && badY) {
@@ -988,7 +1032,7 @@ JXG2.JSXMath.IntervalArithmetic = {
             return x.clone();
         }
         return new MatInterval(Math.min(x.lo, y.lo), Math.max(x.hi, y.hi));
-    },
+    }
 
     /**
      * Intersection of intervals x and y
@@ -996,7 +1040,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} y
      * @returns JXG2.JSXMath.Interval
      */
-    intersection: function (x, y) {
+    static intersection(x, y) {
         var lo, hi;
         if (this.isEmpty(x) || this.isEmpty(y)) {
             return this.EMPTY.clone();
@@ -1007,7 +1051,7 @@ JXG2.JSXMath.IntervalArithmetic = {
             return new MatInterval(lo, hi);
         }
         return this.EMPTY.clone();
-    },
+    }
 
     /**
      * Union of overlapping intervals x and y
@@ -1015,12 +1059,12 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} y
      * @returns JXG2.JSXMath.Interval
      */
-    union: function (x, y) {
+    static union(x, y) {
         if (!this.intervalsOverlap(x, y)) {
             throw new Error("Interval#unions do not overlap");
         }
         return new MatInterval(Math.min(x.lo, y.lo), Math.max(x.hi, y.hi));
-    },
+    }
 
     /**
      * Difference of overlapping intervals x and y
@@ -1028,7 +1072,7 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} y
      * @returns JXG2.JSXMath.Interval
      */
-    difference: function (x, y) {
+    static difference(x, y) {
         if (this.isEmpty(x) || this.isWhole(y)) {
             return this.EMPTY.clone();
         }
@@ -1057,24 +1101,24 @@ JXG2.JSXMath.IntervalArithmetic = {
             return new MatInterval().halfOpenRight(x.lo, y.lo);
         }
         return x.clone();
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    width: function (x) {
+    static width(x) {
         if (this.isEmpty(x)) {
             return 0;
         }
         return this.subHi(x.hi, x.lo);
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    abs: function (x) {
+    static abs(x) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
@@ -1088,14 +1132,14 @@ JXG2.JSXMath.IntervalArithmetic = {
             return this.negative(x);
         }
         return new MatInterval(0, Math.max(-x.lo, x.hi));
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @param {JXG2.JSXMath.Interval} y
      * @returns JXG2.JSXMath.Interval
      */
-    max: function (x, y) {
+    static max(x, y) {
         var badX = this.isEmpty(x),
             badY = this.isEmpty(y);
         if (badX && badY) {
@@ -1108,14 +1152,14 @@ JXG2.JSXMath.IntervalArithmetic = {
             return x.clone();
         }
         return new MatInterval(Math.max(x.lo, y.lo), Math.max(x.hi, y.hi));
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @param {JXG2.JSXMath.Interval} y
      * @returns JXG2.JSXMath.Interval
      */
-    min: function (x, y) {
+    static min(x, y) {
         var badX = this.isEmpty(x),
             badY = this.isEmpty(y);
         if (badX && badY) {
@@ -1128,16 +1172,16 @@ JXG2.JSXMath.IntervalArithmetic = {
             return x.clone();
         }
         return new MatInterval(Math.min(x.lo, y.lo), Math.min(x.hi, y.hi));
-    },
+    }
 
     /*
      * Trigonometric
      */
-    onlyInfinity: function (x) {
+    static onlyInfinity(x) {
         return !isFinite(x.lo) && x.lo === x.hi;
-    },
+    }
 
-    _handleNegative: function (interval) {
+    static _handleNegative(interval) {
         var n;
         if (interval.lo < 0) {
             if (interval.lo === -Infinity) {
@@ -1150,13 +1194,13 @@ JXG2.JSXMath.IntervalArithmetic = {
             }
         }
         return interval;
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    cos: function (x) {
+    static cos(x) {
         var cache, pi2, t, cosv, lo, hi, rlo, rhi;
 
         if (this.isEmpty(x) || this.onlyInfinity(x)) {
@@ -1197,24 +1241,24 @@ JXG2.JSXMath.IntervalArithmetic = {
         }
         // t.lo < pi and t.hi > 2pi
         return new MatInterval(-1, 1);
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    sin: function (x) {
+    static sin(x) {
         if (this.isEmpty(x) || this.onlyInfinity(x)) {
             return this.EMPTY.clone();
         }
         return this.cos(this.sub(x, this.PI_HALF));
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    tan: function (x) {
+    static tan(x) {
         var cache, t, pi;
         if (this.isEmpty(x) || this.onlyInfinity(x)) {
             return this.EMPTY.clone();
@@ -1233,13 +1277,13 @@ JXG2.JSXMath.IntervalArithmetic = {
             return this.WHOLE.clone();
         }
         return new MatInterval(this.tanLo(t.lo), this.tanHi(t.hi));
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    asin: function (x) {
+    static asin(x) {
         var lo, hi;
         if (this.isEmpty(x) || x.hi < -1 || x.lo > 1) {
             return this.EMPTY.clone();
@@ -1247,13 +1291,13 @@ JXG2.JSXMath.IntervalArithmetic = {
         lo = x.lo <= -1 ? -this.piHalfHigh : this.asinLo(x.lo);
         hi = x.hi >= 1 ? this.piHalfHigh : this.asinHi(x.hi);
         return new MatInterval(lo, hi);
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    acos: function (x) {
+    static acos(x) {
         var lo, hi;
         if (this.isEmpty(x) || x.hi < -1 || x.lo > 1) {
             return this.EMPTY.clone();
@@ -1261,46 +1305,46 @@ JXG2.JSXMath.IntervalArithmetic = {
         lo = x.hi >= 1 ? 0 : this.acosLo(x.hi);
         hi = x.lo <= -1 ? this.piHigh : this.acosHi(x.lo);
         return new MatInterval(lo, hi);
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    acot: function (x) {
+    static acot(x) {
         if (this.isEmpty(x)) {
             return this.EMPTY.clone();
         }
         return new MatInterval(this.acotLo(x.lo), this.acotHi(x.hi));
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    atan: function (x) {
+    static atan(x) {
         if (this.isEmpty(x)) {
             return this.EMPTY.clone();
         }
         return new MatInterval(this.atanLo(x.lo), this.atanHi(x.hi));
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    sinh: function (x) {
+    static sinh(x) {
         if (this.isEmpty(x)) {
             return this.EMPTY.clone();
         }
         return new MatInterval(this.sinhLo(x.lo), this.sinhHi(x.hi));
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    cosh: function (x) {
+    static cosh(x) {
         if (this.isEmpty(x)) {
             return this.EMPTY.clone();
         }
@@ -1311,18 +1355,18 @@ JXG2.JSXMath.IntervalArithmetic = {
             return new MatInterval(this.coshLo(x.lo), this.coshHi(x.hi));
         }
         return new MatInterval(1, this.coshHi(-x.lo > x.hi ? x.lo : x.hi));
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @returns JXG2.JSXMath.Interval
      */
-    tanh: function (x) {
+    static tanh(x) {
         if (this.isEmpty(x)) {
             return this.EMPTY.clone();
         }
         return new MatInterval(this.tanhLo(x.lo), this.tanhHi(x.hi));
-    },
+    }
 
     /*
      * Relational
@@ -1333,38 +1377,38 @@ JXG2.JSXMath.IntervalArithmetic = {
      * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
-    equal: function (x, y) {
+    static equal(x, y) {
         if (this.isEmpty(x)) {
             return this.isEmpty(y);
         }
         return !this.isEmpty(y) && x.lo === y.lo && x.hi === y.hi;
-    },
+    }
 
-    // almostEqual: function(x, y): void {
+    // almostEqual(x, y): void {
     //     x = Array.isArray(x) ? x : x.toArray();
     //     y = Array.isArray(y) ? y : y.toArray();
     //     assertEps(x[0], y[0])
     //     assertEps(x[1], y[1])
-    // },
+    // }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
-    notEqual: function (x, y) {
+    static notEqual(x, y) {
         if (this.isEmpty(x)) {
             return !this.isEmpty(y);
         }
         return this.isEmpty(y) || x.hi < y.lo || x.lo > y.hi;
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
-    lt: function (x, y) {
+    static lt(x, y) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
@@ -1375,14 +1419,14 @@ JXG2.JSXMath.IntervalArithmetic = {
             return false;
         }
         return x.hi < y.lo;
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
-    gt: function (x, y) {
+    static gt(x, y) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
@@ -1393,14 +1437,14 @@ JXG2.JSXMath.IntervalArithmetic = {
             return false;
         }
         return x.lo > y.hi;
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
-    leq: function (x, y) {
+    static leq(x, y) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
@@ -1411,14 +1455,14 @@ JXG2.JSXMath.IntervalArithmetic = {
             return false;
         }
         return x.hi <= y.lo;
-    },
+    }
 
     /**
      * @param {JXG2.JSXMath.Interval} x
      * @param {JXG2.JSXMath.Interval} y
      * @returns Boolean
      */
-    geq: function (x, y) {
+    static geq(x, y) {
         if (Type.isNumber(x)) {
             x = this.Interval(x);
         }
@@ -1429,162 +1473,152 @@ JXG2.JSXMath.IntervalArithmetic = {
             return false;
         }
         return x.lo >= y.hi;
-    },
-
-    /*
-     * Constants
-     */
-    piLow: (3373259426.0 + 273688.0 / (1 << 21)) / (1 << 30),
-    piHigh: (3373259426.0 + 273689.0 / (1 << 21)) / (1 << 30),
-    piHalfLow: ((3373259426.0 + 273688.0 / (1 << 21)) / (1 << 30)) * 0.5,
-    piHalfHigh: ((3373259426.0 + 273689.0 / (1 << 21)) / (1 << 30)) * 0.5,
-    piTwiceLow: ((3373259426.0 + 273688.0 / (1 << 21)) / (1 << 30)) * 2,
-    piTwiceHigh: ((3373259426.0 + 273689.0 / (1 << 21)) / (1 << 30)) * 2,
+    }
 
     /*
      * Round
      * Rounding functions for numbers
      */
-    identity: function (v) {
+    static identity(v) {
         return v;
-    },
+    }
 
-    _prev: function (v) {
+    static _prev(v) {
         if (v === Infinity) {
             return v;
         }
         return this.nextafter(v, -Infinity);
-    },
+    }
 
-    _next: function (v) {
+    static _next(v) {
         if (v === -Infinity) {
             return v;
         }
         return this.nextafter(v, Infinity);
-    },
+    }
 
-    prev: function (v) {
+    static prev(v) {
         return this._prev(v);
-    },
+    }
 
-    next: function (v) {
+    static next(v) {
         return this._next(v);
-    },
+    }
 
-    toInteger: function (x) {
+    static toInteger(x) {
         return x < 0 ? Math.ceil(x) : Math.floor(x);
-    },
+    }
 
-    addLo: function (x, y) {
+    static addLo(x, y) {
         return this.prev(x + y);
-    },
-    addHi: function (x, y) {
+    }
+    static addHi(x, y) {
         return this.next(x + y);
-    },
-    subLo: function (x, y) {
+    }
+    static subLo(x, y) {
         return this.prev(x - y);
-    },
-    subHi: function (x, y) {
+    }
+    static subHi(x, y) {
         return this.next(x - y);
-    },
-    mulLo: function (x, y) {
+    }
+    static mulLo(x, y) {
         return this.prev(x * y);
-    },
-    mulHi: function (x, y) {
+    }
+    static mulHi(x, y) {
         return this.next(x * y);
-    },
-    divLo: function (x, y) {
+    }
+    static divLo(x, y) {
         return this.prev(x / y);
-    },
-    divHi: function (x, y) {
+    }
+    static divHi(x, y) {
         return this.next(x / y);
-    },
-    intLo: function (x) {
+    }
+    static intLo(x) {
         return this.toInteger(this.prev(x));
-    },
-    intHi: function (x) {
+    }
+    static intHi(x) {
         return this.toInteger(this.next(x));
-    },
-    logLo: function (x) {
+    }
+    static logLo(x) {
         return this.prev(Math.log(x));
-    },
-    logHi: function (x) {
+    }
+    static logHi(x) {
         return this.next(Math.log(x));
-    },
-    expLo: function (x) {
+    }
+    static expLo(x) {
         return this.prev(Math.exp(x));
-    },
-    expHi: function (x) {
+    }
+    static expHi(x) {
         return this.next(Math.exp(x));
-    },
-    sinLo: function (x) {
+    }
+    static sinLo(x) {
         return this.prev(Math.sin(x));
-    },
-    sinHi: function (x) {
+    }
+    static sinHi(x) {
         return this.next(Math.sin(x));
-    },
-    cosLo: function (x) {
+    }
+    static cosLo(x) {
         return this.prev(Math.cos(x));
-    },
-    cosHi: function (x) {
+    }
+    static cosHi(x) {
         return this.next(Math.cos(x));
-    },
-    tanLo: function (x) {
+    }
+    static tanLo(x) {
         return this.prev(Math.tan(x));
-    },
-    tanHi: function (x) {
+    }
+    static tanHi(x) {
         return this.next(Math.tan(x));
-    },
-    asinLo: function (x) {
+    }
+    static asinLo(x) {
         return this.prev(Math.asin(x));
-    },
-    asinHi: function (x) {
+    }
+    static asinHi(x) {
         return this.next(Math.asin(x));
-    },
-    acosLo: function (x) {
+    }
+    static acosLo(x) {
         return this.prev(Math.acos(x));
-    },
-    acosHi: function (x) {
+    }
+    static acosHi(x) {
         return this.next(Math.acos(x));
-    },
-    acotLo: function (x) {
+    }
+    static acotLo(x) {
         return this.prev(JSXMath.acot(x));
-    },
-    acotHi: function (x) {
+    }
+    static acotHi(x) {
         return this.next(JSXMath.acot(x));
-    },
-    atanLo: function (x) {
+    }
+    static atanLo(x) {
         return this.prev(Math.atan(x));
-    },
-    atanHi: function (x) {
+    }
+    static atanHi(x) {
         return this.next(Math.atan(x));
-    },
-    sinhLo: function (x) {
-        return this.prev(JSXMath.sinh(x));
-    },
-    sinhHi: function (x) {
-        return this.next(JSXMath.sinh(x));
-    },
-    coshLo: function (x) {
-        return this.prev(JSXMath.cosh(x));
-    },
-    coshHi: function (x) {
-        return this.next(JSXMath.cosh(x));
-    },
-    tanhLo: function (x) {
-        return this.prev(JSXMath.tanh(x));
-    },
-    tanhHi: function (x) {
-        return this.next(JSXMath.tanh(x));
-    },
-    sqrtLo: function (x) {
+    }
+    static sinhLo(x) {
+        return this.prev(Math.sinh(x));
+    }
+    static sinhHi(x) {
+        return this.next(Math.sinh(x));
+    }
+    static coshLo(x) {
+        return this.prev(Math.cosh(x));
+    }
+    static coshHi(x) {
+        return this.next(Math.cosh(x));
+    }
+    static tanhLo(x) {
+        return this.prev(Math.tanh(x));
+    }
+    static tanhHi(x) {
+        return this.next(Math.tanh(x));
+    }
+    static sqrtLo(x) {
         return this.prev(Math.sqrt(x));
-    },
-    sqrtHi: function (x) {
+    }
+    static sqrtHi(x) {
         return this.next(Math.sqrt(x));
-    },
+    }
 
-    powLo: function (x, power) {
+    static powLo(x, power) {
         var y;
         if (power % 1 !== 0) {
             // power has decimals
@@ -1601,9 +1635,9 @@ JXG2.JSXMath.IntervalArithmetic = {
             power >>= 1;
         }
         return y;
-    },
+    }
 
-    powHi: function (x, power) {
+    static powHi(x, power) {
         var y;
         if (power % 1 !== 0) {
             // power has decimals
@@ -1620,21 +1654,21 @@ JXG2.JSXMath.IntervalArithmetic = {
             power >>= 1;
         }
         return y;
-    },
+    }
 
     /**
      * @ignore
      * @private
      */
-    disable: function () {
+    static disable() {
         this.next = this.prev = this.identity;
-    },
+    }
 
     /**
      * @ignore
      * @private
      */
-    enable: function () {
+    static enable() {
         this.prev = function (v) {
             return this._prev(v);
         };
@@ -1642,15 +1676,15 @@ JXG2.JSXMath.IntervalArithmetic = {
         this.next = function (v) {
             return this._next(v);
         };
-    },
+    }
 
     /*
      * nextafter
      */
-    SMALLEST_DENORM: Math.pow(2, -1074),
-    UINT_MAX: -1 >>> 0,
+    static SMALLEST_DENORM = Math.pow(2, -1074)
+    static UINT_MAX = -1 >>> 0
 
-    nextafter: function (x, y) {
+    static nextafter(x, y) {
         var lo, hi;
 
         if (isNaN(x) || isNaN(y)) {
@@ -1665,8 +1699,8 @@ JXG2.JSXMath.IntervalArithmetic = {
             }
             return this.SMALLEST_DENORM;
         }
-        hi = doubleBits.hi(x);
-        lo = doubleBits.lo(x);
+        hi = this.doubleBits.hi(x);
+        lo = this.doubleBits.lo(x);
         if (y > x === x > 0) {
             if (lo === this.UINT_MAX) {
                 hi += 1;
@@ -1682,26 +1716,8 @@ JXG2.JSXMath.IntervalArithmetic = {
                 lo -= 1;
             }
         }
-        return doubleBits.pack(lo, hi);
+        return this.doubleBits.pack(lo, hi);
     }
-};
 
-///////// tbtb where does pilow and similar belong?
-// JXG2.JSXMath.IntervalArithmetic.PI = new MatInterval(
-//     JSXMath.IntervalArithmetic.piLow,
-//     JSXMath.IntervalArithmetic.piHigh
-// );
-// JXG2.JSXMath.IntervalArithmetic.PI_HALF = new MatInterval(
-//     JSXMath.IntervalArithmetic.piHalfLow,
-//     JSXMath.IntervalArithmetic.piHalfHigh
-// );
-// JXG2.JSXMath.IntervalArithmetic.PI_TWICE = new MatInterval(
-//     JSXMath.IntervalArithmetic.piTwiceLow,
-//     JSXMath.IntervalArithmetic.piTwiceHigh
-// );
-// JXG2.JSXMath.IntervalArithmetic.ZERO = new MatInterval(0);
-// JXG2.JSXMath.IntervalArithmetic.ONE = new MatInterval(1);
-// JXG2.JSXMath.IntervalArithmetic.WHOLE = new MatInterval().setWhole();
-// JXG2.JSXMath.IntervalArithmetic.EMPTY = new MatInterval().setEmpty();
 
-export default JXG2.JSXMath.IntervalArithmetic;
+}
