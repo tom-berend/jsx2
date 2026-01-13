@@ -16,38 +16,33 @@
 }
 </script>
 
-<script type='module' src="../jsx2/build/jsxgraph.js"></script>
+    <script type='module' src="../jsx2/build/jsxgraph.js"></script>
 
 
 </head>
 
 <body>
+
+    <div id="buttons"></div>
+
     <script type="module">
         import { IndexTests } from "./build/indextests.js"
+
+        let tests = ['text', 'point', 'line', 'circle', 'polygon', 'image']
+
+        // create the buttons (each button starts a new page)
+        tests.map((test) => {
+            let btn = document.createElement('button');
+            btn.innerText = test;
+            btn.type = 'button'
+            btn.addEventListener("click", ()=>window.location.assign(`?${test}`, false))
+            document.getElementById('buttons').appendChild(btn);
+        })
+
+        // now dispatch based on the url option
         let search = window.location.search
-        switch(search){
-            case '?text': new IndexTests('text');break
-            case '?point': new IndexTests('point');break
-            case '?line': new IndexTests('line');break
-            case '?circle': new IndexTests('circle');break
-            case '?polygon': new IndexTests('polygon');break
-            default: runTests()
-        }
+        new IndexTests(search.slice(1))
     </script>
-
-    <!-- <script type="module">
-        import { IndexTests,runTests } from "./build/indextests.js"
-        window.runTests = runTests
-        window.runTests()
-    </script> -->
-
-
-<button type="button" onclick="window.location.assign('?text')">Text</button>
-<button type="button" onclick="window.location.assign('?point')">Point</button>
-<button type="button" onclick="window.location.assign('?line')">Line</button>
-<button type="button" onclick="window.location.assign('?circle')">Circle</button>
-<button type="button" onclick="window.location.assign('?polygon')">Polygon</button>
-
 
     <div style="margin:45px;">
         <div id="box1" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>

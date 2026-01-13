@@ -31,21 +31,9 @@ export class IndexTests {
         this.initBoard()
 
         if (which) {
-            switch (which) {
-                case 'point':
-                    this.point(); break;
-                case 'text':
-                    this.text(); break;
-                case 'line':
-                    this.line(); break;
-                case 'circle':
-                    this.circle(); break;
-                case 'polygon':
-                    this.polygon(); break;
-            }
+            this[which]()
         } else {
             this.polygon()
-
             // this.point()
             // this.text()
             // this.line()
@@ -58,11 +46,12 @@ export class IndexTests {
     }
 
 
+
     initBoard() {
         console.log('initBoard')
         let attr = {
             boundingBox: [-10, 10, 10, -10],
-            axis: true,
+            // axis: true,
             shownavigation: false,
             showcopyright: false,
             showinfobox: false
@@ -120,11 +109,11 @@ export class IndexTests {
             let l1 = board.create('line', [e, [1.0, 1.0]]);
 
             board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
-            board.create('arrow',[[-.5, -9.5], [-3, -9.5]])
+            board.create('arrow', [[-.5, -9.5], [-3, -9.5]])
 
-            let pl1 = board.create('point', [9.5, -9.5],{withlabel:false})
+            let pl1 = board.create('point', [9.5, -9.5], { withlabel: false })
             let pl2 = board.create('point', [3, -.5])
-            board.create('arrow',[pl1,pl2])
+            board.create('arrow', [pl1, pl2])
 
         })
     }
