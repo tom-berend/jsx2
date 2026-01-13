@@ -36,10 +36,10 @@
         Nina Koch
  */
 
-import { JXG2 } from "../jxg.js";
 import { JSXMath } from "../math/math.js";
 import { Type } from "../utils/type.js";
 import { OBJECT_TYPE } from "../base/constants.js";
+import { Env } from "../utils/env.js";
 
 /**
  * @class A grid is a mesh consisting of vertical and horizontal lines or other geometrical objects.
@@ -215,7 +215,7 @@ import { OBJECT_TYPE } from "../base/constants.js";
  *     }());
  * </script><pre>
  */
-export function createGrid (board, parents, attributes) {
+export function createGrid(board, parents, attributes) {
     var eps = JSXMath.eps,       // to avoid rounding errors
         maxLines = 5000,    // maximum number of vertical or horizontal grid elements (abort criterion for performance reasons)
 
@@ -482,11 +482,11 @@ export function createGrid (board, parents, attributes) {
             majorStep = [majorStep[0], majorStep[0]];
         }
         if (Type.exists(gridX)) {
-            JXG2.deprecated("gridX", 'majorStep');
+            Env.deprecated("gridX", 'majorStep');
             majorStep[0] = gridX;
         }
         if (Type.exists(gridY)) {
-            JXG2.deprecated("gridY", 'majorStep');
+            Env.deprecated("gridY", 'majorStep');
             majorStep[1] = gridY;
         }
 

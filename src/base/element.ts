@@ -1,4 +1,4 @@
-let dbug = (elem) => elem && elem.id === "jxgBoard1L9"
+const dbug = (elem) =>  false //elem && elem.id === "jxgBoard1L3";
 let dbugColor = 'color:black;background-color:#FF8FFF;'
 /*
     Copyright 2008-2025
@@ -375,7 +375,7 @@ export class GeometryElement extends Events {
     point2
 
 
-    element // ???
+    element// ???
 
 
     // The inheritance tree is mangles (prototype inheritance lets the parent call the child).
@@ -2295,6 +2295,7 @@ export class GeometryElement extends Events {
      * @param {JXG2.Ticks} ticks Reference to a ticks object which is describing the ticks (color, distance, how many, etc.).
      * @returns {String} Id of the ticks object.
      */
+    //tbtb why isn't this in line.ts??
     addTicks(ticks) {
         if (ticks.id === "" || !Type.exists(ticks.id)) {
             ticks.id = this.id + "_ticks_" + (this.ticks.length + 1);

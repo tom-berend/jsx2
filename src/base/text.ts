@@ -130,6 +130,7 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
         this.elementUpdateRenderer = () => this.updateRenderer();
         this.elementGetLabelAnchor = () => this.getLabelAnchor();
         this.elementGetTextAnchor = () => this.getTextAnchor();
+        
 
         if (dbug(this))
             console.warn(`%c text constructor(${JSON.stringify(parents).substring(0, 100)})`, dbugColor)

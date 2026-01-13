@@ -322,7 +322,7 @@ export class MatInterval {
  *
  */
 
-export class IntervalArithmetic extends DoubleBits {
+export class IntervalArithmetic  {
 
     /*
      * Constants
@@ -1684,7 +1684,8 @@ export class IntervalArithmetic extends DoubleBits {
     static SMALLEST_DENORM = Math.pow(2, -1074)
     static UINT_MAX = -1 >>> 0
 
-    static nextafter(x, y) {
+
+    static nextafter(x, y) {  // eg: nextafter(v,infinity) or nextafter(v,-infinity)
         var lo, hi;
 
         if (isNaN(x) || isNaN(y)) {

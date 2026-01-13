@@ -38,6 +38,8 @@
 import { JSXMath } from "./math/math.js";
 import { Color } from "./utils/color.js";
 import { Type } from "./utils/type.js";
+import { OBJECT_TYPE, OBJECT_CLASS } from "./base/constants.js";
+import {Board} from "./base/board.js";
 
 import {
     BoardOptions, GeometryElementOptions, GridOptions, LayerOptions,
@@ -127,7 +129,7 @@ export class Options {
         jc: { enabled: false }
     }
 
-        static jc:JcOptions = {
+    static jc: JcOptions = {
         enabled: true,
         compile: true,
     }
@@ -228,12 +230,12 @@ export class Options {
             id: null
         },
         ignoreLabels: true,
-        intl: { enabled: false, locale:'' },
+        intl: { enabled: false, locale: '' },
         keepAspectRatio: false,
         keyboard: { enabled: true, dx: 10, dy: 10, panShift: true, panCtrl: false },
         logging: { enabled: false },
         minimizeReflow: 'none',
-        maxBoundingBox: [-10000000,10000000,10000000,-10000000],
+        maxBoundingBox: [-10000000, 10000000, 10000000, -10000000],
         // this didn't work.... maxBoundingBox: [Number.MIN_SAFE_INTEGER,Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER,Number.MIN_SAFE_INTEGER0], //Infinity,Infinity,Infinity,-Infinity],
         maxFrameRate: 40,
         maxNameLength: 1,
@@ -521,7 +523,14 @@ export class Options {
                 },
                 minorElements: 'auto'
             },
-        ]
+        ],
+        gridColor: 'black',    // tbtb added, called from useStandardOptions()
+        gridOpacity: 1,
+        gridDash: false,
+        SnapSizeX: .1,
+        SnapSizeY: .1,
+
+
     }
     static label: LabelOptions = {
         visible: 'inherit',
@@ -580,6 +589,7 @@ export class Options {
         tickEndings: [1, 1],
         majorTickEndings: [1, 1],
         ignoreInfiniteTickEndings: true,
+        majorTicks: 1,
         minorTicks: 4,
         ticksPerLabel: false,
         scale: 1,
@@ -726,7 +736,7 @@ export class Options {
         position: 'static',
         anchor: '',
         anchorDist: '10%',
-        ticksAutoPos: false,
+        ticksAutoPos: true,
         ticksAutoPosThreshold: '5%',
         withTicks: true,
         straightFirst: true,
@@ -1231,6 +1241,7 @@ export class Options {
             minorHeight: 4,          // if <0: full width and height
             majorHeight: -1,         // if <0: full width and height
             minorTicks: 4,
+            majorTicks: 1,
             strokeOpacity: 0.3,
             visible: 'inherit'
         },
@@ -1386,7 +1397,7 @@ export class Options {
             // Polygon layer + 1
             layer: 5,
             label: { position: 'top', },
-            visible:  'inherit',
+            visible: 'inherit',
         },
         highlightbyStrokeWidth: false,
         vertices: {
@@ -2042,75 +2053,73 @@ export class Options {
      * @param {JXG.Board} board The board to which objects the options will be applied.
      */
 
-    //TODO this is never used
-    /*
-   function useStandardOptions(board: Board) {
-       var el, t, p, copyProps,
-           o = this,   // make it easy if we move to individual elements
-           boardHadGrid = board.hasGrid;
+    static useStandardOptions(board: Board) {
+        console.warn('in userStandardOptions')
+        var el, t, p, copyProps,
+            o = this,   // make it easy if we move to individual elements
+            boardHadGrid = board.hasGrid;
 
-       board.options.grid.hasGrid = o.grid.hasGrid;
-       board.options.grid.gridX = o.grid.gridX;
-       board.options.grid.gridY = o.grid.gridY;
-       // POI: Do we have to add something here?
-       board.options.grid.gridColor = o.grid.gridColor;
-       board.options.grid.gridOpacity = o.grid.gridOpacity;
-       board.options.grid.gridDash = o.grid.gridDash;
-       board.options.grid.snapToGrid = o.grid.snapToGrid;
-       board.options.grid.snapSizeX = o.grid.SnapSizeX;
-       board.options.grid.snapSizeY = o.grid.SnapSizeY;
-       board.takeSizeFromFile = o.takeSizeFromFile;
+        board.options.grid.hasGrid = o.grid.hasGrid;
+        board.options.grid.gridX = o.grid.gridX;
+        board.options.grid.gridY = o.grid.gridY;
+        // POI: Do we have to add something here?
+        board.options.grid.gridColor = Options.grid.gridColor;
+        board.options.grid.gridOpacity = o.grid.gridOpacity;
+        board.options.grid.gridDash = o.grid.gridDash;
+        board.options.grid.snapToGrid = o.grid.snapToGrid;
+        board.options.grid.snapSizeX = o.grid.SnapSizeX;
+        board.options.grid.snapSizeY = o.grid.SnapSizeY;
+        //    board.takeSizeFromFile = o.takeSizeFromFile;
 
-       copyProps = function (p, o) {
-           p.visProp.fillcolor = o.fillColor;
-           p.visProp.highlightFillColor = o.highlightFillColor;
-           p.visProp.strokecolor = o.strokeColor;
-           p.visProp.highlightStrokeColor = o.highlightStrokeColor;
-       };
+        copyProps = function (p, o) {
+            p.visProp.fillcolor = o.fillColor;
+            p.visProp.highlightFillColor = o.highlightFillColor;
+            p.visProp.strokecolor = o.strokeColor;
+            p.visProp.highlightStrokeColor = o.highlightStrokeColor;
+        };
 
-       for (el in board.objects) {
-           if (board.objects.hasOwnProperty(el)) {
-               p = board.objects[el];
-               if (p.elementClass === OBJECT_CLASS.POINT) {
-                   copyProps(p, o.point);
-               } else if (p.elementClass === Const.OBJECT_CLASS_LINE) {
-                   copyProps(p, o.line);
+        for (el in board.objects) {
+            if (board.objects.hasOwnProperty(el)) {
+                p = board.objects[el];
+                if (p.elementClass === OBJECT_CLASS.POINT) {
+                    copyProps(p, o.point);
+                } else if (p.elementClass === OBJECT_CLASS.LINE) {
+                    copyProps(p, o.line);
 
-                   for (t = 0; t < p.ticks.length; t++) {
-                       p.ticks[t].majorTicks = o.line.ticks.majorTicks;
-                       p.ticks[t].minTicksDistance = o.line.ticks.minTicksDistance;
-                       p.ticks[t].visProp.minorheight = o.line.ticks.minorHeight;
-                       p.ticks[t].visProp.majorheight = o.line.ticks.majorHeight;
-                   }
-               } else if (p.elementClass === Const.OBJECT_CLASS_CIRCLE) {
-                   copyProps(p, o.circle);
-               } else if (p.type === OBJECT_TYPE.ANGLE) {
-                   copyProps(p, o.angle);
-               } else if (p.type === OBJECT_TYPE.ARC) {
-                   copyProps(p, o.arc);
-               } else if (p.type === OBJECT_TYPE.POLYGON) {
-                   copyProps(p, o.polygon);
-               } else if (p.type === OBJECT_TYPE.CONIC) {
-                   copyProps(p, o.conic);
-               } else if (p.type === OBJECT_TYPE.CURVE) {
-                   copyProps(p, o.curve);
-               } else if (p.type === OBJECT_TYPE.SECTOR) {
-                   p.arc.visProp.fillcolor = o.sector.fillColor;
-                   p.arc.visProp.highlightFillColor = o.sector.highlightFillColor;
-                   p.arc.visProp.fillopacity = o.sector.fillOpacity;
-                   p.arc.visProp.highlightFillOpacity = o.sector.highlightFillOpacity;
-               }
-           }
-       }
+                    for (t = 0; t < p.ticks.length; t++) {
+                        p.ticks[t].majorTicks = o.line.ticks.majorTicks;
+                        p.ticks[t].minTicksDistance = o.line.ticks.minTicksDistance;
+                        p.ticks[t].visProp.minorheight = o.line.ticks.minorHeight;
+                        p.ticks[t].visProp.majorheight = o.line.ticks.majorHeight;
+                    }
+                } else if (p.elementClass === OBJECT_CLASS.CIRCLE) {
+                    copyProps(p, o.circle);
+                } else if (p.type === OBJECT_TYPE.ANGLE) {
+                    copyProps(p, o.angle);
+                } else if (p.type === OBJECT_TYPE.ARC) {
+                    copyProps(p, o.arc);
+                } else if (p.type === OBJECT_TYPE.POLYGON) {
+                    copyProps(p, o.polygon);
+                } else if (p.type === OBJECT_TYPE.CONIC) {
+                    copyProps(p, o.conic);
+                } else if (p.type === OBJECT_TYPE.CURVE) {
+                    copyProps(p, o.curve);
+                } else if (p.type === OBJECT_TYPE.SECTOR) {
+                    p.arc.visProp.fillcolor = o.sector.fillColor;
+                    p.arc.visProp.highlightFillColor = o.sector.highlightFillColor;
+                    p.arc.visProp.fillopacity = o.sector.fillOpacity;
+                    p.arc.visProp.highlightFillOpacity = o.sector.highlightFillOpacity;
+                }
+            }
+        }
 
-       board.fullUpdate();
-       if (boardHadGrid && !board.hasGrid) {
-           board.removeGrids(board);
-       } else if (!boardHadGrid && board.hasGrid) {
-           board.create('grid', []);
-       }
-   };
-   */
+        board.fullUpdate();
+        if (boardHadGrid && !board.hasGrid) {
+            board.removeGrids();
+        } else if (!boardHadGrid && board.hasGrid) {
+            board.create('grid', []);
+        }
+    };
 
 
     /**
@@ -2118,9 +2127,8 @@ export class Options {
      * @param {JXG.Board} board The board to which objects the options will be applied.
      * @see JXG.useStandardOptions
      */
-    /*
-    useBlackWhiteOptions(board: Board) {
-        var o = this // JXG.Options;
+    static useBlackWhiteOptions(board: Board) {
+        let o = this // JXG.Options;
         o.point.fillColor = Color.rgb2bw(o.point.fillColor);
         o.point.highlightFillColor = Color.rgb2bw(o.point.highlightFillColor);
         o.point.strokeColor = Color.rgb2bw(o.point.strokeColor);
@@ -2152,5 +2160,5 @@ export class Options {
 
         this.useStandardOptions(board);
     }
-    */
+
 }

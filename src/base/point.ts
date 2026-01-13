@@ -70,26 +70,6 @@ import { Env } from "../utils/env.js";
  * {@link JXG2.Options#elements} and optional a name and an id.
  * @see JXG2.Board#generateName
  */
-// JXG2.Point = function (board, coordinates, attributes) {
-//     this.constructor(board, attributes, OBJECT_TYPE.POINT, OBJECT_CLASS.POINT);
-//     this.element = this.board.select(attributes.anchor);
-//     this.coordsConstructor(coordinates);
-
-//     this.elType = 'point';
-
-//     /* Register point at board. */
-//     this.id = this.board.setId(this, 'P');
-//     this.board.renderer.drawPoint(this);
-//     this.board.finalizeAdding(this);
-
-//     this.createGradient();
-//     this.createLabel();
-// };
-
-/**
- * Inherits here from {@link JXG2.GeometryElement}.
- */
-// JXG2.Point.prototype = new GeometryElement();
 export class Point extends CoordsElement {
 
 

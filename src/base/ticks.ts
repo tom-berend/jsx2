@@ -1,3 +1,5 @@
+const dbug = (elem) =>  elem && elem.id === "jxgBoard1L3";
+const dbugColor = `color:black;background-color:#bfbfff`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -157,6 +159,13 @@ export class Ticks extends GeometryElement {
     constructor(line: Line, ticks, attributes) {
         super(line.board, attributes, OBJECT_TYPE.TICKS, OBJECT_CLASS.OTHER);
 
+        this.elementUpdate = () => this.update();
+        this.elementUpdateRenderer = () => this.updateRenderer();
+        // this.elementCreateLabel = () => this.createLabel()
+        this.elementGetLabelAnchor = () => this.getLabelAnchor();
+        this.elementGetTextAnchor = () => this.getTextAnchor();
+
+
         this.line = line;
         this.board = this.line.board;
 
@@ -175,11 +184,14 @@ export class Ticks extends GeometryElement {
             this.equidistant = true;
         }
 
-
         this.id = this.line.addTicks(this);
         this.elType = 'ticks';
         this.inherits.push(this.labels);
         this.board.setId(this, 'Ti');
+
+        // if(dbug(this))
+            console.warn(`%c ${this.id} creating ticks`,dbugColor)
+
     };
 
     // /**
@@ -1493,6 +1505,7 @@ export class Ticks extends GeometryElement {
      * @returns {JXG2.Ticks}
      */
     update() {
+
         if (this.needsUpdate) {
             //this.visPropCalc.visible = this.evalVisProp('visible');
             // A canvas with no width or height will create an endless loop, so ignore it
@@ -1518,6 +1531,7 @@ export class Ticks extends GeometryElement {
      * @returns {JXG2.Ticks} Reference to the object.
      */
     updateRenderer() {
+
         if (!this.needsUpdate) {
             return this;
         }

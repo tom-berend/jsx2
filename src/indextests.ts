@@ -45,13 +45,13 @@ export class IndexTests {
             }
         } else {
             // this.default()
-            // this.point()
-            // this.text()
-            // this.line()
-            // this.circle()
-            // this.curve()
-            // this.widgets()
-            // this.image()
+            this.point()
+            this.text()
+            this.line()
+            this.circle()
+            this.curve()
+            this.widgets()
+            this.image()
             this.polygon()
         }
     }
@@ -61,7 +61,7 @@ export class IndexTests {
         console.log('initBoard')
         let attr = {
             boundingBox: [-10, 10, 10, -10],
-            // axis: true,
+            axis: true,
             shownavigation: false,
             showcopyright: false,
             showinfobox: false

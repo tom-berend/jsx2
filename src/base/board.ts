@@ -1,4 +1,4 @@
-const dbug = false;
+const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:black;background-color:aliceblue`;
 
 /*
@@ -675,11 +675,13 @@ export class Board extends Events {
     _shiftKey
     _ctrlKey
     methodMap
+    hasGrid
 
 
 
-
-
+    // because we send updates to axis, etc
+    elementUpdate = () => this.update();
+    elementUpdateRenderer = () => this.updateRenderer();
 
 
     constructor(
@@ -1027,7 +1029,8 @@ export class Board extends Events {
         obj._pos = this.objectsList.length;
         this.objectsList[this.objectsList.length] = obj;
 
-        if (dbug) console.warn(`%c board: setId(obj,type='${type}, this.id = '${this.id}', obj.id='${obj.id}') returns '${elId}`, dbugColor, obj)
+        if (dbug(this))
+            console.warn(`%c board: setId(obj,type='${type}, this.id = '${this.id}', obj.id='${obj.id}') returns '${elId}`, dbugColor, obj)
 
         return elId;
     }
@@ -1481,7 +1484,7 @@ export class Board extends Events {
             len = this.objectsList.length,
             dragEl: LooseObject = { visProp: { layer: -10000 } };
 
-        if (dbug) console.warn(`%c board: initMoveObject(x:${x},y:${y},evt: '${evt.type},  type:${type}')`, dbugColor)
+        if (dbug(this)) console.warn(`%c board: initMoveObject(x:${x},y:${y},evt: '${evt.type},  type:${type}')`, dbugColor)
 
         // Store status of key presses for 3D movement
         this._shiftKey = evt.shiftKey;
@@ -2863,8 +2866,8 @@ export class Board extends Events {
      */
     pointerDownListener(evt: any, object/*: GeometryElement*/, allowDefaultEventHandling = false) {
 
-        // if (dbug) console.warn(`%c board: pointerDownListener(evt: '${evt.type},  obj.id='${object.id}')`, dbugColor)
-        console.log('%c pointerDownEvent', 'background-color:red', evt, object)
+        if (dbug(this))  //console.warn(`%c board: pointerDownListener(evt: '${evt.type},  obj.id='${object.id}')`, dbugColor)
+            console.log('%c pointerDownEvent', 'background-color:red', evt, object)
 
         var i, j, k, pos,
             elements, sel, target_obj,
@@ -4619,7 +4622,14 @@ export class Board extends Events {
             }, options);
             this.intersectionObserver.observe(that.containerObj);
         } catch (err) {
-            JXG2.debug('JSXGraph: IntersectionObserver not available in this browser.');
+            // IntersectionObserver is baseline, available in EVERY browser
+            // except JSDOM (which we use for testing)
+            // so either mock in JEST for every test, or simply add a null object
+            this.intersectionObserver = {
+                observe: () => null,
+                unobserve: () => null,
+                disconnect: () => null,
+            }
         }
     }
 
@@ -4665,7 +4675,7 @@ export class Board extends Events {
      * @returns {JXG2.Board} Reference to the board
      */
     initInfobox(attributes = {}) {
-        if (dbug) console.warn(`%c board: initInfobox(attributes: '${JSON.stringify(attributes)}, this.id = '${this.id}'`, dbugColor)
+        if (dbug(this)) console.warn(`%c board: initInfobox(attributes: '${JSON.stringify(attributes)}, this.id = '${this.id}'`, dbugColor)
 
 
 
@@ -4833,7 +4843,7 @@ export class Board extends Events {
         }
 
         if (this.infobox['hiddenByParent'] === val) {
-            if (dbug) console.warn(`%c board: displayInfobox(val: '${val}, this.id = '${this.id}, hiddenByParent = ${this.infobox['hiddenByParent']}'`, dbugColor)
+            if (dbug(this)) console.warn(`%c board: displayInfobox(val: '${val}, this.id = '${this.id}, hiddenByParent = ${this.infobox['hiddenByParent']}'`, dbugColor)
 
             this.infobox['hiddenByParent'] = !val;
             this.infobox['prepareUpdate']().updateVisibility(val).elementUpdateRenderer();
@@ -5059,7 +5069,7 @@ export class Board extends Events {
     moveOrigin(x, y, diff = false) {
         var ox, oy, ul, lr;
 
-        if (dbug) console.warn(`%c board: moveOrigin(x:${x}, y:${y}, diff:${diff}`, dbugColor)
+        if (dbug(this)) console.warn(`%c board: moveOrigin(x:${x}, y:${y}, diff:${diff}`, dbugColor)
 
         if (Type.exists(x) && Type.exists(y)) {
             ox = this.origin.scrCoords[1];
@@ -6251,7 +6261,7 @@ export class Board extends Events {
         if (dragID !== undefined)
             this.prepareUpdate(dragID).updateElements(dragID).updateConditions();
         else
-            console.warn('Board.update() without specifying element')
+            console.warn(`Board.update() by ${this.id} without specifying element`)
 
         this.renderer.suspendRedraw();
         this.updateRenderer();
@@ -6299,8 +6309,7 @@ export class Board extends Events {
      * @returns {JXG2.Board} Reference to the board.
      */
     addGrid() {
-        this.create('grid', []);
-
+        createGrid(this, [], {});
         return this;
     }
 
@@ -6336,8 +6345,8 @@ export class Board extends Events {
     create(elementType: string, parents: any[] = [], attributes: LooseObject = {}) {
         var el, i;
 
-        if (dbug)
-            console.warn(`%c board: creating elementType '${elementType}', ${JSON.stringify(parents).substring(0, 100)}`, dbugColor)
+        if (dbug(this))
+            console.warn(`%c board: ${this.id} creating new element Type '${elementType}', ${JSON.stringify(parents).substring(0, 100)}`, dbugColor)
 
 
         elementType = elementType.toLowerCase();
@@ -7229,7 +7238,7 @@ export class Board extends Events {
      *   return true;
      * });
      */
-    select(str: string /*| GeometryElement*/, onlyByIdOrName = false)/*: GeometryElement | null /* GeometryComposition*/ {
+    select(str: string | GeometryElement): GeometryElement | null /* GeometryComposition*/ {
         var flist,
             olist,
             i,
@@ -7240,40 +7249,28 @@ export class Board extends Events {
             olist,
             i,
             l,
-            s = str;
+            s: GeometryElement | null = null;
 
-        if (s === null || s === undefined) return null;
+        if (str === null || str === undefined) return null;
 
-        if (typeof s !== 'string') {
-            console.error(`board.select() not a string: ${typeof s}`)
-        }
+        if (typeof str === 'object')
+            console.warn('ERROR - wrong type sent to board.select()')
+        str = (str as GeometryElement).id
 
         // It's a string, most likely an id or a name.
-        if (Type.isString(s) && s !== '') {
+        if (Type.isString(str) && str !== '') {
             // Search by ID
-            if (Type.exists(this.objects[s])) {
-                s = this.objects[s];
+            if (Type.exists(this.objects[str])) {
+                s = this.objects[str];
                 // Search by name
-            } else if (Type.exists(this.elementsByName[s])) {
-                s = this.elementsByName[s];
+            } else if (Type.exists(this.elementsByName[str])) {
+                s = this.elementsByName[str];
                 // Search by group ID
-            } else if (Type.exists(this.groups[s])) {
-                s = this.groups[s];
+            } else if (Type.exists(this.groups[str])) {
+                s = this.groups[str];
             }
 
             // It's a function or an object, but not an element
-        } else if (
-            !onlyByIdOrName &&
-            (Type.isFunction(s) || (Type.isObject(s) && !Type.isFunction(s['setAttribute'])))
-        ) {
-            flist = Type.filterElements(this.objectsList, s);
-
-            olist = {};
-            l = flist.length;
-            for (i = 0; i < l; i++) {
-                olist[flist[i].id] = flist[i];
-            }
-            console.error('fix this')// s = new Composition(olist);
 
             // It's an element which has been deleted (and still hangs around, e.g. in an attractor list
         } else if (
@@ -7284,14 +7281,12 @@ export class Board extends Events {
             s = null;
         }
 
-        if (s === null)
-            console.error(`select(${str}) returns null`)
 
-        if (Type.exists(s['id']))
+        if (dbug(this) && Type.exists(s['id']))
             console.warn(`%c board: select(str:'${str}') returns '${s == null ? 'null' : s['id']}`, dbugColor)
 
-        return s;
-
+        if (s === null)
+            console.error(`%c ERROR board: select(str:'${str}') NOT FOUND`, dbugColor, this.objects)
 
         return s;
     }

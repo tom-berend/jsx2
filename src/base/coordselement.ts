@@ -1704,7 +1704,10 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
 
 
         if (Type.exists(this.element)) {
-            anchor = this.element.elementGetTextAnchor();
+
+            let remote = this.board.select(this.element.id)
+            if (remote !== null)
+            anchor = remote.elementGetTextAnchor();
         } else {
             anchor = this.elementGetTextAnchor();
         }
@@ -2576,7 +2579,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     public coordsElementInit(coords: any[] /*coords part of parents */, attr1?, attr2?) {
 
         if (dbug(this))
-        console.warn(`%c coordselements: INIT ${JSON.stringify(coords)}`, dbugColor, attr1, attr2)
+            console.warn(`%c coordselements: INIT ${JSON.stringify(coords)}`, dbugColor, attr1, attr2)
 
         let isConstrained = false
 

@@ -3079,6 +3079,7 @@ export interface TickOptions {
      * @defaultValue 4
      */
     minorTicks?: number
+    majorTicks?: number  // tbtb
 
     /**
      * By default, i.e. if ticksPerLabel==false labels are generated for major ticks, only.
@@ -5287,6 +5288,12 @@ export interface GridOptions extends CurveOptions {
     strokeWidth?: number
     strokeOpacity: number
     dash?: number
+    gridColor?: string       // tbtb added, called from useStandardOptions()
+    gridOpacity?: number
+    gridDash: boolean
+    SnapSizeX?: number
+    SnapSizeY?: number
+
 
     /**
      * Use a predefined theme for grid.
@@ -6746,6 +6753,7 @@ export interface LineOptions {
         minTicksDistance?: number
         minorHeight?: number          // if <0: full width and height
         majorHeight?: number         // if <0: full width and height
+        majorTicks?: number   // tbtb
         minorTicks?: number
         strokeOpacity?: number
         visible?: 'inherit' | boolean

@@ -1,4 +1,4 @@
-const dbug = (elem) => false// elem && elem.id === "jxgBoard1L9";
+const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:white;background-color:#0080ff`;
 
 /*
@@ -495,7 +495,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.Line
      * @see JXG2.AbstractRenderer#drawLine
      */
-    updateLine(el:GeometryElement) {
+    updateLine(el: GeometryElement) {
         if (dbug(el))
             console.warn(`%c abstract: _updateLine(${el.id})`, dbugColor)
 
@@ -949,10 +949,9 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateTicks
      */
     drawTicks(el) {
-        el.rendNode = this.appendChildPrim(
-            this.createPrim("path", el.id),
-            el.evalVisProp('layer')
-        );
+        let layer = el.evalVisProp('layer')
+        let prim = this.createPrim("path", el.id)
+        el.rendNode = this.appendChildPrim(prim, layer);
         this.appendNodesToElement(el, "path");
     }
 

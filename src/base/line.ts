@@ -1,5 +1,5 @@
-let dbug = (elem) => elem && elem.id === "jxgBoard1L9"
-const dbugColor = `color:black;background-color:#0fffff`;
+const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
+const dbugColor = `color:black;background-color:#bfffff`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -137,11 +137,12 @@ export class Line extends GeometryElement {
         this.elType = 'line';
         this.visProp = Type.initVisProps(Options.board, Options.elements, Options.line, attributes)
 
-        // let points = Type.providePoints(board, [p1,p2], attributes)
-        this.point1 = this.board.select(p1.id);
-        this.point2 = this.board.select(p2.id);
+        /* Register line at board */
+        this.id = this.board.setId(this, 'L');
 
-        this.elType = 'line';
+        // let points = Type.providePoints(board, [p1,p2], attributes)
+        this.point1 = p1 //this.board.select(p1.id);
+        this.point2 = p2 //this.board.select(p2.id);
 
         if (dbug(this))
             console.warn(`%c new line [${p1.id},${p2.id}]  for ${this.id})`, dbugColor, this)
@@ -163,8 +164,6 @@ export class Line extends GeometryElement {
 
         this.inherits.push(this.point1, this.point2);
 
-        /* Register line at board */
-        this.id = this.board.setId(this, 'L');
         this.board.renderer.drawLine(this);
         this.board.finalizeAdding(this);
 
@@ -309,8 +308,8 @@ export class Line extends GeometryElement {
     update() {
         var funps;
 
-        if (dbug(this))
-            console.warn(`%c line: update() ${this.id})`, dbugColor)
+        // if (dbug(this))
+        console.warn(`%c line: update() ${this.id})`, dbugColor)
 
         if (!this.needsUpdate) {
             return this;
@@ -1139,7 +1138,7 @@ export class Line extends GeometryElement {
     // documented in GeometryElement.js
     remove() {
         this.removeAllTicks();
-        GeometryElement.prototype.remove.call(this);
+        this.remove()
         return this
     }
 
@@ -1779,20 +1778,23 @@ export function createAxis(board, parents, attributes) {
     var axis, attr,
         ancestor, ticksDist;
 
+    console.warn(`%c createAxis (${typeof parents[0]},${typeof parents[1]})`, dbugColor, parents)
+
     // Create line
     attr = Type.copyAttributes(attributes, board.options, 'axis');
-    try {
-        axis = board.create("line", parents, attr);
-    } catch (err) {
-        throw new Error(
-            "JSXGraph: Can't create axis with parent types '" +
-            typeof parents[0] +
-            "' and '" +
-            typeof parents[1] +
-            "'." +
-            "\nPossible parent types: [point,point], [[x1,y1],[x2,y2]]"
-        );
-    }
+    // try {
+    axis = createLine(board, parents, attr);
+    // } catch (err) {
+    //     throw new Error(
+    //         "JSXGraph: Can't create axis with parent types '" +
+    //         typeof parents[0] +
+    //         "' and '" +
+    //         typeof parents[1] +
+    //         "'." +
+    //         "\nPossible parent types: [point,point], [[x1,y1],[x2,y2]]"
+    //     );
+    // }
+
 
     axis.type = OBJECT_TYPE.AXIS;
     axis.isDraggable = false;
@@ -1833,6 +1835,7 @@ export function createAxis(board, parents, attributes) {
     };
     axis.inherits.push(axis.defaultTicks);
 
+
     axis.update = function () {
         var bbox,
             position, i,
@@ -1843,6 +1846,9 @@ export function createAxis(board, parents, attributes) {
             newPosP1, newPosP2,
             locationOrg,
             visLabel, anchr, off;
+
+        if (dbug(this))
+            console.warn(`%c axis update `, dbugColor)
 
         if (!this.needsUpdate) {
             return this;
@@ -2069,12 +2075,18 @@ export function createAxis(board, parents, attributes) {
             }
             this.defaultTicks.needsUpdate = true;
         }
+    }
+    // Line.prototype.update.call(this);
+    // axis.elementUpdate()
+    // axis.needsUpdate = true;
+    // axis.board.finalizeAdding(axis);
+    // axis.elementUpdate()
 
-        Line.prototype.update.call(this);
+    axis.elementUpdate = () => axis.update();
+    axis.elementUpdateRenderer = () => axis.updateRenderer();
 
-        return this;
-    };
-
+    axis.update()
+    axis.updateRenderer()
     return axis;
 };
 

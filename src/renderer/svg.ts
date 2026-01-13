@@ -1,4 +1,4 @@
-const dbug = (elem?) => false//elem && elem.id === "jxgBoard1L9"
+const dbug = (elem) =>  elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:blue;background-color:#ffc0c0`;
 
 /*
@@ -98,7 +98,7 @@ export class SVGRenderer extends AbstractRenderer {
     constructor(containerName: string | HTMLDivElement, dim: Dim) {  // width height
         super()
 
-        if (dbug()) console.log(`%c svg: constructor(container:${containerName},dim:'${JSON.stringify(dim)}'`, dbugColor)
+        // if (dbug()) console.log(`%c svg: constructor(container:${containerName},dim:'${JSON.stringify(dim)}'`, dbugColor)
 
 
         // https://stackoverflow.com/questions/7944460/detect-safari-browser
@@ -615,16 +615,16 @@ export class SVGRenderer extends AbstractRenderer {
      */
     updateTicks(ticks) {
         var i,
-            j,
-            c,
-            node,
-            x,
-            y,
-            tickStr = "",
-            len = ticks.ticks.length,
-            len2,
-            str,
-            isReal = true;
+        j,
+        c,
+        node,
+        x,
+        y,
+        tickStr = "",
+        len = ticks.ticks.length,
+        len2,
+        str,
+        isReal = true;
 
         for (i = 0; i < len; i++) {
             c = ticks.ticks[i];
@@ -686,7 +686,7 @@ export class SVGRenderer extends AbstractRenderer {
 
         this.assertNonNullish(this.container, 'expected container')
 
-        if (dbug()) console.log(`%c svg: displayCopyright(str: ${str},fontsize: ${fontsize})`, dbugColor)
+        // if (dbug()) console.log(`%c svg: displayCopyright(str: ${str},fontsize: ${fontsize})`, dbugColor)
 
         node = this.createPrim("text", 'licenseText');
         node.setAttributeNS(null, 'x', x + 'px');
@@ -1004,7 +1004,7 @@ export class SVGRenderer extends AbstractRenderer {
      */
     appendChildPrim(node: Node, level: number = 0) {  // trace nodes have level not set
 
-        if (dbug()) console.log(`%c svg: appendChildPrim: node:${node.nodeName}, level:${level},'`, dbugColor)
+        // if (dbug()) console.log(`%c svg: appendChildPrim: node:${node.nodeName}, level:${level},'`, dbugColor)
 
         if (typeof level !== 'number') {      // someone is misbehaving
             console.warn('level is not a number', (typeof level))
@@ -1028,7 +1028,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @returns {Node} Reference to the created node.
      */
     createPrim(type: SVGType, id: string): HTMLElement {
-        if (dbug()) console.warn(`%c svg: createPrim(type:${type},id:'${id}'`, dbugColor)
+        // if (dbug()) console.warn(`%c svg: createPrim(type:${type},id:'${id}'`, dbugColor)
 
         let node = this.container.ownerDocument.createElementNS(this.svgNamespace, type) as HTMLElement
         node.setAttributeNS(null, "id", this.uniqName(id));
@@ -1158,7 +1158,7 @@ export class SVGRenderer extends AbstractRenderer {
     updateEllipsePrim(node: HTMLElement, x: number, y: number, rx: number, ry: number) {
         var huge = 1000000;
 
-        if (dbug()) console.log(`%c svg: updateEllipsePrim(node, x:${x}, y:${y}, rx:${rx}, ry:${ry} )`, dbugColor, node)
+        // if (dbug()) console.log(`%c svg: updateEllipsePrim(node, x:${x}, y:${y}, rx:${rx}, ry:${ry} )`, dbugColor, node)
 
         huge = 200000; // IE
         // webkit does not like huge values if the object is dashed
