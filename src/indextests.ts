@@ -44,15 +44,16 @@ export class IndexTests {
                     this.polygon(); break;
             }
         } else {
-            // this.default()
-            this.point()
-            this.text()
-            this.line()
-            this.circle()
-            this.curve()
-            this.widgets()
-            this.image()
             this.polygon()
+
+            // this.point()
+            // this.text()
+            // this.line()
+            // this.circle()
+            // this.curve()
+            // this.widgets()
+            // this.image()
+            // this.polygon()
         }
     }
 

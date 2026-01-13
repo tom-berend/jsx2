@@ -22,17 +22,32 @@
 </head>
 
 <body>
-
     <script type="module">
+        import { IndexTests } from "./build/indextests.js"
+        let search = window.location.search
+        switch(search){
+            case '?text': new IndexTests('text');break
+            case '?point': new IndexTests('point');break
+            case '?line': new IndexTests('line');break
+            case '?circle': new IndexTests('circle');break
+            case '?polygon': new IndexTests('polygon');break
+            default: runTests()
+        }
+    </script>
+
+    <!-- <script type="module">
         import { IndexTests,runTests } from "./build/indextests.js"
         window.runTests = runTests
         window.runTests()
-    </script>
+    </script> -->
 
 
-<button type="button" onclick="runTests('text')">Text</button>
-<button type="button" onclick="runTests('point')">Point</button>
-<button type="button" onclick="runTests('line')">Line</button>
+<button type="button" onclick="window.location.assign('?text')">Text</button>
+<button type="button" onclick="window.location.assign('?point')">Point</button>
+<button type="button" onclick="window.location.assign('?line')">Line</button>
+<button type="button" onclick="window.location.assign('?circle')">Circle</button>
+<button type="button" onclick="window.location.assign('?polygon')">Polygon</button>
+
 
     <div style="margin:45px;">
         <div id="box1" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>

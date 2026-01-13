@@ -318,7 +318,8 @@ export class Board extends Events {
      * An associative array containing all geometric objects belonging to the board. Key is the id of the object and value is a reference to the object.
      * @type Object
      */
-    objects: LooseObject = {};
+    // objects: LooseObject = {};
+    objects: { [key: string]: GeometryElement } = {}
 
     /**
      * An array containing all geometric objects on the board in the order of construction.
@@ -7287,6 +7288,7 @@ export class Board extends Events {
 
         if (s === null)
             console.error(`%c ERROR board: select(str:'${str}') NOT FOUND`, dbugColor, this.objects)
+
 
         return s;
     }
