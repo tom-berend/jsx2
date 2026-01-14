@@ -52,7 +52,7 @@ export class IndexTests {
         let attr = {
             boundingBox: [-10, 10, 10, -10],
             axis: true,
-            shownavigation: false,
+            shownavigation: true,
             showcopyright: false,
             showinfobox: false
         }
