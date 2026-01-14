@@ -126,14 +126,14 @@ export class SVGRenderer extends AbstractRenderer {
             this.container.style.position = "relative";
         }
 
-        this.svgRoot = this.container.ownerDocument.createElementNS(this.svgNamespace, "svg");
-        (this.svgRoot as SVGSVGElement).style.overflow = "hidden";
-        (this.svgRoot as SVGSVGElement).style.display = "block";
+        this.canvas = this.container.ownerDocument.createElementNS(this.svgNamespace, "svg");
+        (this.canvas as SVGSVGElement).style.overflow = "hidden";
+        (this.canvas as SVGSVGElement).style.display = "block";
         this.resize(dim.width, dim.height);
 
         //this.svgRoot.setAttributeNS(null, 'shape-rendering', 'crispEdge'); //'optimizeQuality'); //geometricPrecision');
 
-        this.jsxAppendChild(this.container, this.svgRoot) // this.container.appendChild(this.svgRoot);
+        this.jsxAppendChild(this.container, this.canvas) // this.container.appendChild(this.svgRoot);
 
 
         /**
@@ -142,7 +142,7 @@ export class SVGRenderer extends AbstractRenderer {
          * @see https://www.w3.org/TR/SVG2/struct.html#DefsElement
          */
         this.defs = this.container.ownerDocument.createElementNS(this.svgNamespace, "defs");
-        this.jsxAppendChild(this.svgRoot, this.defs) // this.svgRoot.appendChild(this.defs);
+        this.jsxAppendChild(this.canvas, this.defs) // this.svgRoot.appendChild(this.defs);
 
 
         /* Default shadow filter */
@@ -157,7 +157,7 @@ export class SVGRenderer extends AbstractRenderer {
         this.layers = [];
         for (let i = 0; i < Options['layer'].numlayers; i++) {
             this.layers[i] = this.container.ownerDocument.createElementNS(this.svgNamespace, 'g');
-            this.svgRoot.appendChild(this.layers[i]);
+            this.canvas.appendChild(this.layers[i]);
         }
 
         try {
@@ -171,7 +171,7 @@ export class SVGRenderer extends AbstractRenderer {
             this.foreignObjLayer.setAttribute("width", "100%");
             this.foreignObjLayer.setAttribute("height", "100%");
             this.foreignObjLayer.setAttribute("id", this.uniqName('foreignObj'));
-            this.svgRoot.appendChild(this.foreignObjLayer);
+            this.canvas.appendChild(this.foreignObjLayer);
             this.supportsForeignObject = true;
         } catch (e) {
             this.supportsForeignObject = false;
@@ -2275,7 +2275,7 @@ export class SVGRenderer extends AbstractRenderer {
       */
     suspendRedraw() {
         // It seems to be important for the Linux version of firefox
-        this.suspendHandle = (this.svgRoot as SVGSVGElement).suspendRedraw(10000);
+        this.suspendHandle = (this.canvas as SVGSVGElement).suspendRedraw(10000);
     }
 
     /**
@@ -2283,7 +2283,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.AbstractRenderer#suspendRedraw
      */
     unsuspendRedraw() {
-        (this.svgRoot as SVGSVGElement).unsuspendRedraw(this.suspendHandle);
+        (this.canvas as SVGSVGElement).unsuspendRedraw(this.suspendHandle);
 
     }
 
@@ -2293,10 +2293,10 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Number} h New height
      */
     resize(w: number, h: number) {
-        this.assertNonNullish(this.svgRoot, "Expected a node")
+        this.assertNonNullish(this.canvas, "Expected a node")
 
-        this.svgRoot.setAttribute("width", w.toString());
-        this.svgRoot.setAttribute("height", h.toString());
+        this.canvas.setAttribute("width", w.toString());
+        this.canvas.setAttribute("height", h.toString());
     }
 
     /**
@@ -2519,7 +2519,7 @@ export class SVGRenderer extends AbstractRenderer {
             svg, i, len,
             values = [];
 
-        var svgRoot = this.svgRoot
+        var svgRoot = this.canvas
         this.assertNonNullish(svgRoot, "Expected a node")
 
         // Move all HTML tags (beside the SVG root) of the container
@@ -2843,12 +2843,6 @@ export class SVGRenderer extends AbstractRenderer {
 
         return this;
 
-    }
-
-    /** proxy for appendChild, enables debugging and mocks */
-    jsxAppendChild(parent: Node, child: Node) {
-        // console.warn('appendChild',parent,child)
-        parent.appendChild(child)
     }
 
 }

@@ -35,7 +35,7 @@
             let btn = document.createElement('button');
             btn.innerText = test;
             btn.type = 'button'
-            btn.addEventListener("click", ()=>window.location.assign(`?${test}`, false))
+            btn.addEventListener("click", () => window.location.assign(`?${test}`, false))
             document.getElementById('buttons').appendChild(btn);
         })
 
@@ -45,12 +45,9 @@
     </script>
 
     <div style="margin:45px;">
-        <div id="box1" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>
-        <div id="box2" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div>
-        <div id="box3" class="jxgbox" style="width:500px; aspect-ratio: 1/1;">
-            <canvas id="canvas3" style="height:640;width:480;">
-            </canvas>
-        </div>
+        <div id="box1" class="jxgbox" style="width:500px; aspect-ratio: 1/1;float:left;"></div>
+        <div id="box2" class="jxgbox" style="width:500px; aspect-ratio: 1/1;float:left;"></div>
+        <div id="box3" class="jxgbox" style="width:500px; aspect-ratio: 1/1;float:left;"> </div>
 
     </div>
 </body>

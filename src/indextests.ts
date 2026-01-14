@@ -21,7 +21,7 @@ export class IndexTests {
 
     old = true  // turn on and off boards
     new = true
-    webgl = false
+    webgl = true
 
     boards = []
 
@@ -51,7 +51,7 @@ export class IndexTests {
         console.log('initBoard')
         let attr = {
             boundingBox: [-10, 10, 10, -10],
-            // axis: true,
+            axis: true,
             shownavigation: false,
             showcopyright: false,
             showinfobox: false

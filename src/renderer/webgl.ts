@@ -52,7 +52,9 @@ import { Text } from "../base/text.js"
 import { Dim, SVGType } from "../interfaces.js"
 import { genUUID } from "../utils/uuid.js";
 
- import * as THREE from 'three'
+import * as THREE from 'three'
+// @ts-ignore
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -108,12 +110,11 @@ export class WebGLRenderer extends AbstractRenderer {
     public canvasNamespace
     public context
 
-    constructor(containerName: string | HTMLDivElement, dim: Dim) {  // width height
+    constructor(containerName: string, dim: Dim) {  // width height
         super()
 
         if (dbug()) console.log(`%c webgl: constructor(container:${containerName},dim:'${JSON.stringify(dim)}'`, dbugColor)
 
-        this.canvasId = 'webgl_canvas'
 
         if (typeof containerName == 'string') {
             let container = document.getElementById(containerName) as HTMLDivElement
@@ -126,43 +127,25 @@ export class WebGLRenderer extends AbstractRenderer {
             this.container = containerName
         }
 
-        this.container.style.userSelect = 'none';
-
         this.container.style.overflow = 'hidden';
         if (this.container.style.position === "") {
             this.container.style.position = 'relative';
         }
 
-        if (Env.isBrowser()) {
-            this.container.innerHTML = [
-                '<canvas id="', this.canvasId, '" width="', dim.width, 'px" height="', dim.height, 'px"></canvas>'
-            ].join("");
-            this.canvasRoot = this.container.ownerDocument.getElementById(this.canvasId);
-            this.canvasRoot.style.display = 'block';
-            this.context = this.canvasRoot.getContext('webgl2');    // TODO: check if only version 1 available?
-            // } else if (Env.isNode()) {
-            //     try {
-            //         this.canvasRoot = createCanvas(500, 500);
-            //         this.context = this.canvasRoot.getContext('2d');
-            //     } catch (err) {
-            //         throw new Error('JXG2.createCanvas not available.\n' +
-            //             'Install the npm package `canvas`\n' +
-            //             'and call:\n' +
-            //             '    import { createCanvas } from "canvas.js"\n' +
-            //             '    JXG2.createCanvas = createCanvas;\n');
-            //     }
-            // }
-        };
+        let webcanvas = this.container.ownerDocument.createElement("canvas") as HTMLCanvasElement
+        webcanvas.id = 'webgl_canvas'
+        this.container.appendChild(webcanvas)
+
+        webcanvas.width = this.container.clientWidth
+        webcanvas.height = this.container.clientHeight
 
 
-
+        console.log(webcanvas)
+        const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: webcanvas });
+        renderer.setSize(webcanvas.clientWidth, webcanvas.clientHeight)
 
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-        let canvasRef = document.getElementById(this.canvasId) as HTMLCanvasElement;
-        const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef });
-        renderer.setSize(canvasRef.width, canvasRef.height) //window.innerWidth, window.innerHeight);
 
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -171,15 +154,31 @@ export class WebGLRenderer extends AbstractRenderer {
 
         camera.position.z = 3;
 
+        var controls = new OrbitControls(camera, webcanvas);
+        controls.enableDamping = true;
+
+        ////////////////////
+
+        let groundGeometry = new THREE.BoxGeometry(20, 20, 0.1);
+        let groundMaterial = new THREE.MeshBasicMaterial({ color: 'aliceblue' });
+
+        let ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.receiveShadow = true;
+        ground.position.z = - 0.25;
+        scene.add(ground)
+
+
         let animate = () => {
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
+            controls.update();
+
             renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+
         }
-        renderer.setAnimationLoop(animate);
+        animate()
 
 
-return;
+        return;
 
 
 
@@ -206,7 +205,7 @@ return;
         * @see https://www.w3.org/TR/SVG2/struct.html#DefsElement
         */
         this.defs = this.container.ownerDocument.createElementNS(this.svgNamespace, "defs");
-        this.jsxAppendChild(this.svgRoot, this.defs) // this.svgRoot.appendChild(this.defs);
+        this.jsxAppendChild(this.canvas, this.defs) // this.svgRoot.appendChild(this.defs);
 
 
         /* Default shadow filter */
@@ -223,7 +222,7 @@ return;
          * @see https://www.w3.org/TR/SVG2/struct.html#DefsElement
          */
         this.defs = this.container.ownerDocument.createElementNS(this.svgNamespace, "defs");
-        this.jsxAppendChild(this.svgRoot, this.defs) // this.svgRoot.appendChild(this.defs);
+        this.jsxAppendChild(this.canvas, this.defs) // this.svgRoot.appendChild(this.defs);
 
 
         /* Default shadow filter */
@@ -238,7 +237,7 @@ return;
         this.layers = [];
         for (let i = 0; i < Options['layer'].numlayers; i++) {
             this.layers[i] = this.container.ownerDocument.createElementNS(this.svgNamespace, 'g');
-            this.svgRoot.appendChild(this.layers[i]);
+            this.canvas.appendChild(this.layers[i]);
         }
 
         try {
@@ -252,7 +251,7 @@ return;
             this.foreignObjLayer.setAttribute("width", "100%");
             this.foreignObjLayer.setAttribute("height", "100%");
             this.foreignObjLayer.setAttribute("id", this.uniqName('foreignObj'));
-            this.svgRoot.appendChild(this.foreignObjLayer);
+            this.canvas.appendChild(this.foreignObjLayer);
             this.supportsForeignObject = true;
         } catch (e) {
             this.supportsForeignObject = false;
@@ -1087,6 +1086,7 @@ return;
      * {@link JXG2.SVGRenderer#layer} or the <tt>z-index</tt> style property of the node in SVGRenderer.
      */
     appendChildPrim(node: Node, level: number = 0) {  // trace nodes have level not set
+        return
 
         if (dbug()) console.log(`%c webgl: appendChildPrim: node:${node.nodeName}, level:${level},'`, dbugColor)
 
@@ -1162,6 +1162,7 @@ return;
     *
      */
     makeArrows(el/*: GeometryElement*/, a) {
+        return
         var node2, str,
             ev_fa = a.evFirst,
             ev_la = a.evLast;
@@ -1240,6 +1241,7 @@ return;
      * @param {Number} ry The y-axis radius.
      */
     updateEllipsePrim(node: HTMLElement, x: number, y: number, rx: number, ry: number) {
+        return
         var huge = 1000000;
 
         if (dbug()) console.log(`%c webgl: updateEllipsePrim(node, x:${x}, y:${y}, rx:${rx}, ry:${ry} )`, dbugColor, node)
@@ -1269,6 +1271,7 @@ return;
      * @param {JXG2.Board} board
      */
     updateLinePrim(node, p1x, p1y, p2x, p2y) {
+        return;
         var huge = 1000000;
 
         console.warn('updateLinePrim', p1x, p1y, p2x, p2y)
@@ -1772,6 +1775,7 @@ return;
      * @param {String} cssClass String containing a space separated list of CSS classes.
      */
     setCssClass(el, cssClass) {
+        return
         if (el.visPropOld.cssclass !== cssClass) {
             this.setPropertyPrim(el.rendNode, 'class', cssClass);
             el.visPropOld.cssclass = cssClass;
@@ -1783,6 +1787,7 @@ return;
      * @param {JXG2.GeometryElement} el An JSXGraph element.
      */
     setDashStyle(el) {
+        return
         var dashStyle = el.evalVisProp('dash'),
             ds = el.evalVisProp('dashscale'),
             sw = ds ? 0.5 * el.evalVisProp('strokewidth') : 1,
@@ -1873,6 +1878,7 @@ return;
      * @param {Number} opacity Opacity of the fill color. Must be between 0 and 1.
      */
     setObjectFillColor(el/*: GeometryElement*/, color: any, opacity: number, rendNode?: HTMLElement) {
+        return
         var node, c, rgbo, oo,
             rgba = color,
             o = opacity,
@@ -1952,6 +1958,7 @@ return;
      * @param {Number} opacity Opacity of the fill color. Must be between 0 and 1.
      */
     setObjectStrokeColor(el, color: any, opacity) {
+        return;
         if (dbug(el)) console.warn(`%c webgl: setObjectSrokeColor(el, color:${color},opacity:'${opacity}'`, dbugColor)
 
         var rgba = color,
@@ -2211,6 +2218,7 @@ return;
      * @param {String} val New value for the attribute.
      */
     setPropertyPrim(node, key, val) {
+        return;
         if (key === "stroked") {
             return;
         }
@@ -2359,10 +2367,10 @@ return;
       * @see JXG2.AbstractRenderer#unsuspendRedraw
       */
     suspendRedraw() {
-                return // neutered //tbtb
+        return // neutered //tbtb
 
         // It seems to be important for the Linux version of firefox
-        this.suspendHandle = (this.svgRoot as SVGSVGElement).suspendRedraw(10000);
+        this.suspendHandle = (this.canvas as SVGSVGElement).suspendRedraw(10000);
     }
 
     /**
@@ -2371,7 +2379,7 @@ return;
      */
     unsuspendRedraw() {
         return // neutered //tbtb
-        (this.svgRoot as SVGSVGElement).unsuspendRedraw(this.suspendHandle);
+        (this.canvas as SVGSVGElement).unsuspendRedraw(this.suspendHandle);
 
     }
 
@@ -2382,10 +2390,10 @@ return;
      */
     resize(w: number, h: number) {
         return // neutered //tbtb
-        this.assertNonNullish(this.svgRoot, "Expected a node")
+        this.assertNonNullish(this.canvas, "Expected a node")
 
-        this.svgRoot.setAttribute("width", w.toString());
-        this.svgRoot.setAttribute("height", h.toString());
+        this.canvas.setAttribute("width", w.toString());
+        this.canvas.setAttribute("height", h.toString());
     }
 
     /**
@@ -2608,7 +2616,7 @@ return;
             svg, i, len,
             values = [];
 
-        var svgRoot = this.svgRoot
+        var svgRoot = this.canvas
         this.assertNonNullish(svgRoot, "Expected a node")
 
         // Move all HTML tags (beside the SVG root) of the container

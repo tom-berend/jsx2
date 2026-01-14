@@ -131,7 +131,7 @@ export abstract class AbstractRenderer {
     /**
      * SVG root node
      */
-    svgRoot: Element | null = null;       // not SVGElement!
+    canvas: Element | null = null;       // not SVGElement!
 
     /**
      * The SVG Namespace used in JSXGraph.
@@ -1953,6 +1953,13 @@ export abstract class AbstractRenderer {
         };
     }
 
+
+
+    /** proxy for appendChild, enables debugging and mocks */
+    jsxAppendChild(parent: Node, child: Node) {
+        // console.warn('appendChild',parent,child)
+        parent.appendChild(child)
+    }
 
 
     // these are stubs, documentation moved to svg.ts
