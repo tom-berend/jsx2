@@ -147,12 +147,7 @@ export class WebGLRenderer extends AbstractRenderer {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
-
-        camera.position.z = 3;
+        camera.position.z = 15;
 
         var controls = new OrbitControls(camera, webcanvas);
         controls.enableDamping = true;
@@ -162,6 +157,11 @@ export class WebGLRenderer extends AbstractRenderer {
         let groundGeometry = new THREE.BoxGeometry(20, 20, 0.1);
         let groundMaterial = new THREE.MeshBasicMaterial({ color: 'aliceblue' });
 
+        const geometry = new THREE.BoxGeometry(5, 5, 5);
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
         let ground = new THREE.Mesh(groundGeometry, groundMaterial);
         ground.receiveShadow = true;
         ground.position.z = - 0.25;
@@ -170,6 +170,8 @@ export class WebGLRenderer extends AbstractRenderer {
 
         let animate = () => {
             controls.update();
+            cube.rotateX(.01)
+            cube.rotateY(.01)
 
             renderer.render(scene, camera);
             requestAnimationFrame(animate);

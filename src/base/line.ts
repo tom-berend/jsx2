@@ -51,6 +51,7 @@ const dbugColor = `color:black;background-color:#bfffff`;
 import { Options } from "../options.js";
 
 import { JSXMath } from "../math/math.js";
+import {Board} from "../base/board.js";
 import { Geometry } from "../math/geometry.js";
 import { Numerics } from "../math/numerics.js";
 import { Statistics } from "../math/statistics.js";
@@ -59,6 +60,7 @@ import { Coords } from "../base/coords.js";
 import { GeometryElement } from "./element.js";
 import { Point, createPoint } from "../base/point.js";
 import { Text } from "../base/text.js";
+import { createTicks } from "./ticks.js";
 import { Type } from "../utils/type.js";
 import { CoordsElement } from "../base/coordselement.js";
 import { LooseObject } from "../interfaces.js";
@@ -125,7 +127,7 @@ export class Line extends GeometryElement {
 
 
 
-    constructor(board, p1, p2, attributes) {
+    constructor(board:Board, p1:Point, p2:Point, attributes:LooseObject) {
         super(board, attributes, OBJECT_TYPE.LINE, OBJECT_CLASS.LINE);
 
         this.elementUpdate = () => this.update();
@@ -1774,16 +1776,12 @@ export function createArrow(board, parents, attributes) {
  * </script><pre>
  *
  */
-export function createAxis(board, parents, attributes) {
-    var axis, attr,
-        ancestor, ticksDist;
-
-    console.warn(`%c createAxis (${typeof parents[0]},${typeof parents[1]})`, dbugColor, parents)
-
-    // Create line
-    attr = Type.copyAttributes(attributes, board.options, 'axis');
+export function createAxis(board: Board, parents: any[], attributes: LooseObject) {
     // try {
-    axis = createLine(board, parents, attr);
+
+    parents = Type.providePoints(board,parents,attributes['point'])
+
+    let axis = new Axis(board, parents, attributes);
     // } catch (err) {
     //     throw new Error(
     //         "JSXGraph: Can't create axis with parent types '" +
@@ -1795,48 +1793,79 @@ export function createAxis(board, parents, attributes) {
     //     );
     // }
 
+    return axis;
+}
 
-    axis.type = OBJECT_TYPE.AXIS;
-    axis.isDraggable = false;
-    axis.point1.isDraggable = false;
-    axis.point2.isDraggable = false;
 
-    // Save usrCoords of points
-    axis._point1UsrCoordsOrg = axis.point1.coords.usrCoords.slice();
-    axis._point2UsrCoordsOrg = axis.point2.coords.usrCoords.slice();
 
-    for (ancestor in axis.ancestors) {
-        if (axis.ancestors.hasOwnProperty(ancestor)) {
-            axis.ancestors[ancestor].type = OBJECT_TYPE.AXISPOINT;
+
+export class Axis extends Line {
+
+    _point1UsrCoordsOrg:number[]
+    _point2UsrCoordsOrg:number[]
+
+    constructor(board, parents, attributes) {
+
+        super(board, parents[0], parents[1], attributes)
+
+        var axis, attr,
+            ancestor, ticksDist;
+
+        console.warn(`%c createAxis (${typeof parents[0]},${typeof parents[1]})`, dbugColor, parents)
+
+        // Create line
+        this.visProp  = Type.initVisProps(Options.elements, Options.line, Options.axis, attributes);
+
+        this.otype = OBJECT_TYPE.AXIS;
+        this.isDraggable = false;
+        this.point1.isDraggable = false;
+        this.point2.isDraggable = false;
+
+        // Save usrCoords of points
+        this._point1UsrCoordsOrg = this.point1.coords.usrCoords.slice();
+        this._point2UsrCoordsOrg = this.point2.coords.usrCoords.slice();
+
+        for (ancestor in this.ancestors) {
+            if (this.ancestors.hasOwnProperty(ancestor)) {
+                this.ancestors[ancestor].type = OBJECT_TYPE.AXISPOINT;
+            }
         }
+
+        // Create ticks
+        // this.visPropTicks = this.visProp.ticks;
+        if (this.evalVisProp('ticks.ticksdistance')) {
+            ticksDist = this.evalVisProp('ticks.ticksdistance');
+        } else if (Type.isArray(this.evalVisProp('ticks.ticks'))) {
+            ticksDist = this.evalVisProp('ticks.ticks');
+        } else {
+            ticksDist = 1.0;
+        }
+
+        /**
+         * The ticks attached to the this.
+         * @memberOf this.prototype
+         * @name defaultTicks
+         * @type JXG.Ticks
+         */
+        this.defaultTicks = createTicks(board, [this, ticksDist], this.evalVisProp('ticks'));
+        this.defaultTicks.dump = false;
+        this.elType = 'axis';
+        this.subs = {
+            ticks: this.defaultTicks
+        };
+        this.inherits.push(this.defaultTicks);
+
+
+    this.elementUpdate = () => this.update();
+    this.elementUpdateRenderer = () => this.updateRenderer();
+
+    this.update()
+    this.updateRenderer()
+
     }
 
-    // Create ticks
-    // attrTicks = attr.ticks;
-    if (Type.exists(attr.ticks.ticksdistance)) {
-        ticksDist = attr.ticks.ticksdistance;
-    } else if (Type.isArray(attr.ticks.ticks)) {
-        ticksDist = attr.ticks.ticks;
-    } else {
-        ticksDist = 1.0;
-    }
+    updateRenderer(){
 
-    /**
-     * The ticks attached to the axis.
-     * @memberOf Axis.prototype
-     * @name defaultTicks
-     * @type JXG.Ticks
-     */
-    axis.defaultTicks = board.create("ticks", [axis, ticksDist], attr.ticks);
-    axis.defaultTicks.dump = false;
-    axis.elType = 'axis';
-    axis.subs = {
-        ticks: axis.defaultTicks
-    };
-    axis.inherits.push(axis.defaultTicks);
-
-
-    axis.update = function () {
         var bbox,
             position, i,
             direction, horizontal, vertical,
@@ -1972,7 +2001,7 @@ export function createAxis(board, parents, attributes) {
 
                 off = visLabel.offset;
                 if (horizontal) {
-                    dist = axis.point1.coords.scrCoords[2] - (this.board.canvasHeight * 0.5);
+                    dist = this.point1.coords.scrCoords[2] - (this.board.canvasHeight * 0.5);
 
                     anchr = visLabel.anchory;
 
@@ -2015,13 +2044,13 @@ export function createAxis(board, parents, attributes) {
                         }
                     }
 
-                    for (i = 0; i < axis.defaultTicks.labels.length; i++) {
+                    for (i = 0; i < this.defaultTicks.labels.length; i++) {
                         this.defaultTicks.labels[i].visProp.anchory = anchr;
                     }
                     visLabel.anchory = anchr;
 
                 } else if (vertical) {
-                    dist = axis.point1.coords.scrCoords[1] - (this.board.canvasWidth * 0.5);
+                    dist = this.point1.coords.scrCoords[1] - (this.board.canvasWidth * 0.5);
 
                     if (dist < 0 && Math.abs(dist) > ticksAutoPosThres) {
                         // Put labels to the left of the line
@@ -2061,7 +2090,7 @@ export function createAxis(board, parents, attributes) {
                         }
                     }
 
-                    for (i = 0; i < axis.defaultTicks.labels.length; i++) {
+                    for (i = 0; i < this.defaultTicks.labels.length; i++) {
                         this.defaultTicks.labels[i].visProp.anchorx = anchr;
                     }
                     visLabel.anchorx = anchr;
@@ -2076,18 +2105,6 @@ export function createAxis(board, parents, attributes) {
             this.defaultTicks.needsUpdate = true;
         }
     }
-    // Line.prototype.update.call(this);
-    // axis.elementUpdate()
-    // axis.needsUpdate = true;
-    // axis.board.finalizeAdding(axis);
-    // axis.elementUpdate()
-
-    axis.elementUpdate = () => axis.update();
-    axis.elementUpdateRenderer = () => axis.updateRenderer();
-
-    axis.update()
-    axis.updateRenderer()
-    return axis;
 };
 
 

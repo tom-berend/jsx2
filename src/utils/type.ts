@@ -1409,6 +1409,7 @@ export class Type {
      * @returns {Object} The resulting attributes object
      */
     static copyAttributes(attributes, options, ...s) {
+        console.warn('COPYATTRIBUTES - use INITVISPROPS instead')
         var a, arg, i, len, o, isAvail,
             primitives = {
                 circle: 1,

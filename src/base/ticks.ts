@@ -42,6 +42,8 @@ const dbugColor = `color:black;background-color:#bfbfff`;
  */
 
 import { JXG2 } from "../jxg.js";
+import {Board} from "../base/board.js";
+
 import { JSXMath } from "../math/math.js";
 import { Geometry } from "../math/geometry.js";
 import { Numerics } from "../math/numerics.js";
@@ -1763,7 +1765,7 @@ export class Ticks extends GeometryElement {
  *
  * @example
  */
-export function createTicks (board, parents, attributes) {
+export function createTicks (board:Board, parents, attributes) {
     var el,
         dist,
         attr = Type.copyAttributes(attributes, board.options, 'ticks');
