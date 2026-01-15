@@ -64,9 +64,7 @@
  * by D.E. Knuth and J.D. Hobby.
  */
 
-import { JXG2 } from "../jxg.js"
 import { Type } from "../utils/type.js";
-import { JSXMath } from "./math.js";
 
 /**
  * The Geometry.Metapost namespace holds algorithms translated from Metapost

@@ -42,10 +42,7 @@ const dbugColor = `color:blue;background-color:#c0feac`;
  * the browser runs on is a tablet/cell or a desktop computer.
  */
 
-// import { JXG2 } from "../Env.js";
 import { Type } from "./type.js";
-import { LooseObject } from "../interfaces.js";
-import { GeometryElement } from "../base/element.js";
 import { Board } from '../base/board.js'
 
 

@@ -14,6 +14,8 @@ export function runTests(which) {
         new IndexTests()
 }
 
+export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'image']
+
 
 export class IndexTests {
     newBoard: Board
@@ -28,12 +30,12 @@ export class IndexTests {
     constructor(which?: string) {
 
 
-        this.initBoard()
+        this.initBoard(which)
 
         if (which) {
             this[which]()
         } else {
-            this.polygon()
+            this.axis()
             // this.point()
             // this.text()
             // this.line()
@@ -47,14 +49,15 @@ export class IndexTests {
 
 
 
-    initBoard() {
-        console.log('initBoard')
+    initBoard(which: string) {
+        let showAxis = ['axis'].includes(which)
+
         let attr = {
             boundingBox: [-10, 10, 10, -10],
-            axis: true,
-            shownavigation: true,
-            showcopyright: false,
-            showinfobox: false
+            axis: showAxis,
+            shownavigation: showAxis,
+            showcopyright: showAxis,
+            showinfobox: showAxis
         }
 
         if (this.new)
@@ -69,6 +72,15 @@ export class IndexTests {
         }
     }
 
+    axis() {
+        this.boards.map((board) => {
+            // Create an axis providing two coords pairs.
+            let p1 = board.create('point', [0, 3]);
+            let p2 = board.create('point', [1, 3]);
+            let l1 = board.create('line', [p1, p2]);
+            let t = board.create('hatch', [l1, 3]);
+        })
+    }
     point() {
         this.boards.map((board) => {
             let a = board.create('point', [1, 3])
@@ -83,7 +95,6 @@ export class IndexTests {
         })
     }
     text() {
-        console.log('text')
         this.boards.map((board) => {
             board.create('text', [2, 7, "test"], { strokecolor: 'red' })
         })
@@ -115,6 +126,12 @@ export class IndexTests {
             let pl2 = board.create('point', [3, -.5])
             board.create('arrow', [pl1, pl2])
 
+        })
+    }
+    glider() {
+        this.boards.map((board) => {
+            // Create a slider with values between 1 and 10, initial position is 5.
+            let s = board.create('slider', [[1, 2], [3, 2], [1, 5, 10]]);
         })
     }
     circle() {

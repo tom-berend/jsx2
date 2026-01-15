@@ -434,9 +434,10 @@ export class Board extends Events {
 
     /**
      * Cached result of getCoordsTopLeftCorner for touch/mouseMove-Events to save some DOM operations.
+     * [x,y] of window after applying border and padding
      * @type Array
      */
-    cPos = [];
+    cPos: number[] = []
 
     /**
      * Contains the last time (epoch, msec) since the last touchMove event which was not thrown away or since
@@ -470,7 +471,7 @@ export class Board extends Events {
      * Elements are stored with their id.
      * @type Array
      */
-    focusObjects/*: GeometryElement[]*/ = [];
+    focusObjects: GeometryElement[] = [];
 
 
     /**
@@ -896,7 +897,7 @@ export class Board extends Events {
      * @param {Object} object Reference of an JXG2.GeometryElement that is to be named.
      * @returns {String} Unique name for the object.
      */
-    generateName(object/*: GeometryElement*/): string {
+    generateName(object: GeometryElement): string {
         let possibleNames, i,
             maxNameLength = this.attr.maxnamelength,
             pre = '',
@@ -986,9 +987,9 @@ export class Board extends Events {
 
     /**
      * Generates unique id for a board. The result is randomly generated and prefixed with 'jxgBoard'.
-     * @returns {String} Unique id for a board.
+     * @returns  Unique id for a board.
      */
-    generateId() {
+    generateId(): string {
         var r = 1;
 
         // as long as we don't have a unique id generate a new one
@@ -1003,11 +1004,11 @@ export class Board extends Events {
      * Composes an id for an element. If the ID is empty ('' or null) a new ID is generated, depending on the
      * object type. As a side effect {@link JXG2.Board#numObjects}
      * is updated.
-     * @param {Object} obj Reference of an geometry object that needs an id.
-     * @param {Number} type Type of the object.
-     * @returns {String} Unique id for an element.
+     * @param  obj Reference of an geometry object that needs an id.
+     * @param type Type of the object.
+     * @returns Unique id for an element.
      */
-    setId(obj: GeometryElement, type: string) {
+    setId(obj: GeometryElement, type: string): string {
         console.assert(typeof obj == 'object', typeof obj)
 
         var randomNumber,
@@ -1039,15 +1040,15 @@ export class Board extends Events {
     /**
      * After construction of the object the visibility is set
      * and the label is constructed if necessary.
-     * @param {Object} obj The object to add.
+     * @param obj The object to add.
      */
-    finalizeAdding(obj) {
+    finalizeAdding(obj: GeometryElement) {
         if (obj.evalVisProp('visible') === false) {
             this.renderer.display(obj, false);
         }
     }
 
-    finalizeLabel(obj) {
+    finalizeLabel(obj: GeometryElement) {
         if (
             obj.hasLabel &&
             !obj.label.evalVisProp('islabel') &&
@@ -1067,19 +1068,21 @@ export class Board extends Events {
      * Returns false if the event has been triggered faster than the maximum frame rate.
      *
      * @param {Events} evt Event object given by the browser (unused)
-     * @returns {Boolean} If the event has been triggered faster than the maximum frame rate, false is returned.
+     * @returns  If the event has been triggered faster than the maximum frame rate, false is returned.
      * @private
-     * @see JXG2.Board#pointerMoveListener
-     * @see JXG2.Board#touchMoveListener
-     * @see JXG2.Board#mouseMoveListener
+     * @see Board#pointerMoveListener
+     * @see Board#touchMoveListener
+     * @see Board#mouseMoveListener
      */
-    checkFrameRate(evt) {
+    checkFrameRate(evt: Event): boolean {
         var handleEvt = false,
             time = new Date().getTime();
 
-        if (Type.exists(evt.pointerId) && this.touchMoveLastId !== evt.pointerId) {
+        // TODO:  don't use pointerId  https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerId
+
+        if (Type.exists(evt['pointerId']) && this.touchMoveLastId !== evt['pointerId']) {
             handleEvt = true;
-            this.touchMoveLastId = evt.pointerId;
+            this.touchMoveLastId = evt['pointerId'];
         }
         if (!handleEvt && (time - this.touchMoveLast) * this.attr.maxframerate >= 1000) {
             handleEvt = true;
@@ -1220,9 +1223,9 @@ export class Board extends Events {
      * Optional a <tt>margin</tt> to the inner of the board is respected.<br>
      *
      * @name Board#getPointLoc
-     * @param {Array} position Array of requested position <tt>[x, y]</tt> or <tt>[w, x, y]</tt>.
-     * @param {Array|Number} [margin] Optional margin for the inner of the board: <tt>[top, right, bottom, left]</tt>. A single number <tt>m</tt> is interpreted as <tt>[m, m, m, m]</tt>.
-     * @returns {Array} [u,v] with the following meanings:
+     * @param  position Array of requested position <tt>[x, y]</tt> or <tt>[w, x, y]</tt>.
+     * @param margin Optional margin for the inner of the board: <tt>[top, right, bottom, left]</tt>. A single number <tt>m</tt> is interpreted as <tt>[m, m, m, m]</tt>.
+     * @returns [u,v] with the following meanings:
      * <pre>
      *     v    u > |   -1    |    0   |    1   |
      * ------------------------------------------
@@ -1364,7 +1367,7 @@ export class Board extends Events {
      * </script><pre>
      *
      */
-    getPointLoc(position, margin) {
+    getPointLoc(position: number[], margin: number): number[] {
         var bbox, pos, res, marg;
 
         bbox = this.getBoundingBox();
@@ -1400,10 +1403,10 @@ export class Board extends Events {
      * Optional a <tt>margin</tt> to the inner of the board is respected.<br>
      *
      * @name Board#getLocationOrigin
-     * @param {Array|Number} [margin] Optional margin for the inner of the board: <tt>[top, right, bottom, left]</tt>. A single number <tt>m</tt> is interpreted as <tt>[m, m, m, m]</tt>.
-     * @returns {Array} [u,v] which shows where the origin is located (@link Board#getPointLoc).
+     * @param margin Optional margin for the inner of the board: <tt>[top, right, bottom, left]</tt>. A single number <tt>m</tt> is interpreted as <tt>[m, m, m, m]</tt>.
+     * @returns [u,v] which shows where the origin is located (@link Board#getPointLoc).
      */
-    getLocationOrigin(margin) {
+    getLocationOrigin(margin: number): number[] {
         return this.getPointLoc([0, 0], margin);
     }
 
@@ -7255,7 +7258,8 @@ export class Board extends Events {
         if (str === null || str === undefined) return null;
 
         if (typeof str === 'object')
-            console.warn('ERROR - wrong type sent to board.select()')
+            console.warn('ERROR - wrong type sent to board.select()',str)
+
         str = (str as GeometryElement).id
 
         // It's a string, most likely an id or a name.

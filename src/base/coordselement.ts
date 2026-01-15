@@ -1703,7 +1703,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         // } else {
 
 
-        if (Type.exists(this.element)) {
+        if (Type.exists(this.element) && Type.exists(this.element.id)) {
 
             let remote = this.board.select(this.element.id)
             if (remote !== null)

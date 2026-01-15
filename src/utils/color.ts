@@ -39,7 +39,6 @@
  * Stoyan Stefanov <sstoo@gmail.com> (see https://www.phpied.com/rgb-color-parser-in-javascript/)
  */
 
-// import { JXG2 } from "../jxg.js";
 import { Type } from "./type.js";
 import {Env} from "./env.js"
 import { JSXMath } from "../math/math.js";

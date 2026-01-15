@@ -1779,8 +1779,12 @@ export function createArrow(board, parents, attributes) {
 export function createAxis(board: Board, parents: any[], attributes: LooseObject) {
     // try {
 
-    parents = Type.providePoints(board,parents,attributes['point'])
+    let attr = Type.initVisProps(Options.point,Options.axis, attributes)
+    console.error(attr)
+    parents = Type.providePoints(board,parents,attr['point1'])
 
+    let lineAttr = Type.initVisProps(Options.line,Options.axis, attributes)
+    console.error(lineAttr)
     let axis = new Axis(board, parents, attributes);
     // } catch (err) {
     //     throw new Error(
@@ -1805,11 +1809,10 @@ export class Axis extends Line {
     _point2UsrCoordsOrg:number[]
 
     constructor(board, parents, attributes) {
+        let attr = Type.initVisProps(Options.axis,attributes)
+        super(board, parents[0], parents[1], attr)
 
-        super(board, parents[0], parents[1], attributes)
-
-        var axis, attr,
-            ancestor, ticksDist;
+        let  ancestor, ticksDist;
 
         console.warn(`%c createAxis (${typeof parents[0]},${typeof parents[1]})`, dbugColor, parents)
 
@@ -1860,7 +1863,7 @@ export class Axis extends Line {
     this.elementUpdateRenderer = () => this.updateRenderer();
 
     this.update()
-    this.updateRenderer()
+    this.elementUpdateRenderer()
 
     }
 
@@ -2104,6 +2107,7 @@ export class Axis extends Line {
             }
             this.defaultTicks.needsUpdate = true;
         }
+
     }
 };
 

@@ -50,7 +50,6 @@ const dbugColor = `color:white;background-color:#0080ff`;
  * renderers is the class AbstractRenderer defined in this file.
  */
 
-// import { JXG2 } from '../jxg.js'
 import { LooseObject } from "../interfaces.js";
 import { Options } from "../options.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js'

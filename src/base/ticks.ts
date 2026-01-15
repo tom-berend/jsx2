@@ -41,10 +41,10 @@ const dbugColor = `color:black;background-color:#bfbfff`;
  * @version 0.1
  */
 
-import { JXG2 } from "../jxg.js";
 import {Board} from "../base/board.js";
 
 import { JSXMath } from "../math/math.js";
+import {Env} from "../utils/env.js";
 import { Geometry } from "../math/geometry.js";
 import { Numerics } from "../math/numerics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
@@ -780,7 +780,7 @@ export class Ticks extends GeometryElement {
             return;
         }
         if (Math.abs(bounds.upper - bounds.lower) > ticksDelta * 2048) {
-            JXG2.warn("JSXGraph ticks: too many ticks (>2048). Please increase ticksDistance.");
+            Env.warn("JSXGraph ticks: too many ticks (>2048). Please increase ticksDistance.");
             return;
         }
 
@@ -1629,7 +1629,7 @@ export class Ticks extends GeometryElement {
     hideElement() {
         var i;
 
-        JXG2.deprecated("Element.hideElement()", "Element.setDisplayRendNode()");
+        Env.deprecated("Element.hideElement()", "Element.setDisplayRendNode()");
 
         this.visPropCalc.visible = false;
         this.board.renderer.display(this, false);
@@ -1645,7 +1645,7 @@ export class Ticks extends GeometryElement {
     showElement() {
         var i;
 
-        JXG2.deprecated("Element.showElement()", "Element.setDisplayRendNode()");
+        Env.deprecated("Element.showElement()", "Element.setDisplayRendNode()");
 
         this.visPropCalc.visible = true;
         this.board.renderer.display(this, false);
@@ -1913,8 +1913,4 @@ export function createHatchmark(board, parents, attributes) {
 
     return el;
 };
-
-JXG2.registerElement("ticks", JXG2.createTicks);
-JXG2.registerElement("hash", JXG2.createHatchmark);
-JXG2.registerElement("hatch", JXG2.createHatchmark);
 

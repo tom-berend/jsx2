@@ -26,9 +26,7 @@
     <div id="buttons"></div>
 
     <script type="module">
-        import { IndexTests } from "./build/indextests.js"
-
-        let tests = ['text', 'point', 'line', 'circle', 'polygon', 'image']
+        import { IndexTests, tests } from "./build/indextests.js"
 
         // create the buttons (each button starts a new page)
         tests.map((test) => {
@@ -45,9 +43,9 @@
     </script>
 
     <div style="margin:45px;">
-        <div id="box1" class="jxgbox" style="width:500px; aspect-ratio: 1/1;float:left;"></div>
-        <div id="box2" class="jxgbox" style="width:500px; aspect-ratio: 1/1;float:left;"></div>
-        <div id="box3" class="jxgbox" style="width:500px; aspect-ratio: 1/1;float:left;"> </div>
+        <div style="float:left;"><h4>TypeScript</h4><div id="box1" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div></div>
+        <div style="float:left;"><h4>SVG       </h4><div id="box2" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div></div>
+        <div style="float:left;"><h4>WebGL     </h4><div id="box3" class="jxgbox" style="width:500px; aspect-ratio: 1/1;float:left;"></div></div>
 
     </div>
 </body>
