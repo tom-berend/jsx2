@@ -52,6 +52,7 @@ import { Type } from "../utils/type.js";
 import { CoordsElement } from "../base/coordselement.js";
 import { LooseObject } from "../interfaces.js";
 import { Board } from "./board.js";
+import { Transformation } from "../base/transformation.js";
 
 /**
  * Curves are the common object for function graphs, parametric curves, polar curves, and data plots.
@@ -142,7 +143,6 @@ export class Curve extends GeometryElement {
     xterm
     yterm
     _transformationSource
-    transformMat
     _visibleArea
 
 
@@ -1477,10 +1477,12 @@ export class Curve extends GeometryElement {
      * @returns {Array} [Boolean, curve]: Array contining 'true' if curve is result of a transformation,
      *   and the source curve of the transformation.
      */
-    getTransformationSource() {
-        var isTransformed, curve_org;
+    getTransformationSource(): [boolean, Transformation | null] {
+        let isTransformed = true
+        let curve_org = null
+
         if (Type.exists(this._transformationSource)) {
-            curve_org = this._transformationSource;
+            let curve_org = this._transformationSource;
             if (
                 curve_org.elementClass === OBJECT_CLASS.CURVE //&&
                 //curve_org.evalVisProp('curvetype') !== 'plot'
@@ -1795,8 +1797,8 @@ export function createFunctiongraph(board, parents, attributes) {
     var attr,
 
 
-    // tbtb - seems to be for jessiecode     par = ["x", "x"].concat(parents); // variable name and identity function for x-coordinate
-    par = ["x", function(x) { return x; }].concat(parents);
+        // tbtb - seems to be for jessiecode     par = ["x", "x"].concat(parents); // variable name and identity function for x-coordinate
+        par = ["x", function (x) { return x; }].concat(parents);
 
     attr = Type.copyAttributes(attributes, board.options, 'functiongraph');
     attr = Type.copyAttributes(attr, board.options, 'curve');

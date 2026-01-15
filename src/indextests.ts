@@ -14,7 +14,7 @@ export function runTests(which) {
         new IndexTests()
 }
 
-export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'image']
+export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image']
 
 
 export class IndexTests {
@@ -23,7 +23,7 @@ export class IndexTests {
 
     old = true  // turn on and off boards
     new = true
-    webgl = true
+    webgl = false
 
     boards = []
 
@@ -130,8 +130,17 @@ export class IndexTests {
     }
     glider() {
         this.boards.map((board) => {
-            // Create a slider with values between 1 and 10, initial position is 5.
-            let s = board.create('slider', [[1, 2], [3, 2], [1, 5, 10]]);
+            let l1 = board.create('segment', [[-8, 8], [0, 8]])
+            let glid1 = board.create('glider', [l1])
+
+            let c1 = board.create('circle', [[-4, 6], [-4, 3]])
+            let glid2 = board.create('glider', [c1])
+
+            let c3 = board.create('curve', [(t) => t - Math.sin(t), (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
+            let glid3 = board.create('glider', [c3])
+
+            // // Create a slider with values between 1 and 10, initial position is 5.
+            // let s = board.create('slider', [[1, 2], [3, 2], [1, 5, 10]]);
         })
     }
     circle() {

@@ -96,7 +96,7 @@ export class Point extends CoordsElement {
         this.board.renderer.drawPoint(this);
         this.board.finalizeAdding(this);
 
-        this.coordsElementInit(coordinates, this.visProp)
+        this.coordsConstructor(coordinates, this.visProp)
 
         this.createGradient();
         this.createLabel();
@@ -578,7 +578,7 @@ export class Point extends CoordsElement {
  *   var fpex2_p3 = fpex2_board.create('point', [fpex2_p2, fpex2_trans]);
  * </script><pre>
  */
-export function createPoint(board, parents, attributes) {
+export function createPoint(board, parents, attributes): Point {
     var el, attr;
 
     attr = Type.copyAttributes(attributes, board.options, 'point');
@@ -594,78 +594,6 @@ export function createPoint(board, parents, attributes) {
             "\nPossible parent types: [x,y], [z,x,y], [element,transformation]"
         );
     }
-
-    return el;
-};
-
-/**
- * @class A glider is a point bound to a line, circle or curve or even another point.
- * @pseudo
- * @description A glider is a point which lives on another geometric element like a line, circle, curve, turtle.
- * @name Glider
- * @augments JXG2.Point
- * @constructor
- * @type JXG2.Point
- * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {Number_Number_Number_JXG.GeometryElement} z_,x_,y_,GlideObject Parent elements can be two or three elements of type number and the object the glider lives on.
- * The coordinates are completely optional. If not given the origin is used. If you provide two numbers for coordinates they will be interpreted as affine Euclidean
- * coordinates, otherwise they will be interpreted as homogeneous coordinates. In any case the point will be projected on the glide object.
- * @example
- * // Create a glider with user defined coordinates. If the coordinates are not on
- * // the circle (like in this case) the point will be projected onto the circle.
- * var p1 = board.create('point', [2.0, 2.0]);
- * var c1 = board.create('circle', [p1, 2.0]);
- * var p2 = board.create('glider', [2.0, 1.5, c1]);
- * </pre><div class="jxgbox" id="JXG4f65f32f-e50a-4b50-9b7c-f6ec41652930" style="width: 300px; height: 300px;"></div>
- * <script type="text/javascript">
- *   var gpex1_board = JXG2.JSXGraph.initBoard('JXG4f65f32f-e50a-4b50-9b7c-f6ec41652930', {boundingbox: [-1, 5, 5, -1], axis: true, showcopyright: false, shownavigation: false});
- *   var gpex1_p1 = gpex1_board.create('point', [2.0, 2.0]);
- *   var gpex1_c1 = gpex1_board.create('circle', [gpex1_p1, 2.0]);
- *   var gpex1_p2 = gpex1_board.create('glider', [2.0, 1.5, gpex1_c1]);
- * </script><pre>
- * @example
- * // Create a glider with default coordinates (1,0,0). Same premises as above.
- * var p1 = board.create('point', [2.0, 2.0]);
- * var c1 = board.create('circle', [p1, 2.0]);
- * var p2 = board.create('glider', [c1]);
- * </pre><div class="jxgbox" id="JXG4de7f181-631a-44b1-a12f-bc4d995609e8" style="width: 200px; height: 200px;"></div>
- * <script type="text/javascript">
- *   var gpex2_board = JXG2.JSXGraph.initBoard('JXG4de7f181-631a-44b1-a12f-bc4d995609e8', {boundingbox: [-1, 5, 5, -1], axis: true, showcopyright: false, shownavigation: false});
- *   var gpex2_p1 = gpex2_board.create('point', [2.0, 2.0]);
- *   var gpex2_c1 = gpex2_board.create('circle', [gpex2_p1, 2.0]);
- *   var gpex2_p2 = gpex2_board.create('glider', [gpex2_c1]);
- * </script><pre>
- *@example
- * //animate example 2
- * var p1 = board.create('point', [2.0, 2.0]);
- * var c1 = board.create('circle', [p1, 2.0]);
- * var p2 = board.create('glider', [c1]);
- * var button1 = board.create('button', [1, 7, 'start animation',function(){p2.startAnimation(1,4)}]);
- * var button2 = board.create('button', [1, 5, 'stop animation',function(){p2.stopAnimation()}]);
- * </pre><div class="jxgbox" id="JXG4de7f181-631a-44b1-a12f-bc4d133709e8" style="width: 200px; height: 200px;"></div>
- * <script type="text/javascript">
- *   var gpex3_board = JXG2.JSXGraph.initBoard('JXG4de7f181-631a-44b1-a12f-bc4d133709e8', {boundingbox: [-1, 10, 10, -1], axis: true, showcopyright: false, shownavigation: false});
- *   var gpex3_p1 = gpex3_board.create('point', [2.0, 2.0]);
- *   var gpex3_c1 = gpex3_board.create('circle', [gpex3_p1, 2.0]);
- *   var gpex3_p2 = gpex3_board.create('glider', [gpex3_c1]);
- *   gpex3_board.create('button', [1, 7, 'start animation',function(){gpex3_p2.startAnimation(1,4)}]);
- *   gpex3_board.create('button', [1, 5, 'stop animation',function(){gpex3_p2.stopAnimation()}]);
- * </script><pre>
- */
-export function createGlider(board, parents, attributes) {
-    var el,
-        coords,
-        attr = Type.copyAttributes(attributes, board.options, 'glider');
-
-    if (parents.length === 1) {
-        coords = [0, 0];
-    } else {
-        coords = parents.slice(0, 2);
-    }
-    el = board.create("point", coords, attr);
-
-    // eltype is set in here
-    el.makeGlider(parents[parents.length - 1]);
 
     return el;
 };

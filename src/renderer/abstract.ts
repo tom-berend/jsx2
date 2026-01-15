@@ -1093,7 +1093,6 @@ export abstract class AbstractRenderer {
                 if (el.board.objects[el.visProp["anchor"]] == undefined) {
                 }
                 if (typeof el.visProp["anchor"] !== 'string') {
-                    console.error(true, 'should be GeometryElement')
                     ev_visible = true
                 } else {
                     ev_visible = el.board.objects[el.visProp["anchor"]].evalVisProp('visible')

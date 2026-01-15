@@ -375,7 +375,12 @@ export class GeometryElement extends Events {
     point2
 
 
-    element// ???  
+    element// ???
+    parentPolygon
+    radiuspoint
+    anglepoint
+
+    transformMat
 
 
     // The inheritance tree is mangles (prototype inheritance lets the parent call the child).

@@ -130,7 +130,7 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
         this.elementUpdateRenderer = () => this.updateRenderer();
         this.elementGetLabelAnchor = () => this.getLabelAnchor();
         this.elementGetTextAnchor = () => this.getTextAnchor();
-        
+
 
         if (dbug(this))
             console.warn(`%c text constructor(${JSON.stringify(parents).substring(0, 100)})`, dbugColor)
@@ -157,7 +157,7 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
             this.visProp['autoposition'] = true;    // always lower case
         }
 
-        this.coordsElementInit(coordinates, this.evalVisProp('islabel'));
+        this.coordsConstructor(coordinates, this.evalVisProp('islabel'));
 
         this.orgText = this.content; // tbtb - recalculate content from orgText in updateText()
 
@@ -166,7 +166,6 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
         this.rendNode = this.board.renderer.drawText(this);
         // this.coordsElementInit(parents, this.visProp)
 
-        // this.coordsConstructor(coords, this.evalVisProp('islabel'));  // now in constructor
 
 
         this.needsSizeUpdate = false;
@@ -1597,7 +1596,7 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
     //         this.parseError = sharedState.yy.parseError;
     //     } else {
     //         this.parseError = Object.getPrimport { Options } from "../options.js";
-// ototypeOf(this).parseError;
+    // ototypeOf(this).parseError;
     //     }
     //     function popStack(n) {
     //         stack.length = stack.length - 2 * n;

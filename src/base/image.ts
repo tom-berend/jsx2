@@ -83,7 +83,7 @@ export class Image extends CoordsElement {
 
 
         this.element = this.board.select(attributes.anchor);
-        // this.coordsConstructor(coords);
+        this.coordsConstructor(coords);
 
         this.W = Type.createFunction(size[0], this.board, "");
         this.H = Type.createFunction(size[1], this.board, "");

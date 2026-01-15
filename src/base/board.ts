@@ -67,7 +67,7 @@ import { Dim } from '../interfaces.js'
 
 // import {GeometryElement} from './element.js';
 import { Text } from '../base/text.js'
-import { Point, createGlider, createPolePoint, createIntersectionPoint, createOtherIntersectionPoint } from '../base/point.js'
+import { Point, createPolePoint, createIntersectionPoint, createOtherIntersectionPoint } from '../base/point.js'
 import { Checkbox } from "../element/checkbox.js"
 import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis, createPolarLine, createTangentTo } from '../base/line.js'
 import { createCircle } from './circle.js';
@@ -81,6 +81,7 @@ import { createSlider } from '../element/slider.js';
 import { createGrid } from '../element/grid.js';
 import { createImage } from '../base/image.js';
 import { createPolygon, createRegularPolygon, createPolygonalChain, createParallelogram } from "../base/polygon.js";
+import { createGlider } from '../element/glider.js';
 
 /**
  * Constructs a new Board object.
@@ -6431,7 +6432,9 @@ export class Board extends Events {
             case 'boxPlot': el = createBoxPlot(this, parents, attributes); break;
             case 'implicitCurve': el = createImplicitCurve(this, parents, attributes); break;
 
+            case 'glider': el = createGlider(this, parents, attributes); break;
             case 'slider': el = createSlider(this, parents, attributes); break;
+            
             case 'grid': el = createGrid(this, parents, attributes); break;
 
             case 'image': el = createImage(this, parents, attributes); break;

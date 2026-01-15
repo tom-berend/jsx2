@@ -1780,11 +1780,9 @@ export function createAxis(board: Board, parents: any[], attributes: LooseObject
     // try {
 
     let attr = Type.initVisProps(Options.point,Options.axis, attributes)
-    console.error(attr)
     parents = Type.providePoints(board,parents,attr['point1'])
 
     let lineAttr = Type.initVisProps(Options.line,Options.axis, attributes)
-    console.error(lineAttr)
     let axis = new Axis(board, parents, attributes);
     // } catch (err) {
     //     throw new Error(
