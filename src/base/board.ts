@@ -1901,16 +1901,15 @@ export class Board extends Events {
     }
 
     highlightElements(x, y, evt, target) {
-        var el,
-            pEl,
+        var
             pId,
             overObjects = {},
             len = this.objectsList.length;
 
         // Elements  below the mouse pointer which are not highlighted yet will be highlighted.
-        for (el = 0; el < len; el++) {
-            pEl = this.objectsList[el];
-            pId = pEl.id;
+        for (let el = 0; el < len; el++) {
+            let pEl = this.objectsList[el];
+            let pId = pEl.id;
             if (
                 Type.exists(pEl.hasPoint) &&
                 pEl.visPropCalc.visible &&
@@ -1936,8 +1935,8 @@ export class Board extends Events {
             }
         }
 
-        for (el = 0; el < len; el++) {
-            pEl = this.objectsList[el];
+        for (let el = 0; el < len; el++) {
+            let pEl = this.objectsList[el];
             pId = pEl.id;
             if (pEl.mouseover) {
                 if (!overObjects[pId]) {
@@ -6434,7 +6433,7 @@ export class Board extends Events {
 
             case 'glider': el = createGlider(this, parents, attributes); break;
             case 'slider': el = createSlider(this, parents, attributes); break;
-            
+
             case 'grid': el = createGrid(this, parents, attributes); break;
 
             case 'image': el = createImage(this, parents, attributes); break;

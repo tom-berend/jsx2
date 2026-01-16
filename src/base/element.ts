@@ -1,4 +1,4 @@
-const dbug = (elem) =>  false //elem && elem.id === "jxgBoard1L3";
+const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
 let dbugColor = 'color:black;background-color:#FF8FFF;'
 /*
     Copyright 2008-2025
@@ -1918,10 +1918,10 @@ export class GeometryElement extends Events {
     /**
      * Highlights the element.
      * @private
-     * @param {Boolean} [force=false] Force the highlighting
+     * @param  Force the highlighting
      * @returns {JXG2.Board}
      */
-    highlight(force) {
+    highlight(force=false) {
         force = Type.def(force, false);
         // I know, we have the JXG2.Board.highlightedObjects AND JXG2.GeometryElement.highlighted and YES we need both.
         // Board.highlightedObjects is for the internal highlighting and GeometryElement.highlighted is for user highlighting
@@ -2291,7 +2291,8 @@ export class GeometryElement extends Events {
      * @param {Number} y Coordinate in y direction, screen coordinates.
      * @returns {Boolean} True if (x,y) is near the element, False otherwise.
      */
-    hasPoint(x, y, start) {
+    hasPoint(x, y, tol?) {
+        throw new Error(`don't call this version of hasPoint`)
         return false;
     }
 

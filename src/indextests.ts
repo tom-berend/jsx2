@@ -66,6 +66,7 @@ export class IndexTests {
         if (this.old)
             this.boards.push((window as any).JXG.JSXGraph.initBoard('box2', attr));
 
+        
         if (this.webgl) {
             attr['renderer'] = 'webgl'
             this.boards.push(JSXGraph.initBoard('box3', attr));
@@ -74,6 +75,7 @@ export class IndexTests {
 
     axis() {
         this.boards.map((board) => {
+
             // Create an axis providing two coords pairs.
             let p1 = board.create('point', [0, 3]);
             let p2 = board.create('point', [1, 3]);

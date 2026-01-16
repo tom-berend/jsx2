@@ -51,7 +51,7 @@ const dbugColor = `color:black;background-color:#bfffff`;
 import { Options } from "../options.js";
 
 import { JSXMath } from "../math/math.js";
-import {Board} from "../base/board.js";
+import { Board } from "../base/board.js";
 import { Geometry } from "../math/geometry.js";
 import { Numerics } from "../math/numerics.js";
 import { Statistics } from "../math/statistics.js";
@@ -127,7 +127,7 @@ export class Line extends GeometryElement {
 
 
 
-    constructor(board:Board, p1:Point, p2:Point, attributes:LooseObject) {
+    constructor(board: Board, p1: Point, p2: Point, attributes: LooseObject) {
         super(board, attributes, OBJECT_TYPE.LINE, OBJECT_CLASS.LINE);
 
         this.elementUpdate = () => this.update();
@@ -310,8 +310,8 @@ export class Line extends GeometryElement {
     update() {
         var funps;
 
-        // if (dbug(this))
-        console.warn(`%c line: update() ${this.id})`, dbugColor)
+        if (dbug(this))
+            console.warn(`%c line: update() ${this.id})`, dbugColor)
 
         if (!this.needsUpdate) {
             return this;
@@ -1779,10 +1779,9 @@ export function createArrow(board, parents, attributes) {
 export function createAxis(board: Board, parents: any[], attributes: LooseObject) {
     // try {
 
-    let attr = Type.initVisProps(Options.point,Options.axis, attributes)
-    parents = Type.providePoints(board,parents,attr['point1'])
+    let attr = Type.initVisProps(Options.point, Options.axis, attributes)
+    parents = Type.providePoints(board, parents, attr['point1'])
 
-    let lineAttr = Type.initVisProps(Options.line,Options.axis, attributes)
     let axis = new Axis(board, parents, attributes);
     // } catch (err) {
     //     throw new Error(
@@ -1803,30 +1802,35 @@ export function createAxis(board: Board, parents: any[], attributes: LooseObject
 
 export class Axis extends Line {
 
-    _point1UsrCoordsOrg:number[]
-    _point2UsrCoordsOrg:number[]
+    _point1UsrCoordsOrg: number[]
+    _point2UsrCoordsOrg: number[]
 
     constructor(board, parents, attributes) {
-        let attr = Type.initVisProps(Options.axis,attributes)
-        super(board, parents[0], parents[1], attr)
 
-        let  ancestor, ticksDist;
+        let attr = Type.initVisProps(Options.axis['line'], attributes)
+        super(board, parents[0], parents[1], attributes)
 
-        console.warn(`%c createAxis (${typeof parents[0]},${typeof parents[1]})`, dbugColor, parents)
+        if (dbug(this))
+            console.warn(`%c createAxis (${typeof parents[0]},${typeof parents[1]})`, dbugColor, parents)
+
+        this.elementUpdate = () => this.update();
+        this.elementUpdateRenderer = () => this.updateRenderer();
+
 
         // Create line
-        this.visProp  = Type.initVisProps(Options.elements, Options.line, Options.axis, attributes);
+        this.visProp = Type.initVisProps(Options.elements, Options.line, Options.axis, attributes);
 
         this.otype = OBJECT_TYPE.AXIS;
         this.isDraggable = false;
         this.point1.isDraggable = false;
         this.point2.isDraggable = false;
 
+
         // Save usrCoords of points
         this._point1UsrCoordsOrg = this.point1.coords.usrCoords.slice();
         this._point2UsrCoordsOrg = this.point2.coords.usrCoords.slice();
 
-        for (ancestor in this.ancestors) {
+        for (let ancestor in this.ancestors) {
             if (this.ancestors.hasOwnProperty(ancestor)) {
                 this.ancestors[ancestor].type = OBJECT_TYPE.AXISPOINT;
             }
@@ -1834,6 +1838,7 @@ export class Axis extends Line {
 
         // Create ticks
         // this.visPropTicks = this.visProp.ticks;
+        let ticksDist
         if (this.evalVisProp('ticks.ticksdistance')) {
             ticksDist = this.evalVisProp('ticks.ticksdistance');
         } else if (Type.isArray(this.evalVisProp('ticks.ticks'))) {
@@ -1857,15 +1862,17 @@ export class Axis extends Line {
         this.inherits.push(this.defaultTicks);
 
 
-    this.elementUpdate = () => this.update();
-    this.elementUpdateRenderer = () => this.updateRenderer();
+        this.elementUpdate()
+        this.elementUpdateRenderer()
 
-    this.update()
-    this.elementUpdateRenderer()
+        // TODO:  tbtb - hack, don't know why it doesn't show
+        // mouse over fixes it, and also fixes left and right
+        // something isn't being updated
+        this.board.renderer.highlight(this);
 
     }
 
-    updateRenderer(){
+    updateRenderer() {
 
         var bbox,
             position, i,
