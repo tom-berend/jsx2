@@ -152,7 +152,6 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
 
         this.content = parents[parents.length - 1];
 
-        //tbtb
         if (this.evalVisProp('islabel')) {
             this.visProp['autoposition'] = true;    // always lower case
         }

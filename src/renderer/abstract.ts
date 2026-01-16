@@ -64,6 +64,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { GeometryElement } from "../base/element.js";
 import { SVGType } from "../interfaces.js";
 import { Text } from "../base/text.js"
+import { Point } from "../base/point.js"
 import { elements } from "../index.js";
 
 
@@ -307,7 +308,7 @@ export abstract class AbstractRenderer {
      * @returns {String} 'highlight' if highlighted, otherwise the ampty string '' is returned.
      * @private
      */
-    _getHighlighted(el: GeometryElement) {
+    _getHighlighted(el: GeometryElement):string {
         var isTrace = false,
             hl;
 
@@ -335,9 +336,9 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updatePoint
      * @see JXG2.AbstractRenderer#changePointStyle
      */
-    drawPoint(el) {
+    drawPoint(el:Point) {
 
-        if (dbug(el)) console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visprop)
+        if (dbug(el)) console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visProp)
 
 
         var prim: SVGType
@@ -385,7 +386,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#drawPoint
      * @see JXG2.AbstractRenderer#changePointStyle
      */
-    updatePoint(el) {
+    updatePoint(el:Point) {
 
         if (dbug(el))
             console.warn(`%c abstract: updatePoint(${el.id})`, dbugColor, el.coords.scrCoords)
@@ -448,7 +449,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updatePoint
      * @see JXG2.AbstractRenderer#drawPoint
      */
-    changePointStyle(el) {
+    changePointStyle(el:Point) {
         var node = this.getElementById(el.id);
 
         // remove the existing point rendering node

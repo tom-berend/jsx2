@@ -1,6 +1,10 @@
 const dbug = (elem?) => false//elem && elem.id === "jxgBoard1L9"
 const dbugColor = `color:blue;background-color:#c0ffc0`;
 
+// this is a clone of abstract.ts, not a child (like svg and canvas)
+// the rendering methods are just too different
+
+
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -35,11 +39,19 @@ const dbugColor = `color:blue;background-color:#c0ffc0`;
 /*global JXG2: true, define: true, AMprocessNode: true, MathJax: true, document: true */
 /*jslint nomen: true, plusplus: true, newcap:true*/
 
-// import { JXG2 } from "../jxg.js";
+import { LooseObject } from "../interfaces.js";
+
 import { Options } from "../options.js";
 import { AbstractRenderer } from "./abstract.js";
-import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Type } from "../utils/type.js";
+import { JSXMath } from "../math/math.js";
+import { Coords } from "../base/coords.js";
+import { Point } from "../base/point.js"
+import { Geometry } from "../math/geometry.js";
+
+
+
 import { Color } from "../utils/color.js";
 import { Base64 } from "../utils/base64.js";
 import { Numerics } from "../math/numerics.js";
@@ -55,6 +67,9 @@ import { genUUID } from "../utils/uuid.js";
 import * as THREE from 'three'
 // @ts-ignore
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// @ts-ignore
+import { SpriteText } from './three-spritetext.js'
+
 
 // import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -74,13 +89,99 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
 
+export class WebGLRenderer {
+
+    /**
+     * SVG root node
+     */
+    canvas: Element | null = null;       // not SVGElement!
+
+    /**
+     * The SVG Namespace used in JSXGraph.
+     * @see http://www.w3.org/TR/SVG2/
+     * @default http://www.w3.org/2000/svg
+     */
+    svgNamespace = "http://www.w3.org/2000/svg";
 
 
-export class WebGLRenderer extends AbstractRenderer {
+
+    /**
+     * The vertical offset for {@link Text} elements. Every {@link Text} element will
+     * be placed this amount of pixels below the user given coordinates.
+     * @type Number
+     * @default 0
+     */
+    vOffsetText = 0;
+
+    /**
+     * If this property is set to <tt>true</tt> the visual properties of the elements are updated
+     * on every update. Visual properties means: All the stuff stored in the
+     * {@link JXG2.GeometryElement#visProp} property won't be set if enhancedRendering is <tt>false</tt>
+     * @type Boolean
+     * @default true
+     */
+    enhancedRendering = true;
+
+    /**
+     * The HTML element that stores the JSXGraph board in it.
+     * @type Node
+     */
+    container: HTMLDivElement | null = null
 
 
-    // docstring in AbstractRenderer
+    /**
+     * This is used to easily determine which renderer we are using
+     * @example if (board.renderer.type === 'vml') {
+     *     // do something
+     * }
+     * @type String
+     */
     type = "webgl";
+
+    /**
+     * True if the browsers' SVG engine supports foreignObject.
+     * Not supported browsers are IE 9 - 11.
+     * It is tested in svg renderer.
+     *
+     * @type Boolean
+     * @private
+     */
+    supportsForeignObject = false;
+
+    /**
+     * Defines dash patterns. Sizes are in pixel.
+     * Defined styles are:
+     * <ol>
+     * <li> 2 dash, 2 space</li>
+     * <li> 5 dash, 5 space</li>
+     * <li> 10 dash, 10 space</li>
+     * <li> 20 dash, 20 space</li>
+     * <li> 20 dash, 10 space, 10 dash, 10 space</li>
+     * <li> 20 dash, 5 space, 10 dash, 5 space</li>
+     * <li> 0 dash, 5 space (dotted line)</li>
+     * </ol>
+     * This means, the numbering is <b>1-based</b>.
+     * Solid lines are set with dash:0.
+     * If the object's attribute "dashScale:true" the dash pattern is multiplied by
+     * strokeWidth / 2.
+     *
+     * @type Array
+     * @default [[2, 2], [5, 5], [10, 10], [20, 20], [20, 10, 10, 10], [20, 5, 10, 5], [0, 5]]
+     * @see JXG2.GeometryElement#dash
+     * @see JXG2.GeometryElement#dashScale
+     */
+    dashArray = [
+        [2, 2],
+        [5, 5],
+        [10, 10],
+        [20, 20],
+        [20, 10, 10, 10],
+        [20, 5, 10, 5],
+        [0, 5]
+    ];
+
+
+
 
     isSafari: boolean
 
@@ -110,8 +211,12 @@ export class WebGLRenderer extends AbstractRenderer {
     public canvasNamespace
     public context
 
+    public scene
+
+    public enableOrbital = true
+    public orbitalControls = null
+
     constructor(containerName: string, dim: Dim) {  // width height
-        super()
 
         if (dbug()) console.log(`%c webgl: constructor(container:${containerName},dim:'${JSON.stringify(dim)}'`, dbugColor)
 
@@ -144,36 +249,34 @@ export class WebGLRenderer extends AbstractRenderer {
         const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: webcanvas });
         renderer.setSize(webcanvas.clientWidth, webcanvas.clientHeight)
 
-        const scene = new THREE.Scene();
+        this.scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
         camera.position.z = 15;
 
-        var controls = new OrbitControls(camera, webcanvas);
-        controls.enableDamping = true;
-
+        if (this.enableOrbital) {
+            this.orbitalControls = new OrbitControls(camera, webcanvas);
+            this.orbitalControls.enableDamping = true;
+        }
         ////////////////////
 
         let groundGeometry = new THREE.BoxGeometry(20, 20, 0.1);
         let groundMaterial = new THREE.MeshBasicMaterial({ color: 'aliceblue' });
 
-        const geometry = new THREE.BoxGeometry(5, 5, 5);
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
 
         let ground = new THREE.Mesh(groundGeometry, groundMaterial);
         ground.receiveShadow = true;
+        ground.position.x = 0;
+        ground.position.y = 0;
         ground.position.z = - 0.25;
-        scene.add(ground)
+        this.scene.add(ground)
 
 
         let animate = () => {
-            controls.update();
-            cube.rotateX(.01)
-            cube.rotateY(.01)
+            if (this.enableOrbital)
+                this.orbitalControls.update();
 
-            renderer.render(scene, camera);
+            renderer.render(this.scene, camera);
             requestAnimationFrame(animate);
 
         }
@@ -181,665 +284,926 @@ export class WebGLRenderer extends AbstractRenderer {
 
 
         return;
-
-
-
-        // // https://stackoverflow.com/questions/7944460/detect-safari-browser
-        // this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-        // this.type = 'webgl';
-
-        // this.canvasRoot = null;
-        // this.suspendHandle = null;
-        // this.canvasId = genUUID('webgl');
-
-        // this.canvasNamespace = null;
-
-
-
-        // ////////////////////////////////////
-
-
-
-        /**
-        * The <tt>defs</tt> element is a container element to reference reusable SVG elements.
-        * @type Node
-        * @see https://www.w3.org/TR/SVG2/struct.html#DefsElement
-        */
-        this.defs = this.container.ownerDocument.createElementNS(this.svgNamespace, "defs");
-        this.jsxAppendChild(this.canvas, this.defs) // this.svgRoot.appendChild(this.defs);
-
-
-        /* Default shadow filter */
-        this.defs.appendChild(this.createShadowFilter(this.uniqName('f1'), 'none', 1, 0.1, 3, [5, 5]));
-
-
-
-
-
-
-        /**
-         * The <tt>defs</tt> element is a container element to reference reusable SVG elements.
-         * @type Node
-         * @see https://www.w3.org/TR/SVG2/struct.html#DefsElement
-         */
-        this.defs = this.container.ownerDocument.createElementNS(this.svgNamespace, "defs");
-        this.jsxAppendChild(this.canvas, this.defs) // this.svgRoot.appendChild(this.defs);
-
-
-        /* Default shadow filter */
-        this.defs.appendChild(this.createShadowFilter(this.uniqName('f1'), 'none', 1, 0.1, 3, [5, 5]));
-
-        /**
-         * JSXGraph uses a layer system to sort the elements on the board. This puts certain types of elements in front
-         * of other types of elements. For the order used see {@link Options.layer}. The number of layers is documented
-         * there, too. The higher the number, the "more on top" are the elements on this layer.
-         * @type Array
-         */
-        this.layers = [];
-        for (let i = 0; i < Options['layer'].numlayers; i++) {
-            this.layers[i] = this.container.ownerDocument.createElementNS(this.svgNamespace, 'g');
-            this.canvas.appendChild(this.layers[i]);
-        }
-
-        try {
-            this.foreignObjLayer = this.container.ownerDocument.createElementNS(
-                this.svgNamespace,
-                "foreignObject"
-            );
-            this.foreignObjLayer.setAttribute("display", "none");
-            this.foreignObjLayer.setAttribute("x", 0);
-            this.foreignObjLayer.setAttribute("y", 0);
-            this.foreignObjLayer.setAttribute("width", "100%");
-            this.foreignObjLayer.setAttribute("height", "100%");
-            this.foreignObjLayer.setAttribute("id", this.uniqName('foreignObj'));
-            this.canvas.appendChild(this.foreignObjLayer);
-            this.supportsForeignObject = true;
-        } catch (e) {
-            this.supportsForeignObject = false;
-        }
-
-
-
     }
 
+    /* ********* Private methods *********** */
 
+    /**
+     * Update visual properties, but only if {@link JXG2.AbstractRenderer#enhancedRendering} or <tt>enhanced</tt> is set to true.
+     * @param {JXG2.GeometryElement} el The element to update
+     * @param {Object} [not={}] Select properties you don't want to be updated: <tt>{fill: true, dash: true}</tt> updates
+     * everything except for fill and dash. Possible values are <tt>stroke, fill, dash, shadow, gradient</tt>.
+     * @param {Boolean} [enhanced=false] If true, {@link JXG2.AbstractRenderer#enhancedRendering} is assumed to be true.
+     * @private
+     */
+    _updateVisual(el: GeometryElement, not: LooseObject = {}, enhanced: boolean = false) {
 
+        if (dbug(el)) console.warn(`%c abstract: _updateVisual(el, ${JSON.stringify(not)}, ${enhanced})`, dbugColor, 'el.visProp = ', el.visProp, not)
 
-    /** TypeScript magic - see https://mariusschulz.com/blog/assertion-functions-in-typescript */
-    assertNonNullish<TValue>(value: TValue, message: string): asserts value is NonNullable<TValue> {
-        // if (value === null || value === undefined) {
-        //     throw Error(message);
-        // }
+        if (enhanced || this.enhancedRendering) {
+            not = not || {};
+
+            this.setObjectTransition(el);
+            if (!el.evalVisProp('draft.draft')) {
+                if (!not.stroke) {
+                    if (el.highlighted) {
+                        this.setObjectStrokeColor(
+                            el,
+                            el.evalVisProp('highlightstrokecolor'),
+                            el.evalVisProp('highlightstrokeopacity')
+                        );
+                        this.setObjectStrokeWidth(el, el.evalVisProp('highlightstrokewidth'));
+                    } else {
+                        this.setObjectStrokeColor(
+                            el,
+                            el.evalVisProp('strokecolor'),
+                            el.evalVisProp('strokeopacity')
+                        );
+                        this.setObjectStrokeWidth(el, el.evalVisProp('strokewidth'));
+                    }
+                }
+
+                if (!not.fill) {
+                    if (el.highlighted) {
+                        this.setObjectFillColor(
+                            el,
+                            el.evalVisProp('highlightfillcolor'),
+                            el.evalVisProp('highlightfillopacity')
+                        );
+                    } else {
+                        this.setObjectFillColor(
+                            el,
+                            el.evalVisProp('fillcolor'),
+                            el.evalVisProp('fillopacity')
+                        );
+                    }
+                }
+
+                if (!not.dash) {
+                    this.setDashStyle(el);
+                }
+
+                if (!not.shadow) {
+                    this.setShadow(el);
+                }
+
+                // if (!not.gradient) {
+                //     // this.setGradient(el);
+                //     this.setShadow(el);
+                // }
+
+                if (!not.tabindex) {
+                    this.setTabindex(el);
+                }
+            } else {
+                this.setDraft(el);
+            }
+
+            if (el.highlighted) {
+                this.setCssClass(el, el.evalVisProp('highlightcssclass'));
+            } else {
+                this.setCssClass(el, el.evalVisProp('cssclass'));
+            }
+
+            if (el.evalVisProp('aria.enabled')) {
+                this.setARIA(el);
+            }
+        }
     }
 
     /**
-     * Filters are used to apply shadows.
-     * @type Node
-     * @see https://www.w3.org/TR/SVG2/struct.html#DefsElement
-     */
-    /**
-     * Create an SVG shadow filter. If the object's RGB color is [r,g,b], it's opacity is op, and
-     * the parameter color is given as [r', g', b'] with opacity op'
-     * the shadow will have RGB color [blend*r + r', blend*g + g', blend*b + b'] and the opacity will be equal to op * op'.
-     * Further, blur and offset can be adjusted.
-     *
-     * The shadow color is [r*ble
-     * @param {String} id Node is of the filter.
-     * @param {Array|String} rgb RGB value for the blend color or the string 'none' for default values. Default 'black'.
-     * @param {Number} opacity Value between 0 and 1, default is 1.
-     * @param {Number} blend  Value between 0 and 1, default is 0.1.
-     * @param {Number} blur  Default: 3
-     * @param {Array} offset [dx, dy]. Default is [5,5].
-     * @returns DOM node to be added to this.defs.
+     * Get information if element is highlighted.
+     * @param {JXG2.GeometryElement} el The element which is tested for being highlighted.
+     * @returns {String} 'highlight' if highlighted, otherwise the ampty string '' is returned.
      * @private
      */
-    createShadowFilter(id: string, rgb, opacity: number, blend: number, blur: number, offset: number[] = [5, 5]) {
-        var feOffset, feColor, feGaussianBlur, feBlend, mat;
+    _getHighlighted(el: GeometryElement): string {
+        var isTrace = false,
+            hl;
 
-        this.assertNonNullish(this.container, 'expected container')
+        if (!Type.exists(el.board) || !Type.exists(el.board.highlightedObjects)) {
+            // This case handles trace elements.
+            // To make them work, we simply neglect highlighting.
+            isTrace = true;
+        }
 
-        let filter = this.container.ownerDocument.createElementNS(this.svgNamespace, 'filter')
-
-        filter.setAttributeNS(null, 'id', id);
-        filter.setAttributeNS(null, 'width', '300%');
-        filter.setAttributeNS(null, 'height', '300%');
-        filter.setAttributeNS(null, 'filterUnits', 'userSpaceOnUse');
-
-        feOffset = this.container.ownerDocument.createElementNS(this.svgNamespace, 'feOffset');
-        feOffset.setAttributeNS(null, 'in', 'SourceGraphic'); // b/w: SourceAlpha, Color: SourceGraphic
-        feOffset.setAttributeNS(null, 'result', 'offOut');
-        feOffset.setAttributeNS(null, 'dx', offset[0]);
-        feOffset.setAttributeNS(null, 'dy', offset[1]);
-        filter.appendChild(feOffset);
-
-        feColor = this.container.ownerDocument.createElementNS(this.svgNamespace, 'feColorMatrix');
-        feColor.setAttributeNS(null, 'in', 'offOut');
-        feColor.setAttributeNS(null, 'result', 'colorOut');
-        feColor.setAttributeNS(null, 'type', 'matrix');
-        // See https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feColorMatrix
-        if (rgb === 'none' || !Array.isArray(rgb) || rgb.length < 3) {
-            feColor.setAttributeNS(null, 'values', '0.1 0 0 0 0  0 0.1 0 0 0  0 0 0.1 0 0  0 0 0 ' + opacity + ' 0');
+        if (!isTrace && Type.exists(el.board.highlightedObjects[el.id])) {
+            hl = "highlight";
         } else {
-            rgb[0] /= 255;
-            rgb[1] /= 255;
-            rgb[2] /= 255;
-            mat = blend + ' 0 0 0 ' + rgb[0] +
-                '  0 ' + blend + ' 0 0 ' + rgb[1] +
-                '  0 0 ' + blend + ' 0 ' + rgb[2] +
-                '  0 0 0 ' + opacity + ' 0';
-            feColor.setAttributeNS(null, 'values', mat);
+            hl = "";
         }
-        filter.appendChild(feColor);
+        return hl;
+    }
 
-        feGaussianBlur = this.container.ownerDocument.createElementNS(this.svgNamespace, 'feGaussianBlur');
-        feGaussianBlur.setAttributeNS(null, 'in', 'colorOut');
-        feGaussianBlur.setAttributeNS(null, 'result', 'blurOut');
-        feGaussianBlur.setAttributeNS(null, 'stdDeviation', blur);
-        filter.appendChild(feGaussianBlur);
-
-        feBlend = this.container.ownerDocument.createElementNS(this.svgNamespace, 'feBlend');
-        feBlend.setAttributeNS(null, 'in', 'SourceGraphic');
-        feBlend.setAttributeNS(null, 'in2', 'blurOut');
-        feBlend.setAttributeNS(null, 'mode', 'normal');
-        filter.appendChild(feBlend);
-
-        return filter;
-    };
+    /* ********* Point related stuff *********** */
 
     /**
-     * Create a "unique" string id from the arguments of the function.
-     * Concatenate all arguments by "_".
-     * "Unique" is achieved by simply prepending the container id.
-     * Do not escape the string.
-     *
-     * If the id is used in an "url()" call it must be eascaped.
-     *
-     * @params {String} one or strings which will be concatenated.
-     * @return {String}
-     * @private
+     * Draws a point on the {@link JXG2.Board}.
+     * @param {JXG2.Point} el Reference to a {@link JXG2.Point} object that has to be drawn.
+     * @see Point
+     * @see JXG2.Point
+     * @see JXG2.AbstractRenderer#updatePoint
+     * @see JXG2.AbstractRenderer#changePointStyle
      */
-    uniqName(id: string): string {
-        this.assertNonNullish(this.container, 'expected container')
+    drawPoint(el: Point) {
 
-        return this.container.id + '_' +
-            Array.prototype.slice.call(arguments).join('_');
-    };
+        if (dbug(el)) console.warn(`%c webgl: drawPoint(el)`, dbugColor, el.visProp)
 
-    /**
-     * Combine arguments to a string, joined by empty string.
-     * The container id needs to be escaped, as it may contain URI-unsafe characters
-     *
-     * @params {String} str variable number of strings
-     * @returns String
-     * @see JXG2.SVGRenderer#toURL
-     * @private
-     * @example
-     * this.toStr('aaa', '_', 'bbb', 'TriangleEnd')
-     * // Output:
-     * // xxx_bbbTriangleEnd
-     */
-    toStr(...args): string {
-        // ES6 would be [...arguments].join()
-        var str = Array.prototype.slice.call(arguments).join('');
-        // Mask special symbols like '/' and '\' in id
-        if (Type.exists(encodeURIComponent)) {
-            str = encodeURIComponent(str);
-        }
-        return str;
-    };
+        // really naive
 
-    /**
-     * Combine arguments to an URL string of the form
-     * url(#...)
-     * Masks the container id. Calls {@link JXG2.SVGRenderer#toStr}.
-     *
-     * @params {String} str variable number of strings
-     * @returns URL string
-     * @see JXG2.SVGRenderer#toStr
-     * @private
-     * @example
-     * this.toURL('aaa', '_', 'bbb', 'TriangleEnd')
-     * // Output:
-     * // url(#xxx_bbbTriangleEnd)
-     */
-    toURL(...args: any[]) {
-        return 'url(#' +
-            this.toStr.apply(this, args) + // Pass the arguments to toStr
-            ')';
-    };
+        let coord = el.Coords(false)
+
+        let color = el.evalVisProp('strokecolor')
+        let vertexMaterial = new THREE.MeshBasicMaterial({ color: color });
+
+        let v = new THREE.Mesh(new THREE.SphereGeometry(.2, 6, 6), vertexMaterial)
+        v.position.set(coord[0], coord[1], 0)
+
+        this.scene.add(v)
+        return
 
 
 
-    /* ******************************** *
-     *  This renderer does not need to
-     *  override draw/update* methods
-     *  since it provides draw/update*Prim
-     *  methods except for some cases like
-     *  internal texts or images.
-     * ******************************** */
+        var prim: SVGType
+        // Sometimes el is not a real point and lacks the methods of a JXG2.Point instance,
+        // in these cases to not use el directly.
+        let face = Options.normalizePointFace(el.evalVisProp('face'));
 
-    /* ********* Arrow head related stuff *********** */
-
-    /**
-     * Creates an arrow DOM node. Arrows are displayed in SVG with a <em>marker</em> tag.
-     * @private
-     * @param {JXG2.GeometryElement} el A JSXGraph element, preferably one that can have an arrow attached.
-     * @param {String} [idAppendix=''] A string that is added to the node's id.
-     * @returns {Node} Reference to the node added to the DOM.
-     */
-    _createArrowHead(el, idAppendix, type) {
-        var node2,
-            node3,
-            id = el.id + "Triangle",
-            //type = null,
-            v,
-            h;
-
-        if (Type.exists(idAppendix)) {
-            id += idAppendix;
-        }
-        if (Type.exists(type)) {
-            id += type;
-        }
-        node2 = this.createPrim("marker", id);
-
-        // 'context-stroke': property is inherited from line or curve
-        if (Env.isWebkitApple()) {
-            // 2025: Safari does not support 'context-stroke'
-            node2.setAttributeNS(null, 'fill', el.evalVisProp('strokecolor'));
-            node2.setAttributeNS(null, 'stroke', el.evalVisProp('strokecolor'));
+        // Determine how the point looks like
+        if (face === "o") {
+            prim = "ellipse";
+        } else if (face === "[]") {
+            prim = "rect";
         } else {
-            node2.setAttributeNS(null, 'fill', 'context-stroke');
-            node2.setAttributeNS(null, 'stroke', 'context-stroke');
+            // cross/x, diamond/<>, triangleup/A/^, triangledown/v, triangleleft/<,
+            // triangleright/>, plus/+, |, -
+            prim = "path";
         }
 
-        // node2.setAttributeNS(null, 'fill-opacity', 'context-stroke'); // Not available
-        // node2.setAttributeNS(null, 'stroke-opacity', 'context-stroke');
-        node2.setAttributeNS(null, 'stroke-width', 0); // this is the stroke-width of the arrow head.
-        // Should be zero to simplify the calculations
+        if (dbug(el)) console.log(`%c abstract: drawPoint(el)`, dbugColor)
 
-        node2.setAttributeNS(null, 'orient', 'auto');
-        node2.setAttributeNS(null, 'markerUnits', 'strokeWidth'); // 'strokeWidth' 'userSpaceOnUse');
+        // el.rendNode = this.appendChildPrim(
+        //     this.createPrim(prim, el.id),
+        //     el.evalVisProp('layer')
+        // );
+        let layer = el.evalVisProp('layer')
+        let tempPrim = this.createPrim(prim, el.id)
+        el.rendNode = this.appendChildPrim(tempPrim, layer)
 
-        /*
-           Types 1, 2:
-           The arrow head is an isosceles triangle with base length 10 and height 10.
 
-           Type 3:
-           A rectangle
+        this.appendNodesToElement(el, prim);   // updates el with characteristics of various nodes
 
-           Types 4, 5, 6:
-           Defined by Bezier curves from mp_arrowheads.html
+        // Adjust visual properties
+        this._updateVisual(el, { dash: true, shadow: true }, true);
 
-           In any case but type 3 the arrow head is 10 units long,
-           type 3 is 10 units high.
-           These 10 units are scaled to strokeWidth * arrowSize pixels, see
-           this._setArrowWidth().
+        // By now we only created the xml nodes and set some styles, in updatePoint
+        // the attributes are filled with data.
+        this.updatePoint(el);
+    }
 
-           See also abstractRenderer.updateLine() where the line path is shortened accordingly.
+    /**
+     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Point}.
+     * @param {JXG2.Point} el Reference to a {@link JXG2.Point} object, that has to be updated.
+     * @see Point
+     * @see JXG2.Point
+     * @see JXG2.AbstractRenderer#drawPoint
+     * @see JXG2.AbstractRenderer#changePointStyle
+     */
+    updatePoint(el: Point) {
 
-           Changes here are also necessary in setArrowWidth().
+        if (dbug(el))
+            console.warn(`%c abstract: updatePoint(${el.id})`, dbugColor, el.coords.scrCoords)
 
-           So far, lines with arrow heads are shortenend to avoid overlapping of
-           arrow head and line. This is not the case for curves, yet.
-           Therefore, the offset refX has to be adapted to the path type.
-        */
-        this.assertNonNullish(this.container, 'expected container')
 
-        node3 = this.container.ownerDocument.createElementNS(this.svgNamespace, "path");
-        h = 5;
-        if (idAppendix === "Start") {
-            // First arrow
-            v = 0;
-            if (type === 2) {
-                node3.setAttributeNS(null, "d", "M 10,0 L 0,5 L 10,10 L 5,5 z");
-            } else if (type === 3) {
-                node3.setAttributeNS(null, "d", "M 0,0 L 3.33,0 L 3.33,10 L 0,10 z");
-            } else if (type === 4) {
-                // insetRatio:0.8 tipAngle:45 wingCurve:15 tailCurve:0
-                h = 3.31;
-                node3.setAttributeNS(
-                    null,
-                    "d",
-                    "M 0.00,3.31 C 3.53,3.84 7.13,4.50 10.00,6.63 C 9.33,5.52 8.67,4.42 8.00,3.31 C 8.67,2.21 9.33,1.10 10.00,0.00 C 7.13,2.13 3.53,2.79 0.00,3.31"
+        var size = el.evalVisProp('size'),
+            // sometimes el is not a real point and lacks the methods of a JXG2.Point instance,
+            // in these cases to not use el directly.
+            face = Options.normalizePointFace(el.evalVisProp('face')),
+            unit = el.evalVisProp('sizeunit'),
+            zoom = el.evalVisProp('zoom'),
+            s1;
+
+        if (!isNaN(el.coords.scrCoords[2] + el.coords.scrCoords[1])) {
+            if (unit === "user") {
+                size *= Math.sqrt(Math.abs(el.board.unitX * el.board.unitY));
+            }
+            size *= !el.board || !zoom ? 1.0 : Math.sqrt(el.board.zoomX * el.board.zoomY);
+            s1 = size === 0 ? 0 : size + 1;
+
+            if (face === "o") {
+                // circle
+                this.updateEllipsePrim(
+                    el.rendNode,
+                    el.coords.scrCoords[1],
+                    el.coords.scrCoords[2],
+                    s1,
+                    s1
                 );
-            } else if (type === 5) {
-                // insetRatio:0.9 tipAngle:40 wingCurve:5 tailCurve:15
-                h = 3.28;
-                node3.setAttributeNS(
-                    null,
-                    "d",
-                    "M 0.00,3.28 C 3.39,4.19 6.81,5.07 10.00,6.55 C 9.38,5.56 9.00,4.44 9.00,3.28 C 9.00,2.11 9.38,0.99 10.00,0.00 C 6.81,1.49 3.39,2.37 0.00,3.28"
-                );
-            } else if (type === 6) {
-                // insetRatio:0.9 tipAngle:35 wingCurve:5 tailCurve:0
-                h = 2.84;
-                node3.setAttributeNS(
-                    null,
-                    "d",
-                    "M 0.00,2.84 C 3.39,3.59 6.79,4.35 10.00,5.68 C 9.67,4.73 9.33,3.78 9.00,2.84 C 9.33,1.89 9.67,0.95 10.00,0.00 C 6.79,1.33 3.39,2.09 0.00,2.84"
-                );
-            } else if (type === 7) {
-                // insetRatio:0.9 tipAngle:60 wingCurve:30 tailCurve:0
-                h = 5.2;
-                node3.setAttributeNS(
-                    null,
-                    "d",
-                    "M 0.00,5.20 C 4.04,5.20 7.99,6.92 10.00,10.39 M 10.00,0.00 C 7.99,3.47 4.04,5.20 0.00,5.20"
+            } else if (face === "[]") {
+                // rectangle
+                this.updateRectPrim(
+                    el.rendNode,
+                    el.coords.scrCoords[1] - size,
+                    el.coords.scrCoords[2] - size,
+                    size * 2,
+                    size * 2
                 );
             } else {
-                // type == 1 or > 6
-                node3.setAttributeNS(null, "d", "M 10,0 L 0,5 L 10,10 z");
-            }
-            if (
-                // !Type.exists(el.rendNode.getTotalLength) &&
-                el.elementClass === OBJECT_CLASS.LINE
-            ) {
-                if (type === 2) {
-                    v = 4.9;
-                } else if (type === 3) {
-                    v = 3.3;
-                } else if (type === 4 || type === 5 || type === 6) {
-                    v = 6.66;
-                } else if (type === 7) {
-                    v = 0.0;
-                } else {
-                    v = 10.0;
-                }
-            }
-        } else {
-            // Last arrow
-            v = 10.0;
-            if (type === 2) {
-                node3.setAttributeNS(null, "d", "M 0,0 L 10,5 L 0,10 L 5,5 z");
-            } else if (type === 3) {
-                v = 3.3;
-                node3.setAttributeNS(null, "d", "M 0,0 L 3.33,0 L 3.33,10 L 0,10 z");
-            } else if (type === 4) {
-                // insetRatio:0.8 tipAngle:45 wingCurve:15 tailCurve:0
-                h = 3.31;
-                node3.setAttributeNS(
-                    null,
-                    "d",
-                    "M 10.00,3.31 C 6.47,3.84 2.87,4.50 0.00,6.63 C 0.67,5.52 1.33,4.42 2.00,3.31 C 1.33,2.21 0.67,1.10 0.00,0.00 C 2.87,2.13 6.47,2.79 10.00,3.31"
+                // x, +, <>, <<>>, ^, v, <, >
+                this.updatePathPrim(
+                    el.rendNode,
+                    this.updatePathStringPoint(el, size, face),
+                    el.board
                 );
-            } else if (type === 5) {
-                // insetRatio:0.9 tipAngle:40 wingCurve:5 tailCurve:15
-                h = 3.28;
-                node3.setAttributeNS(
-                    null,
-                    "d",
-                    "M 10.00,3.28 C 6.61,4.19 3.19,5.07 0.00,6.55 C 0.62,5.56 1.00,4.44 1.00,3.28 C 1.00,2.11 0.62,0.99 0.00,0.00 C 3.19,1.49 6.61,2.37 10.00,3.28"
-                );
-            } else if (type === 6) {
-                // insetRatio:0.9 tipAngle:35 wingCurve:5 tailCurve:0
-                h = 2.84;
-                node3.setAttributeNS(
-                    null,
-                    "d",
-                    "M 10.00,2.84 C 6.61,3.59 3.21,4.35 0.00,5.68 C 0.33,4.73 0.67,3.78 1.00,2.84 C 0.67,1.89 0.33,0.95 0.00,0.00 C 3.21,1.33 6.61,2.09 10.00,2.84"
-                );
-            } else if (type === 7) {
-                // insetRatio:0.9 tipAngle:60 wingCurve:30 tailCurve:0
-                h = 5.2;
-                node3.setAttributeNS(
-                    null,
-                    "d",
-                    "M 10.00,5.20 C 5.96,5.20 2.01,6.92 0.00,10.39 M 0.00,0.00 C 2.01,3.47 5.96,5.20 10.00,5.20"
-                );
-            } else {
-                // type == 1 or > 6
-                node3.setAttributeNS(null, "d", "M 0,0 L 10,5 L 0,10 z");
             }
-            if (
-                // !Type.exists(el.rendNode.getTotalLength) &&
-                el.elementClass === OBJECT_CLASS.LINE
-            ) {
-                if (type === 2) {
-                    v = 5.1;
-                } else if (type === 3) {
-                    v = 0.02;
-                } else if (type === 4 || type === 5 || type === 6) {
-                    v = 3.33;
-                } else if (type === 7) {
-                    v = 10.0;
-                } else {
-                    v = 0.05;
-                }
-            }
+            this._updateVisual(el, { dash: false, shadow: false });
+            this.setShadow(el);
         }
-        if (type === 7) {
-            node2.setAttributeNS(null, "fill", "none");
-            node2.setAttributeNS(null, "stroke-width", 1); // this is the stroke-width of the arrow head.
-        }
-        node2.setAttributeNS(null, "refY", h);
-        node2.setAttributeNS(null, "refX", v);
-
-        node2.appendChild(node3);
-        return node2;
     }
 
     /**
-     * Updates color of an arrow DOM node.
-     * @param {Node} node The arrow node.
-     * @param {String} color Color value in a HTML compatible format, e.g. <tt>#00ff00</tt> or <tt>green</tt> for green.
-     * @param {Number} opacity
-     * @param {JXG2.GeometryElement} el The element the arrows are to be attached to
+     * Changes the style of a {@link JXG2.Point}. This is required because the point styles differ in what
+     * elements have to be drawn, e.g. if the point is marked by a "x" or a "+" two lines are drawn, if
+     * it's marked by spot a circle is drawn. This method removes the old renderer element(s) and creates
+     * the new one(s).
+     * @param {JXG2.Point} el Reference to a {@link JXG2.Point} object, that's style is changed.
+     * @see Point
+     * @see JXG2.Point
+     * @see JXG2.AbstractRenderer#updatePoint
+     * @see JXG2.AbstractRenderer#drawPoint
      */
-    _setArrowColor(node, color, opacity, el, type) {
-        if (node) {
-            if (Type.isString(color)) {
-                if (type !== 7) {
-                    this._setAttribute(function () {
-                        if (Env.isWebkitApple()) {
-                            // 2025: Safari does not support 'context-stroke'
-                            node.setAttributeNS(null, 'fill', color);
-                        } else {
-                            node.setAttributeNS(null, 'fill', 'context-stroke');
-                        }
-                    }, el.visPropOld.fillcolor);
-                } else {
-                    this._setAttribute(function () {
-                        node.setAttributeNS(null, 'fill', 'none');
-                        if (Env.isWebkitApple()) {
-                            node.setAttributeNS(null, 'stroke', color);
-                        } else {
-                            node.setAttributeNS(null, 'stroke', 'context-stroke');
-                        }
-                    }, el.visPropOld.fillcolor);
-                }
-            }
+    changePointStyle(el: Point) {
+        var node = this.getElementById(el.id);
 
-            if (this.isSafari) {
-                // Necessary, since Safari is the new IE (11.2024)
-                el.rendNode.parentNode.insertBefore(el.rendNode, el.rendNode);
-            }
+        // remove the existing point rendering node
+        if (Type.exists(node)) {
+            this.remove(node);
         }
-    }
-    /**
-     * Updates width of an arrow DOM node. Used in
-     * @param {Node} node The arrow node.
-     * @param {Number} width
-     * @param {Node} parentNode Used in IE only
-     */
-    _setArrowWidth(node, width, parentNode, size) {
-        var s, d;
 
-        if (node) {
-            // if (width === 0) {
-            //     // display:none does not work well in webkit
-            //     node.setAttributeNS(null, 'display', 'none');
-            // } else {
-            s = width;
-            d = s * size;
-            node.setAttributeNS(null, "viewBox", 0 + " " + 0 + " " + s * 10 + " " + s * 10);
-            node.setAttributeNS(null, "markerHeight", d);
-            node.setAttributeNS(null, "markerWidth", d);
-            node.setAttributeNS(null, "display", "inherit");
-            // }
+        // and make a new one
+        this.drawPoint(el);
+        Type.clearVisPropOld(el);
 
-            if (this.isSafari) {
-                // Necessary, since Safari is the new IE (11.2024)
-                parentNode.parentNode.insertBefore(parentNode, parentNode);
-            }
+        if (!el.visPropCalc.visible) {
+            this.display(el, false);
+        }
+
+        if (el.evalVisProp('draft.draft')) {
+            this.setDraft(el);
         }
     }
 
     /* ********* Line related stuff *********** */
 
     /**
-     * Update {@link Ticks} on a {@link JXG2.Line}. This method is only a stub and has to be implemented
-     * in any descendant renderer class.
-     * @param {JXG2.Ticks} el Reference of a ticks object that has to be updated.
+     * Draws a line on the {@link JXG2.Board}.
+     * @param {JXG2.Line} el Reference to a line object, that has to be drawn.
+     * @see Line
+     * @see JXG2.Line
+     * @see JXG2.AbstractRenderer#updateLine
+     */
+    drawLine(el) {
+        el.rendNode = this.appendChildPrim(
+            this.createPrim("line", el.id),
+            el.evalVisProp('layer')
+        );
+        this.appendNodesToElement(el, "lines");
+        this.updateLine(el);
+    }
+
+    /**
+     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Line}.
+     * @param {JXG2.Line} el Reference to the {@link JXG2.Line} object that has to be updated.
+     * @see Line
+     * @see JXG2.Line
+     * @see JXG2.AbstractRenderer#drawLine
+     */
+    updateLine(el: GeometryElement) {
+        if (dbug(el))
+            console.warn(`%c abstract: _updateLine(${el.id})`, dbugColor)
+
+
+
+        this._updateVisual(el);
+        this.updatePathWithArrowHeads(el); // Calls the renderer primitive
+        this.setLineCap(el);
+    }
+
+    /* ********* Curve related stuff *********** */
+
+    /**
+     * Draws a {@link JXG2.Curve} on the {@link JXG2.Board}.
+     * @param {JXG2.Curve} el Reference to a graph object, that has to be plotted.
+     * @see Curve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#updateCurve
+     */
+    drawCurve(el) {
+        el.rendNode = this.appendChildPrim(
+            this.createPrim("path", el.id),
+            el.evalVisProp('layer')
+        );
+        this.appendNodesToElement(el, "path");
+        this.updateCurve(el);
+    }
+
+    /**
+     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Curve}.
+     * @param {JXG2.Curve} el Reference to a {@link JXG2.Curve} object, that has to be updated.
+     * @see Curve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#drawCurve
+     */
+    updateCurve(el) {
+        this._updateVisual(el);
+        this.updatePathWithArrowHeads(el); // Calls the renderer primitive
+        this.setLineCap(el);
+    }
+
+    /* ********* Arrow heads and related stuff *********** */
+
+    /**
+     * Handles arrow heads of a line or curve element and calls the renderer primitive.
+     *
+     * @param {JXG2.GeometryElement} el Reference to a line or curve object that has to be drawn.
+     * @param {Boolean} doHighlight
+     *
+     * @private
+     * @see Line
+     * @see JXG2.Line
+     * @see Curve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#updateLine
+     * @see JXG2.AbstractRenderer#updateCurve
+     * @see JXG2.AbstractRenderer#makeArrows
+     * @see JXG2.AbstractRenderer#getArrowHeadData
+     */
+    updatePathWithArrowHeads(el: GeometryElement, doHighlight?) {
+        var hl = doHighlight ? 'highlight' : '',
+            w,
+            arrowData;
+
+        if (doHighlight && el.evalVisProp('highlightstrokewidth')) {
+            w = Math.max(
+                el.evalVisProp('highlightstrokewidth'),
+                el.evalVisProp('strokewidth')
+            );
+        } else {
+            w = el.evalVisProp('strokewidth');
+        }
+
+        // Get information if there are arrow heads and how large they are.
+        arrowData = this.getArrowHeadData(el, w, hl);
+        // console.log(`UpdatePathWithArrowHeads`,el.coords.scrCoords)
+
+        // Create the SVG nodes if necessary
+        this.makeArrows(el, arrowData);
+
+        // Draw the paths with arrow heads
+        if (el.elementClass === OBJECT_CLASS.LINE) {
+            this.updateLineWithEndings(el, arrowData);
+        } else if (el.elementClass === OBJECT_CLASS.CURVE) {
+            this.updatePath(el);
+        }
+
+        this.setArrowSize(el, arrowData);
+    }
+
+    /**
+     * This method determines some data about the line endings of this element.
+     * If there are arrow heads, the offset is determined so that no parts of the line stroke
+     * lap over the arrow head.
+     * <p>
+     * The returned object also contains the types of the arrow heads.
+     *
+     * @param {JXG2.GeometryElement} el JSXGraph line or curve element
+     * @param {Number} strokewidth strokewidth of the element
+     * @param {String} hl Ither 'highlight' or empty string
+     * @returns {Object} object containing the data
+     *
+     * @private
+     */
+    getArrowHeadData(el, strokewidth, hl) {
+        var minlen = JSXMath.eps,
+            typeFirst,
+            typeLast,
+            offFirst = 0,
+            offLast = 0,
+            sizeFirst = 0,
+            sizeLast = 0,
+            ev_fa = el.evalVisProp('firstarrow'),
+            ev_la = el.evalVisProp('lastarrow'),
+            off,
+            size;
+
+        /*
+           Handle arrow heads.
+
+           The default arrow head is an isosceles triangle with base length 10 units and height 10 units.
+           These 10 units are scaled to strokeWidth * arrowSize pixels.
+        */
+        if (ev_fa || ev_la) {
+            if (Type.exists(ev_fa.type)) {
+                typeFirst = el.eval(ev_fa.type);
+            } else {
+                if (el.elementClass === OBJECT_CLASS.LINE) {
+                    typeFirst = 1;
+                } else {
+                    typeFirst = 7;
+                }
+            }
+            if (Type.exists(ev_la.type)) {
+                typeLast = el.eval(ev_la.type);
+            } else {
+                if (el.elementClass === OBJECT_CLASS.LINE) {
+                    typeLast = 1;
+                } else {
+                    typeLast = 7;
+                }
+            }
+
+            if (ev_fa) {
+                size = 6;
+                if (Type.exists(ev_fa.size)) {
+                    size = el.eval(ev_fa.size);
+                }
+                if (hl !== "" && Type.exists(ev_fa[hl + "size"])) {
+                    size = el.eval(ev_fa[hl + "size"]);
+                }
+
+                off = strokewidth * size;
+                if (typeFirst === 2) {
+                    off *= 0.5;
+                    minlen += strokewidth * size;
+                } else if (typeFirst === 3) {
+                    off = (strokewidth * size) / 3;
+                    minlen += strokewidth;
+                } else if (typeFirst === 4 || typeFirst === 5 || typeFirst === 6) {
+                    off = (strokewidth * size) / 1.5;
+                    minlen += strokewidth * size;
+                } else if (typeFirst === 7) {
+                    off = 0;
+                    size = 10;
+                    minlen += strokewidth;
+                } else {
+                    minlen += strokewidth * size;
+                }
+                offFirst += off;
+                sizeFirst = size;
+            }
+
+            if (ev_la) {
+                size = 6;
+                if (Type.exists(ev_la.size)) {
+                    size = el.eval(ev_la.size);
+                }
+                if (hl !== "" && Type.exists(ev_la[hl + "size"])) {
+                    size = el.eval(ev_la[hl + "size"]);
+                }
+                off = strokewidth * size;
+                if (typeLast === 2) {
+                    off *= 0.5;
+                    minlen += strokewidth * size;
+                } else if (typeLast === 3) {
+                    off = (strokewidth * size) / 3;
+                    minlen += strokewidth;
+                } else if (typeLast === 4 || typeLast === 5 || typeLast === 6) {
+                    off = (strokewidth * size) / 1.5;
+                    minlen += strokewidth * size;
+                } else if (typeLast === 7) {
+                    off = 0;
+                    size = 10;
+                    minlen += strokewidth;
+                } else {
+                    minlen += strokewidth * size;
+                }
+                offLast += off;
+                sizeLast = size;
+            }
+        }
+        el.visPropCalc.typeFirst = typeFirst;
+        el.visPropCalc.typeLast = typeLast;
+
+        return {
+            evFirst: ev_fa,
+            evLast: ev_la,
+            typeFirst: typeFirst,
+            typeLast: typeLast,
+            offFirst: offFirst,
+            offLast: offLast,
+            sizeFirst: sizeFirst,
+            sizeLast: sizeLast,
+            showFirst: 1, // Show arrow head. 0 if the distance is too small
+            showLast: 1, // Show arrow head. 0 if the distance is too small
+            minLen: minlen,
+            strokeWidth: strokewidth
+        };
+    }
+
+    /**
+     * Corrects the line length if there are arrow heads, such that
+     * the arrow ends exactly at the intended position.
+     * Calls the renderer method to draw the line.
+     *
+     * @param {JXG2.Line} el Reference to a line object, that has to be drawn
+     * @param {Object} arrowData Data concerning possible arrow heads
+     *
+     * @returns {JXG2.AbstractRenderer} Reference to the renderer
+     *
+     * @private
+     * @see Line
+     * @see JXG2.Line
+     * @see JXG2.AbstractRenderer#updateLine
+     * @see JXG2.AbstractRenderer#getPositionArrowHead
+     *
+     */
+    updateLineWithEndings(el: GeometryElement, arrowData) {
+        var c1,
+            c2,
+            // useTotalLength = true,
+            margin = null;
+
+        c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board);
+        c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
+
+        margin = el.evalVisProp('margin');
+        Geometry.calcStraight(el, c1, c2, margin);
+
+        this.handleTouchpoints(el, c1, c2, arrowData);
+        this.getPositionArrowHead(el, c1, c2, arrowData);
+
+        this.updateLinePrim(
+            el.rendNode,
+            c1.scrCoords[1],
+            c1.scrCoords[2],
+            c2.scrCoords[1],
+            c2.scrCoords[2],
+            el.board
+        );
+
+
+        return this;
+    }
+
+    /**
+     *
+     * Calls the renderer method to draw a curve.
+     *
+     * @param {JXG2.GeometryElement} el Reference to a line object, that has to be drawn.
+     * @returns {JXG2.AbstractRenderer} Reference to the renderer
+     *
+     * @private
+     * @see Curve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#updateCurve
+     *
+     */
+    updatePath(el) {
+        if (el.evalVisProp('handdrawing')) {
+            this.updatePathPrim(el.rendNode, this.updatePathStringBezierPrim(el), el.board);
+        } else {
+            this.updatePathPrim(el.rendNode, this.updatePathStringPrim(el), el.board);
+        }
+
+        return this;
+    }
+
+    /**
+     * Shorten the length of a line element such that the arrow head touches
+     * the start or end point and such that the arrow head ends exactly
+     * at the start / end position of the line.
+     * <p>
+     * The Coords objects c1 and c2 are changed in place. In object a, the Boolean properties
+     * 'showFirst' and 'showLast' are set.
+     *
+     * @param  {JXG2.Line} el Reference to the line object that gets arrow heads.
+     * @param  {JXG2.Coords} c1  Coords of the first point of the line (after {@link Geometry.Geometry#calcStraight}).
+     * @param  {JXG2.Coords} c2  Coords of the second point of the line (after {@link Geometry.Geometry#calcStraight}).
+     * @param  {Object}  a Object { evFirst: Boolean, evLast: Boolean} containing information about arrow heads.
+     * @see JXG2.AbstractRenderer#getArrowHeadData
+     *
+     */
+    getPositionArrowHead(el, c1, c2, a) {
+        var d, d1x, d1y, d2x, d2y;
+
+        //    Handle arrow heads.
+
+        //    The default arrow head (type==1) is an isosceles triangle with base length 10 units and height 10 units.
+        //    These 10 units are scaled to strokeWidth * arrowSize pixels.
+        if (a.evFirst || a.evLast) {
+            // Correct the position of the arrow heads
+            d1x = d1y = d2x = d2y = 0.0;
+            d = c1.distance(COORDS_BY.SCREEN, c2);
+
+            if (a.evFirst && el.board.renderer.type !== "vml") {
+                if (d >= a.minLen) {
+                    d1x = ((c2.scrCoords[1] - c1.scrCoords[1]) * a.offFirst) / d;
+                    d1y = ((c2.scrCoords[2] - c1.scrCoords[2]) * a.offFirst) / d;
+                } else {
+                    a.showFirst = 0;
+                }
+            }
+
+            if (a.evLast && el.board.renderer.type !== "vml") {
+                if (d >= a.minLen) {
+                    d2x = ((c2.scrCoords[1] - c1.scrCoords[1]) * a.offLast) / d;
+                    d2y = ((c2.scrCoords[2] - c1.scrCoords[2]) * a.offLast) / d;
+                } else {
+                    a.showLast = 0;
+                }
+            }
+            c1.setCoordinates(
+                COORDS_BY.SCREEN,
+                [c1.scrCoords[1] + d1x, c1.scrCoords[2] + d1y],
+                false,
+                true
+            );
+            c2.setCoordinates(
+                COORDS_BY.SCREEN,
+                [c2.scrCoords[1] - d2x, c2.scrCoords[2] - d2y],
+                false,
+                true
+            );
+        }
+
+        return this;
+    }
+
+    /**
+     * Handle touchlastpoint / touchfirstpoint
+     *
+     * @param {JXG2.GeometryElement} el
+     * @param {JXG2.Coords} c1 Coordinates of the start of the line. The coordinates are changed in place.
+     * @param {JXG2.Coords} c2 Coordinates of the end of the line. The coordinates are changed in place.
+     * @param {Object} a
+     * @see JXG2.AbstractRenderer#getArrowHeadData
+     */
+    handleTouchpoints(el, c1, c2, a) {
+        var s1, s2, d, d1x, d1y, d2x, d2y;
+
+        if (a.evFirst || a.evLast) {
+            d = d1x = d1y = d2x = d2y = 0.0;
+
+            s1 = el.point1.evalVisProp('size') +
+                el.point1.evalVisProp('strokewidth');
+
+            s2 = el.point2.evalVisProp('size') +
+                el.point2.evalVisProp('strokewidth');
+
+            // Handle touchlastpoint /touchfirstpoint
+            if (a.evFirst && el.evalVisProp('touchfirstpoint') &&
+                el.point1.evalVisProp('visible')) {
+                d = c1.distance(COORDS_BY.SCREEN, c2);
+                //if (d > s) {
+                d1x = ((c2.scrCoords[1] - c1.scrCoords[1]) * s1) / d;
+                d1y = ((c2.scrCoords[2] - c1.scrCoords[2]) * s1) / d;
+                //}
+            }
+            if (a.evLast && el.evalVisProp('touchlastpoint') &&
+                el.point2.evalVisProp('visible')) {
+                d = c1.distance(COORDS_BY.SCREEN, c2);
+                //if (d > s) {
+                d2x = ((c2.scrCoords[1] - c1.scrCoords[1]) * s2) / d;
+                d2y = ((c2.scrCoords[2] - c1.scrCoords[2]) * s2) / d;
+                //}
+            }
+            c1.setCoordinates(
+                COORDS_BY.SCREEN,
+                [c1.scrCoords[1] + d1x, c1.scrCoords[2] + d1y],
+                false,
+                true
+            );
+            c2.setCoordinates(
+                COORDS_BY.SCREEN,
+                [c2.scrCoords[1] - d2x, c2.scrCoords[2] - d2y],
+                false,
+                true
+            );
+        }
+
+        return this;
+    }
+
+    /**
+     * Set the arrow head size.
+     *
+     * @param {JXG2.GeometryElement} el Reference to a line or curve object that has to be drawn.
+     * @param {Object} arrowData Data concerning possible arrow heads
+     * @returns {JXG2.AbstractRenderer} Reference to the renderer
+     *
+     * @private
+     * @see Line
+     * @see JXG2.Line
+     * @see Curve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#updatePathWithArrowHeads
+     * @see JXG2.AbstractRenderer#getArrowHeadData
+     */
+    setArrowSize(el, a) {
+        if (a.evFirst) {
+            this._setArrowWidth(
+                el.rendNodeTriangleStart,
+                a.showFirst * a.strokeWidth,
+                el.rendNode,
+                a.sizeFirst
+            );
+        }
+        if (a.evLast) {
+            this._setArrowWidth(
+                el.rendNodeTriangleEnd,
+                a.showLast * a.strokeWidth,
+                el.rendNode,
+                a.sizeLast
+            );
+        }
+        return this;
+    }
+
+
+    /* ********* Ticks related stuff *********** */
+
+    /**
+     * Creates a rendering node for ticks added to a line.
+     * @param {JXG2.Line} el A arbitrary line.
      * @see Line
      * @see Ticks
      * @see JXG2.Line
      * @see JXG2.Ticks
-     * @see JXG2.AbstractRenderer#drawTicks
+     * @see JXG2.AbstractRenderer#updateTicks
      */
-    updateTicks(ticks) {
-        var i,
-            j,
-            c,
-            node,
-            x,
-            y,
-            tickStr = "",
-            len = ticks.ticks.length,
-            len2,
-            str,
-            isReal = true;
+    drawTicks(el) {
+        let layer = el.evalVisProp('layer')
+        let prim = this.createPrim("path", el.id)
+        el.rendNode = this.appendChildPrim(prim, layer);
+        this.appendNodesToElement(el, "path");
+    }
 
-        for (i = 0; i < len; i++) {
-            c = ticks.ticks[i];
-            x = c[0];
-            y = c[1];
 
-            len2 = x.length;
-            str = " M " + x[0] + " " + y[0];
-            if (!Type.isNumber(x[0])) {
-                isReal = false;
-            }
-            for (j = 1; isReal && j < len2; ++j) {
-                if (Type.isNumber(x[j])) {
-                    str += " L " + x[j] + " " + y[j];
-                } else {
-                    isReal = false;
-                }
-            }
-            if (isReal) {
-                tickStr += str;
-            }
-        }
+    /* ********* Circle related stuff *********** */
 
-        node = ticks.rendNode;
-
-        if (!Type.exists(node)) {
-            node = this.createPrim("path", ticks.id);
-            this.appendChildPrim(node, ticks.evalVisProp('layer'));
-            ticks.rendNode = node;
-        }
-
-        node.setAttributeNS(null, "stroke", ticks.evalVisProp('strokecolor'));
-        node.setAttributeNS(null, "fill", "none");
-        node.setAttributeNS(null, 'fill', ticks.evalVisProp('fillcolor'));
-        node.setAttributeNS(null, 'fill-opacity', ticks.evalVisProp('fillopacity'));
-        node.setAttributeNS(
-            null,
-            "stroke-opacity",
-            ticks.evalVisProp('strokeopacity')
+    /**
+     * Draws a {@link JXG2.Circle}
+     * @param {JXG2.Circle} el Reference to a {@link JXG2.Circle} object that has to be drawn.
+     * @see Circle
+     * @see JXG2.Circle
+     * @see JXG2.AbstractRenderer#updateEllipse
+     */
+    drawEllipse(el) {
+        el.rendNode = this.appendChildPrim(
+            this.createPrim("ellipse", el.id),
+            el.evalVisProp('layer')
         );
-        node.setAttributeNS(null, "stroke-width", ticks.evalVisProp('strokewidth'));
-        this.updatePathPrim(node, tickStr, ticks.board);
+        this.appendNodesToElement(el, "ellipse");
+        this.updateEllipse(el);
+    }
+
+    /**
+     * Updates visual appearance of a given {@link JXG2.Circle} on the {@link JXG2.Board}.
+     * @param {JXG2.Circle} el Reference to a {@link JXG2.Circle} object, that has to be updated.
+     * @see Circle
+     * @see JXG2.Circle
+     * @see JXG2.AbstractRenderer#drawEllipse
+     */
+    updateEllipse(el) {
+        this._updateVisual(el);
+
+        var radius = el.Radius();
+
+        if (
+            /*radius > 0.0 &&*/
+            Math.abs(el.center.coords.usrCoords[0]) > JSXMath.eps &&
+            !isNaN(radius + el.center.coords.scrCoords[1] + el.center.coords.scrCoords[2]) &&
+            radius * el.board.unitX < 2000000
+        ) {
+            this.updateEllipsePrim(
+                el.rendNode,
+                el.center.coords.scrCoords[1],
+                el.center.coords.scrCoords[2],
+                radius * el.board.unitX,
+                radius * el.board.unitY
+            );
+        }
+        this.setLineCap(el);
+    }
+
+    /* ********* Polygon related stuff *********** */
+
+    /**
+     * Draws a {@link JXG2.Polygon} on the {@link JXG2.Board}.
+     * @param {JXG2.Polygon} el Reference to a Polygon object, that is to be drawn.
+     * @see Polygon
+     * @see JXG2.Polygon
+     * @see JXG2.AbstractRenderer#updatePolygon
+     */
+    drawPolygon(el) {
+        el.rendNode = this.appendChildPrim(
+            this.createPrim("polygon", el.id),
+            el.evalVisProp('layer')
+        );
+        this.appendNodesToElement(el, "polygon");
+        this.updatePolygon(el);
+    }
+
+    /**
+     * Updates properties of a {@link JXG2.Polygon}'s rendering node.
+     * @param {JXG2.Polygon} el Reference to a {@link JXG2.Polygon} object, that has to be updated.
+     * @see Polygon
+     * @see JXG2.Polygon
+     * @see JXG2.AbstractRenderer#drawPolygon
+     */
+    updatePolygon(el) {
+        // Here originally strokecolor wasn't updated but strokewidth was.
+        // But if there's no strokecolor i don't see why we should update strokewidth.
+        this._updateVisual(el, { stroke: true, dash: true });
+        this.updatePolygonPrim(el.rendNode, el);
     }
 
     /* ********* Text related stuff *********** */
 
-    /**
-     * Shows a small copyright notice in the top left corner of the board.
-     * @param {String} str The copyright notice itself
-     * @param {Number} fontsize Size of the font the copyright notice is written in
-     * @see JXG2.AbstractRenderer#displayLogo
-     * @see Text#fontSize
-     */
-    displayCopyright(str: string, fontsize: number) {
-        var node, t,
-            x = 4 + 1.8 * fontsize,
-            y = 6 + fontsize,
-            alpha = 0.2;
-
-        this.assertNonNullish(this.container, 'expected container')
-
-        if (dbug()) console.log(`%c webgl: displayCopyright(str: ${str},fontsize: ${fontsize})`, dbugColor)
-
-        node = this.createPrim("text", 'licenseText');
-        node.setAttributeNS(null, 'x', x + 'px');
-        node.setAttributeNS(null, 'y', y + 'px');
-        node.setAttributeNS(null, 'style', 'font-family:Arial,Helvetica,sans-serif; font-size:' +
-            fontsize + 'px; opacity:' + alpha + ';');
-        // fill:#356AA0;
-        node.setAttributeNS(null, 'aria-hidden', 'true');
-
-        t = this.container.ownerDocument.createTextNode(str);
-        this.jsxAppendChild(node, t)  // node.appendChild(t);
-        this.appendChildPrim(node, 0);
-    }
 
     /**
-     * Shows a small JSXGraph logo in the top left corner of the board.
-     * @param {String} str The data-URL of the logo
-     * @param {Number} fontsize Size of the font the copyright notice is written in
-     * @see JXG2.AbstractRenderer#displayCopyright
-     * @see Text#fontSize
-     */
-    displayLogo(str: string, fontsize: number) {
-        var node,
-            s = 1.5 * fontsize,
-            alpha = 0.2;
-
-        node = this.createPrim("image", 'licenseLogo');
-        node.setAttributeNS(null, 'x', '5px');
-        node.setAttributeNS(null, 'y', '5px');
-        node.setAttributeNS(null, 'width', s + 'px');
-        node.setAttributeNS(null, 'height', s + 'px');
-        node.setAttributeNS(null, "preserveAspectRatio", "none");
-        node.setAttributeNS(null, 'style', 'opacity:' + alpha + ';');
-        node.setAttributeNS(null, 'aria-hidden', 'true');
-
-        node.setAttributeNS(this.xlinkNamespace, "xlink:href", str);
-        this.appendChildPrim(node, 0);
-    }
-
-    /**
-     * An internal text is a {@link JXG2.Text} element which is drawn using only
-     * the given renderer but no HTML. This method is only a stub, the drawing
-     * is done in the special renderers.
-     * @param {JXG2.Text} el Reference to a {@link JXG2.Text} object
+     * Displays a {@link JXG2.Text} on the {@link JXG2.Board} by putting a HTML div over it.
+     * @param {JXG2.Text} el Reference to an {@link JXG2.Text} object, that has to be displayed
      * @see Text
      * @see JXG2.Text
-     * @see JXG2.AbstractRenderer#updateInternalText
-     * @see JXG2.AbstractRenderer#drawText
+     * @see JXG2.AbstractRenderer#drawInternalText
      * @see JXG2.AbstractRenderer#updateText
+     * @see JXG2.AbstractRenderer#updateInternalText
      * @see JXG2.AbstractRenderer#updateTextStyle
      */
-    drawInternalText(el: GeometryElement) {
-        // console.log('drawInternalText', el)
-        var node = this.createPrim("text", el.id);
-
-        if (dbug(el)) console.log(`%c webgl: drawInternalText(el) ${el.id}`, dbugColor, el)
+    drawText(el: Text): HTMLElement {
 
 
-        // node.setAttributeNS(null, "style", "alignment-baseline:middle"); // Not yet supported by Firefox
-        // Preserve spaces
-        //node.setAttributeNS("http://www.w3.org/XML/1998/namespace", "space", "preserve");
-        node.style.whiteSpace = "nowrap";
+        let content = el.htmlStr
+        let coord = el.Coords(false)
 
-        el.rendNodeText = this.container.ownerDocument.createTextNode("");
-        node.appendChild(el.rendNodeText);
-        this.appendChildPrim(node, el.evalVisProp('layer'));
+        let sprite = new SpriteText(content, .5, 'black')
+        el.rendNode = sprite    // save it
+        this.scene.add(sprite)
 
-        return node;
+        sprite.position.set(coord[0], coord[1], 0)
+        return
+
+
+        var node: HTMLElement, z, level, ev_visible;
+
+        if (dbug(el))
+            console.warn(`%c abstract: drawText(${el.id})`, dbugColor)
+
+        if (this.container !== null) {
+            if (
+                el.evalVisProp('display') === "html" &&
+                Env.isBrowser() &&
+                this.type !== "no"
+            ) {
+                node = this.container.ownerDocument.createElement("div");
+
+                //node = this.container.ownerDocument.createElementNS('http://www.w3.org/1999/xhtml', 'div'); //
+                node.style.position = "absolute";
+                node.className = el.evalVisProp('cssclass');
+
+                level = el.evalVisProp('layer');
+                if (level !== undefined) {
+                    // trace nodes have level not set
+                    level = 0;
+                }
+
+                if (this.container.style.zIndex === "") {
+                    z = 0;
+                } else {
+                    z = parseInt(this.container.style.zIndex, 10);
+                }
+
+                node.style.zIndex = z + level;
+                this.container.appendChild(node);
+
+                node.setAttribute("id", this.container.id + "_" + el.id);
+            } else {
+                node = this.drawInternalText(el);
+            }
+
+            el.rendNode = node;
+            el.htmlStr = "";
+
+            // Set el.visPropCalc.visible
+            if (el.visProp["islabel"] && Type.exists(el.visProp["anchor"])) {
+                if (el.board.objects[el.visProp["anchor"]] == undefined) {
+                }
+                if (typeof el.visProp["anchor"] !== 'string') {
+                    ev_visible = true
+                } else {
+                    ev_visible = el.board.objects[el.visProp["anchor"]].evalVisProp('visible')
+                }
+                el.prepareUpdate().updateVisibility(ev_visible);
+            } else {
+                el.prepareUpdate().updateVisibility();
+            }
+            this.updateText(el);
+
+        } else {
+            throw new Error('container was null')
+        }
+        return node
     }
 
     /**
@@ -847,205 +1211,410 @@ export class WebGLRenderer extends AbstractRenderer {
      * @param {JXG2.Text} el Reference to an {@link JXG2.Text} object, that has to be updated.
      * @see Text
      * @see JXG2.Text
-     * @see JXG2.AbstractRenderer#drawInternalText
      * @see JXG2.AbstractRenderer#drawText
-     * @see JXG2.AbstractRenderer#updateText
+     * @see JXG2.AbstractRenderer#drawInternalText
+     * @see JXG2.AbstractRenderer#updateInternalText
      * @see JXG2.AbstractRenderer#updateTextStyle
      */
-    updateInternalText(el: Text) {
-        var content = el.plaintext,
-            v, css,
-            ev_ax = el.getAnchorX(),
-            ev_ay = el.getAnchorY();
+    updateText(el: Text) {
+        let content = el.plaintext
+        let coord = el.Coords(false)
 
-        if (dbug(el)) console.log(`%c webgl: updateInternalText(${el.id})`, dbugColor)
-
-
-        css = el.evalVisProp('cssclass');
-        if (el.rendNode.getAttributeNS(null, "class") !== css) {
-            el.rendNode.setAttributeNS(null, "class", css);
-            el.needsSizeUpdate = true;
+        if (el.rendNode === undefined) {
+            el.rendNode = new SpriteText(content, .5, 'black')
+            this.scene.add(el.rendNode)
         }
 
-        if (!isNaN(el.coords.scrCoords[1] + el.coords.scrCoords[2])) {
-            // Horizontal
-            v = el.coords.scrCoords[1];
-            if (el.visPropOld.left !== ev_ax + v) {
-                el.rendNode.setAttributeNS(null, "x", v + "px");
+        el.rendNode.position.set(coord[0], coord[1], 0)
+        return
 
-                if (dbug(el)) console.log(`%c webgl: updateInternalText/[x,y] x:${v + 'px'}`, dbugColor, el)
 
-                if (ev_ax === "left") {
-                    el.rendNode.setAttributeNS(null, "text-anchor", "start");
-                } else if (ev_ax === "right") {
-                    el.rendNode.setAttributeNS(null, "text-anchor", "end");
-                } else if (ev_ax === "middle") {
-                    el.rendNode.setAttributeNS(null, "text-anchor", "middle");
+
+
+        var v, c,
+            parentNode, node,
+            // scale, vshift,
+            // id, wrap_id,
+            ax, ay, angle, co, si,
+            to_h, to_v;
+
+        if (dbug(el))
+            console.warn(`%c abstract: updateText(${el.id} ${JSON.stringify(el.coords.usrCoords)})`, dbugColor)
+
+        if (el.visPropCalc.visible) {
+            this.updateTextStyle(el, false);
+
+            if (el.evalVisProp('display') === "html" && this.type !== "no") {
+                // Set the position
+                if (!isNaN(el.coords.scrCoords[1]) && !isNaN(el.coords.scrCoords[2])) {
+                    // Horizontal
+                    c = el.coords.scrCoords[1];
+                    // webkit seems to fail for extremely large values for c.
+                    c = Math.abs(c) < 1000000 ? c : 1000000;
+                    ax = el.getAnchorX();
+
+                    if (ax === "right") {
+                        // v = Math.floor(el.board.canvasWidth - c);
+                        v = el.board.canvasWidth - c;
+                        to_h = "right";
+                    } else if (ax === "middle") {
+                        // v = Math.floor(c - 0.5 * el.size[0]);
+                        v = c - 0.5 * el.size[0];
+                        to_h = "center";
+                    } else {
+                        // 'left'
+                        // v = Math.floor(c);
+                        v = c;
+                        to_h = "left";
+                    }
+
+                    // This may be useful for foreignObj.
+                    //if (window.devicePixelRatio !== undefined) {
+                    //v *= window.devicePixelRatio;
+                    //}
+
+                    if (el.visPropOld.left !== ax + v) {
+                        if (ax === "right") {
+                            el.rendNode.style.right = v + "px";
+                            el.rendNode.style.left = "auto";
+                        } else {
+                            el.rendNode.style.left = v + "px";
+                            el.rendNode.style.right = "auto";
+                        }
+                        el.visPropOld.left = ax + v;
+
+                        if (dbug(el)) console.log(`%c abstract: updateText:left/right ${v + 'px'}`, dbugColor)
+                    }
+
+                    // Vertical
+                    c = el.coords.scrCoords[2] + this.vOffsetText;
+                    c = Math.abs(c) < 1000000 ? c : 1000000;
+                    ay = el.getAnchorY();
+
+                    if (ay === "bottom") {
+                        // v = Math.floor(el.board.canvasHeight - c);
+                        v = el.board.canvasHeight - c;
+                        to_v = "bottom";
+                    } else if (ay === "middle") {
+                        // v = Math.floor(c - 0.5 * el.size[1]);
+                        v = c - 0.5 * el.size[1];
+                        to_v = "center";
+                    } else {
+                        // top
+                        // v = Math.floor(c);
+                        v = c;
+                        to_v = "top";
+                    }
+
+                    // This may be useful for foreignObj.
+                    //if (window.devicePixelRatio !== undefined) {
+                    //v *= window.devicePixelRatio;
+                    //}
+
+                    if (el.visPropOld.top !== ay + v) {
+                        if (ay === "bottom") {
+                            el.rendNode.style.top = "auto";
+                            el.rendNode.style.bottom = v + "px";
+                        } else {
+                            el.rendNode.style.bottom = "auto";
+                            el.rendNode.style.top = v + "px";
+                        }
+                        el.visPropOld.top = ay + v;
+                        if (dbug(el)) console.log(`%c abstract: updateText:top/bottom ${v + 'px'}`, dbugColor)
+                    }
                 }
-                el.visPropOld.left = ev_ax + v;
-            }
 
-            // Vertical
-            v = el.coords.scrCoords[2];
-            if (el.visPropOld.top !== ev_ay + v) {
-                el.rendNode.setAttributeNS(null, "y", v + this.vOffsetText * 0.5 + "px");
+                // Set the content
+                if (el.htmlStr !== content) {
+                    try {
+                        if (el.otype === OBJECT_TYPE.BUTTON) {
+                            el.rendNodeButton.innerHTML = content;
+                        } else if (
+                            el.otype === OBJECT_TYPE.CHECKBOX ||
+                            el.otype === OBJECT_TYPE.INPUT
+                        ) {
+                            el.rendNodeLabel.innerHTML = content;
+                        } else {
+                            el.rendNode.innerHTML = content;
+                        }
+                    } catch (e) {
+                        // Setting innerHTML sometimes fails in IE8.
+                        // A workaround is to take the node off the DOM, assign innerHTML,
+                        // then append back.
+                        // Works for text elements as they are absolutely positioned.
+                        parentNode = el.rendNode.parentNode;
+                        el.rendNode.parentNode.removeChild(el.rendNode);
+                        el.rendNode.innerHTML = content;
+                        parentNode.appendChild(el.rendNode);
+                    }
 
-                if (dbug(el)) console.log(`%c webgl: updateInternalText/[x,y] y:${v + this.vOffsetText * 0.5 + 'px'}`, dbugColor, el)
+                    el.htmlStr = content;   // cache, so can minimize updates
 
-                // Not supported by IE, edge
-                // el.rendNode.setAttributeNS(null, "dy", "0");
-                // if (ev_ay === "bottom") {
-                //     el.rendNode.setAttributeNS(null, 'dominant-baseline', 'text-after-edge');
-                // } else if (ev_ay === "top") {
-                //     el.rendNode.setAttributeNS(null, 'dominant-baseline', 'text-before-edge');
-                // } else if (ev_ay === "middle") {
-                //     el.rendNode.setAttributeNS(null, 'dominant-baseline', 'middle');
-                // }
+                    if (el.evalVisProp('usemathjax')) {
+                        // Typesetting directly might not work because MathJax was not loaded completely
+                        try {
+                            if ((Window as any).MathJax.typeset) {
+                                // Version 3
+                                (Window as any).MathJax.typeset([el.rendNode]);
+                            } else {
+                                // Version 2
+                                (Window as any).MathJax.Hub.Queue(["Typeset", (window as any).MathJax.Hub, el.rendNode]);
+                            }
 
-                if (ev_ay === "bottom") {
-                    el.rendNode.setAttributeNS(null, "dy", "0");
-                    el.rendNode.setAttributeNS(null, 'dominant-baseline', 'auto');
-                } else if (ev_ay === "top") {
-                    el.rendNode.setAttributeNS(null, "dy", "1.6ex");
-                    el.rendNode.setAttributeNS(null, 'dominant-baseline', 'auto');
-                } else if (ev_ay === "middle") {
-                    el.rendNode.setAttributeNS(null, "dy", "0.6ex");
-                    el.rendNode.setAttributeNS(null, 'dominant-baseline', 'auto');
+                            // Obsolete:
+                            // // Restore the transformation necessary for fullscreen mode
+                            // // MathJax removes it when handling dynamic content
+                            // id = el.board.container;
+                            // wrap_id = "fullscreenwrap_" + id;
+                            // if (document.getElementById(wrap_id)) {
+                            //     scale = el.board.containerObj._cssFullscreenStore.scale;
+                            //     vshift = el.board.containerObj._cssFullscreenStore.vshift;
+                            //     Env.scaleJSXGraphDiv(
+                            //         "#" + wrap_id,
+                            //         "#" + id,
+                            //         scale,
+                            //         vshift
+                            //     );
+                            // }
+                        } catch (e) {
+                            Env.debug("MathJax (not yet) loaded");
+                        }
+                    } else if (el.evalVisProp('usekatex')) {
+                        try {
+                            // Checkboxes et. al. do not possess rendNodeLabel during the first update.
+                            // In this case node will be undefined and not rendered by KaTeX.
+                            if (el.rendNode.innerHTML.indexOf('<span') === 0 &&
+                                el.rendNode.innerHTML.indexOf('<label') > 0 &&
+                                (
+                                    el.rendNode.innerHTML.indexOf('<checkbox') > 0 ||
+                                    el.rendNode.innerHTML.indexOf('<input') > 0
+                                )
+                            ) {
+                                node = el.rendNodeLabel;
+                            } else if (el.rendNode.innerHTML.indexOf('<button') === 0) {
+                                node = el.rendNodeButton;
+                            } else {
+                                node = el.rendNode;
+                            }
+
+                            if (node) {
+                                /* eslint-disable no-undef */
+                                (window as any).katex.render(content, node, {
+                                    macros: el.evalVisProp('katexmacros'),
+                                    throwOnError: false
+                                });
+                                /* eslint-enable no-undef */
+                            }
+                        } catch (e) {
+                            Env.debug("KaTeX not loaded (yet)");
+                        }
+                    } else if (el.evalVisProp('useasciimathml')) {
+                        // This is not a constructor.
+                        // See http://asciimath.org/ for more information
+                        // about AsciiMathML and the project's source code.
+                        try {
+                            (window as any).AMprocessNode(el.rendNode, false);
+                        } catch (e) {
+                            Env.debug("AsciiMathML not loaded (yet)");
+                        }
+                    }
                 }
-                el.visPropOld.top = ev_ay + v;
+
+                angle = el.evalVisProp('rotate');
+                if (angle !== 0) {
+                    // Don't forget to convert to rad
+                    angle *= (Math.PI / 180);
+                    co = Math.cos(angle);
+                    si = Math.sin(angle);
+
+                    el.rendNode.style['transform'] = 'matrix(' +
+                        [co, -1 * si, si, co, 0, 0].join(',') +
+                        ')';
+                    el.rendNode.style['transform-origin'] = to_h + ' ' + to_v;
+                }
+                this.transformRect(el, el.transformations);
+            } else {
+                this.updateInternalText(el);
             }
         }
-        if (el.htmlStr !== content) {
-            el.rendNodeText.data = content;
-            el.htmlStr = content;
-        }
-        this.transformRect(el, el.transformations);
     }
 
     /**
-     * Set color and opacity of internal texts.
-     * @private
-     * @see JXG2.AbstractRenderer#updateTextStyle
+     * Converts string containing CSS properties into
+     * array with key-value pair objects.
+     *
+     * @example
+     * "color:blue; background-color:yellow" is converted to
+     * [{'color': 'blue'} {'backgroundColor': 'yellow'}]
+     *
+     * @param  {String} cssString String containing CSS properties
+     * @return {Array}           Array of CSS key-value pairs
+     */
+    _css2js(cssString: string) {
+        var pairs: object[] = [],
+            i,
+            len,
+            key,
+            val,
+            s,
+            list = Type.trim(cssString).replace(/;$/, "").split(";");
+
+        len = list.length;
+        for (i = 0; i < len; ++i) {
+            if (Type.trim(list[i]) !== "") {
+                s = list[i].split(":");
+                key = Type.trim(
+                    s[0].replace(/-([a-z])/gi, function (match, char) {
+                        return char.toUpperCase();
+                    })
+                );
+                val = Type.trim(s[1]);
+                pairs.push({ key: key, val: val });
+            }
+        }
+        return pairs;
+    }
+
+    /**
+     * Updates font-size, color and opacity properties and CSS style properties of a {@link JXG2.Text} node.
+     * This function is also called by highlight() and nohighlight().
+     * @param {JXG2.Text} el Reference to the {@link JXG2.Text} object, that has to be updated.
+     * @param {Boolean} doHighlight
+     * @see Text
+     * @see JXG2.Text
+     * @see JXG2.AbstractRenderer#drawText
+     * @see JXG2.AbstractRenderer#drawInternalText
+     * @see JXG2.AbstractRenderer#updateText
+     * @see JXG2.AbstractRenderer#updateInternalText
      * @see JXG2.AbstractRenderer#updateInternalTextStyle
      */
-    updateInternalTextStyle(el: GeometryElement, strokeColor: string, strokeOpacity: number) {
-        this.setObjectFillColor(el, strokeColor, strokeOpacity);
+    updateTextStyle(el, doHighlight) {
+        var fs,
+            so, sc,
+            css,
+            node,
+            display = Env.isBrowser() ? el.visProp["display"] : "internal",
+            nodeList = ["rendNode", "rendNodeTag", "rendNodeLabel"],
+            lenN = nodeList.length,
+            fontUnit = el.evalVisProp('fontunit'),
+            cssList,
+            prop,
+            style,
+            cssString,
+            styleList = ["cssdefaultstyle", "cssstyle"],
+            lenS = styleList.length;
+
+        if (dbug(el)) console.log(`%c abstract: updateTextStyle(el, doHighlight: ${doHighlight})`, dbugColor)
+
+        if (doHighlight) {
+            sc = el.evalVisProp('highlightstrokecolor');
+            so = el.evalVisProp('highlightstrokeopacity');
+            css = el.evalVisProp('highlightcssclass');
+        } else {
+            sc = el.evalVisProp('strokecolor');
+            so = el.evalVisProp('strokeopacity');
+            css = el.evalVisProp('cssclass');
+        }
+
+        // This part is executed for all text elements except internal texts in canvas.
+        // HTML-texts or internal texts in SVG or VML.
+        //            HTML    internal
+        //  SVG        +         +
+        //  VML        +         +
+        //  canvas     +         -
+        //  no         -         -
+        if (this.type !== "no" && (display === "html" || this.type !== "canvas")) {
+            for (style = 0; style < lenS; style++) {
+                // First set cssString to
+                // ev.cssdefaultstyle of ev.highlightcssdefaultstyle,
+                // then to
+                // ev.cssstyle of ev.highlightcssstyle
+                cssString = el.evalVisProp(
+                    (doHighlight ? 'highlight' : '') + styleList[style]
+                );
+                // Set the CSS style properties - without deleting other properties
+                for (node = 0; node < lenN; node++) {
+                    if (Type.exists(el[nodeList[node]])) {
+                        if (cssString !== "" && el.visPropOld[styleList[style] + '_' + node] !== cssString) {
+                            cssList = this._css2js(cssString);
+                            for (prop in cssList) {
+                                if (cssList.hasOwnProperty(prop)) {
+                                    el[nodeList[node]].style[cssList[prop].key] = cssList[prop].val;
+                                }
+                            }
+                            el.visPropOld[styleList[style] + '_' + node] = cssString;
+                        }
+                    }
+                    // el.visPropOld[styleList[style]] = cssString;
+                }
+            }
+
+            fs = el.evalVisProp('fontsize');
+            if (el.visPropOld.fontsize !== fs) {
+                el.needsSizeUpdate = true;
+                try {
+                    for (node = 0; node < lenN; node++) {
+                        if (Type.exists(el[nodeList[node]])) {
+                            el[nodeList[node]].style.fontSize = fs + fontUnit;
+                        }
+                    }
+                } catch (e) {
+                    // IE needs special treatment.
+                    for (node = 0; node < lenN; node++) {
+                        if (Type.exists(el[nodeList[node]])) {
+                            el[nodeList[node]].style.fontSize = fs;
+                        }
+                    }
+                }
+                el.visPropOld.fontsize = fs;
+            }
+        }
+
+        this.setTabindex(el);
+
+        this.setObjectTransition(el);
+        if (display === "html" && this.type !== "no") {
+            // Set new CSS class
+            if (el.visPropOld.cssclass !== css) {
+                // el.rendNode.className = css;     // TODO this is a getter, not a property
+                el.visPropOld.cssclass = css;
+                el.needsSizeUpdate = true;
+            }
+            this.setObjectStrokeColor(el, sc, so);
+        } else {
+            this.updateInternalTextStyle(el, sc, so);
+        }
+
+        if (el.evalVisProp('aria.enabled')) {
+            this.setARIA(el);
+        }
+
+        return this;
     }
+
+    // /**
+    //  * Set color and opacity of internal texts.
+    //  * This method is used for Canvas and VML.
+    //  * SVG needs its own version.
+    //  * @private
+    //  * @see JXG2.AbstractRenderer#updateTextStyle
+    //  * @see JXG2.SVGRenderer#updateInternalTextStyle
+    //  */
+    // updateInternalTextStyle(el, strokeColor, strokeOpacity) {
+    //     this.setObjectStrokeColor(el, strokeColor, strokeOpacity);
+    // }
 
     /* ********* Image related stuff *********** */
 
+
     /**
-     * Draws an {@link JXG2.Image} on a board; This is just a template that has to be implemented by special
-     * renderers.
-     * @param {JXG2.Image} el Reference to the image object that is to be drawn
+     * Updates the properties of an {@link JXG2.Image} element.
+     * @param {JXG2.Image} el Reference to an {@link JXG2.Image} object, that has to be updated.
      * @see Image
      * @see JXG2.Image
-     * @see JXG2.AbstractRenderer#updateImage
+     * @see JXG2.AbstractRenderer#drawImage
      */
-    drawImage(el: GeometryElement) {
-        var node = this.createPrim("image", el.id);
-
-        node.setAttributeNS(null, "preserveAspectRatio", "none");
-        this.appendChildPrim(node, el.evalVisProp('layer'));
-        el.rendNode = node;
-
-        this.updateImage(el);
-    }
-
-    /**
-     * Applies transformations on images and text elements. This method has to implemented in
-     * all descendant classes where text and image transformations are to be supported.
-     * <p>
-     * Only affine transformation are supported, no proper projective transformations. This means, the
-     * respective entries of the transformation matrix are simply ignored.
-     *
-     * @param {JXG2.Image|JXG2.Text} el A {@link JXG2.Image} or {@link JXG2.Text} object.
-     * @param {Array} transformations An array of {@link JXG2.Transformation} objects. This is usually the
-     * transformations property of the given element <tt>el</tt>.
-     */
-    transformRect(el, t) {
-        var s, m, node,
-            str = "",
-            cx, cy,
-            len = t.length;
-
-        if (dbug(el)) console.log(`%c webgl: transformRect(el,t)' ${el.id}`, dbugColor, el)
-        if (t.length > 0 && dbug(el)) console.log(`%c webgl: ${JSON.stringify(t)}`, dbugColor)
-
-        if (len > 0) {
-            node = el.rendNode;
-            m = this.joinTransforms(el, t);
-            s = [m[1][1], m[2][1], m[1][2], m[2][2], m[1][0], m[2][0]].join(",");
-            if (s.indexOf('NaN') === -1) {
-                str += " matrix(" + s + ") ";
-                if (el.elementClass === OBJECT_CLASS.TEXT && el.visProp.display === 'html') {
-                    node.style.transform = str;
-                    cx = -el.coords.scrCoords[1];
-                    cy = -el.coords.scrCoords[2];
-                    switch (el.evalVisProp('anchorx')) {
-                        case 'right': cx += el.size[0]; break;
-                        case 'middle': cx += el.size[0] * 0.5; break;
-                    }
-                    switch (el.evalVisProp('anchory')) {
-                        case 'bottom': cy += el.size[1]; break;
-                        case 'middle': cy += el.size[1] * 0.5; break;
-                    }
-                    node.style['transform-origin'] = (cx) + 'px ' + (cy) + 'px';
-                } else {
-                    // Images and texts with display:'internal'
-                    node.setAttributeNS(null, "transform", str);
-                }
-            }
-        }
-    }
-
-    /**
-     * If the URL of the image is provided by a function the URL has to be updated during updateImage()
-     * @param {JXG2.Image} el Reference to an image object.
-     * @see JXG2.AbstractRenderer#updateImage
-     */
-    updateImageURL(el) {
-        var url = el.eval(el.url);
-
-        if (el._src !== url) {
-            el.imgIsLoaded = false;
-            el.rendNode.setAttributeNS(this.xlinkNamespace, "xlink:href", url);
-            el._src = url;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    // Already documented in JXG2.AbstractRenderer
-    updateImageStyle(el, doHighlight) {
-        var css = el.evalVisProp(
-            doHighlight ? 'highlightcssclass' : 'cssclass'
-        );
-
-        el.rendNode.setAttributeNS(null, "class", css);
-    }
-
-    // Already documented in JXG2.AbstractRenderer
-    drawForeignObject(el) {
-        el.rendNode = this.appendChildPrim(
-            this.createPrim("foreignObject", el.id),
-            el.evalVisProp('layer')
-        );
-
-        this.appendNodesToElement(el, "foreignObject");
-        this.updateForeignObject(el);
-    }
-
-    // Already documented in JXG2.AbstractRenderer
-    updateForeignObject(el) {
-        if (el._useUserSize) {
-            el.rendNode.style.overflow = "hidden";
-        } else {
-            el.rendNode.style.overflow = "visible";
-        }
-
+    updateImage(el) {
         this.updateRectPrim(
             el.rendNode,
             el.coords.scrCoords[1],
@@ -1054,1895 +1623,444 @@ export class WebGLRenderer extends AbstractRenderer {
             el.size[1]
         );
 
-        if (el.evalVisProp('evaluateOnlyOnce') !== true || !el.renderedOnce) {
-            el.rendNode.innerHTML = el.content;
-            el.renderedOnce = true;
-        }
+        this.updateImageURL(el);
+        this.transformRect(el, el.transformations);
         this._updateVisual(el, { stroke: true, dash: true }, true);
+    }
+
+    /**
+     * Multiplication of transformations without updating. That means, at that point it is expected that the
+     * matrices contain numbers only. First, the origin in user coords is translated to <tt>(0,0)</tt> in screen
+     * coords. Then, the stretch factors are divided out. After the transformations in user coords, the stretch
+     * factors are multiplied in again, and the origin in user coords is translated back to its position. This
+     * method does not have to be implemented in a new renderer.
+     * @param {JXG2.GeometryElement} el A JSXGraph element. We only need its board property.
+     * @param {Array} transformations An array of JXG2.Transformations.
+     * @returns {Array} A matrix represented by a two dimensional array of numbers.
+     * @see JXG2.AbstractRenderer#transformRect
+     */
+    joinTransforms(el, transformations) {
+        var i,
+            ox = el.board.origin.scrCoords[1],
+            oy = el.board.origin.scrCoords[2],
+            ux = el.board.unitX,
+            uy = el.board.unitY,
+
+            len = transformations.length,
+            // Translate to 0,0 in screen coords and then scale
+            m = [
+                [1, 0, 0],
+                [-ox / ux, 1 / ux, 0],
+                [oy / uy, 0, -1 / uy]
+            ];
+
+        for (i = 0; i < len; i++) {
+            m = JSXMath.matMatMult(transformations[i].matrix, m);
+        }
+        // Scale back and then translate back
+        m = JSXMath.matMatMult(
+            [
+                [1, 0, 0],
+                [ox, ux, 0],
+                [oy, 0, -uy]
+            ],
+            m
+        );
+        return m;
+    }
+
+
+
+    /**
+     * Updates CSS style properties of a {@link JXG2.Image} node.
+     * In SVGRenderer opacity is the only available style element.
+     * This function is called by highlight() and nohighlight().
+     * This function works for VML.
+     * It does not work for Canvas.
+     * SVGRenderer overwrites this method.
+     * @param {JXG2.Text} el Reference to the {@link JXG2.Image} object, that has to be updated.
+     * @param {Boolean} doHighlight
+     * @see Image
+     * @see JXG2.Image
+     * @see JXG2.AbstractRenderer#highlight
+     * @see JXG2.AbstractRenderer#noHighlight
+     */
+    updateImageStyle(el, doHighlight) {
+        el.rendNode.className = el.evalVisProp(
+            doHighlight ? 'highlightcssclass' : 'cssclass'
+        );
     }
 
     /* ********* Render primitive objects *********** */
 
-    /**
-    * Stores the rendering nodes.
-    * the <tt>createPrim</tt> method.
-    * @param {JXG2.GeometryElement} el A JSXGraph element.
-    * @param {String} type The XML node name. Only used in VMLRenderer.
-    */
-    // Already documented in JXG2.AbstractRenderer
-    appendNodesToElement(el, type: string) {
-        if (type === "shape" || type === "path" || type === 'polygon') {
-            el.rendNodePath = this.getElementById(el.id + "_path");
-        }
-        el.rendNodeFill = this.getElementById(el.id + "_fill");
-        el.rendNodeStroke = this.getElementById(el.id + "_stroke");
-        el.rendNodeShadow = this.getElementById(el.id + "_shadow");
-        el.rendNode = this.getElementById(el.id);
-    }
 
 
-    /**
-     * Appends a node to a specific layer level.
-     * @param {Node} node A DOM tree node.
-     * @param {Number} level The layer the node is attached to. This is the index of the layer in
-     * {@link JXG2.SVGRenderer#layer} or the <tt>z-index</tt> style property of the node in SVGRenderer.
-     */
-    appendChildPrim(node: Node, level: number = 0) {  // trace nodes have level not set
-        return
-
-        if (dbug()) console.log(`%c webgl: appendChildPrim: node:${node.nodeName}, level:${level},'`, dbugColor)
-
-        if (typeof level !== 'number') {      // someone is misbehaving
-            console.warn('level is not a number', (typeof level))
-            level = 0
-        }
-
-        if (!Type.exists(level)) {
-            level = 0;
-        } else if (level >= Options['layer'].numlayers) {
-            level = Options['layer'].numlayers - 1;
-        }
-        this.jsxAppendChild(this.layers[level], node) // this.layers[level].appendChild(node);
-        return node;
-    }
 
 
-    /**
-     * Creates a node of a given type with a given id.
-     * @param  type The type of the node to create.
-     * @param  id Set the id attribute to this.
-     * @returns {Node} Reference to the created node.
-     */
-    createPrim(type: SVGType, id: string): HTMLElement {
-        if (dbug()) console.warn(`%c webgl: createPrim(type:${type},id:'${id}'`, dbugColor)
 
-        let node = this.container.ownerDocument.createElementNS(this.svgNamespace, type) as HTMLElement
-        node.setAttributeNS(null, "id", this.uniqName(id));
-        node.style.position = "absolute";
-        if (type === "path") {
-            node.setAttributeNS(null, "stroke-linecap", "round");
-            node.setAttributeNS(null, "stroke-linejoin", "round");
-            node.setAttributeNS(null, "fill-rule", "evenodd");
-        }
 
-        return node;
-    }
 
-    /**
-     * Removes an element node.
-     * @param {Node} node The node to remove.
-     */
-    remove(shape) {
-        if (Type.exists(shape) && Type.exists(shape.parentNode)) {
-            shape.parentNode.removeChild(shape);
-        }
-    }
 
-    /**
-     * Move element into new layer. This is trivial for canvas, but needs more effort in SVG.
-     * Does not work dynamically, i.e. if level is a function.
-     *
-     * @param  el Element which is put into different layer
-     * @param  value Layer number
-     * @private
-     */
-    setLayer(el/*: GeometryElement*/, level: number) {
-        if (!Type.exists(level)) {
-            level = 0;
-        } else if (level >= Options.layer.numlayers) {
-            level = Options.layer.numlayers - 1;
-        }
 
-        this.layers[level].appendChild(el.rendNode);
-    }
 
-    /**
-     * Can be used to create the nodes to display arrows. This is an abstract method which has to be implemented
-     * in any descendant renderer.
-     * @param {JXG2.GeometryElement} el The element the arrows are to be attached to.
-     * @param {Object} arrowData Data concerning possible arrow heads
-    *
-     */
-    makeArrows(el/*: GeometryElement*/, a) {
-        return
-        var node2, str,
-            ev_fa = a.evFirst,
-            ev_la = a.evLast;
 
-        this.assertNonNullish(el.rendNode, 'expected node')
-        this.assertNonNullish(el.rendNode.parentNode, 'expected node')
-        this.assertNonNullish(this.container, 'expected container')
 
-        if (this.isSafari && el.visPropCalc.visible && (ev_fa || ev_la)) {
-            // Necessary, since Safari is the new IE (11.2024)
-            el.rendNode.parentNode.insertBefore(el.rendNode, el.rendNode);
-            return;
-        }
 
-        // We can not compare against visPropOld if there is need for a new arrow head,
-        // since here visPropOld and ev_fa / ev_la already have the same value.
-        // This has been set in _updateVisual.
-        //
-        node2 = el.rendNodeTriangleStart;
-        if (ev_fa) {
-            str = this.toStr(this.container.id, '_', el.id, 'TriangleStart', a.typeFirst);
 
-            // If we try to set the same arrow head as is already set, we can bail out now
-            if (!Type.exists(node2) || node2.id !== str) {
-                node2 = this.container.ownerDocument.getElementById(str);
-                // Check if the marker already exists.
-                // If not, create a new marker
-                if (node2 === null) {
-                    node2 = this._createArrowHead(el, "Start", a.typeFirst);
-                    this.defs.appendChild(node2);
-                }
-                el.rendNodeTriangleStart = node2;
-                el.rendNode.setAttributeNS(null, "marker-start", this.toURL(str));
-            }
-        } else {
-            if (Type.exists(node2)) {
-                this.remove(node2);
-                el.rendNodeTriangleStart = null;
-            }
-            el.rendNode.setAttributeNS(null, "marker-start", '');
-        }
-
-        node2 = el.rendNodeTriangleEnd;
-        if (ev_la) {
-            str = this.toStr(this.container.id, '_', el.id, 'TriangleEnd', a.typeLast);
-
-            // If we try to set the same arrow head as is already set, we can bail out now
-            if (!Type.exists(node2) || node2.id !== str) {
-                node2 = this.container.ownerDocument.getElementById(str);
-                // Check if the marker already exists.
-                // If not, create a new marker
-                if (node2 === null) {
-                    node2 = this._createArrowHead(el, "End", a.typeLast);
-                    this.defs.appendChild(node2);
-                }
-                el.rendNodeTriangleEnd = node2;
-                el.rendNode.setAttributeNS(null, "marker-end", this.toURL(str));
-            }
-        } else {
-            if (Type.exists(node2)) {
-                this.remove(node2);
-                el.rendNodeTriangleEnd = null;
-            }
-
-            el.rendNode.setAttributeNS(null, "marker-end", '');
-        }
-    }
-
-    /**
-     * Updates an ellipse node primitive. This is an abstract method which has to be implemented in all renderers
-     * that use the <tt>createPrim</tt> method.
-     * @param {Node} node Reference to the node.
-     * @param {Number} x Centre X coordinate
-     * @param {Number} y Centre Y coordinate
-     * @param {Number} rx The x-axis radius.
-     * @param {Number} ry The y-axis radius.
-     */
-    updateEllipsePrim(node: HTMLElement, x: number, y: number, rx: number, ry: number) {
-        return
-        var huge = 1000000;
-
-        if (dbug()) console.log(`%c webgl: updateEllipsePrim(node, x:${x}, y:${y}, rx:${rx}, ry:${ry} )`, dbugColor, node)
-
-        huge = 200000; // IE
-        // webkit does not like huge values if the object is dashed
-        // iE doesn't like huge values above 216000
-        x = Math.abs(x) < huge ? x : (huge * x) / Math.abs(x);
-        y = Math.abs(y) < huge ? y : (huge * y) / Math.abs(y);
-        rx = Math.abs(rx) < huge ? rx : (huge * rx) / Math.abs(rx);
-        ry = Math.abs(ry) < huge ? ry : (huge * ry) / Math.abs(ry);
-
-        node.setAttributeNS(null, "cx", x.toString());
-        node.setAttributeNS(null, "cy", y.toString());
-        node.setAttributeNS(null, "rx", Math.abs(rx).toString());
-        node.setAttributeNS(null, "ry", Math.abs(ry).toString());
-    }
-
-    /**
-     * Refreshes a line node. This is an abstract method which has to be implemented in all renderers that use
-     * the <tt>createPrim</tt> method.
-     * @param {Node} node The node to be refreshed.
-     * @param {Number} p1x The first point's x coordinate.
-     * @param {Number} p1y The first point's y coordinate.
-     * @param {Number} p2x The second point's x coordinate.
-     * @param {Number} p2y The second point's y coordinate.
-     * @param {JXG2.Board} board
-     */
-    updateLinePrim(node, p1x, p1y, p2x, p2y) {
-        return;
-        var huge = 1000000;
-
-        console.warn('updateLinePrim', p1x, p1y, p2x, p2y)
-        huge = 200000; //IE
-        if (!isNaN(p1x + p1y + p2x + p2y)) {
-            // webkit does not like huge values if the object is dashed
-            // IE doesn't like huge values above 216000
-            p1x = Math.abs(p1x) < huge ? p1x : (huge * p1x) / Math.abs(p1x);
-            p1y = Math.abs(p1y) < huge ? p1y : (huge * p1y) / Math.abs(p1y);
-            p2x = Math.abs(p2x) < huge ? p2x : (huge * p2x) / Math.abs(p2x);
-            p2y = Math.abs(p2y) < huge ? p2y : (huge * p2y) / Math.abs(p2y);
-
-            node.setAttributeNS(null, "x1", p1x);
-            node.setAttributeNS(null, "y1", p1y);
-            node.setAttributeNS(null, "x2", p2x);
-            node.setAttributeNS(null, "y2", p2y);
-        }
-    }
-
-    /**
-     * Updates a path element. This is an abstract method which has to be implemented in all renderers that use
-     * the <tt>createPrim</tt> method.
-     * @param {Node} node The path node.
-     * @param {String} pathString A string formatted like e.g. <em>'M 1,2 L 3,1 L5,5'</em>. The format of the string
-     * depends on the rendering engine.
-     * @param {JXG2.Board} board Reference to the element's board.
-     */
-    updatePathPrim(node, pointString, board: Board) {
-        if (pointString === "") {
-            pointString = "M 0 0";
-        }
-        node.setAttributeNS(null, "d", pointString);
-    }
-
-    /**
-     * Builds a path data string to draw a point with a face other than <em>rect</em> and <em>circle</em>. Since
-     * the format of such a string usually depends on the renderer this method
-     * is only an abstract method. Therefore, it has to be implemented in the descendant renderer itself unless
-     * the renderer does not use the createPrim interface but the draw* interfaces to paint.
-     * @param {JXG2.Point} el The point element
-     * @param {Number} size A positive number describing the size. Usually the half of the width and height of
-     * the drawn point.
-     * @param {String} type A string describing the point's face. This method only accepts the shortcut version of
-     * each possible face: <tt>x, +, |, -, [], <>, <<>>,^, v, >, < </tt>
-     */
-    updatePathStringPoint(el, size, type) {
-        var s = "",
-            scr = el.coords.scrCoords,
-            sqrt32 = size * Math.sqrt(3) * 0.5,
-            s05 = size * 0.5;
-
-        if (type === "x") {
-            s =
-                " M " +
-                (scr[1] - size) +
-                " " +
-                (scr[2] - size) +
-                " L " +
-                (scr[1] + size) +
-                " " +
-                (scr[2] + size) +
-                " M " +
-                (scr[1] + size) +
-                " " +
-                (scr[2] - size) +
-                " L " +
-                (scr[1] - size) +
-                " " +
-                (scr[2] + size);
-        } else if (type === "+") {
-            s =
-                " M " +
-                (scr[1] - size) +
-                " " +
-                scr[2] +
-                " L " +
-                (scr[1] + size) +
-                " " +
-                scr[2] +
-                " M " +
-                scr[1] +
-                " " +
-                (scr[2] - size) +
-                " L " +
-                scr[1] +
-                " " +
-                (scr[2] + size);
-        } else if (type === "|") {
-            s =
-                " M " +
-                scr[1] +
-                " " +
-                (scr[2] - size) +
-                " L " +
-                scr[1] +
-                " " +
-                (scr[2] + size);
-        } else if (type === "-") {
-            s =
-                " M " +
-                (scr[1] - size) +
-                " " +
-                scr[2] +
-                " L " +
-                (scr[1] + size) +
-                " " +
-                scr[2];
-        } else if (type === "<>" || type === "<<>>") {
-            if (type === "<<>>") {
-                size *= 1.41;
-            }
-            s =
-                " M " +
-                (scr[1] - size) +
-                " " +
-                scr[2] +
-                " L " +
-                scr[1] +
-                " " +
-                (scr[2] + size) +
-                " L " +
-                (scr[1] + size) +
-                " " +
-                scr[2] +
-                " L " +
-                scr[1] +
-                " " +
-                (scr[2] - size) +
-                " Z ";
-        } else if (type === "^") {
-            s =
-                " M " +
-                scr[1] +
-                " " +
-                (scr[2] - size) +
-                " L " +
-                (scr[1] - sqrt32) +
-                " " +
-                (scr[2] + s05) +
-                " L " +
-                (scr[1] + sqrt32) +
-                " " +
-                (scr[2] + s05) +
-                " Z "; // close path
-        } else if (type === "v") {
-            s =
-                " M " +
-                scr[1] +
-                " " +
-                (scr[2] + size) +
-                " L " +
-                (scr[1] - sqrt32) +
-                " " +
-                (scr[2] - s05) +
-                " L " +
-                (scr[1] + sqrt32) +
-                " " +
-                (scr[2] - s05) +
-                " Z ";
-        } else if (type === ">") {
-            s =
-                " M " +
-                (scr[1] + size) +
-                " " +
-                scr[2] +
-                " L " +
-                (scr[1] - s05) +
-                " " +
-                (scr[2] - sqrt32) +
-                " L " +
-                (scr[1] - s05) +
-                " " +
-                (scr[2] + sqrt32) +
-                " Z ";
-        } else if (type === "<") {
-            s =
-                " M " +
-                (scr[1] - size) +
-                " " +
-                scr[2] +
-                " L " +
-                (scr[1] + s05) +
-                " " +
-                (scr[2] - sqrt32) +
-                " L " +
-                (scr[1] + s05) +
-                " " +
-                (scr[2] + sqrt32) +
-                " Z ";
-        }
-        return s;
-    }
-
-    /**
-     * Builds a path data string from a {@link JXG2.Curve} element. Since the path data strings heavily depend on the
-     * underlying rendering technique this method is just a stub. Although such a path string is of no use for the
-     * CanvasRenderer, this method is used there to draw a path directly.
-     * @param {JXG2.GeometryElement} el
-     */
-    updatePathStringPrim(el) {
-        var i,
-            scr,
-            len,
-            symbm = " M ",
-            symbl = " L ",
-            symbc = " C ",
-            nextSymb = symbm,
-            maxSize = 5000.0,
-            pStr = "";
-
-        if (el.numberPoints <= 0) {
-            return "";
-        }
-
-        len = Math.min(el.points.length, el.numberPoints);
-
-        if (el.bezierDegree === 1) {
-            for (i = 0; i < len; i++) {
-                scr = el.points[i].scrCoords;
-                if (isNaN(scr[1]) || isNaN(scr[2])) {
-                    // PenUp
-                    nextSymb = symbm;
-                } else {
-                    // Chrome has problems with values being too far away.
-                    scr[1] = Math.max(Math.min(scr[1], maxSize), -maxSize);
-                    scr[2] = Math.max(Math.min(scr[2], maxSize), -maxSize);
-
-                    // Attention: first coordinate may be inaccurate if far way
-                    //pStr += [nextSymb, scr[1], ' ', scr[2]].join('');
-                    pStr += nextSymb + scr[1] + " " + scr[2]; // Seems to be faster now (webkit and firefox)
-                    nextSymb = symbl;
-                }
-            }
-        } else if (el.bezierDegree === 3) {
-            i = 0;
-            while (i < len) {
-                scr = el.points[i].scrCoords;
-                if (isNaN(scr[1]) || isNaN(scr[2])) {
-                    // PenUp
-                    nextSymb = symbm;
-                } else {
-                    pStr += nextSymb + scr[1] + " " + scr[2];
-                    if (nextSymb === symbc) {
-                        i += 1;
-                        scr = el.points[i].scrCoords;
-                        pStr += " " + scr[1] + " " + scr[2];
-                        i += 1;
-                        scr = el.points[i].scrCoords;
-                        pStr += " " + scr[1] + " " + scr[2];
-                    }
-                    nextSymb = symbc;
-                }
-                i += 1;
-            }
-        }
-        return pStr;
-    }
-
-    /**
-     * Builds a path data string from a {@link JXG2.Curve} element such that the curve looks like hand drawn. Since
-     * the path data strings heavily depend on the underlying rendering technique this method is just a stub.
-     * Although such a path string is of no use for the CanvasRenderer, this method is used there to draw a path
-     * directly.
-     * @param  {JXG2.GeometryElement} el
-     */
-    updatePathStringBezierPrim(el) {
-        var i, j, k,
-            scr,
-            lx, ly,
-            len,
-            symbm = " M ",
-            symbl = " C ",
-            nextSymb = symbm,
-            maxSize = 5000.0,
-            pStr = "",
-            f = el.evalVisProp('strokewidth'),
-            isNoPlot = el.evalVisProp('curvetype') !== "plot";
-
-        if (el.numberPoints <= 0) {
-            return "";
-        }
-
-        if (isNoPlot && el.board.options.curve.RDPsmoothing) {
-            el.points = Numerics.RamerDouglasPeucker(el.points, 0.5);
-        }
-
-        len = Math.min(el.points.length, el.numberPoints);
-        for (j = 1; j < 3; j++) {
-            nextSymb = symbm;
-            for (i = 0; i < len; i++) {
-                scr = el.points[i].scrCoords;
-
-                if (isNaN(scr[1]) || isNaN(scr[2])) {
-                    // PenUp
-                    nextSymb = symbm;
-                } else {
-                    // Chrome has problems with values being too far away.
-                    scr[1] = Math.max(Math.min(scr[1], maxSize), -maxSize);
-                    scr[2] = Math.max(Math.min(scr[2], maxSize), -maxSize);
-
-                    // Attention: first coordinate may be inaccurate if far way
-                    if (nextSymb === symbm) {
-                        //pStr += [nextSymb, scr[1], ' ', scr[2]].join('');
-                        pStr += nextSymb + scr[1] + " " + scr[2]; // Seems to be faster now (webkit and firefox)
-                    } else {
-                        k = 2 * j;
-                        pStr += [
-                            nextSymb,
-                            lx + (scr[1] - lx) * 0.333 + f * (k * Math.random() - j),
-                            " ",
-                            ly + (scr[2] - ly) * 0.333 + f * (k * Math.random() - j),
-                            " ",
-                            lx + (scr[1] - lx) * 0.666 + f * (k * Math.random() - j),
-                            " ",
-                            ly + (scr[2] - ly) * 0.666 + f * (k * Math.random() - j),
-                            " ",
-                            scr[1],
-                            " ",
-                            scr[2]
-                        ].join("");
-                    }
-
-                    nextSymb = symbl;
-                    lx = scr[1];
-                    ly = scr[2];
-                }
-            }
-        }
-        return pStr;
-    }
-
-    /**
-     * Update a polygon primitive.
-     * @param {Node} node
-     * @param {JXG2.Polygon} el A JSXGraph element of type {@link JXG2.Polygon}
-     */
-    updatePolygonPrim(node, el) {
-        var i,
-            pStr = "",
-            scrCoords,
-            len = el.vertices.length;
-
-        node.setAttributeNS(null, "stroke", "none");
-        node.setAttributeNS(null, "fill-rule", "evenodd");
-        if (el.elType === "polygonalchain") {
-            len++;
-        }
-
-        for (i = 0; i < len - 1; i++) {
-            if (el.vertices[i].isReal) {
-                scrCoords = el.vertices[i].coords.scrCoords;
-                pStr = pStr + scrCoords[1] + "," + scrCoords[2];
-            } else {
-                node.setAttributeNS(null, "points", "");
-                return;
-            }
-
-            if (i < len - 2) {
-                pStr += " ";
-            }
-        }
-        if (pStr.indexOf("NaN") === -1) {
-            node.setAttributeNS(null, "points", pStr);
-        }
-    }
-
-    /**
-     * Update a rectangle primitive. This is used only for points with face of type 'rect'.
-     * @param {Node} node The node yearning to be updated.
-     * @param {Number} x x coordinate of the top left vertex.
-     * @param {Number} y y coordinate of the top left vertex.
-     * @param {Number} w Width of the rectangle.
-     * @param {Number} h The rectangle's height.
-     */
-    updateRectPrim(node, x, y, w, h) {
-        node.setAttributeNS(null, "x", x);
-        node.setAttributeNS(null, "y", y);
-        node.setAttributeNS(null, "width", w);
-        node.setAttributeNS(null, "height", h);
-    }
 
     /* ********* Set attributes *********** */
 
+
     /**
-     * Call user-defined function to set visual attributes.
-     * If "testAttribute" is the empty string, the function
-     * is called immediately, otherwise it is called in a timeOut.
-     *
-     * This is necessary to realize smooth transitions but avoid transitions
-     * when first creating the objects.
-     *
-     * Usually, the string in testAttribute is the visPropOld attribute
-     * of the values which are set.
-     *
-     * @param {Function} setFunc       Some function which usually sets some attributes
-     * @param {String} testAttribute If this string is the empty string  the function is called immediately,
-     *                               otherwise it is called in a setImeout.
-     * @see JXG2.SVGRenderer#setObjectFillColor
-     * @see JXG2.SVGRenderer#setObjectStrokeColor
-     * @see JXG2.SVGRenderer#_setArrowColor
-     * @private
+     * Highlights an object, i.e. changes the current colors of the object to its highlighting colors
+     * and highlighting strokewidth.
+     * @param {JXG2.GeometryElement} el Reference of the object that will be highlighted.
+     * @param {Boolean} [suppressHighlightStrokeWidth=undefined] If undefined or false, highlighting also changes strokeWidth. This might not be
+     * the cases for polygon borders. Thus, if a polygon is highlighted, its polygon borders change strokeWidth only if the polygon attribute
+     * highlightByStrokeWidth == true.
+     * @returns {JXG2.AbstractRenderer} Reference to the renderer
+     * @see JXG2.AbstractRenderer#updateTextStyle
      */
-    _setAttribute(setFunc, testAttribute) {
-        if (testAttribute === "") {
-            setFunc();
-        } else {
-            window.setTimeout(setFunc, 1);
-        }
-    }
+    highlight(el/*: GeometryElement*/, suppressHighlightStrokeWidth: boolean = false) {
+        var i, do_hl, sw;
 
-    /**
-    * Shows or hides an element on the canvas; Only a stub, requires implementation in the derived renderer.
-    * @param {JXG2.GeometryElement} el Reference to the object that has to appear.
-    * @param {Boolean} show true to show the element, false to hide the element.
-    */
-
-    display(el/*: GeometryElement*/, show: boolean) {
-        if (dbug(el))
-            console.warn(`%c webgl: display(${el.id}, show=${show})`, dbugColor)
-
-        if (el) {
-            el.visPropOld.visible = show;
-        }
-
-        ///////////////////// tbtb - this was in svg.js, but above code implement in abstract.js
-        var node;
-
-        if (el && el.rendNode) {
-            el.visPropOld.visible = show;
-            node = el.rendNode;
-            if (show) {
-                node.setAttributeNS(null, "display", "inline");
-                node.style.visibility = "inherit";
-            } else {
-                node.setAttributeNS(null, "display", "none");
-                node.style.visibility = "hidden";
-            }
-        }
-    }
-
-    /**
-     * Hides an element on the canvas; Only a stub, requires implementation in the derived renderer.
-     *
-     * Please use JXG2.AbstractRenderer#display instead
-     * @param {JXG2.GeometryElement} el Reference to the geometry element that has to disappear.
-     * @see JXG2.AbstractRenderer#show
-     * @deprecated
-     */
-    hide(el) {
-        Env.deprecated("Board.renderer.hide()", "Board.renderer.display()");
-        this.display(el, false);
-    }
-
-    /**
-     * Set ARIA related properties of an element. The attribute "aria" of an element contains at least the
-     * properties "enabled", "label", and "live". Additionally, all available properties from
-     * {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA} may be set.
-     * <p>
-     * In JSXGraph, the available properties are used without the leading 'aria-'.
-     * For example, the value of the JSXGraph attribute 'aria.label' will be set to the
-     * HTML attribute 'aria-label'.
-     *
-     * @param {JXG2.GeometryElement} el Reference of the object that wants new
-     *        ARIA attributes.
-     */
-    setARIA(el) {
-        // This method is only called in abstractRenderer._updateVisual() if aria.enabled == true.
-        var key, k, v;
-
-        // this.setPropertyPrim(el.rendNode, 'aria-label', el.evalVisProp('aria.label'));
-        // this.setPropertyPrim(el.rendNode, 'aria-live', el.evalVisProp('aria.live'));
-        for (key in el.visProp.aria) {
-            if (el.visProp.aria.hasOwnProperty(key) && key !== 'enabled') {
-                k = 'aria.' + key;
-                v = el.evalVisProp('aria.' + key);
-                if (el.visPropOld[k] !== v) {
-                    this.setPropertyPrim(el.rendNode, 'aria-' + key, v);
-                    el.visPropOld[k] = v;
-                }
-            }
-        }
-    }
-
-    /**
-     * Sets the buffering as recommended by SVGWG. Until now only Opera supports this and will be ignored by other
-     * browsers. Although this feature is only supported by SVG we have this method in {@link JXG2.AbstractRenderer}
-     * because it is called from outside the renderer.
-     * @param {Node} node The SVG DOM Node which buffering type to update.
-     * @param {String} type Either 'auto', 'dynamic', or 'static'. For an explanation see
-     *   {@link https://www.w3.org/TR/SVGTiny12/painting.html#BufferedRenderingProperty}.
-     */
-    setBuffering(el, type) {
-        el.rendNode.setAttribute("buffered-rendering", type);
-    }
-
-    /**
-     * Sets CSS classes for elements (relevant for SVG only).
-     *
-     * @param {JXG2.GeometryElement} el Reference of the object that wants a
-     *         new set of CSS classes.
-     * @param {String} cssClass String containing a space separated list of CSS classes.
-     */
-    setCssClass(el, cssClass) {
-        return
-        if (el.visPropOld.cssclass !== cssClass) {
-            this.setPropertyPrim(el.rendNode, 'class', cssClass);
-            el.visPropOld.cssclass = cssClass;
-        }
-    }
-
-    /**
-     * Sets an element's dash style.
-     * @param {JXG2.GeometryElement} el An JSXGraph element.
-     */
-    setDashStyle(el) {
-        return
-        var dashStyle = el.evalVisProp('dash'),
-            ds = el.evalVisProp('dashscale'),
-            sw = ds ? 0.5 * el.evalVisProp('strokewidth') : 1,
-            node = el.rendNode;
-
-        if (dashStyle > 0) {
-            node.setAttributeNS(null, "stroke-dasharray",
-                // sw could distinguish highlighting or not.
-                // But it seems to preferable to ignore this.
-                this.dashArray[dashStyle - 1].map(function (x) { return x * sw; }).join(',')
-            );
-        } else {
-            if (node.hasAttributeNS(null, "stroke-dasharray")) {
-                node.removeAttributeNS(null, "stroke-dasharray");
-            }
-        }
-    }
-
-    /**
-     * Sets up nodes for rendering a gradient fill.
-     * @param {JXG2.GeometryElement}  el Reference of the object which gets the gradient
-     */
-    setGradient(el) {
-        var fillNode = el.rendNode,
-            node, node2, node3,
-            ev_g = el.evalVisProp('gradient');
-
-
-        if (ev_g === "linear" || ev_g === "radial") {
-            if (ev_g === "linear")
-                node = this.createPrim("linearGradient", el.id + "_gradient");
-            else
-                node = this.createPrim("radialGradient", el.id + "_gradient");
-
-            node2 = this.createPrim("stop", el.id + "_gradient1");
-            node3 = this.createPrim("stop", el.id + "_gradient2");
-            node.appendChild(node2);
-            node.appendChild(node3);
-            this.defs.appendChild(node);
-
-            this.assertNonNullish(this.container, 'expected container')
-            fillNode.setAttributeNS(
-                null,
-                'style',
-                // "fill:url(#" + this.container.id + "_" + el.id + "_gradient)"
-                'fill:' + this.toURL(this.container.id + '_' + el.id + '_gradient')
-            );
-            el.gradNode1 = node2;
-            el.gradNode2 = node3;
-            el.gradNode = node;
-        } else {
-            fillNode.removeAttributeNS(null, "style");
-        }
-    }
-
-    /**
-     * Update the line endings (linecap) of a straight line from its attribute
-     * 'linecap'.
-     * Possible values for the attribute 'linecap' are: 'butt', 'round', 'square'.
-     * The default value is 'butt'. Not available for VML renderer.
-     *
-     * @param {JXG2.Line} element A arbitrary line.
-     * @see Line
-     * @see JXG2.Line
-     * @see JXG2.AbstractRenderer#updateLine
-     */
-    setLineCap(el) {
-        var capStyle = el.evalVisProp('linecap');
-
-        if (
-            capStyle === undefined ||
-            capStyle === "" ||
-            el.visPropOld.linecap === capStyle ||
-            !Type.exists(el.rendNode)
-        ) {
-            return;
-        }
-
-        this.setPropertyPrim(el.rendNode, "stroke-linecap", capStyle);
-        el.visPropOld.linecap = capStyle;
-    }
-
-    /**
-     * Sets an objects fill color.
-     * @param {JXG2.GeometryElement} el Reference of the object that wants a new fill color.
-     * @param {String} color Color in a HTML/CSS compatible format. If you don't want any fill color at all, choose
-     * 'none'.
-     * @param {Number} opacity Opacity of the fill color. Must be between 0 and 1.
-     */
-    setObjectFillColor(el/*: GeometryElement*/, color: any, opacity: number, rendNode?: HTMLElement) {
-        return
-        var node, c, rgbo, oo,
-            rgba = color,
-            o = opacity,
-            grad = el.evalVisProp('gradient');
-
-        o = o > 0 ? o : 0;
-
-        // TODO  save gradient and gradientangle
-        if (
-            el.visPropOld.fillcolor === rgba &&
-            el.visPropOld.fillopacity === o &&
-            grad === null
-        ) {
-            return;
-        }
-
-        if (Type.exists(rgba) && rgba !== false) {
-
-            if (rgba.length !== 9) {
-                // RGB, not RGBA
-                c = rgba;
-                oo = o;
-            } else {
-                // True RGBA, not RGB
-                rgbo = Color.rgba2rgbo(rgba);
-                c = rgbo[0];
-                oo = o * rgbo[1];
-            }
-
-            if (rendNode === undefined) {
-                node = el.rendNode;
-            } else {
-                node = rendNode;
-            }
-
-            if (c !== "none" && c !== "" && c !== false) {
-                this._setAttribute(function () {
-                    node.setAttributeNS(null, "fill", c);
-                }, el.visPropOld.fillcolor);
-            }
-
-            if (el.type === OBJECT_TYPE.IMAGE) {
-                this._setAttribute(function () {
-                    node.setAttributeNS(null, "opacity", oo);
-                }, el.visPropOld.fillopacity);
-                //node.style['opacity'] = oo;  // This would overwrite values set by CSS class.
-            } else {
-                if (c === 'none') {
-                    // This is done only for non-images
-                    // because images have no fill color.
-                    oo = 0;
-                    // This is necessary if there is a foreignObject below.
-                    node.setAttributeNS(null, "pointer-events", 'visibleStroke');
-                } else {
-                    // This is the default
-                    node.setAttributeNS(null, "pointer-events", 'visiblePainted');
-                }
-                this._setAttribute(function () {
-                    node.setAttributeNS(null, 'fill-opacity', oo);
-                }, el.visPropOld.fillopacity);
-            }
-
-            if (grad === "linear" || grad === 'radial') {
-                this.updateGradient(el);
-            }
-        }
-        el.visPropOld.fillcolor = rgba;
-        el.visPropOld.fillopacity = o;
-    }
-
-    /**
-     * Changes an objects stroke color to the given color.
-     * @param {JXG2.GeometryElement} el Reference of the {@link JXG2.GeometryElement} that gets a new stroke
-     * color.
-     * @param {String} color Color value in a HTML compatible format, e.g. <strong>#00ff00</strong> or
-     * <strong>green</strong> for green.
-     * @param {Number} opacity Opacity of the fill color. Must be between 0 and 1.
-     */
-    setObjectStrokeColor(el, color: any, opacity) {
-        return;
-        if (dbug(el)) console.warn(`%c webgl: setObjectSrokeColor(el, color:${color},opacity:'${opacity}'`, dbugColor)
-
-        var rgba = color,
-            c, rgbo,
-            o = opacity,
-            oo, node;
-
-        o = o > 0 ? o : 0;
-
-        if (el.visPropOld.strokecolor === rgba && el.visPropOld.strokeopacity === o) {
-            return;
-        }
-
-        if (Type.exists(rgba) && rgba !== false) {
-            if (rgba.length !== 9) {
-                // RGB, not RGBA
-                c = rgba;
-                oo = o;
-            } else {
-                // True RGBA, not RGB
-                rgbo = Color.rgba2rgbo(rgba);
-                c = rgbo[0];
-                oo = o * rgbo[1];
-            }
-
-            node = el.rendNode;
-
-            if (el.elementClass === OBJECT_CLASS.TEXT) {
-                if (el.evalVisProp('display') === "html") {
-                    this._setAttribute(function () {
-                        node.style.color = c;
-                        node.style.opacity = oo;
-                    }, el.visPropOld.strokecolor);
-                } else {
-                    this._setAttribute(function () {
-                        node.setAttributeNS(null, "style", "fill:" + c);
-                        node.setAttributeNS(null, "style", "fill-opacity:" + oo);
-                    }, el.visPropOld.strokecolor);
+        this.setObjectTransition(el);
+        if (!el.evalVisProp("draft.draft")) {
+            if (el.otype === OBJECT_TYPE.POLYGON) {
+                this.setObjectFillColor(el, el.evalVisProp('highlightfillcolor'), el.evalVisProp('highlightfillopacity'));
+                do_hl = el.evalVisProp('highlightbystrokewidth');
+                for (i = 0; i < el.borders.length; i++) {
+                    this.highlight(el.borders[i], !do_hl);
                 }
             } else {
-                this._setAttribute(function () {
-                    node.setAttributeNS(null, "stroke", c);
-                    node.setAttributeNS(null, "stroke-opacity", oo);
-                }, el.visPropOld.strokecolor);
-            }
-
-            if (
-                el.elementClass === OBJECT_CLASS.CURVE ||
-                el.elementClass === OBJECT_CLASS.LINE
-            ) {
-                if (el.evalVisProp('firstarrow')) {
-                    this._setArrowColor(
-                        el.rendNodeTriangleStart,
-                        c, oo, el,
-                        el.visPropCalc.typeFirst
+                if (el.elementClass === OBJECT_CLASS.TEXT) {
+                    this.updateTextStyle(el, true);
+                } else if (el.otype === OBJECT_TYPE.IMAGE) {
+                    this.updateImageStyle(el, true);
+                    this.setObjectFillColor(
+                        el,
+                        el.evalVisProp('highlightfillcolor'),
+                        el.evalVisProp('highlightfillopacity')
                     );
-                }
-
-                if (el.evalVisProp('lastarrow')) {
-                    this._setArrowColor(
-                        el.rendNodeTriangleEnd,
-                        c, oo, el,
-                        el.visPropCalc.typeLast
+                } else {
+                    this.setObjectStrokeColor(
+                        el,
+                        el.evalVisProp('highlightstrokecolor'),
+                        el.evalVisProp('highlightstrokeopacity')
+                    );
+                    this.setObjectFillColor(
+                        el,
+                        el.evalVisProp('highlightfillcolor'),
+                        el.evalVisProp('highlightfillopacity')
                     );
                 }
             }
-        }
 
-        el.visPropOld.strokecolor = rgba;
-        el.visPropOld.strokeopacity = o;
-    }
-
-    /**
-     * Sets an element's stroke width.
-     * @param {JXG2.GeometryElement} el Reference to the geometry element.
-     * @param {Number} width The new stroke width to be assigned to the element.
-     */
-    setObjectStrokeWidth(el, width) {
-        var node,
-            w = width;
-
-        if (isNaN(w) || el.visPropOld.strokewidth === w) {
-            return;
-        }
-
-        node = el.rendNode;
-        this.setPropertyPrim(node, "stroked", "true");
-        if (Type.exists(w)) {
-            this.setPropertyPrim(node, "stroke-width", w + "px");
-
-            // if (el.elementClass === Const.OBJECT_CLASS_CURVE ||
-            // el.elementClass === Const.OBJECT_CLASS_LINE) {
-            //     if (el.evalVisProp('firstarrow')) {
-            //         this._setArrowWidth(el.rendNodeTriangleStart, w, el.rendNode);
-            //     }
-            //
-            //     if (el.evalVisProp('lastarrow')) {
-            //         this._setArrowWidth(el.rendNodeTriangleEnd, w, el.rendNode);
-            //     }
-            // }
-        }
-        el.visPropOld.strokewidth = w;
-    }
-
-    /**
-     * Sets the transition duration (in milliseconds) for fill color and stroke
-     * color and opacity.
-     * @param {JXG2.GeometryElement} el Reference of the object that wants a
-     *         new transition duration.
-     * @param {Number} duration (Optional) duration in milliseconds. If not given,
-     *        element.visProp.transitionDuration is taken. This is the default.
-     */
-    setObjectTransition(el/*: GeometryElement*/, duration?: number) {
-        var node, props,
-            transitionArr: string[] = [],
-            transitionStr,
-            i,
-            len = 0,
-            nodes = ["rendNode", "rendNodeTriangleStart", "rendNodeTriangleEnd"];
-
-        if (duration === undefined) {
-            duration = el.evalVisProp('transitionduration');
-        }
-
-        props = el.evalVisProp('transitionproperties');
-        if (duration === el.visPropOld.transitionduration &&
-            props === el.visPropOld.transitionproperties) {
-            return;
-        }
-
-        // if (
-        //     el.elementClass === Const.OBJECT_CLASS_TEXT &&
-        //     el.evalVisProp('display') === "html"
-        // ) {
-        //     // transitionStr = " color " + duration + "ms," +
-        //     //     " opacity " + duration + "ms";
-        //     transitionStr = " all " + duration + "ms ease";
-        // } else {
-        //     transitionStr =
-        //         " fill " + duration + "ms," +
-        //         " fill-opacity " + duration + "ms," +
-        //         " stroke " + duration + "ms," +
-        //         " stroke-opacity " + duration + "ms," +
-        //         " stroke-width " + duration + "ms," +
-        //         " width " + duration + "ms," +
-        //         " height " + duration + "ms," +
-        //         " rx " + duration + "ms," +
-        //         " ry " + duration + "ms";
-        // }
-
-        if (Type.exists(props)) {
-            len = props.length;
-        }
-        for (i = 0; i < len; i++) {
-            transitionArr.push(props[i] + ' ' + duration + 'ms');
-        }
-        transitionStr = transitionArr.join(', ');
-
-        len = nodes.length;
-        for (i = 0; i < len; ++i) {
-            if (el[nodes[i]]) {
-                node = el[nodes[i]];
-                node.style.transition = transitionStr;
-            }
-        }
-
-        el.visPropOld.transitionduration = duration;
-        el.visPropOld.transitionproperties = props;
-    }
-
-    /**
-     * Sets the shadow properties to a geometry element. This method is only a stub, it is implemented in the actual
-     * renderers.
-     * @param {JXG2.GeometryElement} el Reference to a geometry object, that should get a shadow
-     */
-    setShadow(el) {
-        var ev_s = el.evalVisProp('shadow'),
-            ev_s_json, c, b, bl, o, op, id, node,
-            use_board_filter = true,
-            show = false;
-
-        ev_s_json = JSON.stringify(ev_s);
-        if (ev_s_json === el.visPropOld.shadow) {
-            return;
-        }
-
-        if (typeof ev_s === 'boolean') {
-            use_board_filter = true;
-            show = ev_s;
-            c = 'none';
-            b = 3;
-            bl = 0.1;
-            o = [5, 5];
-            op = 1;
-        } else {
-            if (el.evalVisProp('shadow.enabled')) {
-                use_board_filter = false;
-                show = true;
-                c = Color.rgbParser(el.evalVisProp('shadow.color'));
-                b = el.evalVisProp('shadow.blur');
-                bl = el.evalVisProp('shadow.blend');
-                o = el.evalVisProp('shadow.offset');
-                op = el.evalVisProp('shadow.opacity');
-            } else {
-                show = false;
-            }
-        }
-
-        if (Type.exists(el.rendNode)) {
-            if (show) {
-                this.assertNonNullish(this.container, 'expected container')
-                if (use_board_filter) {
-                    el.rendNode.setAttributeNS(null, 'filter', this.toURL(this.container.id + '_' + 'f1'));
-                    // 'url(#' + this.container.id + '_' + 'f1)');
-                } else {
-                    node = this.container.ownerDocument.getElementById(id);
-                    if (node) {
-                        this.defs.removeChild(node);
-                    }
-                    id = el.rendNode.id + '_' + 'f1';
-                    this.defs.appendChild(this.createShadowFilter(id, c, op, bl, b, o));
-                    el.rendNode.setAttributeNS(null, 'filter', this.toURL(id));
-                    // 'url(#' + id + ')');
-                }
-            } else {
-                el.rendNode.removeAttributeNS(null, 'filter');
-            }
-        }
-
-        el.visPropOld.shadow = ev_s_json;
-    }
-
-    /**
-     * Set the attribute `tabindex` to the attribute `tabindex` of an element.
-     * This is only relevant for the SVG renderer.
-     *
-     * @param {JXG2.GeometryElement} el
-     */
-    setTabindex(el) {
-        var val;
-        if (el.board.attr.keyboard.enabled && Type.exists(el.rendNode)) {
-            val = el.evalVisProp('tabindex');
-            if (!el.visPropCalc.visible /* || el.evalVisProp('fixed') */) {
-                val = null;
-            }
-            if (val !== el.visPropOld.tabindex) {
-                el.rendNode.setAttribute("tabindex", val);
-                el.visPropOld.tabindex = val;
-            }
-        }
-    }
-
-    /**
-     * Sets a node's attribute.
-     * @param {Node} node The node that is to be updated.
-     * @param {String} key Name of the attribute.
-     * @param {String} val New value for the attribute.
-     */
-    setPropertyPrim(node, key, val) {
-        return;
-        if (key === "stroked") {
-            return;
-        }
-        node.setAttributeNS(null, key, val);
-    }
-
-    /**
-     * Shows a hidden element on the canvas; Only a stub, requires implementation in the derived renderer.
-     *
-     * Please use JXG2.AbstractRenderer#display instead
-     * @param {JXG2.GeometryElement} el Reference to the object that has to appear.
-     * @see JXG2.AbstractRenderer#hide
-     * @deprecated
-     */
-    show(el) {
-        Env.deprecated("Board.renderer.show()", "Board.renderer.display()");
-        this.display(el, true);
-        // var node;
-        //
-        // if (el && el.rendNode) {
-        //     node = el.rendNode;
-        //     node.setAttributeNS(null, 'display', 'inline');
-        //     node.style.visibility = "inherit";
-        // }
-    }
-
-    /**
-     * Updates the gradient fill.
-     * @param {JXG2.GeometryElement} el An JSXGraph element with an area that can be filled.
-     */
-    updateGradient(el) {
-        var col,
-            op,
-            node2 = el.gradNode1,
-            node3 = el.gradNode2,
-            ev_g = el.evalVisProp('gradient');
-
-        if (!Type.exists(node2) || !Type.exists(node3)) {
-            return;
-        }
-
-        op = el.evalVisProp('fillopacity');
-        op = op > 0 ? op : 0;
-        col = el.evalVisProp('fillcolor');
-
-        node2.setAttributeNS(null, "style", "stop-color:" + col + ";stop-opacity:" + op);
-        node3.setAttributeNS(
-            null,
-            "style",
-            "stop-color:" +
-            el.evalVisProp('gradientsecondcolor') +
-            ";stop-opacity:" +
-            el.evalVisProp('gradientsecondopacity')
-        );
-        node2.setAttributeNS(
-            null,
-            "offset",
-            el.evalVisProp('gradientstartoffset') * 100 + "%"
-        );
-        node3.setAttributeNS(
-            null,
-            "offset",
-            el.evalVisProp('gradientendoffset') * 100 + "%"
-        );
-        if (ev_g === "linear") {
-            this.updateGradientAngle(el.gradNode, el.evalVisProp('gradientangle'));
-        } else if (ev_g === "radial") {
-            this.updateGradientCircle(
-                el.gradNode,
-                el.evalVisProp('gradientcx'),
-                el.evalVisProp('gradientcy'),
-                el.evalVisProp('gradientr'),
-                el.evalVisProp('gradientfx'),
-                el.evalVisProp('gradientfy'),
-                el.evalVisProp('gradientfr')
-            );
-        }
-    }
-
-    /**
-     * Set the gradient angle for linear color gradients.
-     *
-     * @private
-     * @param {SVGnode} node SVG gradient node of an arbitrary JSXGraph element.
-     * @param {Number} radians angle value in radians. 0 is horizontal from left to right, Pi/4 is vertical from top to bottom.
-     */
-    updateGradientAngle(node, radians) {
-        // Angles:
-        // 0: ->
-        // 90: down
-        // 180: <-
-        // 90: up
-        var f = 1.0,
-            co = Math.cos(radians),
-            si = Math.sin(radians);
-
-        if (Math.abs(co) > Math.abs(si)) {
-            f /= Math.abs(co);
-        } else {
-            f /= Math.abs(si);
-        }
-
-        if (co >= 0) {
-            node.setAttributeNS(null, "x1", 0);
-            node.setAttributeNS(null, "x2", co * f);
-        } else {
-            node.setAttributeNS(null, "x1", -co * f);
-            node.setAttributeNS(null, "x2", 0);
-        }
-        if (si >= 0) {
-            node.setAttributeNS(null, "y1", 0);
-            node.setAttributeNS(null, "y2", si * f);
-        } else {
-            node.setAttributeNS(null, "y1", -si * f);
-            node.setAttributeNS(null, "y2", 0);
-        }
-    }
-
-    /**
-     * Set circles for radial color gradients.
-     *
-     * @private
-     * @param {SVGnode} node SVG gradient node
-     * @param {Number} cx SVG value cx (value between 0 and 1)
-     * @param {Number} cy  SVG value cy (value between 0 and 1)
-     * @param {Number} r  SVG value r (value between 0 and 1)
-     * @param {Number} fx  SVG value fx (value between 0 and 1)
-     * @param {Number} fy  SVG value fy (value between 0 and 1)
-     * @param {Number} fr  SVG value fr (value between 0 and 1)
-     */
-    updateGradientCircle(node, cx, cy, r, fx, fy, fr) {
-        node.setAttributeNS(null, "cx", cx * 100 + "%"); // Center first color
-        node.setAttributeNS(null, "cy", cy * 100 + "%");
-        node.setAttributeNS(null, "r", r * 100 + "%");
-        node.setAttributeNS(null, "fx", fx * 100 + "%"); // Center second color / focal point
-        node.setAttributeNS(null, "fy", fy * 100 + "%");
-        node.setAttributeNS(null, "fr", fr * 100 + "%");
-    }
-
-    /* ********* Renderer control *********** */
-
-    /**
-      * Stop redraw. This method is called before every update, so a non-vector-graphics based renderer can use this
-      * method to delete the contents of the drawing panel. This is an abstract method every descendant renderer
-      * should implement, if appropriate.
-      * @see JXG2.AbstractRenderer#unsuspendRedraw
-      */
-    suspendRedraw() {
-        return // neutered //tbtb
-
-        // It seems to be important for the Linux version of firefox
-        this.suspendHandle = (this.canvas as SVGSVGElement).suspendRedraw(10000);
-    }
-
-    /**
-     * Restart redraw. This method is called after updating all the rendering node attributes.
-     * @see JXG2.AbstractRenderer#suspendRedraw
-     */
-    unsuspendRedraw() {
-        return // neutered //tbtb
-        (this.canvas as SVGSVGElement).unsuspendRedraw(this.suspendHandle);
-
-    }
-
-    /**
-     * Resizes the rendering element
-     * @param {Number} w New width
-     * @param {Number} h New height
-     */
-    resize(w: number, h: number) {
-        return // neutered //tbtb
-        this.assertNonNullish(this.canvas, "Expected a node")
-
-        this.canvas.setAttribute("width", w.toString());
-        this.canvas.setAttribute("height", h.toString());
-    }
-
-    /**
-     * Create crosshair elements (Fadenkreuz) for presentations.
-     * @param {Number} n Number of crosshairs.
-     */
-    createTouchpoints(n) {
-        var i, na1, na2, node;
-        this.touchpoints = [];
-        for (i = 0; i < n; i++) {
-            na1 = "touchpoint1_" + i;
-            node = this.createPrim("path", na1);
-            this.appendChildPrim(node, 19);
-            node.setAttributeNS(null, "d", "M 0 0");
-            this.touchpoints.push(node);
-
-            this.setPropertyPrim(node, "stroked", "true");
-            this.setPropertyPrim(node, "stroke-width", "1px");
-            node.setAttributeNS(null, "stroke", "#000000");
-            node.setAttributeNS(null, "stroke-opacity", 1.0);
-            node.setAttributeNS(null, "display", "none");
-
-            na2 = "touchpoint2_" + i;
-            node = this.createPrim("ellipse", na2);
-            this.appendChildPrim(node, 19);
-            this.updateEllipsePrim(node, 0, 0, 0, 0);
-            this.touchpoints.push(node);
-
-            this.setPropertyPrim(node, "stroked", "true");
-            this.setPropertyPrim(node, "stroke-width", "1px");
-            node.setAttributeNS(null, "stroke", "#000000");
-            node.setAttributeNS(null, "stroke-opacity", 1.0);
-            node.setAttributeNS(null, "fill", "#ffffff");
-            node.setAttributeNS(null, "fill-opacity", 0.0);
-
-            node.setAttributeNS(null, "display", "none");
-        }
-    }
-
-    /**
-     * Show a specific crosshair.
-     * @param {Number} i Number of the crosshair to show
-     */
-    showTouchpoint(i) {
-        if (this.touchpoints && i >= 0 && 2 * i < this.touchpoints.length) {
-            this.touchpoints[2 * i].setAttributeNS(null, "display", "inline");
-            this.touchpoints[2 * i + 1].setAttributeNS(null, "display", "inline");
-        }
-    }
-
-    /**
-     * Hide a specific crosshair.
-     * @param {Number} i Number of the crosshair to show
-     */
-    hideTouchpoint(i) {
-        if (this.touchpoints && i >= 0 && 2 * i < this.touchpoints.length) {
-            this.touchpoints[2 * i].setAttributeNS(null, "display", "none");
-            this.touchpoints[2 * i + 1].setAttributeNS(null, "display", "none");
-        }
-    }
-
-    /**
-     * Move a specific crosshair.
-     * @param {Number} i Number of the crosshair to show
-     * @param {Array} pos New positon in screen coordinates
-     */
-    updateTouchpoint(i, pos) {
-        var x,
-            y,
-            d = 37;
-
-        if (this.touchpoints && i >= 0 && 2 * i < this.touchpoints.length) {
-            x = pos[0];
-            y = pos[1];
-
-            this.touchpoints[2 * i].setAttributeNS(
-                null,
-                "d",
-                "M " +
-                (x - d) +
-                " " +
-                y +
-                " " +
-                "L " +
-                (x + d) +
-                " " +
-                y +
-                " " +
-                "M " +
-                x +
-                " " +
-                (y - d) +
-                " " +
-                "L " +
-                x +
-                " " +
-                (y + d)
-            );
-            this.updateEllipsePrim(this.touchpoints[2 * i + 1], pos[0], pos[1], 25, 25);
-        }
-    }
-
-    /* ********* Dump related stuff *********** */
-
-    /**
-     * Walk recursively through the DOM subtree of a node and collect all
-     * value attributes together with the id of that node.
-     * <b>Attention:</b> Only values of nodes having a valid id are taken.
-     * @param  {Node} node   root node of DOM subtree that will be searched recursively.
-     * @return {Array}      Array with entries of the form [id, value]
-     * @private
-     */
-    _getValuesOfDOMElements(node) {
-        var values: any[] = [];
-        if (node.nodeType === 1) {
-            node = node.firstChild;
-            while (node) {
-                if (node.id !== undefined && node.value !== undefined) {
-                    values.push([node.id, node.value]);
-                }
-                Type.concat(values, this._getValuesOfDOMElements(node));
-                node = node.nextSibling;
-            }
-        }
-        return values;
-    }
-
-    // _getDataUri(url, callback) {
-    //     var image = new Image();
-    //     image.onload = function () {
-    //         var canvas = document.createElement("canvas");
-    //         canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
-    //         canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
-    //         canvas.getContext("2d").drawImage(this, 0, 0);
-    //         callback(canvas.toDataURL("image/png"));
-    //         canvas.remove();
-    //     };
-    //     image.src = url;
-    // }
-
-    _getImgDataURL(svgRoot) {
-        var images, len, canvas, ctx, ur, i;
-
-        images = svgRoot.getElementsByTagName("image");
-        len = images.length;
-        if (len > 0) {
-            canvas = document.createElement("canvas");
-            //img = new Image();
-            for (i = 0; i < len; i++) {
-                images[i].setAttribute("crossorigin", "anonymous");
-                //img.src = images[i].href;
-                //img.onload = function() {
-                // img.crossOrigin = "anonymous";
-                ctx = canvas.getContext("2d");
-                canvas.width = images[i].getAttribute("width");
-                canvas.height = images[i].getAttribute("height");
-                try {
-                    ctx.drawImage(images[i], 0, 0, canvas.width, canvas.height);
-
-                    // If the image is not png, the format must be specified here
-                    ur = canvas.toDataURL();
-                    images[i].setAttribute("xlink:href", ur);
-                } catch (err) {
-                    console.log("CORS problem! Image can not be used", err);
-                }
-            }
-            //canvas.remove();
-        }
-        return true;
-    }
-
-    /**
-     * Return a data URI of the SVG code representing the construction.
-     * The SVG code of the construction is base64 encoded. The return string starts
-     * with "data:image/svg+xml;base64,...".
-     *
-     * @param {Boolean} ignoreTexts If true, the foreignObject tag is set to display=none.
-     * This is necessary for older versions of Safari. Default: false
-     * @returns {String}  data URI string
-     *
-     * @example
-     * var A = board.create('point', [2, 2]);
-     *
-     * var txt = board.renderer.dumpToDataURI(false);
-     * // txt consists of a string of the form
-     * // data:image/svg+xml;base64,PHN2Zy. base64 encoded SVG..+PC9zdmc+
-     * // Behind the comma, there is the base64 encoded SVG code
-     * // which is decoded with atob().
-     * // The call of decodeURIComponent(escape(...)) is necessary
-     * // to handle unicode strings correctly.
-     * var ar = txt.split(',');
-     * document.getElementById('output').value = decodeURIComponent(escape(atob(ar[1])));
-     *
-     * </pre><div id="JXG1bad4bec-6d08-4ce0-9b7f-d817e8dd762d" class="jxgbox" style="width: 300px; height: 300px;"></div>
-     * <textarea id="output2023" rows="5" cols="50"></textarea>
-     * <script type="text/javascript">
-     *     (function() {
-     *         var board = JXG2.JSXGraph.initBoard('JXG1bad4bec-6d08-4ce0-9b7f-d817e8dd762d',
-     *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
-     *     var A = board.create('point', [2, 2]);
-     *
-     *     var txt = board.renderer.dumpToDataURI(false);
-     *     // txt consists of a string of the form
-     *     // data:image/svg+xml;base64,PHN2Zy. base64 encoded SVG..+PC9zdmc+
-     *     // Behind the comma, there is the base64 encoded SVG code
-     *     // which is decoded with atob().
-     *     // The call of decodeURIComponent(escape(...)) is necessary
-     *     // to handle unicode strings correctly.
-     *     var ar = txt.split(',');
-     *     document.getElementById('output2023').value = decodeURIComponent(escape(atob(ar[1])));
-     *
-     *     })();
-     *
-     * </script><pre>
-     *
-     */
-    dumpToDataURI(ignoreTexts) {
-        let
-            btoa = window.btoa || Base64.encode,
-            svg, i, len,
-            values = [];
-
-        var svgRoot = this.canvas
-        this.assertNonNullish(svgRoot, "Expected a node")
-
-        // Move all HTML tags (beside the SVG root) of the container
-        // to the foreignObject element inside of the svgRoot node
-        // Problem:
-        // input values are not copied. This can be verified by looking at an innerHTML output
-        // of an input element. Therefore, we do it "by hand".
-
-        this.assertNonNullish(this.container, "Expected a node")
-        if (this.container.hasChildNodes() && Type.exists(this.foreignObjLayer)) {
-            if (!ignoreTexts) {
-                this.foreignObjLayer.setAttribute("display", "inline");
-            }
-            while (svgRoot.nextSibling) {
-                // Copy all value attributes
-                Type.concat(values, this._getValuesOfDOMElements(svgRoot.nextSibling));
-                this.foreignObjLayer.appendChild(svgRoot.nextSibling);
-            }
-        }
-
-        this._getImgDataURL(svgRoot);
-
-
-        // Convert the SVG graphic into a string containing SVG code
-        svgRoot.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-        svg = new XMLSerializer().serializeToString(svgRoot);
-
-        if (ignoreTexts !== true) {
-            // Handle SVG texts
-            // Insert all value attributes back into the svg string
-            len = values.length;
-            for (i = 0; i < len; i++) {
-                svg = svg.replace(
-                    'id="' + values[i][0] + '"',
-                    'id="' + values[i][0] + '" value="' + values[i][1] + '"'
+            // Highlight strokeWidth is suppressed if
+            // parameter suppressHighlightStrokeWidth is false or undefined.
+            // suppressHighlightStrokeWidth is false if polygon attribute
+            // highlightbystrokewidth is true.
+            if (!suppressHighlightStrokeWidth && el.evalVisProp('highlightstrokewidth')) {
+                sw = Math.max(
+                    el.evalVisProp('highlightstrokewidth'),
+                    el.evalVisProp('strokewidth')
                 );
+                this.setObjectStrokeWidth(el, sw);
+                if (
+                    el.elementClass === OBJECT_CLASS.LINE ||
+                    el.elementClass === OBJECT_CLASS.CURVE
+                ) {
+                    this.updatePathWithArrowHeads(el, true);
+                }
             }
         }
-
-        // if (false) {
-        //     // Debug: use example svg image
-        //     svg = '<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="220" height="220"><rect width="66" height="30" x="21" y="32" stroke="#204a87" stroke-width="2" fill="none" /></svg>';
-        // }
-
-        // In IE we have to remove the namespace again.
-        // Since 2024 we have to check if the namespace attribute appears twice in one tag, because
-        // there might by a svg inside of the svg, e.g. the screenshot icon.
-        if (this.isSafari &&
-            (svg.match(/xmlns="http:\/\/www.w3.org\/2000\/svg"\s+xmlns="http:\/\/www.w3.org\/2000\/svg"/g) || []).length > 1
-        ) {
-            svg = svg.replace(/xmlns="http:\/\/www.w3.org\/2000\/svg"\s+xmlns="http:\/\/www.w3.org\/2000\/svg"/g, "");
-        }
-
-        // Safari fails if the svg string contains a "&nbsp;"
-        // Obsolete with Safari 12+
-        svg = svg.replace(/&nbsp;/g, " ");
-        // Replacing &quot;s might be necessary for older Safari versions
-        // svg = svg.replace(/url\(&quot;(.*)&quot;\)/g, "url($1)"); // Bug: does not replace matching &quot;s
-        // svg = svg.replace(/&quot;/g, "");
-
-        // Move all HTML tags back from
-        // the foreignObject element to the container
-        if (Type.exists(this.foreignObjLayer) && this.foreignObjLayer.hasChildNodes()) {
-            // Restore all HTML elements
-            while (this.foreignObjLayer.firstChild) {
-                this.assertNonNullish(this.container, "Expected a node")
-                this.container.appendChild(this.foreignObjLayer.firstChild);
-            }
-            this.foreignObjLayer.setAttribute("display", "none");
-        }
-
-        return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
-    }
-
-    /**
-     * Convert the SVG construction into an HTML canvas image.
-     * This works for all SVG supporting browsers. Implemented as Promise.
-     * <p>
-     * Might fail if any text element or foreign object element contains SVG. This
-     * is the case e.g. for the default fullscreen symbol.
-     * <p>
-     * For IE, it is realized as function.
-     * It works from version 9, with the exception that HTML texts
-     * are ignored on IE. The drawing is done with a delay of
-     * 200 ms. Otherwise there would be problems with IE.
-     *
-     * @param {String} canvasId Id of an HTML canvas element
-     * @param {Number} w Width in pixel of the dumped image, i.e. of the canvas tag.
-     * @param {Number} h Height in pixel of the dumped image, i.e. of the canvas tag.
-     * @param {Boolean} ignoreTexts If true, the foreignObject tag is taken out from the SVG root.
-     * This is necessary for older versions of Safari. Default: false
-     * @returns {Promise}  Promise object
-     *
-     * @example
-     * 	board.renderer.dumpToCanvas('canvas').then(function() { console.log('done'); });
-     *
-     * @example
-     *  // IE 11 example:
-     * 	board.renderer.dumpToCanvas('canvas');
-     * 	setTimeout(function() { console.log('done'); } 400);
-     */
-    dumpToCanvas(canvasId, w, h, ignoreTexts): Promise<unknown> {
-        var svg, tmpImg,
-            cv, ctx
-
-        this.assertNonNullish(this.container, "Expected a node")
-        let doc = this.container.ownerDocument;
-
-        // Prepare the canvas element
-        cv = doc.getElementById(canvasId);
-
-        // Clear the canvas
-        /* eslint-disable no-self-assign */
-        cv.width = cv.width;
-        /* eslint-enable no-self-assign */
-
-        ctx = cv.getContext("2d");
-        if (w !== undefined && h !== undefined) {
-            cv.style.width = parseFloat(w) + "px";
-            cv.style.height = parseFloat(h) + "px";
-            // Scale twice the CSS size to make the image crisp
-            // cv.setAttribute('width', 2 * parseFloat(wOrg));
-            // cv.setAttribute('height', 2 * parseFloat(hOrg));
-            // ctx.scale(2 * wOrg / w, 2 * hOrg / h);
-            cv.setAttribute("width", parseFloat(w));
-            cv.setAttribute("height", parseFloat(h));
-        }
-
-        // Display the SVG string as data-uri in an HTML img.
-        /**
-         * @type {Image}
-         * @ignore
-         * {ignore}
-         */
-        tmpImg = new Image();
-        svg = this.dumpToDataURI(ignoreTexts);
-        tmpImg.src = svg;
-
-        // Finally, draw the HTML img in the canvas.
-        if (!("Promise" in window)) {
-            /**
-             * @function
-             * @ignore
-             */
-            tmpImg.onload = function () {
-                // IE needs a pause...
-                // Seems to be broken
-                window.setTimeout(function () {
-                    try {
-                        ctx.drawImage(tmpImg, 0, 0, w, h);
-                    } catch (err) {
-                        console.log("screenshots not longer supported on IE");
-                    }
-                }, 200);
-            };
-            return new Promise(() => { });     // TODO:  this is wrong, but caller expects a promise...
-        }
-
-        return new Promise(function (resolve, reject) {
-            try {
-                tmpImg.onload = function () {
-                    ctx.drawImage(tmpImg, 0, 0, w, h);
-                    this.resolve();
-                };
-            } catch (e) {
-                reject(e);
-            }
-        });
-    }
-
-    /**
-     * Display SVG image in html img-tag which enables
-     * easy download for the user.
-     *
-     * Support:
-     * <ul>
-     * <li> IE: No
-     * <li> Edge: full
-     * <li> Firefox: full
-     * <li> Chrome: full
-     * <li> Safari: full (No text support in versions prior to 12).
-     * </ul>
-     *
-     * @param {JXG2.Board} board Link to the board.
-     * @param {String} imgId Optional id of an img object. If given and different from the empty string,
-     * the screenshot is copied to this img object. The width and height will be set to the values of the
-     * JSXGraph container.
-     * @param {Boolean} ignoreTexts If set to true, the foreignObject is taken out of the
-     *  SVGRoot and texts are not displayed. This is mandatory for Safari. Default: false
-     * @return {Object}       the svg renderer object
-     */
-    screenshot(board, imgId, ignoreTexts) {
-        var node,
-            // cPos,
-            // cssTxt,
-            canvas, id, img,
-            button, buttonText,
-            w, h,
-            bas = board.attr.screenshot,
-            navbar, navbarDisplay, insert,
-            newImg = false,
-            _copyCanvasToImg,
-            isDebug = false;
-
-        this.assertNonNullish(this.container, "Expected a node")
-        let doc = this.container.ownerDocument
-        this.assertNonNullish(doc, "Expected a node")
-        let parent = this.container.parentNode
-        this.assertNonNullish(parent, "Expected a node")
-
-        if (this.type === "no") {
-            return this;
-        }
-
-        this.assertNonNullish(this.container.getBoundingClientRect(), "Expected a node")
-        w = bas.scale * this.container.getBoundingClientRect().width;
-        h = bas.scale * this.container.getBoundingClientRect().height;
-
-        if (imgId === undefined || imgId === "") {
-            newImg = true;
-            img = new Image(); //doc.createElement('img');
-            img.style.width = w + "px";
-            img.style.height = h + "px";
-        } else {
-            newImg = false;
-            img = doc.getElementById(imgId);
-        }
-        // img.crossOrigin = 'anonymous';
-
-        // Create div which contains canvas element and close button
-        if (newImg) {
-            node = doc.createElement("div");
-            node.style.cssText = bas.css;
-            node.style.width = w + "px";
-            node.style.height = h + "px";
-
-            this.assertNonNullish(this.container, "Expected a node")
-            node.style.zIndex = this.container.style.zIndex + 120;
-
-            // Try to position the div exactly over the JSXGraph board
-            node.style.position = "absolute";
-            node.style.top = this.container.offsetTop + "px";
-            node.style.left = this.container.offsetLeft + "px";
-        }
-
-        if (!isDebug) {
-            // Create canvas element and add it to the DOM
-            // It will be removed after the image has been stored.
-            canvas = doc.createElement("canvas");
-            id = Math.random().toString(36).slice(2, 7);
-            canvas.setAttribute("id", id);
-            canvas.setAttribute("width", w);
-            canvas.setAttribute("height", h);
-            canvas.style.width = w + "px";
-            canvas.style.height = w + "px";
-            canvas.style.display = "none";
-
-            this.assertNonNullish(parent, "Expected a node")
-            this.assertNonNullish(parent, "Expected a node")
-            parent.appendChild(canvas);
-        } else {
-            // Debug: use canvas element 'jxgbox_canvas' from jsxdev/dump.html
-            id = "jxgbox_canvas";
-            canvas = doc.getElementById(id);
-        }
-
-        if (newImg) {
-            // Create close button
-            button = doc.createElement("span");
-            buttonText = doc.createTextNode("\u2716");
-            button.style.cssText = bas.cssButton;
-            button.appendChild(buttonText);
-            button.onclick = function () {
-                node.parentNode.removeChild(node);
-            };
-
-            // Add all nodes
-            node.appendChild(img);
-            node.appendChild(button);
-
-            this.assertNonNullish(this.container, "Expected a container")
-            this.assertNonNullish(parent, "Expected a node")
-
-            parent.insertBefore(node, this.container.nextSibling);
-        }
-
-        // Hide navigation bar in board
-        navbar = doc.getElementById(this.uniqName('navigationbar'));
-        if (Type.exists(navbar)) {
-            navbarDisplay = navbar.style.display;
-            navbar.style.display = "none";
-            insert = this.removeToInsertLater(navbar);
-        }
-
-        _copyCanvasToImg = function () {
-            // Show image in img tag
-            img.src = canvas.toDataURL("image/png");
-
-            // Remove canvas node
-            if (!isDebug && parent !== null) {
-                parent.removeChild(canvas);
-            }
-        };
-
-        // Create screenshot in image element
-        // if ("Promise" in window) {
-
-        this.dumpToCanvas(id, w, h, ignoreTexts).then(_copyCanvasToImg);
-
-        // } else {
-        //     // IE
-        //     this.dumpToCanvas(id, w, h, ignoreTexts);
-        //     window.setTimeout(_copyCanvasToImg, 200);
-        // }
-
-        // Reinsert navigation bar in board
-        if (Type.exists(navbar)) {
-            navbar.style.display = navbarDisplay;
-            insert();
-        }
+        this.setCssClass(el, el.evalVisProp('highlightcssclass'));
 
         return this;
-
     }
+
+    /**
+     * Uses the normal colors of an object, i.e. the opposite of {@link JXG2.AbstractRenderer#highlight}.
+     * @param {JXG2.GeometryElement} el Reference of the object that will get its normal colors.
+     * @returns {JXG2.AbstractRenderer} Reference to the renderer
+     * @see JXG2.AbstractRenderer#updateTextStyle
+     */
+    noHighlight(el) {
+        var i, sw;
+
+        if (dbug(el)) console.warn(`%c abstract: noHighlight(el)`, dbugColor, 'el.visProp = ', el)
+
+        this.setObjectTransition(el);
+        if (!el.evalVisProp('draft')) {
+            if (el.type === OBJECT_TYPE.POLYGON) {
+                this.setObjectFillColor(el, el.evalVisProp('fillcolor'), el.evalVisProp('fillopacity'));
+                for (i = 0; i < el.borders.length; i++) {
+                    this.noHighlight(el.borders[i]);
+                }
+            } else {
+                if (el.elementClass === OBJECT_CLASS.TEXT) {
+                    this.updateTextStyle(el, false);
+                } else if (el.type === OBJECT_TYPE.IMAGE) {
+                    this.updateImageStyle(el, false);
+                    this.setObjectFillColor(el, el.evalVisProp('fillcolor'), el.evalVisProp('fillopacity'));
+                } else {
+                    this.setObjectStrokeColor(el, el.evalVisProp('strokecolor'), el.evalVisProp('strokeopacity'));
+                    this.setObjectFillColor(el, el.evalVisProp('fillcolor'), el.evalVisProp('fillopacity'));
+                }
+            }
+
+            sw = el.evalVisProp('strokewidth');
+            this.setObjectStrokeWidth(el, sw);
+            if (
+                el.elementClass === OBJECT_CLASS.LINE ||
+                el.elementClass === OBJECT_CLASS.CURVE
+            ) {
+                this.updatePathWithArrowHeads(el, false);
+            }
+        }
+        this.setCssClass(el, el.evalVisProp('cssclass'));
+
+        return this;
+    }
+
+    /**
+     * Puts an object from draft mode back into normal mode.
+     * @param {JXG2.GeometryElement} el Reference of the object that no longer is in draft mode.
+     */
+    removeDraft(el) {
+        this.setObjectTransition(el);
+        if (el.type === OBJECT_TYPE.POLYGON) {
+            this.setObjectFillColor(el, el.evalVisProp('fillcolor'), el.evalVisProp('fillopacity'));
+        } else {
+            if (el.type === OBJECT_CLASS.POINT) {
+                this.setObjectFillColor(el, el.evalVisProp('fillcolor'), el.evalVisProp('fillopacity'));
+            }
+            this.setObjectStrokeColor(el, el.evalVisProp('strokecolor'), el.evalVisProp('strokeopacity'));
+            this.setObjectStrokeWidth(el, el.evalVisProp('strokewidth'));
+        }
+    }
+
+
+    /**
+     * Puts an object into draft mode, i.e. it's visual appearance will be changed. For GEONE<sub>x</sub>T backwards
+     * compatibility.
+     * @param {JXG2.GeometryElement} el Reference of the object that is in draft mode.
+     */
+    setDraft(el) {
+        if (!el.evalVisProp('draft.draft')) {
+            return;
+        }
+        var draftColor = el.board.options.elements.draft.color,
+            draftOpacity = el.board.options.elements.draft.opacity;
+
+        this.setObjectTransition(el);
+        if (el.type === OBJECT_TYPE.POLYGON) {
+            this.setObjectFillColor(el, draftColor, draftOpacity);
+        } else {
+            if (el.elementClass === OBJECT_CLASS.POINT) {
+                this.setObjectFillColor(el, draftColor, draftOpacity);
+            } else {
+                this.setObjectFillColor(el, "none", 0);
+            }
+            this.setObjectStrokeColor(el, draftColor, draftOpacity);
+            this.setObjectStrokeWidth(el, el.board.options.elements.draft.strokeWidth);
+        }
+    }
+
+    /**
+     * The tiny zoom bar shown on the bottom of a board (if board attribute "showNavigation" is true).
+     * It is a div element and gets the CSS class "JXG_navigation" and the id {board id}_navigationbar.
+     * <p>
+     * The buttons get the CSS class "JXG_navigation_button" and the id {board_id}_name where name is
+     * one of [top, down, left, right, out, 100, in, fullscreen, screenshot, reload, cleartraces].
+     * <p>
+     * The symbols for zoom, navigation and reload are hard-coded.
+     *
+     * @param {JXG2.Board} board Reference to a JSXGraph board.
+     * @param {Object} attr Attributes of the navigation bar
+     * @private
+     */
+    drawNavigationBar(board, attr) {
+        var doc,
+            node,
+            cancelbubble = function (e) {
+                if (!e) {
+                    e = window.event;
+                }
+                e.stopPropagation();
+            }
+        let createNavButton = (label, handler, board_id, type) => {
+            var button;
+
+            board_id = board_id || "";
+
+            button = doc.createElement("span");
+            button.innerHTML = label; // button.appendChild(doc.createTextNode(label));
+
+            // Style settings are superseded by adding the CSS class below
+            button.style.paddingLeft = "7px";
+            button.style.paddingRight = "7px";
+
+            if (button.classList !== undefined) {
+                // classList not available in IE 9
+                button.classList.add("JXG_navigation_button");
+                button.classList.add("JXG_navigation_button_" + type);
+            }
+            // button.setAttribute('tabindex', 0);
+
+            button.setAttribute("id", board_id + '_navigation_' + type);
+            button.setAttribute("aria-hidden", 'true');   // navigation buttons should never appear in screen reader
+
+            node.appendChild(button);
+
+            Env.addEvent(
+                button,
+                "click",
+                function (e) {
+                    Type.bind(handler, board)();
+                    return false;
+                },
+                board
+            );
+            // prevent the click from bubbling down to the board
+            Env.addEvent(button, "pointerup", cancelbubble, board);
+            Env.addEvent(button, "pointerdown", cancelbubble, board);
+            Env.addEvent(button, "pointerleave", cancelbubble, board);
+            Env.addEvent(button, "mouseup", cancelbubble, board);
+            Env.addEvent(button, "mousedown", cancelbubble, board);
+            Env.addEvent(button, "touchend", cancelbubble, board);
+            Env.addEvent(button, "touchstart", cancelbubble, board);
+        };
+
+        if (Env.isBrowser() && this.type !== "no") {
+            doc = board.containerObj.ownerDocument;
+            node = doc.createElement("div");
+
+            node.setAttribute("id", board.container + "_navigationbar");
+
+            // Style settings are superseded by adding the CSS class below
+            node.style.color = attr.strokecolor;
+            node.style.backgroundColor = attr.fillcolor;
+            node.style.padding = attr.padding;
+            node.style.position = attr.position;
+            node.style.fontSize = attr.fontsize;
+            node.style.cursor = attr.cursor;
+            node.style.zIndex = attr.zindex;
+            board.containerObj.appendChild(node);
+            node.style.right = attr.right;
+            node.style.bottom = attr.bottom;
+
+            if (node.classList !== undefined) {
+                // classList not available in IE 9
+                node.classList.add("JXG_navigation");
+            }
+            // For XHTML we need unicode instead of HTML entities
+
+            if (board.attr.showfullscreen) {
+                createNavButton(
+                    board.attr.fullscreen.symbol,
+                    function () {
+                        board.toFullscreen(board.attr.fullscreen.id);
+                    },
+                    board.container, "fullscreen"
+                );
+            }
+
+            if (board.attr.showscreenshot) {
+                createNavButton(
+                    board.attr.screenshot.symbol,
+                    function () {
+                        window.setTimeout(function () {
+                            board.renderer.screenshot(board, "", false);
+                        }, 330);
+                    },
+                    board.container, "screenshot"
+                );
+            }
+
+            if (board.attr.showreload) {
+                // full reload circle: \u27F2
+                // the board.reload() method does not exist during the creation
+                // of this button. That's why this anonymous function wrapper is required.
+                createNavButton(
+                    "\u21BB",
+                    function () {
+                        board.reload();
+                    },
+                    board.container, "reload"
+                );
+            }
+
+            if (board.attr.showcleartraces) {
+                // clear traces symbol (otimes): \u27F2
+                createNavButton("\u2297",
+                    function () {
+                        board.clearTraces();
+                    },
+                    board.container, "cleartraces"
+                );
+            }
+
+            if (board.attr.shownavigation) {
+                if (board.attr.showzoom) {
+                    createNavButton("\u2013", board.zoomOut, board.container, "out");
+                    createNavButton("o", board.zoom100, board.container, "100");
+                    createNavButton("+", board.zoomIn, board.container, "in");
+                }
+                createNavButton("\u2190", board.clickLeftArrow, board.container, "left");
+                createNavButton("\u2193", board.clickUpArrow, board.container, "down"); // Down arrow
+                createNavButton("\u2191", board.clickDownArrow, board.container, "up"); // Up arrow
+                createNavButton("\u2192", board.clickRightArrow, board.container, "right");
+            }
+        }
+    }
+
+    /**
+     * Wrapper for getElementById for maybe other renderers which elements are not directly accessible by DOM
+     * methods like document.getElementById().
+     * @param {String} id Unique identifier for element.
+     * @returns {Object} Reference to a JavaScript object. In case of SVGRenderer it's a reference to a SVG/VML node.
+     */
+    getElementById(id) {
+        var str;
+        if (Type.exists(this.container) && this.container !== null) {
+            // Use querySelector over getElementById for compatibility with both 'regular' document
+            // and ShadowDOM fragments.
+            str = this.container.id + '_' + id;
+            // Mask special symbols like '/' and '\' in id
+            if ((window as any).CSS !== undefined && Type.exists((window as any).CSS.escape)) {
+                str = (window as any).CSS.escape(str);
+            }
+            return this.container.querySelector('#' + str);
+        }
+        return "";
+    }
+
+    /**
+     * Remove an element and provide a function that inserts it into its original position. This method
+     * is taken from this article {@link https://developers.google.com/speed/articles/javascript-dom}.
+     * @author KeeKim Heng, Google Web Developer
+     * @param {Element} el The element to be temporarily removed
+     * @returns {Function} A function that inserts the element into its original position
+     */
+    removeToInsertLater(el) {
+        var parentNode = el.parentNode,
+            nextSibling = el.nextSibling;
+
+        if (parentNode === null) {
+            return;
+        }
+        parentNode.removeChild(el);
+
+        return function () {
+            if (nextSibling) {
+                parentNode.insertBefore(el, nextSibling);
+            } else {
+                parentNode.appendChild(el);
+            }
+        };
+    }
+
 
     /** proxy for appendChild, enables debugging and mocks */
     jsxAppendChild(parent: Node, child: Node) {
@@ -2950,5 +2068,178 @@ export class WebGLRenderer extends AbstractRenderer {
         // parent.appendChild(child)
     }
 
+
+    // these are stubs, documentation moved to svg.ts
+    _setArrowWidth(node, width, parentNode, size) {
+        return;
+    }
+    setLineCap(el) {
+        return;
+    }
+    updateTicks(ticks) {
+        return;
+    }
+    displayCopyright(str, fontsize) {
+        return;
+    }
+    displayLogo(str, fontsize) {
+        return;
+    }
+    drawInternalText(el): HTMLElement {
+        return;
+    }
+    updateInternalText(el) {
+        return;
+    }
+    drawImage(el) {
+        return;
+    }
+    transformRect(el, transformations) {
+        return
+        return;
+    }
+    updateImageURL(el) {
+        return;
+    }
+    drawForeignObject(el) {
+        return;
+    }
+    updateForeignObject(el) {
+        return;
+    }
+    appendChildPrim(node, level) {
+        return;
+    }
+    appendNodesToElement(el, type) {
+        return;
+    }
+    createPrim(type, id): HTMLElement {
+        return;
+    }
+    remove(node) {
+        return;
+    }
+    makeArrows(el, arrowData) {
+        return;
+    }
+    updateEllipsePrim(node, x, y, rx, ry) {
+        return
+        return;
+    }
+    updateLinePrim(node, p1x, p1y, p2x, p2y, board) {
+        return;
+    }
+    updatePathPrim(node, pathString, board) {
+        return;
+    }
+    updatePathStringPoint(el, size, type) {
+        return;
+    }
+    updatePathStringPrim(el) {
+        return;
+    }
+    updatePathStringBezierPrim(el) {
+        return;
+    }
+    updatePolygonPrim(node, el) {
+        return;
+    }
+    updateRectPrim(node, x, y, w, h) {
+        return;
+    }
+    display(el, value) {
+        return
+        return;
+    }
+    hide(el) {
+        return;
+    }
+    setARIA(el) {
+        return;
+    }
+    setBuffering(node, type) {
+        return;
+    }
+    setCssClass(el, cssClass) {
+        return;
+    }
+    setDashStyle(el) {
+        return;
+    }
+    setGradient(el) {
+        return;
+    }
+    setLayer(el, level) {
+        return;
+    }
+    setObjectFillColor(el, color, opacity, rendnodw?) {
+        return;
+    }
+    setObjectStrokeColor(el, color, opacity) {
+        return
+        return;
+    }
+    setObjectStrokeWidth(el, width) {
+        return;
+    }
+    setObjectTransition(el, duration?) {
+        return
+        return;
+    }
+    setPropertyPrim(node, key, val) {
+        return;
+    }
+    setShadow(el) {
+        return;
+    }
+    setTabindex(el) {
+        return
+        return;
+    }
+    show(el) {
+        return;
+    }
+    updateGradient(el) {
+        return;
+    }
+    suspendRedraw() {
+        return
+        return;
+    }
+    unsuspendRedraw() {
+        return
+        return;
+    }
+    resize(w, h) {
+        return;
+        return;
+    }
+    createTouchpoints(n) {
+        return;
+    }
+    showTouchpoint(i) {
+        return;
+    }
+    hideTouchpoint(i) {
+        return;
+    }
+    updateTouchpoint(i, pos) {
+        return;
+    }
+    dumpToDataURI(_ignoreTexts) {
+        return;
+    }
+    dumpToCanvas(canvasId, w, h, _ignoreTexts) {
+        return;
+    }
+    screenshot(board, imgId, ignoreTexts) {
+        return;
+    }
+    updateInternalTextStyle(el, strokeColor, strokeOpacity) {
+        return;
+    }
+    uniqName(prefix) {
+        return;
+    }
 
 }

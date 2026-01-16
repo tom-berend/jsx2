@@ -198,6 +198,7 @@ export class Line extends GeometryElement {
         });
     }
 
+
     /**
      * Checks whether (x,y) is near the line.
      * @param {Number} x Coordinate in x direction, screen coordinates.
@@ -1865,11 +1866,6 @@ export class Axis extends Line {
         this.elementUpdate()
         this.elementUpdateRenderer()
 
-        // TODO:  tbtb - hack, don't know why it doesn't show
-        // mouse over fixes it, and also fixes left and right
-        // something isn't being updated
-        this.board.renderer.highlight(this);
-
     }
 
     updateRenderer() {
@@ -2112,6 +2108,8 @@ export class Axis extends Line {
             }
             this.defaultTicks.needsUpdate = true;
         }
+
+        this.board.renderer.updateLine(this);
 
     }
 };

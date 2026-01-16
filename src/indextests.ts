@@ -23,7 +23,7 @@ export class IndexTests {
 
     old = true  // turn on and off boards
     new = true
-    webgl = false
+    webgl = true
 
     boards = []
 
@@ -66,7 +66,7 @@ export class IndexTests {
         if (this.old)
             this.boards.push((window as any).JXG.JSXGraph.initBoard('box2', attr));
 
-        
+
         if (this.webgl) {
             attr['renderer'] = 'webgl'
             this.boards.push(JSXGraph.initBoard('box3', attr));
@@ -141,8 +141,8 @@ export class IndexTests {
             let c3 = board.create('curve', [(t) => t - Math.sin(t), (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
             let glid3 = board.create('glider', [c3])
 
-            // // Create a slider with values between 1 and 10, initial position is 5.
-            // let s = board.create('slider', [[1, 2], [3, 2], [1, 5, 10]]);
+            // Create a slider with values between 1 and 10, initial position is 5.
+            let s = board.create('slider', [[1, 2], [3, 2], [1, 5, 10]]);
         })
     }
     circle() {
