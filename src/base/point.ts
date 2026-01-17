@@ -86,11 +86,13 @@ export class Point extends CoordsElement {
         if (dbug(this))
             console.warn(`%c create Point ${this.id}`, dbugColor, coordinates)
 
+        /* Register point on board. */
         this.elType = 'point';
+        this.id = this.board.setId(this, 'P');
+
+
         this.visProp = Type.initVisProps(Options.elements, Options.point, attributes)
 
-        /* Register point on board. */
-        this.id = this.board.setId(this, 'P');
 
 
         this.board.renderer.drawPoint(this);

@@ -1323,8 +1323,18 @@ export class GeometryElement extends Events {
             opacity, pair, oldvalue,
             attributes = {};
 
-        if (dbug(this))
-            console.warn(`%c GeoElement setAttribute(${this.id}, ${attr}') `, dbugColor)
+        // all sorts of special cases.  for TS, we simply ensure that
+        // attribute already exists, and investigate later...
+
+        for (const [key, value] of Object.entries(arg)) {
+            if (this.visProp[key] === undefined) {
+                // if (dbug(this))
+                console.warn(`%c GeoElement setAttribute(${this.id},${key} => ${value}') previously unknown `, dbugColor)
+            }
+            this.visProp[key] = value
+        }
+        /////////////////////////////////
+
 
         // Normalize the user input
         for (i = 0; i < arguments.length; i++) {
@@ -1336,6 +1346,7 @@ export class GeometryElement extends Events {
             } else if (!Type.isArray(arg)) {
                 // pairRaw consists of objects of the form {key1:value1,key2:value2,...}
                 // JXG2.extend(attributes, arg);
+                // this.visProp[]
                 throw new Error('can we take JXG.extend out??')
             } else {
                 // pairRaw consists of array [key,value]
@@ -1921,7 +1932,7 @@ export class GeometryElement extends Events {
      * @param  Force the highlighting
      * @returns {JXG2.Board}
      */
-    highlight(force=false) {
+    highlight(force = false) {
         force = Type.def(force, false);
         // I know, we have the JXG2.Board.highlightedObjects AND JXG2.GeometryElement.highlighted and YES we need both.
         // Board.highlightedObjects is for the internal highlighting and GeometryElement.highlighted is for user highlighting

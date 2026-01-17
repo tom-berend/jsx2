@@ -131,15 +131,15 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
         this.elementGetLabelAnchor = () => this.getLabelAnchor();
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
+        /* Register text on board. */
+        this.elType = "text";
+        this.id = this.board.setId(this, "T");
 
         if (dbug(this))
             console.warn(`%c text constructor(${JSON.stringify(parents).substring(0, 100)})`, dbugColor)
 
-        this.elType = "text";
         this.visProp = Type.initVisProps(Options.board, Options.elements, Options.point, Options.label, Options.text, attributes)
 
-        /* Register text on board. */
-        this.id = this.board.setId(this, "T");
 
         let coordinates = parents.slice(0, -1)
         this.relativeCoords = new Coords(COORDS_BY.USER, coordinates, board, true, this)  // used by transforms

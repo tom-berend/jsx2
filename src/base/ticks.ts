@@ -1,4 +1,4 @@
-const dbug = (elem) =>  elem && elem.id === "jxgBoard1L3";
+const dbug = (elem) => false // elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:black;background-color:#bfbfff`;
 /*
     Copyright 2008-2025
@@ -191,7 +191,7 @@ export class Ticks extends GeometryElement {
         this.inherits.push(this.labels);
         this.board.setId(this, 'Ti');
 
-        // if(dbug(this))
+        if(dbug(this))
             console.warn(`%c ${this.id} creating ticks`,dbugColor)
 
     };

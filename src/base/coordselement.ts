@@ -1056,6 +1056,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
 
 
         if (Type.exists(this.element) && Type.exists(this.element.id)) {
+            // console.log(this.element.id, )
             let remote = this.board.select(this.element.id)
             if (remote !== null)
                 anchor = remote.elementGetTextAnchor();

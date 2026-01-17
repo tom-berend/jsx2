@@ -240,7 +240,7 @@ export const useStandardOptions = JXG2.useStandardOptions;
 export const warn = JXG2.warn;
 
 // We're in the browser, export JXG2 to the global JXG2 symbol for backwards compatibility
-if (Env.isBrowser) {
+// if (Env.isBrowser) {
     (window as any).JXG2 = JXG2;
 
     // In node there are two cases:
@@ -252,8 +252,8 @@ if (Env.isBrowser) {
     // the return value of this factory function
     // } else if (Env.isNode() && typeof module === 'object') {
     //     module.exports = JXG2;
-} else if (Env.isWebWorker()) {
-    (self as any).JXG2 = JXG2;
-}
+// } else if (Env.isWebWorker()) {
+    // (self as any).JXG2 = JXG2;
+// }
 
-export default JXG2;
+// export default JXG2;

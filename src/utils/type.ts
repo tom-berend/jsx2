@@ -45,6 +45,7 @@ import { Point } from "../base/point.js";
 
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
+import { Options } from '../index.js';
 
 export class Type {
     /**
@@ -499,6 +500,7 @@ export class Type {
             lenAttr = attrArray.length;
         }
         if (lenAttr === 0) {
+            // attr = Type.initVisProps(Options.element,Options.point, attributes);
             attr = this.copyAttributes(attributes, board.options, attrClass);
         }
 

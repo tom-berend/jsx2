@@ -286,6 +286,7 @@ export class Slider {        // doesn't extend anything
         attr.withlabel = false;
         // gliders set snapwidth=-1 by default (i.e. deactivate them)
         this.p3 = createGlider(board, [startx, starty, this.l1], attr);
+
         this.p3.setAttribute({ snapwidth: snapWidth, snapvalues: snapValues, snapvaluedistance: snapValueDistance });
 
         // Segment from start point to glider point: highline

@@ -513,12 +513,7 @@ export class JSXGraph {
 
         // old style copies EVERYTHIN
         options = Type.deepCopy(Options, theme, true);
-        attr = this._setAttributes(attributes, options);
-        console.log(attr)
-
-        // // new style only copies what is necessary
-        // attr = Type.initVisProps(Options.board, Options.layer, Options.navbar,Options.label, Options.point, Options.text,  attributes)
-        // console.log(attr)
+        attr = Type.initVisProps(Options.board,attributes)
 
 
         dimensions = Env.getDimensions(box, attr.document);

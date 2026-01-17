@@ -7259,10 +7259,10 @@ export class Board extends Events {
 
         if (str === null || str === undefined) return null;
 
-        if (typeof str === 'object')
-            console.warn('ERROR - wrong type sent to board.select()',str)
-
-        str = (str as GeometryElement).id
+        if (typeof str === 'object') {
+            console.warn('ERROR - wrong type sent to board.select()', str)
+            str = (str as GeometryElement).id
+        }
 
         // It's a string, most likely an id or a name.
         if (Type.isString(str) && str !== '') {
@@ -7289,7 +7289,7 @@ export class Board extends Events {
         }
 
 
-        if (dbug(this) && Type.exists(s['id']))
+        if (dbug(this) && s['id'] === undefined)
             console.warn(`%c board: select(str:'${str}') returns '${s == null ? 'null' : s['id']}`, dbugColor)
 
         if (s === null)

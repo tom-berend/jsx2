@@ -142,7 +142,7 @@ export class IndexTests {
             let glid3 = board.create('glider', [c3])
 
             // Create a slider with values between 1 and 10, initial position is 5.
-            let s = board.create('slider', [[1, 2], [3, 2], [1, 5, 10]]);
+            let s = board.create('slider', [[-5, -2], [3, -2], [1, 5, 10]]);
         })
     }
     circle() {
