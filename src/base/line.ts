@@ -389,11 +389,11 @@ export class Line extends GeometryElement {
         if (d1 > JSXMath.eps || d2 > JSXMath.eps || d !== d_new) {
             drag1 =
                 this.point1.isDraggable &&
-                this.point1.type !== OBJECT_TYPE.GLIDER &&
+                this.point1.otype !== OBJECT_TYPE.GLIDER &&
                 !this.point1.evalVisProp('fixed');
             drag2 =
                 this.point2.isDraggable &&
-                this.point2.type !== OBJECT_TYPE.GLIDER &&
+                this.point2.otype !== OBJECT_TYPE.GLIDER &&
                 !this.point2.evalVisProp('fixed');
 
             // First case: the two points are different
@@ -406,13 +406,13 @@ export class Line extends GeometryElement {
                         this.point1.X() + ((this.point2.X() - this.point1.X()) * d_new) / d,
                         this.point1.Y() + ((this.point2.Y() - this.point1.Y()) * d_new) / d
                     ]);
-                    this.point2.fullUpdate();
+                    this.point2.fullUpdate(this.evalVisProp('visible'));
                 } else if ((d1 <= d2 && drag1) || (d1 > d2 && drag1 && !drag2)) {
                     this.point1.setPositionDirectly(COORDS_BY.USER, [
                         this.point2.X() + ((this.point1.X() - this.point2.X()) * d_new) / d,
                         this.point2.Y() + ((this.point1.Y() - this.point2.Y()) * d_new) / d
                     ]);
-                    this.point1.fullUpdate();
+                    this.point1.fullUpdate(this.evalVisProp('visible'));
                 }
                 // Second case: the two points are identical. In this situation
                 // we choose a random direction.
@@ -426,13 +426,13 @@ export class Line extends GeometryElement {
                         this.point1.X() + (x * d_new) / d,
                         this.point1.Y() + (y * d_new) / d
                     ]);
-                    this.point2.fullUpdate();
+                    this.point2.fullUpdate(this.evalVisProp('visible'));
                 } else if (drag1) {
                     this.point1.setPositionDirectly(COORDS_BY.USER, [
                         this.point2.X() + (x * d_new) / d,
                         this.point2.Y() + (y * d_new) / d
                     ]);
-                    this.point1.fullUpdate();
+                    this.point1.fullUpdate(this.evalVisProp('visible'));
                 }
             }
             // Finally, we save the position of the two points.

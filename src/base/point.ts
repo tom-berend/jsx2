@@ -72,6 +72,7 @@ import { Env } from "../utils/env.js";
  */
 export class Point extends CoordsElement {
 
+    _is_new
 
     constructor(board: Board, coordinates: number[], attributes: LooseObject = {}) {
         super(board, COORDS_BY_USER, coordinates, attributes, OBJECT_TYPE.POINT, OBJECT_CLASS.POINT)

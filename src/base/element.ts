@@ -371,8 +371,8 @@ export class GeometryElement extends Events {
     center
     points
     radius
-    point1
-    point2
+    point1:Point
+    point2:Point
 
 
     element// ???

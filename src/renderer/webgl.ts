@@ -48,6 +48,7 @@ import { Type } from "../utils/type.js";
 import { JSXMath } from "../math/math.js";
 import { Coords } from "../base/coords.js";
 import { Point } from "../base/point.js"
+import { Line } from "../base/line.js"
 import { Geometry } from "../math/geometry.js";
 
 
@@ -250,9 +251,14 @@ export class WebGLRenderer {
         renderer.setSize(webcanvas.clientWidth, webcanvas.clientHeight)
 
         this.scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.scene.background = new THREE.Color( 'lightblue' );
 
-        camera.position.z = 15;
+        // const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        // camera.position.z = 13;
+
+        const camera = new THREE.OrthographicCamera(-10,10,10,-10, 0.1, 1000);
+        camera.position.z = 10;
+
 
         if (this.enableOrbital) {
             this.orbitalControls = new OrbitControls(camera, webcanvas);
@@ -261,7 +267,9 @@ export class WebGLRenderer {
         ////////////////////
 
         let groundGeometry = new THREE.BoxGeometry(20, 20, 0.1);
-        let groundMaterial = new THREE.MeshBasicMaterial({ color: 'aliceblue' });
+        let groundMaterial = new THREE.MeshBasicMaterial({ color: 'white' });
+        groundMaterial.transparent = true
+        groundMaterial.opacity = .9
 
 
         let ground = new THREE.Mesh(groundGeometry, groundMaterial);
@@ -287,6 +295,23 @@ export class WebGLRenderer {
     }
 
     /* ********* Private methods *********** */
+
+
+    // eventually this should account for the size of the board.
+    // currently set for a 10x10 board
+    calcLineStrokeWidth(n: number) {
+        if (n <= 0) return 0;
+        return (Math.round(n) * 0.019)
+    }
+
+    // eventually this should account for the size of the board.
+    // currently set for a 10x10 board
+    calcPointStrokeWidth(n: number) {
+        if (n < 0) return 0;
+        return (((Math.sqrt(Math.round(n)+1))) * 0.12)  // point of strokewith zero still shows
+    }
+
+
 
     /**
      * Update visual properties, but only if {@link JXG2.AbstractRenderer#enhancedRendering} or <tt>enhanced</tt> is set to true.
@@ -407,16 +432,23 @@ export class WebGLRenderer {
      */
     drawPoint(el: Point) {
 
-        if (dbug(el)) console.warn(`%c webgl: drawPoint(el)`, dbugColor, el.visProp)
+        if (dbug(el)) console.warn(`%c webgl: drawPoint(${el.id})`, dbugColor, el.visProp)
 
         // really naive
 
         let coord = el.Coords(false)
 
         let color = el.evalVisProp('strokecolor')
-        let vertexMaterial = new THREE.MeshBasicMaterial({ color: color });
 
-        let v = new THREE.Mesh(new THREE.SphereGeometry(.2, 6, 6), vertexMaterial)
+
+        let pointMaterial = new THREE.MeshBasicMaterial({ color: color });
+        pointMaterial.transparent = true
+        pointMaterial.opacity = 1
+
+                let strokewidth = this.calcPointStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
+
+        let v = new THREE.Mesh(new THREE.SphereGeometry(strokewidth, 8, 8), pointMaterial)
+
         v.position.set(coord[0], coord[1], 0)
 
         this.scene.add(v)
@@ -562,13 +594,31 @@ export class WebGLRenderer {
      * @see JXG2.Line
      * @see JXG2.AbstractRenderer#updateLine
      */
-    drawLine(el) {
-        el.rendNode = this.appendChildPrim(
-            this.createPrim("line", el.id),
-            el.evalVisProp('layer')
-        );
-        this.appendNodesToElement(el, "lines");
-        this.updateLine(el);
+    drawLine(el: Line) {
+
+        if (dbug(el))
+            console.warn(`%c webgl: drawLine(${el.id})`, dbugColor, el.visProp)
+
+        let start = el.point1.Coords(false)
+        let end = el.point2.Coords(false)
+        console.log(start, end)
+
+        let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
+        let color = el.evalVisProp('strokecolor')
+        // let opacity = el.evalVisProp('opacity')
+
+        // let strokewidth = 2
+        // let color = 'blue'
+        let opacity = 1
+
+
+        let path = new THREE.LineCurve3(new THREE.Vector3(start[0], start[1], 0), new THREE.Vector3(end[0], end[1], 0))
+
+        const geometry = new THREE.TubeGeometry(path, 1, strokewidth, 8, false);  // closed must be false
+        const material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
+        const mesh = new THREE.Mesh(geometry, material);
+        this.scene.add(mesh);
+
     }
 
     /**

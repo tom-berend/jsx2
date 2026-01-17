@@ -14,7 +14,7 @@ export function runTests(which) {
         new IndexTests()
 }
 
-export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image']
+export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke']
 
 
 export class IndexTests {
@@ -180,6 +180,17 @@ export class IndexTests {
 
         })
     }
-}
+    stroke() {
+        this.boards.map((board) => {
+            for (let i = 0; i < 15; i++) {
+                board.create('point', [i - 9, 8],{strokewidth:i})
 
+                board.create('segment', [[i - 9, - 9], [i - 2,   2]],{strokewidth:i});  // mostly diagonal
+                board.create('text', [i - 9,  - 9.5, i.toString()])
+            }
+        })
+
+    }
+
+}
 
