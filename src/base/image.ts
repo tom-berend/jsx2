@@ -81,9 +81,10 @@ export class Image extends CoordsElement {
         this.elType = 'image';
         this.visProp = Type.initVisProps(Options.board, Options.elements, Options.image, attributes)
 
+        this.url = url;
 
         this.element = this.board.select(attributes.anchor);
-        this.coordsConstructor(coords);
+        this.coordsConstructor(coords,attributes);
 
         this.W = Type.createFunction(size[0], this.board, "");
         this.H = Type.createFunction(size[1], this.board, "");
@@ -104,7 +105,6 @@ export class Image extends CoordsElement {
          * 'href' of the image. This might be an URL, but also a data-uri is allowed.
          * @type string
          */
-        this.url = url;
 
 
         // span contains the anchor point and the two vectors
@@ -416,6 +416,7 @@ export function createImage(board, parents, attributes) {
         coords = parents[1],
         size = parents[2];
 
+        console.log(parents)
     attr = Type.copyAttributes(attributes, board.options, 'image');
     im = new Image(board, coords, attr, url, size);
     if (!im) {

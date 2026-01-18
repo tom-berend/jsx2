@@ -65,6 +65,8 @@ import { GeometryElement } from "../base/element.js";
 import { SVGType } from "../interfaces.js";
 import { Text } from "../base/text.js"
 import { Point } from "../base/point.js"
+import { Curve } from "../base/curve.js"
+import { Image } from "../base/image.js"
 import { elements } from "../index.js";
 
 
@@ -515,7 +517,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.Curve
      * @see JXG2.AbstractRenderer#updateCurve
      */
-    drawCurve(el) {
+    drawCurve(el:Curve) {
         el.rendNode = this.appendChildPrim(
             this.createPrim("path", el.id),
             el.evalVisProp('layer')
@@ -1505,7 +1507,8 @@ export abstract class AbstractRenderer {
      * @see JXG2.Image
      * @see JXG2.AbstractRenderer#drawImage
      */
-    updateImage(el) {
+    updateImage(el:Image) {
+        console.log(el)
         this.updateRectPrim(
             el.rendNode,
             el.coords.scrCoords[1],

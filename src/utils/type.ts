@@ -515,8 +515,8 @@ export class Type {
                 );
             }
             if (this.isArray(parents[i]) && parents[i].length > 1) {
-                // points.push(board.create("point", parents[i], attr));
-                points.push(createPoint(board, parents[i], attr));
+                points.push(board.create("point", parents[i], attr));
+                // points.push(createPoint(board, parents[i], attr));
 
                 points[points.length - 1]._is_new = true;
             } else if (this.isFunction(parents[i])) {

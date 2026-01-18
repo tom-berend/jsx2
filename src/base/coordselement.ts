@@ -1943,7 +1943,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         if (!isConstrained) {
             if (Type.isNumber(coords[0]) && Type.isNumber(coords[1])) {
 
-                if (Type.exists(attr1.slideobject)) {
+                if (Type.exists(attr1['slideobject'])) {
                     // tbtb - attr1 is never a glider, so always false
                     throw new Error('huh?')
                 //     this.makeGlider(attr1.slideobject);

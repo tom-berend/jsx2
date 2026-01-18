@@ -50,6 +50,7 @@ import { Env } from "../utils/env.js"
 import { GeometryElement } from "../base/element.js";
 import { Text } from "../base/text.js"
 import { Dim, SVGType } from "../interfaces.js"
+import { Polygon } from "../base/polygon.js";
 
 
 /**
@@ -857,7 +858,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.Image
      * @see JXG2.AbstractRenderer#updateImage
      */
-    drawImage(el: GeometryElement) {
+    drawImage(el) {
         var node = this.createPrim("image", el.id);
 
         node.setAttributeNS(null, "preserveAspectRatio", "none");
@@ -922,6 +923,7 @@ export class SVGRenderer extends AbstractRenderer {
     updateImageURL(el) {
         var url = el.eval(el.url);
 
+        console.log(url,el.url)
         if (el._src !== url) {
             el.imgIsLoaded = false;
             el.rendNode.setAttributeNS(this.xlinkNamespace, "xlink:href", url);
@@ -1520,7 +1522,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Node} node
      * @param {JXG2.Polygon} el A JSXGraph element of type {@link JXG2.Polygon}
      */
-    updatePolygonPrim(node, el) {
+    updatePolygonPrim(node, el:Polygon) {
         var i,
             pStr = "",
             scrCoords,

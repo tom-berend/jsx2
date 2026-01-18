@@ -601,7 +601,6 @@ export class WebGLRenderer {
 
         let start = el.point1.Coords(false)
         let end = el.point2.Coords(false)
-        console.log(start, end)
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')

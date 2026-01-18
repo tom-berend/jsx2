@@ -6349,8 +6349,8 @@ export class Board extends Events {
     create(elementType: string, parents: any[] = [], attributes: LooseObject = {}) {
         var el, i;
 
-        if (dbug(this))
-            console.warn(`%c board: ${this.id} creating new element Type '${elementType}', ${JSON.stringify(parents).substring(0, 100)}`, dbugColor)
+        // if (dbug(this))
+        console.warn(`%c board: ${this.id} creating new element Type '${elementType}'`, dbugColor)
 
 
         elementType = elementType.toLowerCase();
@@ -6360,9 +6360,16 @@ export class Board extends Events {
             parents = [];
         }
 
+        // something in the block below is killing the image url string !!
+        // but all this does is select by name
+
         for (i = 0; i < parents.length; i++) {
             if (
                 Type.isString(parents[i]) &&
+
+                //tbtb  - need to investigate what 'select' does for us
+                !(elementType === 'image' && i === 0) &&    // tbtb hack.  first string of image is URL.  how dows this work?
+
                 !(elementType === 'text' && i === 2) &&
                 !(elementType === 'solidofrevolution3d' && i === 2) &&
                 !(elementType === 'text3d' && (i === 2 || i === 4)) &&

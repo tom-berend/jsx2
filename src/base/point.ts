@@ -584,7 +584,8 @@ export class Point extends CoordsElement {
 export function createPoint(board, parents, attributes): Point {
     var el, attr;
 
-    attr = Type.copyAttributes(attributes, board.options, 'point');
+    // attr = Type.copyAttributes(attributes, board.options, 'point');
+    attr = Type.initVisProps(Options.point,attributes)
     el = new Point(board, parents, attr);
 
     if (!el) {

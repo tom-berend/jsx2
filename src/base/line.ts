@@ -1325,7 +1325,8 @@ export function createLine(board, parents, attributes) {
     if (parents.length === 2) {
         // The line is defined by two points or coordinates of two points.
         // In the latter case, the points are created.
-        attr = Type.copyAttributes(attributes, board.options, "line", 'point1');
+        // attr = Type.copyAttributes(attributes, board.options, "line", 'point1');
+        attr = Type.initVisProps(attributes.point1)
 
         if (Array.isArray(parents[0]) && parents[0].length > 1) {
             p1 = createPoint(board, parents[0], attr);
@@ -1356,7 +1357,8 @@ export function createLine(board, parents, attributes) {
         }
 
         // point 2 given by coordinates
-        attr = Type.copyAttributes(attributes, board.options, "line", 'point2');
+        // attr = Type.copyAttributes(attributes, board.options, "line", 'point2');
+        attr = Type.initVisProps(attributes.point2)
         if (doTransform) {
             p2 = createPoint(board, [parents[0].point2, parents[1]], attr)
         } else if (Array.isArray(parents[1]) && parents[1].length > 1) {
