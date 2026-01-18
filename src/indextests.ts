@@ -171,22 +171,26 @@ export class IndexTests {
     polygon() {
         this.boards.map((board) => {
 
-            var p1 = board.create('point', [-5, -6]);
-            var p2 = board.create('point', [-5, -7]);
-            var p3 = board.create('point', [-4, -5]);
-            var p4 = board.create('point', [-6, -6]);
+            let polyBuild = (x, y, attr) => {
+                let p1 = board.create('point', [x, y - 1]);
+                let p2 = board.create('point', [x, y - 2]);
+                let p3 = board.create('point', [x + 1, y]);
+                let p4 = board.create('point', [x - 1, y - 1]);
 
-            var pol = board.create('polygon', [p1, p2, p3, p4]);
-
+                board.create('polygon', [p1, p2, p3, p4], attr);
+            }
+            polyBuild(-5, -5, {})
+            polyBuild(-5, 0, { borders: { strokecolor: 'black',strokewidth:3 } })
+            polyBuild(-5, 5, { vertices: { strokecolor: 'pink',strokewidth:3 } })
         })
     }
     stroke() {
         this.boards.map((board) => {
             for (let i = 0; i < 15; i++) {
-                board.create('point', [i - 9, 8],{strokewidth:i})
+                board.create('point', [i - 9, 8], { strokewidth: i })
 
-                board.create('segment', [[i - 9, - 9], [i - 2,   2]],{strokewidth:i});  // mostly diagonal
-                board.create('text', [i - 9,  - 9.5, i.toString()])
+                board.create('segment', [[i - 9, - 9], [i - 2, 2]], { strokewidth: i });  // mostly diagonal
+                board.create('text', [i - 9, - 9.5, i.toString()])
             }
         })
 

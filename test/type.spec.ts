@@ -1,5 +1,5 @@
 import { Type } from '../src/utils/type.js';
-import {Options} from '../src/options.js';
+import { Options } from '../src/options.js';
 
 
 
@@ -125,10 +125,14 @@ describe('copyAttributes(attr, special, toLower, ignoreUndefinedSpecials)', () =
             a2: { enabled: true },
             a4: false
         }
+
         expect(Type.initVisProps(a, b)).toEqual({ a1: 'string', a2: true, a3: 3.14, a4: { x: { y: 1, z: [1] } }, b1: 'alien', b2: false, b3: 123456 })
         expect(Type.initVisProps(a, c)).toEqual({ a1: 'STRING', a2: true, a3: 3.14, a4: { x: { y: 1, z: [1] } } })
         expect(Type.initVisProps(a, d)).toEqual({ a1: 'string', a2: true, a3: 3.14, a4: { x: { y: 1, z: [2] } } })
         expect(Type.initVisProps(a, e)).toEqual({ a1: 'string', a2: { enabled: true }, a3: 3.14, a4: false })
+
+        // copy a subobject of e into a
+        expect(Type.initVisProps(a, e.a2)).toEqual({ a1: 'string', a2: true, a3: 3.14, a4: { x: { y: 1, z: [1] } }, enabled:true})
 
         // only the second element is converted to lowercase
         let x = { A: true }
@@ -200,7 +204,7 @@ describe('simpleClone()', () => {
 
         }
         {
-            let original = { a1: {a2:1, a3:2} }       //  object contains an array
+            let original = { a1: { a2: 1, a3: 2 } }       //  object contains an array
             let a = Type.cloneToLowerCase(original)
             a.a1.a2 = 3
             expect(a.a1.a2).toBe(3)
@@ -215,16 +219,16 @@ describe('initVisProps()', () => {
     it('creates a new object by merging copyies of successive objects', () => {
         let a = Type.initVisProps()
         expect(a).toStrictEqual({}) // passed nothing, still returns an object
-        a = {a1:1,a2:2}
-        expect(Type.initVisProps(a)).toStrictEqual({a1:1,a2:2}) // simple copy
-        let b = {a1:2, a3:3}
-        expect(Type.initVisProps(a,b)).toStrictEqual({a1:2,a2:2,a3:3}) // copies b over a
-        let c = {a1:4, c1 :{a1:5}}
-        expect(Type.initVisProps(a,c)).toStrictEqual({a1:4,a2:2,c1:{a1:5}}) // copy with depth
-        expect(Type.initVisProps(a,c.c1)).toStrictEqual({a1:5,a2:2}) // copy with partial !!
+        a = { a1: 1, a2: 2 }
+        expect(Type.initVisProps(a)).toStrictEqual({ a1: 1, a2: 2 }) // simple copy
+        let b = { a1: 2, a3: 3 }
+        expect(Type.initVisProps(a, b)).toStrictEqual({ a1: 2, a2: 2, a3: 3 }) // copies b over a
+        let c = { a1: 4, c1: { a1: 5 } }
+        expect(Type.initVisProps(a, c)).toStrictEqual({ a1: 4, a2: 2, c1: { a1: 5 } }) // copy with depth
+        expect(Type.initVisProps(a, c.c1)).toStrictEqual({ a1: 5, a2: 2 }) // copy with partial !!
 
         // try with real options.
-        expect(Type.initVisProps(Options.jc)).toStrictEqual({enabled: true, compile: true})
-        expect(Type.initVisProps(Options.jc,{COMPILE:5})).toStrictEqual({enabled: true, compile: 5})
+        expect(Type.initVisProps(Options.jc)).toStrictEqual({ enabled: true, compile: true })
+        expect(Type.initVisProps(Options.jc, { COMPILE: 5 })).toStrictEqual({ enabled: true, compile: 5 })
     });
 });

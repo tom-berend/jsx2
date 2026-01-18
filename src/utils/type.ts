@@ -41,7 +41,7 @@
  */
 
 import { LooseObject } from '../interfaces.js'
-import { Point } from "../base/point.js";
+import { Point,createPoint } from "../base/point.js";
 
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
@@ -483,7 +483,7 @@ export class Type {
      * @param {Array} attrArray List of subtype attributes for the newly created points. The list of subtypes is mapped to the list of new points.
      * @returns {Array} List of newly created {@link JXG2.Point} elements or false if not all returned elements are points.
      */
-    static providePoints(board, parents, attributes, attrClass?, attrArray?): Point[]  {
+    static providePoints(board, parents, attributes, attrClass?, attrArray?): Point[] {
         var i,
             j,
             len,
@@ -515,7 +515,9 @@ export class Type {
                 );
             }
             if (this.isArray(parents[i]) && parents[i].length > 1) {
-                points.push(board.create("point", parents[i], attr));
+                // points.push(board.create("point", parents[i], attr));
+                points.push(createPoint(board, parents[i], attr));
+
                 points[points.length - 1]._is_new = true;
             } else if (this.isFunction(parents[i])) {
                 val = parents[i]();
@@ -1933,8 +1935,9 @@ export class Type {
         // })
 
         let a: LooseObject = {}
-        s.map((visProps) => {
-            this.mergeAttr(a, visProps, true)
+        s.map((addVisProps) => {
+            this.mergeAttr(a, addVisProps, true)
+
         })
 
         // console.warn('initVisProps',Type.getObjectDiff(a,b),a,b)

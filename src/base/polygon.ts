@@ -69,7 +69,7 @@ export class Polygon extends GeometryElement {
      * a copy of the first one. In a 3D quadrangle, 'vertices' will contain four points.
      * @type Array
      */
-    vertices = [];
+    vertices: Point[] = [];
 
     public withLines: boolean
     public attr_line
@@ -79,7 +79,7 @@ export class Polygon extends GeometryElement {
     constructor(board: Board, vertices: any[], attributes: LooseObject) {
         super(board, attributes, OBJECT_TYPE.POLYGON, OBJECT_CLASS.AREA);
 
-        let i, l, len, j, p
+        let len, j, p
         // Register polygon at board
         this.id = this.board.setId(this, 'Py');
 
@@ -95,7 +95,7 @@ export class Polygon extends GeometryElement {
 
         this.withLines = this.evalVisProp('withlines');
 
-        for (i = 0; i < vertices.length; i++) {
+        for (let i = 0; i < vertices.length; i++) {
             this.vertices[i] = vertices[i];
 
             //     // The _is_new flag is replaced by _is_new_pol.
@@ -107,57 +107,40 @@ export class Polygon extends GeometryElement {
             //     }
             // }
 
-            // Close the polygon
-            if (
-                this.vertices.length > 0 &&
-                this.vertices[this.vertices.length - 1].id !== this.vertices[0].id
-            ) {
-                this.vertices.push(this.vertices[0]);
-            }
         }
 
-            /**
-             * References to the border lines (edges) of the polygon.
-             * @type Array
-             */
-            this.borders = [];
+        /**
+         * References to the border lines (edges) of the polygon.
+         * @type Array
+         */
+        this.borders = [];
 
-            // let attr_line = Type.copyAttributes(attributes, board.options, "polygon", 'borders');
-            let attr_line = Type.initVisProps(Options.polygon.borders, attributes)
+        // let attr_line = Type.copyAttributes(attributes, board.options, "polygon", 'borders');
 
-/*
-            if (this.withLines) {
-                len = vertices.length - 1;
-                for (j = 0; j < len; j++) {
-                    // This sets the "correct" labels for the first triangle of a construction.
-                    i = (j + 1) % len;
-                    attr_line.id = attr_line.ids && attr_line.ids[i];
-                    attr_line.name = attr_line.names && attr_line.names[i];
-                    attr_line.strokecolor =
-                        (Type.isArray(attr_line.colors) &&
-                            attr_line.colors[i % attr_line.colors.length]) ||
-                        attr_line.strokecolor;
+        console.log(vertices)
+        if (this.withLines) {
+            len = vertices.length - 1;
+            for (j = 0; j < len; j++) {
+
+                let attr_line = Type.initVisProps(Options.polygon.borders, attributes['borders'])
+
+                if (attr_line['visible'] === 'inherit')
+                    attr_line['visible'] = this.evalVisProp('visible')
 
 
-                    attr_line.visible = (Type.exists(attributes.borders) && Type.exists(attributes.borders.visible))
-                        ? attributes.borders.visible
-                        : attributes.visible ?? true;
+                let line = createSegment(this.board, [vertices[j], vertices[j + 1]], attr_line)
 
-                    if (attr_line.strokecolor === false) {
-                        attr_line.strokecolor = 'none';
-                    }
+                // This sets the "correct" labels for the first triangle of a construction.
+                line.id = this.id + 'border' + j.toString();
+                // lineattr_line.name = attr_line.names && attr_line.names[i];
 
-                    // l = createSegment(this.board, [this.vertices[i], this.vertices[i + 1]], attr_line)
-
-                    l = createSegment(this.board, [vertices[j], vertices[j + 1]], attr_line)
-
-                    l.dump = false;
-                    this.borders[i] = l;
-                    l.parentPolygon = this;
-                    this.addChild(l);
-                }
+                let i = (j + 1) % len;
+                line.dump = false;
+                this.borders[i] = line;
+                line.parentPolygon = this;
+                this.addChild(line);
             }
-*/
+        }
 
         this.inherits.push(this.vertices, this.borders);
 
@@ -166,7 +149,7 @@ export class Polygon extends GeometryElement {
         // - add polygon as child to an existing point
         // or
         // - add  points (supplied as coordinate arrays by the user and created by Type.providePoints) as children to the polygon
-        for (i = 0; i < this.vertices.length - 1; i++) {
+        for (let i = 0; i < this.vertices.length - 1; i++) {
             p = this.vertices[i];
             if (Type.exists(p._is_new_pol)) {
                 this.addChild(p);
@@ -1267,8 +1250,17 @@ export function createPolygon(board, parents, attributes) {
     // tbtb - handle a function returning an array of coordinate arrays
 
 
-    let vAttributes = Type.exists(attributes['vertices']) ? attributes['vertices'] : {}
+    // let vAttributes = Type.exists(attributes['vertices']) ? attributes['vertices'] : {}
+    let vAttributes = Type.initVisProps(Options.polygon.vertices, attributes['vertices'])
     let vertices = Type.providePoints(board, parents, vAttributes);
+
+    // close the polygon
+    if (
+        vertices.length > 0 &&
+        vertices[vertices.length - 1].id !== vertices[0].id
+    ) {
+        vertices.push(vertices[0]);
+    }
 
 
     obj = points[0];
