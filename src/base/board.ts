@@ -72,7 +72,7 @@ import { Checkbox } from "../element/checkbox.js"
 import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis, createPolarLine, createTangentTo } from '../base/line.js'
 import { createCircle } from './circle.js';
 import { createTicks, createHatchmark } from "./ticks.js";
-import { createTransform, createTransform3D } from "./transformation.js";
+import { createTransform } from "./transformation.js";
 import {
     createCurve, createFunctiongraph, createSpline, createCardinalSpline, createMetapostSpline, createRiemannsum, createTracecurve, createStepfunction, createDerivative,
     createCurveIntersection, createCurveUnion, createCurveDifference, createBoxPlot, createImplicitCurve
@@ -1489,7 +1489,7 @@ export class Board extends Events {
             len = this.objectsList.length,
             dragEl: LooseObject = { visProp: { layer: -10000 } };
 
-        if (dbug(this)) console.warn(`%c board: initMoveObject(x:${x},y:${y},evt: '${evt.type},  type:${type}')`, dbugColor)
+        if (dbug(this)) console.warn(`%c board: initMoveObject(x:${x},y:${y},evt: '${evt.otype},  type:${type}')`, dbugColor)
 
         // Store status of key presses for 3D movement
         this._shiftKey = evt.shiftKey;
@@ -1700,7 +1700,7 @@ export class Board extends Events {
 
         if (
             drag.elementClass === OBJECT_CLASS.LINE ||
-            drag.type === OBJECT_TYPE.POLYGON
+            drag.otype === OBJECT_TYPE.POLYGON
         ) {
             this.twoFingerTouchObject(o.targets, drag, id);
         } else if (drag.elementClass === OBJECT_CLASS.CIRCLE) {
@@ -1959,7 +1959,7 @@ export class Board extends Events {
             i,
             len;
 
-        if (obj.type === OBJECT_TYPE.TICKS) {
+        if (obj.otype === OBJECT_TYPE.TICKS) {
             xy.push([1, NaN, NaN]);
         } else if (obj.elementClass === OBJECT_CLASS.LINE) {
             xy.push(obj.point1.coords.usrCoords);
@@ -3576,8 +3576,8 @@ export class Board extends Events {
                     if (
                         Type.isPoint(obj) ||
                         obj.elementClass === OBJECT_CLASS.TEXT ||
-                        obj.type === OBJECT_TYPE.TICKS ||
-                        obj.type === OBJECT_TYPE.IMAGE
+                        obj.otype === OBJECT_TYPE.TICKS ||
+                        obj.otype === OBJECT_TYPE.IMAGE
                     ) {
                         // It's a point, so it's single touch, so we just push it to our touches
                         targets = [target];
@@ -3591,7 +3591,7 @@ export class Board extends Events {
                         obj.elementClass === OBJECT_CLASS.LINE ||
                         obj.elementClass === OBJECT_CLASS.CIRCLE ||
                         obj.elementClass === OBJECT_CLASS.CURVE ||
-                        obj.type === OBJECT_TYPE.POLYGON
+                        obj.otype === OBJECT_TYPE.POLYGON
                     ) {
                         found = false;
 
@@ -5665,7 +5665,7 @@ export class Board extends Events {
                 for (i = object._pos; i < this.objectsList.length; i++) {
                     this.objectsList[i]._pos--;
                 }
-            } else if (object.type !== OBJECT_TYPE.TURTLE) {
+            } else if (object.otype !== OBJECT_TYPE.TURTLE) {
                 JXG2.debug(
                     'Board.removeObject: object ' + object.id + ' not found in list.'
                 );
@@ -6001,10 +6001,6 @@ export class Board extends Events {
      * @returns {JXG2.Board} Reference to the board
      */
     updateRenderer() {
-        var el,
-            len = this.objectsList.length,
-            autoPositionLabelList = [],
-            currentIndex, randomIndex;
 
         if (!this.renderer) {
             return;
@@ -6017,8 +6013,8 @@ export class Board extends Events {
                 return -1;
             } else if (a.visProp.layer === b.visProp.layer) {
                 return b.lastDragTime.getTime() - a.lastDragTime.getTime();
-            } else {
-                return 1;
+                } else {
+                    return 1;
             }
         });
         */
@@ -6026,7 +6022,9 @@ export class Board extends Events {
         if (this.renderer.type === 'canvas') {
             this.updateRendererCanvas();
         } else {
-            for (el = 0; el < len; el++) {
+
+            let autoPositionLabelList = []
+            for (let el = 0; el < this.objectsList.length; el++) {
                 if (this.objectsList[el].visProp["islabel"] && this.objectsList[el].visProp["autoposition"]) {
                     autoPositionLabelList.push(el);
                 } else {
@@ -6034,16 +6032,16 @@ export class Board extends Events {
                 }
             }
 
-            currentIndex = autoPositionLabelList.length;
+            let currentIndex = autoPositionLabelList.length;
 
             // Randomize the order of the labels
             while (currentIndex !== 0) {
-                randomIndex = Math.floor(Math.random() * currentIndex);
+                let randomIndex = Math.floor(Math.random() * currentIndex);
                 currentIndex--;
                 [autoPositionLabelList[currentIndex], autoPositionLabelList[randomIndex]] = [autoPositionLabelList[randomIndex], autoPositionLabelList[currentIndex]];
             }
 
-            for (el = 0; el < autoPositionLabelList.length; el++) {
+            for (let el = 0; el < autoPositionLabelList.length; el++) {
                 this.objectsList[autoPositionLabelList[el]].elementUpdateRenderer();
             }
             /*
@@ -6264,8 +6262,6 @@ export class Board extends Events {
 
         if (dragID !== undefined)
             this.prepareUpdate(dragID).updateElements(dragID).updateConditions();
-        else
-            console.warn(`Board.update() by ${this.id} without specifying element`)
 
         this.renderer.suspendRedraw();
         this.updateRenderer();

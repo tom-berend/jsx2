@@ -1,4 +1,4 @@
-const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
+const dbug = (elem) => elem && elem.id === "jxgBoard1P3";
 let dbugColor = 'color:black;background-color:#FF8FFF;'
 /*
     Copyright 2008-2025
@@ -137,7 +137,7 @@ export class GeometryElement extends Events {
      * @type Array
      * @see JXG2.Transformation
      */
-    transformations = [];
+    transformations : Transformation[] = [];
 
     /**
      * @type JXG2.GeometryElement
@@ -707,15 +707,15 @@ export class GeometryElement extends Events {
         return this.name;
     }
 
-    /**
-     * Add transformations to this element.
-     * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation}
-     * or an array of {@link JXG2.Transformation}s.
-     * @returns {JXG2.GeometryElement} Reference to the element.
-     */
-    addTransform(el: GeometryElement, transform: Transformation | Transformation[]) {
-        return this;
-    }
+    // /**
+    //  * Add transformations to this element.
+    //  * @param {JXG2.Transformation|Array} transform Either one {@link JXG2.Transformation}
+    //  * or an array of {@link JXG2.Transformation}s.
+    //  * @returns {JXG2.GeometryElement} Reference to the element.
+    //  */
+    // addTransform(el: GeometryElement, transform: Transformation | Transformation[]) {
+    //     return this;
+    // }
 
     /**
      * Decides whether an element can be dragged. This is used in
@@ -733,106 +733,6 @@ export class GeometryElement extends Events {
         );
     }
 
-    /**
-     * Translates the object by <tt>(x, y)</tt>. In case the element is defined by points, the defining points are
-     * translated, e.g. a circle constructed by a center point and a point on the circle line.
-     * @param {Number} method The type of coordinates used here.
-     * Possible values are {@link COORDS_BY.USER} and {@link JXG2.COORDS_BY_SCREEN}.
-     * @param {Array} coords array of translation vector.
-     * @returns {JXG2.GeometryElement} Reference to the element object.
-     *
-     * @see JXG2.GeometryElement3D#setPosition2D
-     */
-    setPosition(method, coords) {
-        var parents = [],
-            el,
-            i, len, t;
-
-        if (!Type.exists(this.parents)) {
-            return this;
-        }
-
-        len = this.parents.length;
-        for (i = 0; i < len; ++i) {
-            el = this.board.select(this.parents[i]);
-            if (Type.isPoint(el)) {
-                if (!el.draggable()) {
-                    return this;
-                }
-                parents.push(el);
-            }
-        }
-
-        if (coords.length === 3) {
-            coords = coords.slice(1);
-        }
-
-        t = this.board.create("transform", coords, { type: "translate" });
-
-        // We distinguish two cases:
-        // 1) elements which depend on free elements, i.e. arcs and sectors
-        // 2) other elements
-        //
-        // In the first case we simply transform the parents elements
-        // In the second case we add a transform to the element.
-        //
-        len = parents.length;
-        if (len > 0) {
-            t.applyOnce(parents);
-
-            // Handle dragging of a 3D element
-            if (Type.exists(this.view) && this.view.elType === 'view3d') {
-                for (i = 0; i < this.parents.length; ++i) {
-                    // Search for the parent 3D element
-                    el = this.view.select(this.parents[i]);
-                    if (Type.exists(el.setPosition2D)) {
-                        el.setPosition2D(t);
-                    }
-                }
-            }
-
-        } else {
-            if (
-                this.transformations.length > 0 &&
-                this.transformations[this.transformations.length - 1].isNumericMatrix
-            ) {
-                this.transformations[this.transformations.length - 1].melt(t);
-            } else {
-                console.error('huh? ')
-                // this.addTransform(t);
-            }
-        }
-
-        /*
-         * If - against the default configuration - defining gliders are marked as
-         * draggable, then their position has to be updated now.
-         */
-        for (i = 0; i < len; ++i) {
-            if (parents[i].type === OBJECT_TYPE.GLIDER) {
-                parents[i].updateGlider();
-            }
-        }
-
-        return this;
-    }
-
-    /**
-     * Moves an element by the difference of two coordinates.
-     * @param {Number} method The type of coordinates used here.
-     * Possible values are {@link COORDS_BY.USER} and {@link JXG2.COORDS_BY_SCREEN}.
-     * @param {Array} coords coordinates in screen/user units
-     * @param {Array} oldcoords previous coordinates in screen/user units
-     * @returns {JXG2.GeometryElement} this element
-     */
-    setPositionDirectly(method, coords, oldcoords) {
-        var c = new Coords(method, coords, this.board, false, this),
-            oldc = new Coords(method, oldcoords, this.board, false, this),
-            dc = Statistics.subtract(c.usrCoords, oldc.usrCoords);
-
-        this.setPosition(COORDS_BY.USER, dc);
-
-        return this;
-    }
 
     /**
      * Array of strings containing the polynomials defining the element.

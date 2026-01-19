@@ -1446,23 +1446,25 @@ export class Curve extends GeometryElement {
      * @returns {JXG2.Curve} Reference to itself.
      */
     moveTo(where) {
-        // TODO add animation
-        var delta = [],
-            p;
-        if (this.points.length > 0 && !this.evalVisProp('fixed')) {
-            p = this.points[0];
-            if (where.length === 3) {
-                delta = [
-                    where[0] - p.usrCoords[0],
-                    where[1] - p.usrCoords[1],
-                    where[2] - p.usrCoords[2]
-                ];
-            } else {
-                delta = [where[0] - p.usrCoords[1], where[1] - p.usrCoords[2]];
-            }
-            this.setPosition(COORDS_BY.USER, delta);
-            return this.board.update(this.id);
-        }
+        throw new Error('what does moving a curve defined by a function mean?')
+
+        // // TODO add animation
+        // var delta = [],
+        //     p;
+        // if (this.points.length > 0 && !this.evalVisProp('fixed')) {
+        //     p = this.points[0];
+        //     if (where.length === 3) {
+        //         delta = [
+        //             where[0] - p.usrCoords[0],
+        //             where[1] - p.usrCoords[1],
+        //             where[2] - p.usrCoords[2]
+        //         ];
+        //     } else {
+        //         delta = [where[0] - p.usrCoords[1], where[1] - p.usrCoords[2]];
+        //     }
+        //     this.setPosition(COORDS_BY.USER, delta);
+        //     return this.board.update(this.id);
+        // }
         return this;
     }
 

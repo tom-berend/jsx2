@@ -23,7 +23,7 @@ export class IndexTests {
 
     old = true  // turn on and off boards
     new = true
-    webgl = true
+    webgl = false
 
     boards = []
 
@@ -31,26 +31,27 @@ export class IndexTests {
 
 
         this.initBoard(which)
+        this.point()
 
-        if (which) {
-            this[which]()
-        } else {
-            this.axis()
-            // this.point()
-            // this.text()
-            // this.line()
-            // this.circle()
-            // this.curve()
-            // this.widgets()
-            // this.image()
-            // this.polygon()
-        }
+        // if (which !== '') {
+        //     this[which]()
+        // } else {
+        //     this.point()
+        //     // this.axis()
+        //     // this.text()
+        //     // this.line()
+        //     // this.circle()
+        //     // this.curve()
+        //     // this.widgets()
+        //     // this.image()
+        //     // this.polygon()
+        // }
     }
 
 
 
     initBoard(which: string) {
-        let showAxis = ['axis'].includes(which)
+        let showAxis = ['axis'].includes(which)   // list of tests that includes showAxis
 
         let attr = {
             boundingBox: [-10, 10, 10, -10],
@@ -86,10 +87,10 @@ export class IndexTests {
     point() {
         this.boards.map((board) => {
             let a = board.create('point', [1, 3])
-            board.create('point', [() => a.X() + 1, () => a.Y() + 1], { name: 'locked to A', strokecolor: 'blue' })
+            // board.create('point', [() => a.X() + 1, () => a.Y() + 1], { name: 'locked to A', strokecolor: 'blue' })
 
-            let wave = () => new Date().getSeconds()
-            board.create('point', [-2, 3], { strokecolor: 'green', strokewidth: 6, linecolor: 'red', opacity: ((wave() % 10) / 10), name: () => wave() })
+            // let wave = () => new Date().getSeconds()
+            // board.create('point', [-2, 3], { strokecolor: 'green', strokewidth: 6, linecolor: 'red', opacity: ((wave() % 10) / 10), name: () => wave() })
 
             // Create a point using transformations
             let trans = board.create('transform', [2, 0.5], { type: 'scale' });
@@ -113,7 +114,7 @@ export class IndexTests {
             board.create('segment', [p2, p3], { strokecolor: 'green' })
 
             let d = board.create('point', [1, 3])
-            let p5 = board.create('point', [() => d.X() - 1, () => d.Y() + 2], { name: 'locked to A', strokecolor: 'blue' })
+            let p5 = board.create('point', [() => d.X() - 1, () => d.Y() + 2], { name: 'locked to D', strokecolor: 'blue' })
             board.create('segment', [d, p5], { strokecolor: 'green' })
 
             // Create a line using point and coordinates/
@@ -121,7 +122,7 @@ export class IndexTests {
             let e = board.create('point', [4.5, 2.0]);
             let l1 = board.create('line', [e, [1.0, 1.0]]);
 
-            board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
+            board.create('line', [[-10, -1], [10, -1]], { strokecolor: 'red' })
             board.create('arrow', [[-.5, -9.5], [-3, -9.5]])
 
             let pl1 = board.create('point', [9.5, -9.5], { withlabel: false })
@@ -180,8 +181,8 @@ export class IndexTests {
                 board.create('polygon', [p1, p2, p3, p4], attr);
             }
             polyBuild(-5, -5, {})
-            polyBuild(-5, 0, { borders: { strokecolor: 'black',strokewidth:3 } })
-            polyBuild(-5, 5, { vertices: { strokecolor: 'pink',strokewidth:3 } })
+            polyBuild(-5, 0, { borders: { strokecolor: 'black', strokewidth: 3 } })
+            polyBuild(-5, 5, { vertices: { strokecolor: 'pink', strokewidth: 3 } })
         })
     }
     stroke() {

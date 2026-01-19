@@ -436,6 +436,9 @@ export class WebGLRenderer {
 
         // really naive
 
+        if(!el.evalVisProp('visible'))
+            return;
+
         let coord = el.Coords(false)
 
         let color = el.evalVisProp('strokecolor')
@@ -596,7 +599,7 @@ export class WebGLRenderer {
      */
     drawLine(el: Line) {
 
-        if (dbug(el))
+        // if (dbug(el))
             console.warn(`%c webgl: drawLine(${el.id})`, dbugColor, el.visProp)
 
         let start = el.point1.Coords(false)

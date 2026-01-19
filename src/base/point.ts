@@ -1,5 +1,5 @@
-let dbug = (elem) => false //elem && elem.id === 'jxgBoard1P3'
-const dbugColor = `color:red;background-color:lightblue`;
+let dbug = (elem) => elem && elem.id === 'jxgBoard1P3'
+const dbugColor = `color:black;background-color:lightblue`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -74,8 +74,10 @@ export class Point extends CoordsElement {
 
     _is_new
 
-    constructor(board: Board, coordinates: number[], attributes: LooseObject = {}) {
-        super(board, COORDS_BY_USER, coordinates, attributes, OBJECT_TYPE.POINT, OBJECT_CLASS.POINT)
+    constructor(board: Board, parents: any[], attributes: LooseObject = {}) {
+        super(board, COORDS_BY_USER, parents, attributes, OBJECT_TYPE.POINT, OBJECT_CLASS.POINT)
+
+        console.log(this.XEval, this.YEval)
 
         this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
@@ -85,21 +87,21 @@ export class Point extends CoordsElement {
 
 
         if (dbug(this))
-            console.warn(`%c create Point ${this.id}`, dbugColor, coordinates)
+            console.warn(`%c create Point ${this.id}`, dbugColor, parents)
 
         /* Register point on board. */
         this.elType = 'point';
         this.id = this.board.setId(this, 'P');
 
+        console.log(this.XEval, this.YEval)
 
         this.visProp = Type.initVisProps(Options.elements, Options.point, attributes)
 
 
+        console.log(this.XEval, this.YEval)
 
         this.board.renderer.drawPoint(this);
         this.board.finalizeAdding(this);
-
-        this.coordsConstructor(coordinates, this.visProp)
 
         this.createGradient();
         this.createLabel();
@@ -108,15 +110,19 @@ export class Point extends CoordsElement {
             this.element = this.board.select(this.evalVisProp('anchor'));
 
         if (!this.isDraggable)
-            this.addConstraint(coordinates)
+            this.addConstraint(parents)
 
+        this.coordsConstructor(parents, this.visProp)
 
 
         if (dbug(this))
-            console.warn(`%c new Point(${this.id}`, dbugColor, this.coords) //  ${JSON.stringify(parents).substring(0, 30)},${JSON.stringify(attributes).substring(0, 30)})`, dbugColor, this)
+            console.warn(`%c new Point(${this.id}) at ${JSON.stringify(this.coords.scrCoords)}`, dbugColor)
+
+
+
     }
 
-    // documented in GeometryElement
+    //documented in GeometryElement
     getTextAnchor() {
         return this.coords;
     }
@@ -164,12 +170,11 @@ export class Point extends CoordsElement {
      * Updates the position of the point.
      */
     update(fromParent?: boolean): GeometryElement {
-        if (dbug(this)) console.warn(`%c Point: pointUpdate ${this.id} ${fromParent}`, dbugColor)
 
-        // if (!this.needsUpdate) {
-        //     console.log(`%c Point doesn't need update`, dbugColor)
-        //     return this
-        // }
+        if (!this.needsUpdate) {
+            console.log(`%c Point doesn't need update`, dbugColor)
+            return this
+        }
 
 
         this.updateCoords(fromParent);
@@ -177,6 +182,9 @@ export class Point extends CoordsElement {
         if (this.evalVisProp('trace')) {
             this.cloneToBackground();
         }
+
+        if (dbug(this))
+            console.warn(`%c point update(${this.id}) to ${JSON.stringify(this.coords.scrCoords)}`, dbugColor)
 
         return this;
     }
@@ -190,15 +198,20 @@ export class Point extends CoordsElement {
      * @returns {JXG2.CoordsElement} Reference to this object.
      */
     updateTransform(fromParent) {
+        console.log('new updateTransform')
+        console.log(this.transformations,this)
+
         var c, i;
 
         if (this.transformations.length === 0 || this.baseElement === null) {
             return this;
         }
 
+
         this.transformations[0].update();
         if (this === this.baseElement) {
             // Case of bindTo
+            throw new Error('huh??')
             c = this.transformations[0].apply(this, 'self');
         } else {
             c = this.transformations[0].apply(this.baseElement);
@@ -486,8 +499,6 @@ export class Point extends CoordsElement {
     createLabel() {
         var attr
 
-        //tbtb - this should be in each of the coordsElements
-
 
         attr = Options.label;
         attr['id'] = this.id + 'Label';
@@ -581,12 +592,10 @@ export class Point extends CoordsElement {
  *   var fpex2_p3 = fpex2_board.create('point', [fpex2_p2, fpex2_trans]);
  * </script><pre>
  */
-export function createPoint(board, parents, attributes): Point {
-    var el, attr;
+export function createPoint(board: Board, parents: any[], attributes: LooseObject = {}): Point {
 
-    // attr = Type.copyAttributes(attributes, board.options, 'point');
-    attr = Type.initVisProps(Options.point,attributes)
-    el = new Point(board, parents, attr);
+    let attr = Type.initVisProps(Options.point, attributes)
+    let el = new Point(board, parents, attr);
 
     if (!el) {
         throw new Error(

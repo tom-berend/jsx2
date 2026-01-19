@@ -1,4 +1,4 @@
-let dbug = (elem) => false //elem && elem.id === 'jxgBoard1P3Label'
+let dbug = (elem) => elem && elem.id === 'jxgBoard1P3'
 const dbugColor = `color:yellow;background-color:#803030`;
 
 /*
@@ -207,15 +207,21 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      * @private
      */
     updateConstraint(): CoordsElement {
-
-        if (dbug(this))
-            console.warn(`%c update constraint ${this.id}`, dbugColor, this.X(), this.Y(), this.XEval(), this.YEval())
-
         // this gets called for unconstrained elements, means something else
+
+        if(typeof this.XEval !== 'function'){
+            throw new Error('how did this happen?')
+
+        }
+        // console.log(this.XEval, this.YEval, this)
 
         let newCoords = [this.ZEval(), this.XEval(), this.YEval()]
         this.coords.setCoordinates(COORDS_BY.USER, newCoords);
 
+        if (dbug(this)) {
+            console.warn(`%c CoordsElem updateConstraint ${this.id} to ${JSON.stringify(this.coords.scrCoords)}`, dbugColor, this.X(), this.Y(), this.XEval(), this.YEval())
+            console.log(this.XEval, this.YEval, this)
+        }
         return this;
     }
 
@@ -607,9 +613,9 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                     projCoords = Geometry.projectPointToCircle(this, el, this.board);
                 } else if (el.elementClass === OBJECT_CLASS.CURVE) {
                     projCoords = Geometry.projectPointToCurve(this, el, this.board)[0];
-                } else if (el.type === OBJECT_TYPE.TURTLE) {
+                } else if (el.otype === OBJECT_TYPE.TURTLE) {
                     projCoords = Geometry.projectPointToTurtle(this, el, this.board)[0];
-                } else if (el.type === OBJECT_TYPE.POLYGON) {
+                } else if (el.otype === OBJECT_TYPE.POLYGON) {
                     projCoords = new Coords(
                         COORDS_BY.USER,
                         Geometry.projectCoordsToPolygon(this.coords.usrCoords, el),
@@ -761,16 +767,17 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         return this;
     }
 
-    /**
-     * Sets coordinates and calls the element's update() method.
-     * @param {Number} method The type of coordinates used here.
-     * Possible values are {@link COORDS_BY.USER} and {@link COORDS_BY.SCREEN}.
-     * @param {Array} coords coordinates in screen/user units
-     * @returns {JXG.CoordsElement}
-     */
-    setPosition(method, coords) {
-        return this.setPositionDirectly(method, coords);
-    }
+    // tbtb - duplicate function
+    // /**
+    //  * Sets coordinates and calls the element's update() method.
+    //  * @param {Number} method The type of coordinates used here.
+    //  * Possible values are {@link COORDS_BY.USER} and {@link COORDS_BY.SCREEN}.
+    //  * @param {Array} coords coordinates in screen/user units
+    //  * @returns {JXG.CoordsElement}
+    //  */
+    // setPosition(method, coords) {
+    //     return this.setPositionDirectly(method, coords);
+    // }
 
     /**
      * Converts a calculated element into a free element,
@@ -799,15 +806,15 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                     this.elType = "point";
                 }
 
-                this.XEval = function () {
+                this.XEval = () => {
                     return this.coords.usrCoords[1];
                 };
 
-                this.YEval = function () {
+                this.YEval = () => {
                     return this.coords.usrCoords[2];
                 };
 
-                this.ZEval = function () {
+                this.ZEval = () => {
                     return this.coords.usrCoords[0];
                 };
 
@@ -882,7 +889,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         let makeSliderFunction = (a) => () => a.Value()
 
         if (dbug(this))
-            console.warn(`%c coordselements: addConstraint( ${this.id} terms: ${JSON.stringify(terms)} )`, dbugColor)
+            console.warn(`%c coordselements: addConstraint( ${this.id} )`, dbugColor, terms)
 
 
         if (this.elementClass === OBJECT_CLASS.POINT) {
@@ -1009,69 +1016,71 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
             this.addParents([this]);
         }
 
-        // this.YEval = function () {
-        //     var sy, coords, anchor, ev_o;
+        this.XEval = function () {
+            var sx, coords, anchor, ev_o;
 
-        //     if (this.evalVisProp('islabel')) {
-        //         ev_o = this.evalVisProp('offset');
-        //         sy = -parseFloat(ev_o[1]);
-        //         anchor = this.element.getLabelAnchor();
-        //         coords = new Coords(
-        //             COORDS_BY.SCREEN,
-        //             [0, sy + this.relativeCoords.scrCoords[2] + anchor.scrCoords[2]],
-        //             this.board, true, this
-        //         );
+            if (this.evalVisProp('islabel')) {
+                ev_o = this.evalVisProp('offset');
+                sx = parseFloat(ev_o[0]);
+                anchor = this.element.getLabelAnchor();
+                coords = new Coords(
+                    COORDS_BY.SCREEN,
+                    [sx + this.relativeCoords.scrCoords[1] + anchor.scrCoords[1], 0],
+                    this.board
+                );
 
-        //         return coords.usrCoords[2];
-        //     }
+                return coords.usrCoords[1];
+            }
 
-        //     anchor = this.element.getTextAnchor();
-        //     return this.relativeCoords.usrCoords[2] + anchor.usrCoords[2];
-        // };
+            console.log(this)
+            anchor = this.elementGetTextAnchor();
+            return this.relativeCoords.usrCoords[1] + anchor.usrCoords[1];
+        };
 
-        // TODO:  ??         this.ZEval = Type.createFunction(1, this.board, "");
+        this.YEval = function () {
+            var sy, coords, anchor, ev_o;
 
-        // this.updateConstraint = () => {
+            if (this.evalVisProp('islabel')) {
+                ev_o = this.evalVisProp('offset');
+                sy = -parseFloat(ev_o[1]);
+                anchor = this.element.getLabelAnchor();
+                coords = new Coords(
+                    COORDS_BY.SCREEN,
+                    [0, sy + this.relativeCoords.scrCoords[2] + anchor.scrCoords[2]],
+                    this.board
+                );
+
+                return coords.usrCoords[2];
+            }
+
+            anchor = this.elementGetTextAnchor();
+            return this.relativeCoords.usrCoords[2] + anchor.usrCoords[2];
+        };
+
+        this.ZEval = Type.createFunction(1, this.board, "");
+
+        // tbtb just a standard method now
+        // this.updateConstraint =  ()=> {
         //     this.coords.setCoordinates(COORDS_BY.USER, [
         //         this.ZEval(),
         //         this.XEval(),
         //         this.YEval()
         //     ]);
-
-        //     console.log(`cooords update constraint anon function`)
-        //     return this;
         // };
+
         this.isConstrained = true;
 
-        let ev_o, sx = 0, sy = 0, anchor, coords
+        this.updateConstraint();
 
-        // if (this.evalVisProp('islabel')) {
-        //     ev_o = this.evalVisProp('offset');
-        //     sx = parseFloat(ev_o[0]);
-        //     sy = parseFloat(ev_o[1]);
-        //     anchor = this.element.elementGetLabelAnchor();
-
-        //     this.addConstraint([1, () => this.elementX()+sx, () => this.Y()+sy])
+        // if (Type.exists(this.element) && Type.exists(this.element.id)) {
+        //     // console.log(this.element.id, )
+        //     let remote = this.board.select(this.element.id)
+        //     if (remote !== null)
+        //         anchor = remote.elementGetTextAnchor();
         // } else {
-
-
-        if (Type.exists(this.element) && Type.exists(this.element.id)) {
-            // console.log(this.element.id, )
-            let remote = this.board.select(this.element.id)
-            if (remote !== null)
-                anchor = remote.elementGetTextAnchor();
-        } else {
-            anchor = this.elementGetTextAnchor();
-        }
-
+        //     anchor = this.elementGetTextAnchor();
         // }
 
-
-        // this.coords.setCoordinates(COORDS_BY.SCREEN, [
-        //     0,
-        //     sx + this.initialCoords.scrCoords[1] + anchor.scrCoords[1],
-        //     sy + this.initialCoords.scrCoords[2] + anchor.scrCoords[2],
-        // ]);
     }
 
     /**
@@ -1111,6 +1120,107 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     }
 
     /**
+     * Translates the object by <tt>(x, y)</tt>. In case the element is defined by points, the defining points are
+     * translated, e.g. a circle constructed by a center point and a point on the circle line.
+     * @param {Number} method The type of coordinates used here.
+     * Possible values are {@link COORDS_BY.USER} and {@link JXG2.COORDS_BY_SCREEN}.
+     * @param {Array} coords array of translation vector.
+     * @returns {JXG2.GeometryElement} Reference to the element object.
+     *
+     * @see JXG2.GeometryElement3D#setPosition2D
+     */
+    setPosition(method, coords) {
+        var parents = [],
+            el,
+            i, len, t;
+
+        if (!Type.exists(this.parents)) {
+            return this;
+        }
+
+        len = this.parents.length;
+        for (i = 0; i < len; ++i) {
+            el = this.board.select(this.parents[i]);
+            if (Type.isPoint(el)) {
+                if (!el.draggable()) {
+                    return this;
+                }
+                parents.push(el);
+            }
+        }
+
+        if (coords.length === 3) {
+            coords = coords.slice(1);
+        }
+
+        t = this.board.create("transform", coords, { type: "translate" });
+
+        // We distinguish two cases:
+        // 1) elements which depend on free elements, i.e. arcs and sectors
+        // 2) other elements
+        //
+        // In the first case we simply transform the parents elements
+        // In the second case we add a transform to the element.
+        //
+        len = parents.length;
+        if (len > 0) {
+            t.applyOnce(parents);
+
+            // Handle dragging of a 3D element
+            if (Type.exists(this.view) && this.view.elType === 'view3d') {
+                for (i = 0; i < this.parents.length; ++i) {
+                    // Search for the parent 3D element
+                    el = this.view.select(this.parents[i]);
+                    if (Type.exists(el.setPosition2D)) {
+                        el.setPosition2D(t);
+                    }
+                }
+            }
+
+        } else {
+            if (
+                this.transformations.length > 0 &&
+                this.transformations[this.transformations.length - 1].isNumericMatrix
+            ) {
+                this.transformations[this.transformations.length - 1].melt(t);
+            } else {
+                this.addTransform(this, t);
+            }
+        }
+
+        /*
+         * If - against the default configuration - defining gliders are marked as
+         * draggable, then their position has to be updated now.
+         */
+        for (i = 0; i < len; ++i) {
+            if (parents[i].type === OBJECT_TYPE.GLIDER) {
+                parents[i].updateGlider();
+            }
+        }
+
+        return this;
+    }
+
+    // tbtb - there were two versions of this function, seemed very similar
+    // /**
+    //  * Moves an element by the difference of two coordinates.
+    //  * @param {Number} method The type of coordinates used here.
+    //  * Possible values are {@link COORDS_BY.USER} and {@link JXG2.COORDS_BY_SCREEN}.
+    //  * @param {Array} coords coordinates in screen/user units
+    //  * @param {Array} oldcoords previous coordinates in screen/user units
+    //  * @returns {JXG2.GeometryElement} this element
+    //  */
+    // setPositionDirectly(method, coords, oldcoords) {
+    //     var c = new Coords(method, coords, this.board, false, this),
+    //         oldc = new Coords(method, oldcoords, this.board, false, this),
+    //         dc = Statistics.subtract(c.usrCoords, oldc.usrCoords);
+
+    //     this.setPosition(COORDS_BY.USER, dc);
+
+    //     return this;
+    // }
+
+    /**
      * Add transformations to this element.
      * @param {JXG.GeometryElement} el
      * @param {JXG.Transformation|Array} transform Either one {@link JXG.Transformation}
@@ -1118,16 +1228,18 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      * @returns {JXG.CoordsElement} Reference to itself.
      */
     addTransform(el: GeometryElement, transform: Transformation | Transformation[]) {
-        var i,
-            list = Array.isArray(transform) ? transform : [transform],
-            len = list.length;
+        let list: Transformation[] = Array.isArray(transform) ? transform : [transform]
+
+        if (dbug(this))
+            console.warn(`%c coordselements: addTransform`, dbugColor, el, transform)
+
 
         // There is only one baseElement possible
         if (this.transformations.length === 0) {
             this.baseElement = el;
         }
 
-        for (i = 0; i < len; i++) {
+        for (let i = 0; i < list.length; i++) {
             this.transformations.push(list[i]);
         }
 
@@ -1930,7 +2042,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     public coordsConstructor(coords: any[] /*coords part of parents */, attr1?) {
 
         if (dbug(this))
-            console.warn(`%c coordselements: INIT ${JSON.stringify(coords)}`, dbugColor, attr1)
+            console.warn(`%c coordselements: INIT ${typeof coords}`, dbugColor, attr1)
 
         let isConstrained = false
 
@@ -1946,7 +2058,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                 if (Type.exists(attr1['slideobject'])) {
                     // tbtb - attr1 is never a glider, so always false
                     throw new Error('huh?')
-                //     this.makeGlider(attr1.slideobject);
+                    //     this.makeGlider(attr1.slideobject);
                 } else {
                     // Free element
                     this.baseElement = this;
@@ -1955,7 +2067,6 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
             } else if (Type.isObject(coords[0]) && Type.isTransformationOrArray(coords[1])) {
                 // Transformation
                 // TODO less general specification of isObject
-                coords = [0, 0]
                 this.addTransform(coords[0], coords[1]);
                 this.isDraggable = false;
             } else {

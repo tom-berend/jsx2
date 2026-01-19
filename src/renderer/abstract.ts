@@ -1,4 +1,4 @@
-const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
+const dbug = (elem) => elem && elem.id === "jxgBoard1P3";
 const dbugColor = `color:white;background-color:#0080ff`;
 
 /*
@@ -340,7 +340,8 @@ export abstract class AbstractRenderer {
      */
     drawPoint(el:Point) {
 
-        if (dbug(el)) console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visProp)
+        if (dbug(el))
+            console.warn(`%c abstract: drawPoint(${el.id}) at ${JSON.stringify(el.coords.scrCoords)}`, dbugColor )
 
 
         var prim: SVGType
@@ -358,8 +359,6 @@ export abstract class AbstractRenderer {
             // triangleright/>, plus/+, |, -
             prim = "path";
         }
-
-        if (dbug(el)) console.log(`%c abstract: drawPoint(el)`, dbugColor)
 
         // el.rendNode = this.appendChildPrim(
         //     this.createPrim(prim, el.id),
@@ -391,7 +390,7 @@ export abstract class AbstractRenderer {
     updatePoint(el:Point) {
 
         if (dbug(el))
-            console.warn(`%c abstract: updatePoint(${el.id})`, dbugColor, el.coords.scrCoords)
+            console.warn(`%c abstract: updatePoint(${el.id}) at ${JSON.stringify(el.coords.scrCoords)}`, dbugColor )
 
 
         var size = el.evalVisProp('size'),

@@ -261,11 +261,12 @@ export class Type {
      */
     static isTransformationOrArray(v) {
         if (v !== null) {
-            if (this.isArray(v) && v.length > 0) {
+            if (Array.isArray(v) && v.length > 0) {
                 return this.isTransformationOrArray(v[0]);
             }
+            console.log('isTransformationOrArray',typeof v,v.otype===OBJECT_TYPE.TRANSFORMATION)
             if (typeof v === 'object') {
-                return v.type === OBJECT_TYPE.TRANSFORMATION;
+                return v.otype === OBJECT_TYPE.TRANSFORMATION;
             }
         }
         return false;

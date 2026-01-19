@@ -36,7 +36,7 @@
  * @fileoverview This file contains code for transformations of geometrical objects.
  */
 
-import { JXG2 } from "../jxg.js";
+//import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "./constants.js";
 import { JSXMath } from "../math/math.js";
 import { Type } from "../utils/type.js";
@@ -102,19 +102,25 @@ import { Env } from "../utils/env.js";
  *
  */
 
-export class Transformation extends GeometryElement {
+type tType = 'translate' | 'scale' | 'reflect' | 'rotate' | 'shear' | 'generic' | 'matrix' | 'none'
 
-    tType: 'translate' | 'scale' | 'reflect' | 'rotate' | 'shear' | 'generic' | 'matrix'
+export class Transformation  {
+
+    tType: tType
+    otype:OBJECT_TYPE
+    
     params
     matrix: number[][]
     isNumericMatrix
     is3D
     evalParam
+    board
+    parents
 
-    constructor(board, type, params, is3D = false) {
-        super(board,params,OBJECT_TYPE.TRANSFORMATION,OBJECT_CLASS.OTHER)
+    constructor(board, type: tType, params, is3D = false) {
 
         this.tType = type
+        this.otype = OBJECT_TYPE.TRANSFORMATION
         this.params = params
 
         if (is3D) {
@@ -604,7 +610,7 @@ export class Transformation extends GeometryElement {
      * @param {String} 'self' Apply the transformation to the initialCoords instead of the coords if this is set.
      * @returns {Array}
      */
-    apply(p, self) {
+    apply(p, self?:string) {
         var c;
 
         this.update();
@@ -657,6 +663,8 @@ export class Transformation extends GeometryElement {
      * @see JXG2.Transformation.meltTo
      */
     bindTo(el) {
+        console.error(`binding transformation to ${el.id}`,this)
+
         var i, len;
         if (Type.isArray(el)) {
             len = el.length;
