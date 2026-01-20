@@ -1,4 +1,4 @@
-const dbug = (elem) => elem && elem.id === "jxgBoard1P3";
+const dbug = (elem) => false //elem && elem.id === "jxgBoard1P3";
 let dbugColor = 'color:black;background-color:#FF8FFF;'
 /*
     Copyright 2008-2025
@@ -480,7 +480,7 @@ export class GeometryElement extends Events {
     addChild(obj: GeometryElement): GeometryElement {
 
         this.childElements[obj.id] = obj;
-        this.addDescendants(obj);  // TODO TomBerend removed this. Check if it is possible.
+        this.addDescendants(obj);  
         obj.ancestors[this.id] = this;
 
         for (let el in this.descendants) {

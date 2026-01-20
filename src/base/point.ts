@@ -94,8 +94,8 @@ export class Point extends CoordsElement {
 
         this.visProp = Type.initVisProps(Options.elements, Options.point, attributes)
 
-        this.board.renderer.drawPoint(this);
         this.board.finalizeAdding(this);
+        this.board.renderer.drawPoint(this);
 
         this.createGradient();
         this.createLabel();
@@ -103,16 +103,24 @@ export class Point extends CoordsElement {
         if (this.evalVisProp('anchor'))
             this.element = this.board.select(this.evalVisProp('anchor'));
 
-        if (!this.isDraggable)
-            this.addConstraint(parents)
+        // deal with point defined by another point and a transformation
+        if (Type.isPoint(parents[0]) && Type.isTransformationOrArray(parents[1])) {
+            this.baseElement = parents[0]
+            this.parents.push(parents[0])
+            this.transformations.push(parents[1])
+            parents[0].addChild(this)
+            console.log(parents[0])
+            this.needsUpdate = true
+        } else {
+            if (!this.isDraggable) {
+                this.addConstraint(parents)
+            }
+        }
 
         this.coordsConstructor(parents, this.visProp)
 
-
         // if (dbug(this))
-            console.warn(`%c new Point(${this.id}) at ${JSON.stringify(this.coords.scrCoords)}`, dbugColor, this)
-
-
+        console.warn(`%c new Point(${this.id}) at ${JSON.stringify(this.coords.scrCoords)}`, dbugColor, this)
 
     }
 
@@ -192,9 +200,19 @@ export class Point extends CoordsElement {
      * @returns {JXG2.CoordsElement} Reference to this object.
      */
     updateTransform(fromParent) {
-        console.warn(`%c Point.updateTransform ${this.id}`, dbugColor,this.transformations, this)
+        console.warn(`%c Point.updateTransform ${this.id}`, dbugColor, this.transformations, this)
 
         var c, i;
+
+        // this.updateConstraint();
+
+        // if any children have transformations, update them,
+        for (let [id, child] of Object.entries(this.childElements)) {
+            child.updateTransform(true)
+            child.updateConstraint()
+            child.elementUpdate()
+        }
+
 
         if (this.transformations.length === 0 || this.baseElement === null) {
             return this;
@@ -203,16 +221,23 @@ export class Point extends CoordsElement {
 
         this.transformations[0].update();
 
-        console.log('BAEELEMENT',this,this.baseElement)
         if (this === this.baseElement) {
             // Case of bindTo
-            c = this.transformations[0].apply(this, 'self');
+            // c = this.transformations[0].apply(this, 'self');
+            this.baseElement.elementUpdate()
         } else {
             c = this.transformations[0].apply(this.baseElement);
         }
         for (i = 1; i < this.transformations.length; i++) {
             this.transformations[i].update();
             c = JSXMath.matVecMult(this.transformations[i].matrix, c);
+        }
+
+        console.log(`%c this.descendants ${this.id}`, 'background-color:red;', this)
+        for (let d in this.descendants) {
+            this.descendants[d].elementUpdate()
+            this.descendants[d].elementUpdateRenderer()
+
         }
         this.coords.setCoordinates(COORDS_BY.USER, c);
 

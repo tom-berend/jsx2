@@ -686,20 +686,21 @@ export class Transformation {
      *                            which the transformation is bound to.
      * @see Transformation.meltTo
      */
-    bindTo(el) {
+    bindTo(el:GeometryElement) {
                                 // if (dbug(p))
             console.warn(`%c Transformation.bindTo ${el.id}`, dbugColor)
 
-        var i, len;
-        if (Type.isArray(el)) {
-            len = el.length;
+                                throw new Error('huh?')
+        // var i, len;
+        // if (Type.isArray(el)) {
+        //     len = el.length;
 
-            for (i = 0; i < len; i++) {
-                el[i].transformations.push(this);
-            }
-        } else {
-            el.transformations.push(this);
-        }
+        //     for (i = 0; i < len; i++) {
+        //         el[i].transformations.push(this);
+        //     }
+        // } else {
+        //     el.transformations.push(this);
+        // }
     }
 
     /**

@@ -215,8 +215,10 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         }
         // console.log(this.XEval, this.YEval, this)
 
+
         let newCoords = [this.ZEval(), this.XEval(), this.YEval()]
         this.coords.setCoordinates(COORDS_BY.USER, newCoords);
+
 
         if (dbug(this)) {
             console.warn(`%c CoordsElem updateConstraint ${this.id} to ${JSON.stringify(this.coords.scrCoords)}`, dbugColor, this.X(), this.Y(), this.XEval(), this.YEval())
@@ -315,6 +317,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         // if (!this.needsUpdate || !this.board.renderer) {
         //     return this;
         // }
+
 
         if (this.visPropCalc.visible) {
             //wasReal = this.isReal;
@@ -742,14 +745,13 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      * Translates the point by <tt>tv = (x, y)</tt>.
      * @param {Number} method The type of coordinates used here.
      * Possible values are {@link COORDS_BY.USER} and {@link COORDS_BY.SCREEN}.
-     * @param {Array} tv (x, y)
+     * @param  coordinates (x, y)
      * @returns {JXG.CoordsElement}
      */
-    setPositionByTransform(method: COORDS_BY, tv: number[]) {
-        var t;
+    setPositionByTransform(method: COORDS_BY, coordinates: number[]) {
 
-        let tvCoords = new Coords(method, tv, this.board, true, this);
-        t = this.board.create("transform", tvCoords.usrCoords.slice(1), {
+        let tvCoords = new Coords(method, coordinates, this.board, true, this);
+        let t = this.board.create("transform", tvCoords.usrCoords.slice(1), {
             type: "translate"
         });
 
@@ -1091,7 +1093,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     updateTransform(fromParent) {
         var c, i;
 
-        if (dbug(this))
+        // if (dbug(this))
             console.warn(`%c coordselements: updateTransform( ${this.id} scr [${this.scrCoords[1]},${this.scrCoords[2]}] )`, dbugColor)
 
         if (this.transformations.length === 0 || this.baseElement === null) {
