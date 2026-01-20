@@ -1,5 +1,5 @@
-const dbug = (elem) => false //elem && elem.id === "jxgBoard1L9";
-const dbugColor = `color:black;background-color:white`;
+const dbug = (elem) => elem && elem.id === "jxgBoard1P3";
+const dbugColor = `color:green;background-color:white`;
 
 // TODO: need a way to mark Coord as invalid.   Geometry often sends [0, NaN, NaN] or Coords
 
@@ -79,7 +79,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
 
     public elem: GeometryElement
 
-    public _t:number = 0    // this is used in Plot.  need to document
+    public _t: number = 0    // this is used in Plot.  need to document
 
     public length = 0       // used in Point3D, text3D, statistics, cinderella
 
@@ -214,7 +214,10 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      * @returns {JXG2.Coords} Reference to the coords object.
      */
     setCoordinates(coord_type: COORDS_BY, coordinates: number[], doRound: boolean = true, noevent: boolean = false) {
-        // console.log(`setCoordinates(${JSON.stringify(coordinates)})`)
+
+        if (dbug(this.elem))
+            console.log(`%c Coords: setCoordinates`, dbugColor, coordinates)
+
 
         var uc = this.usrCoords,
             sc = this.scrCoords,
@@ -254,7 +257,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
         }
 
         if (dbug(this.elem))
-            console.warn(`%c setCoordinates scrCoords:${JSON.stringify(this.scrCoords)}}`, dbugColor)
+            console.warn(`%c setCoordinates scrCoords ${this.elem.id}:${JSON.stringify(this.scrCoords)}}`, dbugColor)
 
         return this;
     }
@@ -272,7 +275,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      * @returns {Array} Returns copy of the coords array either as standard array or as
      *   typed array.
      */
-    copy(obj:string, offset=0) {
+    copy(obj: string, offset = 0) {
         return this[obj].slice(offset);
     }
 

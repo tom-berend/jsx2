@@ -1,4 +1,4 @@
-const dbug = (elem) => elem && elem.id === "jxgBoard1P3";
+const dbug = (elem) => false //elem && elem.id === "jxgBoard1P3";
 const dbugColor = `color:white;background-color:#0080ff`;
 
 /*

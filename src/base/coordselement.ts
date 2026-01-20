@@ -209,7 +209,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     updateConstraint(): CoordsElement {
         // this gets called for unconstrained elements, means something else
 
-        if(typeof this.XEval !== 'function'){
+        if (typeof this.XEval !== 'function') {
             throw new Error('how did this happen?')
 
         }
@@ -1032,7 +1032,6 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                 return coords.usrCoords[1];
             }
 
-            console.log(this)
             anchor = this.elementGetTextAnchor();
             return this.relativeCoords.usrCoords[1] + anchor.usrCoords[1];
         };
@@ -1092,7 +1091,8 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     updateTransform(fromParent) {
         var c, i;
 
-        if (dbug(this)) console.warn(`%c coordselements: updateTransform( ${this.id} scr [${this.scrCoords[1]},${this.scrCoords[2]}] )`, dbugColor)
+        if (dbug(this))
+            console.warn(`%c coordselements: updateTransform( ${this.id} scr [${this.scrCoords[1]},${this.scrCoords[2]}] )`, dbugColor)
 
         if (this.transformations.length === 0 || this.baseElement === null) {
             return this;
@@ -1129,10 +1129,13 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      *
      * @see JXG2.GeometryElement3D#setPosition2D
      */
-    setPosition(method, coords) {
+    setPosition(method:COORDS_BY, coords) {
         var parents = [],
             el,
             i, len, t;
+
+        if (dbug(this))
+            console.warn(`%c coordselements: setPosition( ${this.id} scr [${this.scrCoords[1]},${this.scrCoords[2]}] )`, dbugColor)
 
         if (!Type.exists(this.parents)) {
             return this;
@@ -1153,6 +1156,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
             coords = coords.slice(1);
         }
 
+        // use temporary transform
         t = this.board.create("transform", coords, { type: "translate" });
 
         // We distinguish two cases:

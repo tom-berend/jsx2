@@ -6345,8 +6345,8 @@ export class Board extends Events {
     create(elementType: string, parents: any[] = [], attributes: LooseObject = {}) {
         var el, i;
 
-        // if (dbug(this))
-        console.warn(`%c board: ${this.id} creating new element Type '${elementType}'`, dbugColor)
+        if (dbug(this))
+            console.warn(`%c board: ${this.id} creating new element Type '${elementType}'`, dbugColor)
 
 
         elementType = elementType.toLowerCase();

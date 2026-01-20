@@ -77,8 +77,6 @@ export class Point extends CoordsElement {
     constructor(board: Board, parents: any[], attributes: LooseObject = {}) {
         super(board, COORDS_BY_USER, parents, attributes, OBJECT_TYPE.POINT, OBJECT_CLASS.POINT)
 
-        console.log(this.XEval, this.YEval)
-
         this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
         this.elementCreateLabel = () => this.createLabel()
@@ -93,12 +91,8 @@ export class Point extends CoordsElement {
         this.elType = 'point';
         this.id = this.board.setId(this, 'P');
 
-        console.log(this.XEval, this.YEval)
 
         this.visProp = Type.initVisProps(Options.elements, Options.point, attributes)
-
-
-        console.log(this.XEval, this.YEval)
 
         this.board.renderer.drawPoint(this);
         this.board.finalizeAdding(this);
@@ -115,8 +109,8 @@ export class Point extends CoordsElement {
         this.coordsConstructor(parents, this.visProp)
 
 
-        if (dbug(this))
-            console.warn(`%c new Point(${this.id}) at ${JSON.stringify(this.coords.scrCoords)}`, dbugColor)
+        // if (dbug(this))
+            console.warn(`%c new Point(${this.id}) at ${JSON.stringify(this.coords.scrCoords)}`, dbugColor, this)
 
 
 
@@ -172,7 +166,7 @@ export class Point extends CoordsElement {
     update(fromParent?: boolean): GeometryElement {
 
         if (!this.needsUpdate) {
-            console.log(`%c Point doesn't need update`, dbugColor)
+            console.log(`%c Point ${this.id} doesn't need update`, dbugColor)
             return this
         }
 
@@ -198,8 +192,7 @@ export class Point extends CoordsElement {
      * @returns {JXG2.CoordsElement} Reference to this object.
      */
     updateTransform(fromParent) {
-        console.log('new updateTransform')
-        console.log(this.transformations,this)
+        console.warn(`%c Point.updateTransform ${this.id}`, dbugColor,this.transformations, this)
 
         var c, i;
 
@@ -209,9 +202,10 @@ export class Point extends CoordsElement {
 
 
         this.transformations[0].update();
+
+        console.log('BAEELEMENT',this,this.baseElement)
         if (this === this.baseElement) {
             // Case of bindTo
-            throw new Error('huh??')
             c = this.transformations[0].apply(this, 'self');
         } else {
             c = this.transformations[0].apply(this.baseElement);

@@ -1,3 +1,6 @@
+let dbug = (elem) => elem && elem.id === 'jxgBoard1P3'
+const dbugColor = `color:black;background-color:#b0ffb0`;
+
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -29,7 +32,7 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG2: true, define: true*/
+/*global JXG: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
@@ -40,8 +43,12 @@
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "./constants.js";
 import { JSXMath } from "../math/math.js";
 import { Type } from "../utils/type.js";
+import { Board } from "../base/board.js";
 import { GeometryElement } from "../base/element.js";
+import { Point } from "./point.js";
 import { Env } from "../utils/env.js";
+import { LoopNode } from "three/webgpu";
+import { LooseObject } from "../interfaces.js";
 
 /**
  * A transformation consists of a 3x3 matrix, i.e. it is a projective transformation.
@@ -49,7 +56,7 @@ import { Env } from "../utils/env.js";
  * Use {@link JXG2.Board#create} with
  * type {@link Transformation} instead.
  * @constructor
- * @param {JXG2.Board} board The board the transformation is part of.
+ * @param {Board} board The board the transformation is part of.
  * @param {String} type Can be
  * <ul><li> 'translate'
  * <li> 'scale'
@@ -104,11 +111,11 @@ import { Env } from "../utils/env.js";
 
 type tType = 'translate' | 'scale' | 'reflect' | 'rotate' | 'shear' | 'generic' | 'matrix' | 'none'
 
-export class Transformation  {
+export class Transformation {
 
     tType: tType
-    otype:OBJECT_TYPE
-    
+    otype: OBJECT_TYPE
+
     params
     matrix: number[][]
     isNumericMatrix
@@ -117,7 +124,16 @@ export class Transformation  {
     board
     parents
 
+    /**
+`    * Updates the numerical data for the transformation, i.e. the entry of the subobject matrix.
+`    * @returns  returns pointer to itself
+`    */
+    update: Function = () => { return this; }
+
     constructor(board, type: tType, params, is3D = false) {
+
+        // if (dbug(p))
+            console.warn(`%c New Transformation ${type}`, dbugColor)
 
         this.tType = type
         this.otype = OBJECT_TYPE.TRANSFORMATION
@@ -159,122 +175,10 @@ export class Transformation  {
         // };
     };
 
-    /**
-     * Updates the numerical data for the transformation, i.e. the entry of the subobject matrix.
-     * @returns {JXG2.Transform} returns pointer to itself
-     */
-    update(ignoreParam = true): this {
-        if (this.tType === 'translate') {
-            this.matrix[1][0] = this.evalParam(0);
-            this.matrix[2][0] = this.evalParam(1);
-
-        } else if (this.tType === 'scale') {
-            this.matrix[1][1] = this.evalParam(0); // x
-            this.matrix[2][2] = this.evalParam(1); // y
-
-        } else if (this.tType === 'reflect') {
-            // line or two points
-            var x, y, z, xoff, yoff, d, v, p;
-            // Determine homogeneous coordinates of reflections axis
-            // line
-            if (this.params.length === 1) {
-                v = this.params[0].stdform;
-            } else if (this.params.length === 2) {
-                // two points
-                v = JSXMath.crossProduct(
-                    this.params[1].coords.usrCoords,
-                    this.params[0].coords.usrCoords
-                );
-            } else if (this.params.length === 4) {
-                // two points coordinates [px,py,qx,qy]
-                v = JSXMath.crossProduct(
-                    [1, this.evalParam(2), this.evalParam(3)],
-                    [1, this.evalParam(0), this.evalParam(1)]
-                );
-            }
-
-            // Project origin to the line. This gives a finite point p
-            x = v[1];
-            y = v[2];
-            z = v[0];
-            p = [-z * x, -z * y, x * x + y * y];
-            d = p[2];
-
-            // Normalize p
-            xoff = p[0] / p[2];
-            yoff = p[1] / p[2];
-
-            // x, y is the direction of the line
-            x = -v[2];
-            y = v[1];
-
-            this.matrix[1][1] = (x * x - y * y) / d;
-            this.matrix[1][2] = (2 * x * y) / d;
-            this.matrix[2][1] = this.matrix[1][2];
-            this.matrix[2][2] = -this.matrix[1][1];
-            this.matrix[1][0] =
-                xoff * (1 - this.matrix[1][1]) - yoff * this.matrix[1][2];
-            this.matrix[2][0] =
-                yoff * (1 - this.matrix[2][2]) - xoff * this.matrix[2][1];
-
-        } else if (this.tType === 'rotate') {
-            var x,
-                y,
-                beta = this.evalParam(0),
-                co = Math.cos(beta),
-                si = Math.sin(beta);
-
-            this.matrix[1][1] = co;
-            this.matrix[1][2] = -si;
-            this.matrix[2][1] = si;
-            this.matrix[2][2] = co;
-
-            // rotate around [x,y] otherwise rotate around [0,0]
-            if (this.params.length > 1) {
-                if (this.params.length === 3) {
-                    x = this.evalParam(1);
-                    y = this.evalParam(2);
-                } else {
-                    if (Type.isArray(this.params[1])) {
-                        x = this.params[1][0];
-                        y = this.params[1][1];
-                    } else {
-                        x = this.params[1].X();
-                        y = this.params[1].Y();
-                    }
-                }
-                this.matrix[1][0] = x * (1 - co) + y * si;
-                this.matrix[2][0] = y * (1 - co) - x * si;
-            }
-        } else if (this.tType === 'shear') {
-            this.matrix[1][2] = this.evalParam(0);
-            this.matrix[2][1] = this.evalParam(1);
-        } else if (this.tType === 'generic') {
-            if (this.params.length !== 9) {
-                this.matrix[0][0] = this.evalParam(0);
-                this.matrix[0][1] = this.evalParam(1);
-                this.matrix[0][2] = this.evalParam(2);
-                this.matrix[1][0] = this.evalParam(3);
-                this.matrix[1][1] = this.evalParam(4);
-                this.matrix[1][2] = this.evalParam(5);
-                this.matrix[2][0] = this.evalParam(6);
-                this.matrix[2][1] = this.evalParam(7);
-                this.matrix[2][2] = this.evalParam(8);
-            };
-        } else if (this.tType === 'matrix') {
-            var i, j;
-            for (i = 0; i < 3; i++) {
-                for (j = 0; j < 3; j++) {
-                    this.matrix[i][j] = Type.evaluate(this.evalParam[i][j]);
-                }
-            };
-        }
-        return this
-    }
 
     /**
      * Set the transformation matrix for different types of standard transforms.
-     * @param {JXG2.Board} board
+     * @param {Board} board
      * @param {String} type   Transformation type, possible values are
      *                        'translate', 'scale', 'reflect', 'rotate',
      *                        'shear', 'generic'.
@@ -334,7 +238,7 @@ export class Transformation  {
      * (         )   ( y )
      * </pre>
      */
-    setMatrix(board, type, params) {
+    setMatrix(board: Board, type, params) {
         var i;
         // e, obj; // Handle dependencies
 
@@ -351,11 +255,19 @@ export class Transformation  {
                 throw new Error("JSXGraph: translate transformation needs 2 parameters.");
             }
             this.evalParam = Type.createEvalFunction(board, params, 2);
+            this.update = function () {
+                this.matrix[1][0] = this.evalParam(0);
+                this.matrix[2][0] = this.evalParam(1);
+            };
         } else if (type === 'scale') {
             if (params.length !== 2) {
                 throw new Error("JSXGraph: scale transformation needs 2 parameters.");
             }
             this.evalParam = Type.createEvalFunction(board, params, 2);
+            this.update = function () {
+                this.matrix[1][1] = this.evalParam(0); // x
+                this.matrix[2][2] = this.evalParam(1); // y
+            };
             // Input: line or two points
         } else if (type === 'reflect') {
             // line or two points
@@ -373,6 +285,54 @@ export class Transformation  {
                 this.evalParam = Type.createEvalFunction(board, params, 4);
             }
 
+            this.update = function () {
+
+                        // if (dbug(p))
+            console.warn(`%c Transformation.setMatrix Replacing UPDATE() ${type}`, dbugColor)
+
+                var x, y, z, xoff, yoff, d, v, p;
+                // Determine homogeneous coordinates of reflections axis
+                // line
+                if (params.length === 1) {
+                    v = params[0].stdform;
+                } else if (params.length === 2) {
+                    // two points
+                    v = JSXMath.crossProduct(
+                        params[1].coords.usrCoords,
+                        params[0].coords.usrCoords
+                    );
+                } else if (params.length === 4) {
+                    // two points coordinates [px,py,qx,qy]
+                    v = JSXMath.crossProduct(
+                        [1, this.evalParam(2), this.evalParam(3)],
+                        [1, this.evalParam(0), this.evalParam(1)]
+                    );
+                }
+
+                // Project origin to the line. This gives a finite point p
+                x = v[1];
+                y = v[2];
+                z = v[0];
+                p = [-z * x, -z * y, x * x + y * y];
+                d = p[2];
+
+                // Normalize p
+                xoff = p[0] / p[2];
+                yoff = p[1] / p[2];
+
+                // x, y is the direction of the line
+                x = -v[2];
+                y = v[1];
+
+                this.matrix[1][1] = (x * x - y * y) / d;
+                this.matrix[1][2] = (2 * x * y) / d;
+                this.matrix[2][1] = this.matrix[1][2];
+                this.matrix[2][2] = -this.matrix[1][1];
+                this.matrix[1][0] =
+                    xoff * (1 - this.matrix[1][1]) - yoff * this.matrix[1][2];
+                this.matrix[2][0] =
+                    yoff * (1 - this.matrix[2][2]) - xoff * this.matrix[2][1];
+            };
         } else if (type === 'rotate') {
             if (params.length === 3) {
                 // angle, x, y
@@ -386,23 +346,78 @@ export class Transformation  {
                 }
             }
 
+            this.update = function () {
+                var x,
+                    y,
+                    beta = this.evalParam(0),
+                    co = Math.cos(beta),
+                    si = Math.sin(beta);
+
+                this.matrix[1][1] = co;
+                this.matrix[1][2] = -si;
+                this.matrix[2][1] = si;
+                this.matrix[2][2] = co;
+
+                // rotate around [x,y] otherwise rotate around [0,0]
+                if (params.length > 1) {
+                    if (params.length === 3) {
+                        x = this.evalParam(1);
+                        y = this.evalParam(2);
+                    } else {
+                        if (Type.isArray(params[1])) {
+                            x = params[1][0];
+                            y = params[1][1];
+                        } else {
+                            x = params[1].X();
+                            y = params[1].Y();
+                        }
+                    }
+                    this.matrix[1][0] = x * (1 - co) + y * si;
+                    this.matrix[2][0] = y * (1 - co) - x * si;
+                }
+            };
         } else if (type === 'shear') {
             if (params.length !== 2) {
                 throw new Error("JSXGraph: shear transformation needs 2 parameters.");
             }
-            this.evalParam = Type.createEvalFunction(board, params, 2);
 
+            this.evalParam = Type.createEvalFunction(board, params, 2);
+            this.update = function () {
+                this.matrix[1][2] = this.evalParam(0);
+                this.matrix[2][1] = this.evalParam(1);
+            };
         } else if (type === 'generic') {
             if (params.length !== 9) {
                 throw new Error("JSXGraph: generic transformation needs 9 parameters.");
             }
+
             this.evalParam = Type.createEvalFunction(board, params, 9);
 
+            this.update = function () {
+                this.matrix[0][0] = this.evalParam(0);
+                this.matrix[0][1] = this.evalParam(1);
+                this.matrix[0][2] = this.evalParam(2);
+                this.matrix[1][0] = this.evalParam(3);
+                this.matrix[1][1] = this.evalParam(4);
+                this.matrix[1][2] = this.evalParam(5);
+                this.matrix[2][0] = this.evalParam(6);
+                this.matrix[2][1] = this.evalParam(7);
+                this.matrix[2][2] = this.evalParam(8);
+            };
         } else if (type === 'matrix') {
             if (params.length !== 1) {
                 throw new Error("JSXGraph: transformation of type 'matrix' needs 1 parameter.");
             }
+
             this.evalParam = params[0].slice();
+            this.update = function () {
+                var i, j;
+                for (i = 0; i < 3; i++) {
+                    for (j = 0; j < 3; j++) {
+                        this.matrix[i][j] = Type.evaluate(this.evalParam[i][j]);
+                    }
+                }
+            };
         }
 
         // Handle dependencies
@@ -418,7 +433,7 @@ export class Transformation  {
 
     /**
      * Set the 3D transformation matrix for different types of standard transforms.
-     * @param {JXG2.Board} board
+     * @param {Board} board
      * @param {String} type   Transformation type, possible values are
      *                        'translate', 'scale', 'rotate',
      *                        'rotateX', 'rotateY', 'rotateZ',
@@ -485,118 +500,118 @@ export class Transformation  {
      *
      */
     setMatrix3D(view, type, params) {
-        //     var i,
-        //         board = view.board;
+        var i,
+            board = view.board;
 
-        //     this.isNumericMatrix = true;
-        //     for (i = 0; i < params.length; i++) {
-        //         if (typeof params[i] !== 'number') {
-        //             this.isNumericMatrix = false;
-        //             break;
-        //         }
-        //     }
+        this.isNumericMatrix = true;
+        for (i = 0; i < params.length; i++) {
+            if (typeof params[i] !== 'number') {
+                this.isNumericMatrix = false;
+                break;
+            }
+        }
 
-        //     if (type === 'translate') {
-        //         if (params.length !== 3) {
-        //             throw new Error("JSXGraph: 3D translate transformation needs 3 parameters.");
-        //         }
-        //         this.evalParam = Type.createEvalFunction(board, params, 3);
-        //         this.update = function () {
-        //             this.matrix[1][0] = this.evalParam(0);
-        //             this.matrix[2][0] = this.evalParam(1);
-        //             this.matrix[3][0] = this.evalParam(2);
-        //         };
-        //     } else if (type === 'scale') {
-        //         if (params.length !== 3 && params.length !== 4) {
-        //             throw new Error("JSXGraph: 3D scale transformation needs either 3 or 4 parameters.");
-        //         }
-        //         this.evalParam = Type.createEvalFunction(board, params, 3);
-        //         this.update = function () {
-        //             var x = this.evalParam(0),
-        //                 y = this.evalParam(1),
-        //                 z = this.evalParam(2);
+        if (type === 'translate') {
+            if (params.length !== 3) {
+                throw new Error("JSXGraph: 3D translate transformation needs 3 parameters.");
+            }
+            this.evalParam = Type.createEvalFunction(board, params, 3);
+            this.update = function () {
+                this.matrix[1][0] = this.evalParam(0);
+                this.matrix[2][0] = this.evalParam(1);
+                this.matrix[3][0] = this.evalParam(2);
+            };
+        } else if (type === 'scale') {
+            if (params.length !== 3 && params.length !== 4) {
+                throw new Error("JSXGraph: 3D scale transformation needs either 3 or 4 parameters.");
+            }
+            this.evalParam = Type.createEvalFunction(board, params, 3);
+            this.update = function () {
+                var x = this.evalParam(0),
+                    y = this.evalParam(1),
+                    z = this.evalParam(2);
 
-        //             this.matrix[1][1] = x;
-        //             this.matrix[2][2] = y;
-        //             this.matrix[3][3] = z;
-        //         };
-        //     } else if (type === 'rotateX') {
-        //         params.splice(1, 0, [1, 0, 0]);
-        //         this.setMatrix3D(view, 'rotate', params);
-        //     } else if (type === 'rotateY') {
-        //         params.splice(1, 0, [0, 1, 0]);
-        //         this.setMatrix3D(view, 'rotate', params);
-        //     } else if (type === 'rotateZ') {
-        //         params.splice(1, 0, [0, 0, 1]);
-        //         this.setMatrix3D(view, 'rotate', params);
-        //     } else if (type === 'rotate') {
-        //         if (params.length < 2) {
-        //             throw new Error("JSXGraph: 3D rotate transformation needs 2 or 3 parameters.");
-        //         }
-        //         if (params.length === 3 && !Type.isFunction(params[2]) && !Type.isArray(params[2])) {
-        //             this.evalParam = Type.createEvalFunction(board, params, 2);
-        //             params[2] = view.select(params[2]);
-        //         } else {
-        //             this.evalParam = Type.createEvalFunction(board, params, params.length);
-        //         }
-        //         this.update = function () {
-        //             var a = this.evalParam(0), // angle
-        //                 n = this.evalParam(1), // normal
-        //                 p = [1, 0, 0, 0],
-        //                 co = Math.cos(a),
-        //                 si = Math.sin(a),
-        //                 n1, n2, n3,
-        //                 m1 = [
-        //                     [1, 0, 0, 0],
-        //                     [0, 1, 0, 0],
-        //                     [0, 0, 1, 0],
-        //                     [0, 0, 0, 1]
-        //                 ],
-        //                 m2 = [
-        //                     [1, 0, 0, 0],
-        //                     [0, 1, 0, 0],
-        //                     [0, 0, 1, 0],
-        //                     [0, 0, 0, 1]
-        //                 ],
-        //                 nrm = JSXMath.norm(n);
+                this.matrix[1][1] = x;
+                this.matrix[2][2] = y;
+                this.matrix[3][3] = z;
+            };
+        } else if (type === 'rotateX') {
+            params.splice(1, 0, [1, 0, 0]);
+            this.setMatrix3D(view, 'rotate', params);
+        } else if (type === 'rotateY') {
+            params.splice(1, 0, [0, 1, 0]);
+            this.setMatrix3D(view, 'rotate', params);
+        } else if (type === 'rotateZ') {
+            params.splice(1, 0, [0, 0, 1]);
+            this.setMatrix3D(view, 'rotate', params);
+        } else if (type === 'rotate') {
+            if (params.length < 2) {
+                throw new Error("JSXGraph: 3D rotate transformation needs 2 or 3 parameters.");
+            }
+            if (params.length === 3 && !Type.isFunction(params[2]) && !Type.isArray(params[2])) {
+                this.evalParam = Type.createEvalFunction(board, params, 2);
+                params[2] = view.select(params[2]);
+            } else {
+                this.evalParam = Type.createEvalFunction(board, params, params.length);
+            }
+            this.update = () => {
+                var a = this.evalParam(0), // angle
+                    n = this.evalParam(1), // normal
+                    p = [1, 0, 0, 0],
+                    co = Math.cos(a),
+                    si = Math.sin(a),
+                    n1, n2, n3,
+                    m1 = [
+                        [1, 0, 0, 0],
+                        [0, 1, 0, 0],
+                        [0, 0, 1, 0],
+                        [0, 0, 0, 1]
+                    ],
+                    m2 = [
+                        [1, 0, 0, 0],
+                        [0, 1, 0, 0],
+                        [0, 0, 1, 0],
+                        [0, 0, 0, 1]
+                    ],
+                    nrm = JSXMath.norm(n);
 
-        //             if (n.length === 3) {
-        //                 n1 = n[0] / nrm;
-        //                 n2 = n[1] / nrm;
-        //                 n3 = n[2] / nrm;
-        //             } else {
-        //                 n1 = n[1] / nrm;
-        //                 n2 = n[2] / nrm;
-        //                 n3 = n[3] / nrm;
-        //             }
-        //             if (params.length === 3) {
-        //                 if (params.length === 3 && Type.exists(params[2].is3D)) {
-        //                     p = params[2].coords.slice();
-        //                 } else {
-        //                     p = this.evalParam(2);
-        //                 }
-        //                 if (p.length === 3) {
-        //                     p.unshift(1);
-        //                 }
-        //                 m1[1][0] = -p[1];
-        //                 m1[2][0] = -p[2];
-        //                 m1[3][0] = -p[3];
+                if (n.length === 3) {
+                    n1 = n[0] / nrm;
+                    n2 = n[1] / nrm;
+                    n3 = n[2] / nrm;
+                } else {
+                    n1 = n[1] / nrm;
+                    n2 = n[2] / nrm;
+                    n3 = n[3] / nrm;
+                }
+                if (params.length === 3) {
+                    if (params.length === 3 && Type.exists(params[2].is3D)) {
+                        p = params[2].coords.slice();
+                    } else {
+                        p = this.evalParam(2);
+                    }
+                    if (p.length === 3) {
+                        p.unshift(1);
+                    }
+                    m1[1][0] = -p[1];
+                    m1[2][0] = -p[2];
+                    m1[3][0] = -p[3];
 
-        //                 m2[1][0] = p[1];
-        //                 m2[2][0] = p[2];
-        //                 m2[3][0] = p[3];
-        //             }
+                    m2[1][0] = p[1];
+                    m2[2][0] = p[2];
+                    m2[3][0] = p[3];
+                }
 
-        //             this.matrix = [
-        //                 [1, 0, 0, 0],
-        //                 [0, n1 * n1 * (1 - co) + co, n1 * n2 * (1 - co) - n3 * si, n1 * n3 * (1 - co) + n2 * si],
-        //                 [0, n2 * n1 * (1 - co) + n3 * si, n2 * n2 * (1 - co) + co, n2 * n3 * (1 - co) - n1 * si],
-        //                 [0, n3 * n1 * (1 - co) - n2 * si, n3 * n2 * (1 - co) + n1 * si, n3 * n3 * (1 - co) + co]
-        //             ];
-        //             this.matrix = JSXMath.matMatMult(this.matrix, m1);
-        //             this.matrix = JSXMath.matMatMult(m2, this.matrix);
-        //         };
-        //     }
+                this.matrix = [
+                    [1, 0, 0, 0],
+                    [0, n1 * n1 * (1 - co) + co, n1 * n2 * (1 - co) - n3 * si, n1 * n3 * (1 - co) + n2 * si],
+                    [0, n2 * n1 * (1 - co) + n3 * si, n2 * n2 * (1 - co) + co, n2 * n3 * (1 - co) - n1 * si],
+                    [0, n3 * n1 * (1 - co) - n2 * si, n3 * n2 * (1 - co) + n1 * si, n3 * n3 * (1 - co) + co]
+                ];
+                this.matrix = JSXMath.matMatMult(this.matrix, m1);
+                this.matrix = JSXMath.matMatMult(m2, this.matrix);
+            };
+        }
     }
 
     /**
@@ -606,18 +621,22 @@ export class Transformation  {
      * Restricted to 2D transformations.
      *
      * @private
-     * @param {JXG2.GeometryElement} p element which is transformed
+     * @param {GeometryElement} p element which is transformed
      * @param {String} 'self' Apply the transformation to the initialCoords instead of the coords if this is set.
      * @returns {Array}
      */
-    apply(p, self?:string) {
+    apply(p: GeometryElement, self?: 'self') {
         var c;
+
+        if (dbug(p))
+            console.warn(`%c transformation.apply ${p.id}, ${self}`, dbugColor)
+
 
         this.update();
         if (this.is3D) {
             c = p.coords;
         } else if (Type.exists(self)) {
-            c = p.initialCoords.usrCoords;
+            c = (p as Point).initialCoords.usrCoords;
         } else {
             c = p.coords.usrCoords;
         }
@@ -629,22 +648,27 @@ export class Transformation  {
      * Applies a transformation once to a point element, that are: {@link Point}, {@link Text}, {@link Image}, {@link Point3D} or to an array of such elements.
      * If it is a free 2D point, then it can be dragged around later
      * and will overwrite the transformed coordinates.
-     * @param {JXG2.Point|Array} p
+     * @param {Point|Array} p
      */
-    applyOnce(p) {
-        var c, len, i;
+    applyOnce(p: Point[]) {
 
-        if (!Type.isArray(p)) {
-            p = [p];
-        }
+        console.assert(Array.isArray(p))
 
-        len = p.length;
-        for (i = 0; i < len; i++) {
+        // if (!Type.isArray(p)) {
+        //     p = [p];
+        // }
+
+        for (let i = 0; i < p.length; i++) {
+
+            if (dbug(p[i]))
+                console.warn(`%c transformation.applyOnce ${p[i].id}`, dbugColor)
+
             this.update();
             if (this.is3D) {
-                p[i].coords = JSXMath.matVecMult(this.matrix, p[i].coords);
+                // tbtb this is wrong
+                p[i].coords.scrCoords = JSXMath.matVecMult(this.matrix, p[i].coords);
             } else {
-                c = JSXMath.matVecMult(this.matrix, p[i].coords.usrCoords);
+                let c = JSXMath.matVecMult(this.matrix, p[i].coords.usrCoords);
                 p[i].coords.setCoordinates(COORDS_BY.USER, c);
             }
         }
@@ -658,12 +682,13 @@ export class Transformation  {
      * The transformation is simply appended to the existing list of transformations of the object.
      * It is not fused (melt) with an existing transformation.
      *
-     * @param  {Array|JXG2.Object} el JXG2.Object or array of JXG2.Object to
+     * @param  {Array|Object} el Object or array of Object to
      *                            which the transformation is bound to.
-     * @see JXG2.Transformation.meltTo
+     * @see Transformation.meltTo
      */
     bindTo(el) {
-        console.error(`binding transformation to ${el.id}`,this)
+                                // if (dbug(p))
+            console.warn(`%c Transformation.bindTo ${el.id}`, dbugColor)
 
         var i, len;
         if (Type.isArray(el)) {
@@ -689,10 +714,10 @@ export class Transformation  {
      * If the transformation will be the first transformation ot the element, it will be cloned
      * to prevent side effects.
      *
-     * @param  {Array|JXG2.Object} el JXG2.Object or array of JXG2.Objects to
+     * @param  {Array|Object} el Object or array of Objects to
      *                            which the transformation is bound to.
      *
-     * @see JXG2.Transformation#bindTo
+     * @see Transformation#bindTo
      */
     meltTo(el) {
         var i, elt, t;
@@ -724,7 +749,7 @@ export class Transformation  {
      * <p>
      * If the transformation matrix is not static, null will be returned.
      *
-     * @returns {JXG2.Transformation}
+     * @returns {Transformation}
      */
     clone() {
         var t = null;
@@ -737,6 +762,20 @@ export class Transformation  {
         return t;
     }
 
+    /**
+     * Unused
+     * @deprecated Use setAttribute
+     * @param term
+     */
+    setProperty(term) {
+        Env.deprecated("Transformation.setProperty()", "Transformation.setAttribute()");
+    }
+
+    /**
+     * Empty method. Unused.
+     * @param {Object} term Key-value pairs of the attributes.
+     */
+    setAttribute(term) { }
 
     /**
      * Combine two transformations to one transformation. This only works if
@@ -745,8 +784,8 @@ export class Transformation  {
      *
      * Multiplies the transformation with a transformation t from the left.
      * i.e. (this) = (t) join (this)
-     * @param  {JXG2.Transform} t Transformation which is the left multiplicand
-     * @returns {JXG2.Transform} the transformation object.
+     * @param  {Transform} t Transformation which is the left multiplicand
+     * @returns {Transform} the transformation object.
      */
     melt(t) {
         var res = [];
@@ -756,10 +795,9 @@ export class Transformation  {
 
         res = JSXMath.matMatMult(t.matrix, this.matrix);
 
-        throw new Error('fix this !!')  //tbtb
-        // this.update = function () {
-        //     this.matrix = res;
-        // };
+        this.update = function () {
+            this.matrix = res;
+        };
 
         return this;
     }
@@ -797,11 +835,11 @@ export class Transformation  {
  * Transformations acting on texts and images are considered to be affine, i.e. b and c are ignored.
  *
  * @name Transformation
- * @augments JXG2.Transformation
+ * @augments Transformation
  * @constructor
- * @type JXG2.Transformation
+ * @type Transformation
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {number|function|JXG2.GeometryElement} parameters The parameters depend on the transformation type, supplied as attribute 'type'.
+ * @param {number|function|GeometryElement} parameters The parameters depend on the transformation type, supplied as attribute 'type'.
  * Possible transformation types are
  * <ul>
  * <li> 'translate'
@@ -868,7 +906,7 @@ export class Transformation  {
  * </dl>
  *
  *
- * @see JXG2.Transformation#setMatrix
+ * @see Transformation#setMatrix
  *
  * @example
  * // The point B is determined by taking twice the vector A from the origin
@@ -880,7 +918,7 @@ export class Transformation  {
  * </pre><div class="jxgbox" id="JXG14167b0c-2ad3-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXG14167b0c-2ad3-11e5-8dd9-901b0e1b8723',
+ *         var board = JSXGraph.initBoard('JXG14167b0c-2ad3-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p0 = board.create('point', [0, 3], {name: 'A'}),
  *         t = board.create('transform', [function(){ return p0.X(); }, "Y(A)"], {type:'translate'}),
@@ -901,7 +939,7 @@ export class Transformation  {
  * </pre><div class="jxgbox" id="JXGa6827a72-2ad3-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXGa6827a72-2ad3-11e5-8dd9-901b0e1b8723',
+ *         var board = JSXGraph.initBoard('JXGa6827a72-2ad3-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [1, 1]),
  *         t = board.create('transform', [2, 0.5], {type: 'scale'}),
@@ -926,7 +964,7 @@ export class Transformation  {
  * </pre><div class="jxgbox" id="JXG747cf11e-2ad4-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXG747cf11e-2ad4-11e5-8dd9-901b0e1b8723',
+ *         var board = JSXGraph.initBoard('JXG747cf11e-2ad4-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p0 = board.create('point', [0, 3], {name: 'A'}),
  *         p1 = board.create('point', [1, 1]),
@@ -951,7 +989,7 @@ export class Transformation  {
  * </pre><div class="jxgbox" id="JXGf516d3de-2ad5-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXGf516d3de-2ad5-11e5-8dd9-901b0e1b8723',
+ *         var board = JSXGraph.initBoard('JXGf516d3de-2ad5-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [1, 1]),
  *         t1 = board.create('transform', [-2, -1], {type:'translate'}),
@@ -975,7 +1013,7 @@ export class Transformation  {
  * </pre><div class="jxgbox" id="JXG6f374a04-2ad6-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXG6f374a04-2ad6-11e5-8dd9-901b0e1b8723',
+ *         var board = JSXGraph.initBoard('JXG6f374a04-2ad6-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [1, 1]),
  *         p2 = board.create('point', [1, 3]),
@@ -1005,7 +1043,7 @@ export class Transformation  {
  * </pre><div id="JXGd2bfd46c-3c0c-45c5-a92b-583fad0eb3ec" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXGd2bfd46c-3c0c-45c5-a92b-583fad0eb3ec',
+ *         var board = JSXGraph.initBoard('JXGd2bfd46c-3c0c-45c5-a92b-583fad0eb3ec',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *             var y = board.create('slider', [[-3, 1], [-3, 4], [0, 1, 6]]);
  *             var t1 = board.create('transform', [
@@ -1033,7 +1071,7 @@ export class Transformation  {
  * </pre><div class="jxgbox" id="JXGb6cee1c4-2ad6-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXGb6cee1c4-2ad6-11e5-8dd9-901b0e1b8723',
+ *         var board = JSXGraph.initBoard('JXGb6cee1c4-2ad6-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8, -8], axis: true, showcopyright: false, shownavigation: false});
  *     var p1 = board.create('point', [1, 1]),
  *         p2 = board.create('point', [-1, -2]),
@@ -1078,7 +1116,7 @@ export class Transformation  {
  * </pre><div class="jxgbox" id="JXGc7f9097e-2ad7-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXGc7f9097e-2ad7-11e5-8dd9-901b0e1b8723',
+ *         var board = JSXGraph.initBoard('JXGc7f9097e-2ad7-11e5-8dd9-901b0e1b8723',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     // Construct a square of side length 2 with the
  *     // help of transformations
@@ -1149,7 +1187,7 @@ export class Transformation  {
  * </pre><div id="JXG50d6d546-3b91-41dd-8c0f-3eaa6cff7e66" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXG50d6d546-3b91-41dd-8c0f-3eaa6cff7e66',
+ *         var board = JSXGraph.initBoard('JXG50d6d546-3b91-41dd-8c0f-3eaa6cff7e66',
  *             {boundingbox: [-5, 5, 5, -5], axis: true, showcopyright: false, shownavigation: false});
  *     var p0 = board.create('point', [0, 0], {name: 'p_0'});
  *     var p1 = board.create('point', [3, 0], {name: 'p_1'});
@@ -1186,9 +1224,10 @@ export class Transformation  {
  * </script><pre>
  *
  */
-export function createTransform(board, parents, attributes) {
+export function createTransform(board: Board, parents: any[], attributes: LooseObject) {
     return new Transformation(board, attributes.type, parents);
 };
+
 
 /**
  * @class Define projective 3D transformations like translation, rotation, reflection.
@@ -1209,11 +1248,11 @@ export function createTransform(board, parents, attributes) {
  * <p>
  *
  * @name Transformation3D
- * @augments JXG2.Transformation
+ * @augments Transformation
  * @constructor
- * @type JXG2.Transformation
+ * @type Transformation
  * @throws {Exception} If the element cannot be constructed with the given parent objects an exception is thrown.
- * @param {number|function|JXG2.GeometryElement3D} parameters The parameters depend on the transformation type, supplied as attribute 'type'.
+ * @param {number|function|GeometryElement3D} parameters The parameters depend on the transformation type, supplied as attribute 'type'.
  *  Possible transformation types are
  * <ul>
  * <li> 'translate'
@@ -1285,7 +1324,7 @@ export function createTransform(board, parents, attributes) {
  * </pre><div id="JXG2409bb0a-90d7-4c1e-ae9f-85e8a776acec" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXG2409bb0a-90d7-4c1e-ae9f-85e8a776acec',
+ *         var board = JSXGraph.initBoard('JXG2409bb0a-90d7-4c1e-ae9f-85e8a776acec',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var bound = [-5, 5];
  *     var view = board.create('view3d',
@@ -1300,7 +1339,6 @@ export function createTransform(board, parents, attributes) {
  *     );
  *
  *     var slider = board.create('slider', [[-4, 6], [0, 6], [0, 0, 5]]);
- *
  *
  *     var p1 = view.create('point3d', [1, 2, 2], { name: 'drag me', size: 5 });
  *
@@ -1317,7 +1355,3 @@ export function createTransform(board, parents, attributes) {
  * </script><pre>
  *
  */
-export function createTransform3D(board, parents, attributes) {
-    return new Transformation(board, attributes.type, parents, true);
-};
-
