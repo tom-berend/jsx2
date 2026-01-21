@@ -89,12 +89,12 @@ export class IndexTests {
             let a = board.create('point', [1, 4])
             board.create('point', [() => a.X() + 1, () => a.Y() + 1], { name: 'A + [1,1]', strokecolor: 'blue' })
 
-            let wave = () => new Date().getSeconds()
-            board.create('point', [-2, 3], { strokecolor: 'green', strokewidth: 6, linecolor: 'red', opacity: ((wave() % 10) / 10), name: () => wave() })
+            // let wave = () => new Date().getSeconds()
+            // board.create('point', [-2, 3], { strokecolor: 'green', strokewidth: 6, linecolor: 'red', opacity: ((wave() % 10) / 10), name: () => wave() })
 
-            // Create a point using transformations
-            let trans = board.create('transform', [2, .5], { type: 'scale' });
-            let p3 = board.create('point', [a, trans], { name: 'A scale 2x' });
+            // // Create a point using transformations
+            // let trans = board.create('transform', [2, .5], { type: 'scale' });
+            // let p3 = board.create('point', [a, trans], { name: 'A scale 2x' });
         })
     }
     text() {

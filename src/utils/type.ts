@@ -496,7 +496,7 @@ export class Type {
         if (!this.isArray(parents)) {
             parents = [parents];
         }
-        len = parents.length;
+
         if (this.exists(attrArray)) {
             lenAttr = attrArray.length;
         }
@@ -505,7 +505,7 @@ export class Type {
             attr = this.copyAttributes(attributes, board.options, attrClass);
         }
 
-        for (i = 0; i < len; ++i) {
+        for (i = 0; i < parents.length; ++i) {
             if (lenAttr > 0) {
                 j = Math.min(i, lenAttr - 1);
                 attr = this.copyAttributes(

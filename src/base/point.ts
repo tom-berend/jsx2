@@ -84,13 +84,13 @@ export class Point extends CoordsElement {
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
 
-        if (dbug(this))
-            console.warn(`%c create Point ${this.id}`, dbugColor, parents)
+
 
         /* Register point on board. */
         this.elType = 'point';
         this.id = this.board.setId(this, 'P');
 
+        console.warn(`%c create Point ${this.id}`, dbugColor,typeof parents[0], typeof parents[1], parents)
 
         this.visProp = Type.initVisProps(Options.elements, Options.point, attributes)
 
@@ -100,8 +100,11 @@ export class Point extends CoordsElement {
         this.createGradient();
         this.createLabel();
 
+
         if (this.evalVisProp('anchor'))
             this.element = this.board.select(this.evalVisProp('anchor'));
+
+        this.coordsConstructor(parents, this.visProp)
 
         // deal with point defined by another point and a transformation
         if (Type.isPoint(parents[0]) && Type.isTransformationOrArray(parents[1])) {
@@ -109,15 +112,12 @@ export class Point extends CoordsElement {
             this.parents.push(parents[0])
             this.transformations.push(parents[1])
             parents[0].addChild(this)
-            console.log(parents[0])
-            this.needsUpdate = true
         } else {
             if (!this.isDraggable) {
                 this.addConstraint(parents)
             }
         }
 
-        this.coordsConstructor(parents, this.visProp)
 
         // if (dbug(this))
         console.warn(`%c new Point(${this.id}) at ${JSON.stringify(this.coords.scrCoords)}`, dbugColor, this)
@@ -204,12 +204,11 @@ export class Point extends CoordsElement {
 
         var c, i;
 
-        // this.updateConstraint();
+        this.updateConstraint();
 
         // if any children have transformations, update them,
         for (let [id, child] of Object.entries(this.childElements)) {
             child.updateTransform(true)
-            child.updateConstraint()
             child.elementUpdate()
         }
 
@@ -217,7 +216,6 @@ export class Point extends CoordsElement {
         if (this.transformations.length === 0 || this.baseElement === null) {
             return this;
         }
-
 
         this.transformations[0].update();
 
