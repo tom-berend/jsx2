@@ -1085,6 +1085,10 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
 
         if (dbug(this)) console.warn(`%c coordselements: updateTransform( ${this.id} scr [${this.scrCoords[1]},${this.scrCoords[2]}] )`, dbugColor)
 
+        // for(let [key,value] of Object.entries(this.childElements)){
+        //     console.warn(this,key,value)
+        // }
+
         if (this.transformations.length === 0 || this.baseElement === null) {
             return this;
         }

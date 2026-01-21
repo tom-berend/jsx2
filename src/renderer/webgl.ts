@@ -251,13 +251,13 @@ export class WebGLRenderer {
         renderer.setSize(webcanvas.clientWidth, webcanvas.clientHeight)
 
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color( 'lightblue' );
+        this.scene.background = new THREE.Color('lightblue');
 
-        // const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        // camera.position.z = 13;
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 13;
 
-        const camera = new THREE.OrthographicCamera(-10,10,10,-10, 0.1, 1000);
-        camera.position.z = 10;
+        // const camera = new THREE.OrthographicCamera(-10, 10, 10, -10, 0.1, 1000);
+        // camera.position.z = 10;
 
 
         if (this.enableOrbital) {
@@ -308,7 +308,8 @@ export class WebGLRenderer {
     // currently set for a 10x10 board
     calcPointStrokeWidth(n: number) {
         if (n < 0) return 0;
-        return (((Math.sqrt(Math.round(n)+1))) * 0.12)  // point of strokewith zero still shows
+        return (((Math.sqrt(Math.round(2 * n) + 4))) * 0.07)  // point of strokewith zero still shows
+        // point grows twice as fast because pixel added left and right
     }
 
 
@@ -436,6 +437,9 @@ export class WebGLRenderer {
 
         // really naive
 
+        if (!el.evalVisProp('visible'))
+            return;
+
         let coord = el.Coords(false)
 
         let color = el.evalVisProp('strokecolor')
@@ -445,7 +449,7 @@ export class WebGLRenderer {
         pointMaterial.transparent = true
         pointMaterial.opacity = 1
 
-                let strokewidth = this.calcPointStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
+        let strokewidth = this.calcPointStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
 
         let v = new THREE.Mesh(new THREE.SphereGeometry(strokewidth, 8, 8), pointMaterial)
 
@@ -1538,6 +1542,10 @@ export class WebGLRenderer {
      * @see JXG2.AbstractRenderer#updateInternalTextStyle
      */
     updateTextStyle(el, doHighlight) {
+        return;
+
+
+        
         var fs,
             so, sc,
             css,

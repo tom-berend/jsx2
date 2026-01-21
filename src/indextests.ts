@@ -138,7 +138,7 @@ export class IndexTests {
             let c1 = board.create('circle', [[-4, 6], [-4, 3]])
             let glid2 = board.create('glider', [c1])
 
-            let c3 = board.create('curve', [(t) => t - Math.sin(t), (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
+            let c3 = board.create('curve', [(t) => t - Math.sin(t)+1, (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
             let glid3 = board.create('glider', [c3])
 
             // Create a slider with values between 1 and 10, initial position is 5.
@@ -154,7 +154,7 @@ export class IndexTests {
     curve() {
         this.boards.map((board) => {
             board.create('curve', [(t) => t - Math.sin(t), (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
-            board.create('functiongraph', [(x) => Math.sin(x * 2), -8, 8])
+            board.create('functiongraph', [(x) => Math.sin(x * 2)-3, -8, 8])
         })
     }
     widgets() {
@@ -188,7 +188,7 @@ export class IndexTests {
         this.boards.map((board) => {
             for (let i = 0; i < 15; i++) {
                 board.create('point', [i - 9, 8], { strokewidth: i })
-
+                board.create('text', [i - 9, 7-(i/4),'Aa'],{fontsize:2*i})
                 board.create('segment', [[i - 9, - 9], [i - 2, 2]], { strokewidth: i });  // mostly diagonal
                 board.create('text', [i - 9, - 9.5, i.toString()])
             }
