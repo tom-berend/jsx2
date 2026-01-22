@@ -161,8 +161,8 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
 
         // TODO - phase 2just set up object
         // tbtb - doesn't appear to be used
-        // this.usrCoords = new Coords(COORDS_BY.USER, coordinates, board).usrCoords
-        // this.scrCoords = new Coords(COORDS_BY.SCREEN, coordinates, board).scrCoords
+        this.usrCoords = new Coords(COORDS_BY.USER, coordinates, board).usrCoords
+        this.scrCoords = new Coords(COORDS_BY.SCREEN, coordinates, board).scrCoords
 
         if (dbug(this)) console.warn(`%c coordselements: constructor, ${this.id}`, dbugColor)
 

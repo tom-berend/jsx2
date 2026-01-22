@@ -368,7 +368,6 @@ export class GeometryElement extends Events {
     defaultTicks
     coords: Coords
     vertices
-    center
     points
     radius
     point1:Point
@@ -377,8 +376,10 @@ export class GeometryElement extends Events {
 
     element// ???
     parentPolygon
-    radiuspoint
-    anglepoint
+
+    radiuspoint:Point
+    anglepoint:Point
+    center:Point
 
     transformMat
 

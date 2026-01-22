@@ -82,6 +82,7 @@ import { createGrid } from '../element/grid.js';
 import { createImage } from '../base/image.js';
 import { createPolygon, createRegularPolygon, createPolygonalChain, createParallelogram } from "../base/polygon.js";
 import { createGlider } from '../element/glider.js';
+import { createArc, createMajorArc, createMinorArc, createCircumcircleArc, createSemicircle } from "../element/arc.js";
 
 /**
  * Constructs a new Board object.
@@ -2111,7 +2112,7 @@ export class Board extends Events {
     addEventHandlers() {
         if (Env.supportsPointerEvents()) {
             this.addPointerEventHandlers();
-            // } else {   // tbtb add all of them
+        } else {
             this.addMouseEventHandlers();
             this.addTouchEventHandlers();
         }
@@ -4772,10 +4773,6 @@ export class Board extends Events {
             distX, distY,
             vpsi = el.evalVisProp('showinfobox');
 
-        // tbtb - infobox change all this.infobox['thing'] to infobox.thing when Text is converted
-        console.error('need to add infobox back in')
-        return;
-
         if ((!Type.evaluate(this.attr.showinfobox) && vpsi === 'inherit') || !vpsi) {
             return this;
         }
@@ -6395,14 +6392,14 @@ export class Board extends Events {
 
 
         let attr
-        switch (elementType) {
+        switch (elementType.toLowerCase()) {
             case 'text': el = new Text(this, parents, attributes); break;
 
             case 'point': el = new Point(this, parents, attributes); break;
             case 'glider': el = createGlider(this, parents, attributes); break;
-            case 'createPolePoint': el = createPolePoint(this, parent, attributes); break;
-            case 'createIntersectionPoint': el = createIntersectionPoint(this, parent, attributes); break;
-            case 'createOtherIntersectionPoint': el = createOtherIntersectionPoint(this, parent, attributes); break;
+            case 'createpolepoint': el = createPolePoint(this, parent, attributes); break;
+            case 'createIntersectionpoint': el = createIntersectionPoint(this, parent, attributes); break;
+            case 'createotherintersectionpoint': el = createOtherIntersectionPoint(this, parent, attributes); break;
 
 
             case 'checkbox': el = new Checkbox(this, parents, attributes); break;
@@ -6413,7 +6410,7 @@ export class Board extends Events {
             case 'axis': el = createAxis(this, parents, attributes); break;
             case 'tangent': el = createTangent(this, parents, attributes); break;
             case 'tangent': el = createNormal(this, parents, attributes); break;
-            case 'radialAxis': el = createRadicalAxis(this, parents, attributes); break;
+            case 'radialaxis': el = createRadicalAxis(this, parents, attributes); break;
             case 'polarline': el = createPolarLine(this, parents, attributes); break;
             case 'tangentto': el = createTangentTo(this, parents, attributes); break;
 
@@ -6432,11 +6429,11 @@ export class Board extends Events {
             case 'tracecurve': el = createTracecurve(this, parents, attributes); break;
             case 'stepfunction': el = createStepfunction(this, parents, attributes); break;
             case 'derivative': el = createDerivative(this, parents, attributes); break;
-            case 'curveIntersection': el = createCurveIntersection(this, parents, attributes); break;
-            case 'curveUnion': el = createCurveUnion(this, parents, attributes); break;
-            case 'curveDifference': el = createCurveDifference(this, parents, attributes); break;
-            case 'boxPlot': el = createBoxPlot(this, parents, attributes); break;
-            case 'implicitCurve': el = createImplicitCurve(this, parents, attributes); break;
+            case 'curveintersection': el = createCurveIntersection(this, parents, attributes); break;
+            case 'curveunion': el = createCurveUnion(this, parents, attributes); break;
+            case 'curvedifference': el = createCurveDifference(this, parents, attributes); break;
+            case 'boxplot': el = createBoxPlot(this, parents, attributes); break;
+            case 'implicitcurve': el = createImplicitCurve(this, parents, attributes); break;
 
             case 'glider': el = createGlider(this, parents, attributes); break;
             case 'slider': el = createSlider(this, parents, attributes); break;
@@ -6446,10 +6443,15 @@ export class Board extends Events {
             case 'image': el = createImage(this, parents, attributes); break;
 
             case 'polygon': el = createPolygon(this, parents, attributes); break;
-            case 'regularPolygon': el = createRegularPolygon(this, parents, attributes); break;
-            case 'polygonalChain': el = createPolygonalChain(this, parents, attributes); break;
+            case 'regularpolygon': el = createRegularPolygon(this, parents, attributes); break;
+            case 'polygonalchain': el = createPolygonalChain(this, parents, attributes); break;
             case 'parallelogram': el = createParallelogram(this, parents, attributes); break;
 
+            case 'arc': el = createArc(this, parents, attributes); break;
+            case 'majorarc': el = createMajorArc(this, parents, attributes); break;
+            case 'minorarc': el = createMinorArc(this, parents, attributes); break;
+            case 'semicircle': el = createSemicircle(this, parents, attributes); break;
+            case 'circumcirclearc': el = createCircumcircleArc(this, parents, attributes); break;
 
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)
@@ -6461,7 +6463,7 @@ export class Board extends Events {
             return el;
         }
 
-        if (el.prepareUpdate && el.update && el.updateRenderer) {
+        if (el.prepareUpdate && el.elementUpdate && el.elementUpdateRenderer) {
             el.fullUpdate();
         }
         return el;
@@ -7251,59 +7253,71 @@ export class Board extends Events {
      *   return true;
      * });
      */
-    select(str: string | GeometryElement): GeometryElement | null /* GeometryComposition*/ {
-        var flist,
+    select(str, onlyByIdOrName = true) {
+
+        let flist,
             olist,
             i,
             l,
-            ret = null;
+            ret: GeometryElement | null = str;  // tbtb - unknown types IN and OUT - fix this !!
 
-        var flist,
-            olist,
-            i,
-            l,
-            s: GeometryElement | null = null;
-
-        if (str === null || str === undefined) return null;
-
-        if (typeof str === 'object') {
-            console.warn('ERROR - wrong type sent to board.select()', str)
-            str = (str as GeometryElement).id
+        if (str === null || str === undefined) {
+            return null;
         }
 
+        // if (typeof str === 'object') {
+        //     console.warn('ERROR - wrong type sent to board.select()', str)
+        //     str = (str as GeometryElement).id
+        // }
+
         // It's a string, most likely an id or a name.
-        if (Type.isString(str) && str !== '') {
+        if (typeof str == 'string' && str !== '') {
+
             // Search by ID
             if (Type.exists(this.objects[str])) {
-                s = this.objects[str];
+                ret = this.objects[str];
                 // Search by name
             } else if (Type.exists(this.elementsByName[str])) {
-                s = this.elementsByName[str];
+                ret = this.elementsByName[str];
                 // Search by group ID
             } else if (Type.exists(this.groups[str])) {
-                s = this.groups[str];
+                ret = this.groups[str];
             }
 
             // It's a function or an object, but not an element
+        } else if (
+            !onlyByIdOrName &&
+            (Type.isFunction(str) || (Type.isObject(str) && !Type.isFunction(str['setAttribute'])))
+        ) {
+            flist = Type.filterElements(this.objectsList, str);
+
+            olist = {};
+            l = flist.length;
+            for (i = 0; i < l; i++) {
+                olist[flist[i].id] = flist[i];
+            }
+            throw new Error('s = new Composition(olist);')  // tbtb fix
+            // s = new Composition(olist);
+
 
             // It's an element which has been deleted (and still hangs around, e.g. in an attractor list
         } else if (
-            Type.isObject(s) &&
-            Type.exists(s['id']) &&
-            !Type.exists(this.objects[s['id']])
+            Type.isObject(str) &&
+            Type.exists(ret['id']) &&
+            !Type.exists(this.objects[ret['id']])
         ) {
-            s = null;
+            ret = null;
         }
 
 
-        if (dbug(this) && s['id'] === undefined)
-            console.warn(`%c board: select(str:'${str}') returns '${s == null ? 'null' : s['id']}`, dbugColor)
+        if (dbug(this) && ret['id'] === undefined)
+            console.warn(`%c board: select(str:'${str}') returns '${ret == null ? 'null' : ret['id']}`, dbugColor)
 
-        if (s === null)
+        if (ret === null)
             console.error(`%c ERROR board: select(str:'${str}') NOT FOUND`, dbugColor, this.objects)
 
 
-        return s;
+        return ret;
     }
 
     /**

@@ -46,6 +46,7 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
 // import GeonextParser from "../parser/geonext.js";
 import { Type } from "../utils/type.js";
+import { Point} from "../base/point.js";
 
 /**
  * A circle consists of all points with a given distance from one point. This point is called center, the distance is called radius.
@@ -150,7 +151,7 @@ export class Circle extends GeometryElement {
 
 
         this.method = method;
-        this.center = this.board.select(par1);
+        this.center = this.board.select(par1) as Point;
         this.midpoint = this.board.select(par1);
 
         this.par1 = par1

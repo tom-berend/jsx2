@@ -326,12 +326,13 @@ export class ImplicitPlot {
      */
     searchLine(fmi, fma, fix, interval, dir,
         num_components, dataX, dataY, level): number[] | null {
+
         var t_mi, t_ma, t,
             ft,
             mi, ma, tmp, m,
             is_in,
             u0, i, le,
-            ret,
+            // ret,
             offset,
             delta,
             eps = this.config.tol_u0,
@@ -382,7 +383,7 @@ export class ImplicitPlot {
                 if (DEBUG) {
                     console.log("Not in quadtree", u0, dataX.length);
                 }
-                ret = this.traceComponent(u0) /*, 1);*/
+                let ret = this.traceComponent(u0) /*, 1);*/
                 if (ret[0].length > 0) {
                     // Add jump in curve
                     if (num_components > 0) {
@@ -412,10 +413,10 @@ export class ImplicitPlot {
 
             m = t - delta * 0.01;
             if (m - b > delta && level > 0) {
-                ret = this.searchLine(
+                let ret = this.searchLine(
                     fmi, fma, fix, [b, m], dir,
                     num_components, dataX, dataY, level - 1);
-                if (ret !== false) {
+                if (ret !== null) {
                     dataX = ret[0];
                     dataY = ret[1];
                     num_components = ret[2];
@@ -423,10 +424,10 @@ export class ImplicitPlot {
             }
             m = t + delta * 0.01;
             if (e - m > delta && level > 0) {
-                ret = this.searchLine(
+               let  ret = this.searchLine(
                     fmi, fma, fix, [m, e], dir,
                     num_components, dataX, dataY, level - 1);
-                if (ret !== false) {
+                if (ret !== null) {
                     dataX = ret[0];
                     dataY = ret[1];
                     num_components = ret[2];

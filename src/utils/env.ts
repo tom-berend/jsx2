@@ -473,7 +473,8 @@ export class Env {
      */
     static addEvent(obj: Node | Window, type: string, fn: Function, owner: Board, options: object | boolean = false) {
 
-        if (dbug) console.log(`%c env:addEvent(obj:node, type: ${type}, fn:Function, owner: ${owner.id}, options:'${JSON.stringify(options)}')`, dbugColor, options)
+        if (dbug)
+            console.warn(`%c env:addEvent(obj:node, type: ${type}, fn:Function, owner: ${owner.id}, options:'${JSON.stringify(options)}')`, dbugColor, options)
 
 
         let callback = function () {
@@ -530,7 +531,7 @@ export class Env {
 
 
         if (i === -1) {
-           //tbtb  Env.debug("removeEvent: no such event function in internal list: " + type);
+            //tbtb  Env.debug("removeEvent: no such event function in internal list: " + type);
             return;
         }
 

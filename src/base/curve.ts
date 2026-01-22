@@ -1,3 +1,5 @@
+const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
+const dbugColor = `color:black;background-color:#ff8080`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -67,6 +69,10 @@ import { Transformation } from "../base/transformation.js";
  */
 export class Curve extends GeometryElement {
     points = [];
+    domain
+    dfy
+    dfx
+    f
 
     /**
      * Number of points on curves. This value changes
@@ -154,7 +160,12 @@ export class Curve extends GeometryElement {
 
         this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
+        this.elementGetLabelAnchor = () => this.getLabelAnchor();
+        this.elementGetTextAnchor = () => this.getTextAnchor();
 
+        console.warn(`%c New Curve`, dbugColor, parents)
+
+        this.id = this.board.setId(this, 'G');
 
         this.numberPoints = this.evalVisProp('numberpointshigh');
 
@@ -173,7 +184,6 @@ export class Curve extends GeometryElement {
         // First evaluation of the curve
         this.updateCurve();
 
-        this.id = this.board.setId(this, 'G');
         this.board.renderer.drawCurve(this);
 
         this.board.finalizeAdding(this);
@@ -751,6 +761,7 @@ export class Curve extends GeometryElement {
      *
      */
     updateDataArray() {
+        // throw new Error('need a custom updateDataArray !!')
         // this used to return this, but we shouldn't rely on the user to implement it.
     }
 
@@ -1695,7 +1706,7 @@ export class Curve extends GeometryElement {
  *
  * </script><pre>
  */
-export function createCurve(board, parents, attributes) {
+export function createCurve(board, parents, attributes): Curve {
     var obj,
         cu,
         attr = Type.copyAttributes(attributes, board.options, 'curve');
@@ -1704,17 +1715,18 @@ export function createCurve(board, parents, attributes) {
     if (
         Type.isTransformationOrArray(parents[1]) &&
         Type.isObject(obj) &&
-        (obj.type === OBJECT_TYPE.CURVE ||
-            obj.type === OBJECT_TYPE.ANGLE ||
-            obj.type === OBJECT_TYPE.ARC ||
-            obj.type === OBJECT_TYPE.CONIC ||
-            obj.type === OBJECT_TYPE.SECTOR)
+        (obj.otype === OBJECT_TYPE.CURVE ||
+            obj.otype === OBJECT_TYPE.ANGLE ||
+            obj.otype === OBJECT_TYPE.ARC ||
+            obj.otype === OBJECT_TYPE.CONIC ||
+            obj.otype === OBJECT_TYPE.SECTOR)
     ) {
-        if (obj.type === OBJECT_TYPE.SECTOR) {
+
+        if (obj.otype === OBJECT_TYPE.SECTOR) {
             attr = Type.copyAttributes(attributes, board.options, 'sector');
-        } else if (obj.type === OBJECT_TYPE.ARC) {
+        } else if (obj.otype === OBJECT_TYPE.ARC) {
             attr = Type.copyAttributes(attributes, board.options, 'arc');
-        } else if (obj.type === OBJECT_TYPE.ANGLE) {
+        } else if (obj.otype === OBJECT_TYPE.ANGLE) {
             if (!Type.exists(attributes.withLabel)) {
                 attributes.withLabel = false;
             }
@@ -1728,7 +1740,7 @@ export function createCurve(board, parents, attributes) {
         /**
          * @class
          * @ignore
-         */
+        */
         cu.updateDataArray = function () {
             var i,
                 le = obj.numberPoints;
@@ -1741,15 +1753,23 @@ export function createCurve(board, parents, attributes) {
             }
             return this;
         };
+
+        console.log(`%c createCurve on Object + Transformation`, dbugColor, parents)
+
         cu.addTransform(parents[1]);
         obj.addChild(cu);
         cu.setParents([obj]);
         cu._transformationSource = obj;
 
-        return cu;
+    } else {
+
+        attr = Type.copyAttributes(attributes, board.options, 'curve');
+        cu = new Curve(board, ["x"].concat(parents), attr);
+        cu.updateDataArray = () => { return this }
+
+        console.log(`%c createCurve on parents`, dbugColor, parents)
     }
-    attr = Type.copyAttributes(attributes, board.options, 'curve');
-    return new Curve(board, ["x"].concat(parents), attr);
+    return cu;
 };
 
 
@@ -1798,7 +1818,7 @@ export function createFunctiongraph(board, parents, attributes) {
 
 
         // tbtb - seems to be for jessiecode     par = ["x", "x"].concat(parents); // variable name and identity function for x-coordinate
-        par = ["x", function (x) { return x; }].concat(parents);
+        par = ["x", (x) => { return x; }].concat(parents);
 
     attr = Type.copyAttributes(attributes, board.options, 'functiongraph');
     attr = Type.copyAttributes(attr, board.options, 'curve');
@@ -3378,7 +3398,6 @@ export function createBoxPlot(board, parents, attributes) {
  *
  */
 export function createImplicitCurve(board, parents, attributes) {
-    var c, attr;
 
     if ([1, 3, 5].indexOf(parents.length) < 0) {
         throw new Error(
@@ -3407,8 +3426,8 @@ export function createImplicitCurve(board, parents, attributes) {
     //     }
     // }
 
-    attr = Type.copyAttributes(attributes, board.options, 'implicitcurve');
-    c = board.create("curve", [[], []], attr);
+    let attr = Type.copyAttributes(attributes, board.options, 'implicitcurve');
+    let c = createCurve(board, [[], []], attr);
 
     /**
      * Function of two variables for the left side of the equation <i>f(x,y)=0</i>.
