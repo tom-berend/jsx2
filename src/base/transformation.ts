@@ -1,3 +1,6 @@
+let dbug = () => false
+const dbugColor = `color:black;background-color:#b0ffb0`;
+
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -29,19 +32,22 @@
     and <https://opensource.org/licenses/MIT/>.
  */
 
-/*global JXG2: true, define: true*/
+/*global JXG: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
 /**
  * @fileoverview This file contains code for transformations of geometrical objects.
  */
 
-import { JXG2 } from "../jxg.js";
+//import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "./constants.js";
 import { JSXMath } from "../math/math.js";
 import { Type } from "../utils/type.js";
+import { Board } from "../base/board.js";
 import { GeometryElement } from "../base/element.js";
+import { Point } from "./point.js";
 import { Env } from "../utils/env.js";
+import { LooseObject } from "../interfaces.js";
 
 /**
  * A transformation consists of a 3x3 matrix, i.e. it is a projective transformation.
@@ -49,7 +55,7 @@ import { Env } from "../utils/env.js";
  * Use {@link JXG2.Board#create} with
  * type {@link Transformation} instead.
  * @constructor
- * @param {JXG2.Board} board The board the transformation is part of.
+ * @param {Board} board The board the transformation is part of.
  * @param {String} type Can be
  * <ul><li> 'translate'
  * <li> 'scale'
@@ -102,19 +108,34 @@ import { Env } from "../utils/env.js";
  *
  */
 
-export class Transformation extends GeometryElement {
+type tType = 'translate' | 'scale' | 'reflect' | 'rotate' | 'shear' | 'generic' | 'matrix' | 'none'
 
-    tType: 'translate' | 'scale' | 'reflect' | 'rotate' | 'shear' | 'generic' | 'matrix'
+export class Transformation {
+
+    tType: tType
+    otype: OBJECT_TYPE
+
     params
     matrix: number[][]
     isNumericMatrix
     is3D
     evalParam
+    board
+    parents
 
-    constructor(board, type, params, is3D = false) {
-        super(board,params,OBJECT_TYPE.TRANSFORMATION,OBJECT_CLASS.OTHER)
+    /**
+`    * Updates the numerical data for the transformation, i.e. the entry of the subobject matrix.
+`    * @returns  returns pointer to itself
+`    */
+    // update: Function = () => { return this; }
+
+    constructor(board, type: tType, params, is3D = false) {
+
+        if (dbug())
+            console.warn(`%c New Transformation ${type}`, dbugColor)
 
         this.tType = type
+        this.otype = OBJECT_TYPE.TRANSFORMATION
         this.params = params
 
         if (is3D) {
@@ -328,7 +349,7 @@ export class Transformation extends GeometryElement {
      * (         )   ( y )
      * </pre>
      */
-    setMatrix(board, type, params) {
+    setMatrix(board: Board, type, params) {
         var i;
         // e, obj; // Handle dependencies
 
@@ -1277,7 +1298,7 @@ export function createTransform(board, parents, attributes) {
  * </pre><div id="JXG2409bb0a-90d7-4c1e-ae9f-85e8a776acec" class="jxgbox" style="width: 300px; height: 300px;"></div>
  * <script type="text/javascript">
  *     (function() {
- *         var board = JXG2.JSXGraph.initBoard('JXG2409bb0a-90d7-4c1e-ae9f-85e8a776acec',
+ *         var board = JSXGraph.initBoard('JXG2409bb0a-90d7-4c1e-ae9f-85e8a776acec',
  *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
  *     var bound = [-5, 5];
  *     var view = board.create('view3d',

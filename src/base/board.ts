@@ -72,7 +72,7 @@ import { Checkbox } from "../element/checkbox.js"
 import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis, createPolarLine, createTangentTo } from '../base/line.js'
 import { createCircle } from './circle.js';
 import { createTicks, createHatchmark } from "./ticks.js";
-import { createTransform, createTransform3D } from "./transformation.js";
+import { createTransform } from "./transformation.js";
 import {
     createCurve, createFunctiongraph, createSpline, createCardinalSpline, createMetapostSpline, createRiemannsum, createTracecurve, createStepfunction, createDerivative,
     createCurveIntersection, createCurveUnion, createCurveDifference, createBoxPlot, createImplicitCurve

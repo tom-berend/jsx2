@@ -14,7 +14,7 @@ export function runTests(which) {
         new IndexTests()
 }
 
-export let tests = ['curve','axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc']
+export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc']
 
 
 export class IndexTests {
