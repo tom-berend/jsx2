@@ -613,6 +613,7 @@ export class GeometryElement extends Events {
      * @private
      */
     addParentsFromJCFunctions(function_array) {
+        console.log (function_array)
         var i, e, obj;
         for (i = 0; i < function_array.length; i++) {
             for (e in function_array[i].deps) {

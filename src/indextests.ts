@@ -14,7 +14,7 @@ export function runTests(which) {
         new IndexTests()
 }
 
-export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc']
+export let tests = ['curve','axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc']
 
 
 export class IndexTests {
@@ -29,13 +29,12 @@ export class IndexTests {
 
     constructor(which?: string) {
 
-
         this.initBoard(which)
 
         if (which) {
             this[which]()
         } else {
-            this.axis()
+            this.curve()
             // this.point()
             // this.text()
             // this.line()
@@ -155,12 +154,35 @@ export class IndexTests {
         this.boards.map((board) => {
             board.create('curve', [(t) => t - Math.sin(t), (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
             board.create('functiongraph', [(x) => Math.sin(x * 2) - 3, -8, 8])
+
             let f = (x, y) => 1 / 16 * x ** 2 + y ** 2 - 1;
             let c = board.create('implicitcurve', [f], {
                 strokeWidth: 3,
                 strokeColor: 'red',
                 strokeOpacity: 0.8
             });
+
+            let p = [];
+            p[0] = board.create('point', [-2, 7], { size: 4, face: 'o' });
+            p[1] = board.create('point', [0, 4], { size: 4, face: 'o' });
+            p[2] = board.create('point', [2, 5], { size: 4, face: 'o' });
+            p[3] = board.create('point', [4, 6], { size: 4, face: 'o' });
+
+            board.create('spline', p, { strokeWidth: 3 });
+
+            // createSpline
+            // createCardinalSpline
+            // createMetapostSpline
+            // createRiemannsum
+            // createTracecurve
+            // createStepfunction
+            // createDerivative
+
+            // createCurveIntersection
+            // createCurveUnion
+            // createCurveDifference
+            // createBoxPlot
+
         })
     }
     widgets() {

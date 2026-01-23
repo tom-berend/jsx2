@@ -74,6 +74,7 @@ export class Curve extends GeometryElement {
     dfx
     f
 
+
     /**
      * Number of points on curves. This value changes
      * between numberPointsLow and numberPointsHigh.
@@ -952,20 +953,19 @@ export class Curve extends GeometryElement {
      * @param {String} which Either 'X' or 'Y'
      * @returns {function}
      **/
-    interpolationFunctionFromArray(which) {
-        var data = "data" + which,
+    interpolationFunctionFromArray(which: 'X' | 'Y') {
+        let data = "data" + which,
             that = this;
 
-        return function (t, suspendedUpdate) {
-            var i,
-                j,
+        return (t, suspendedUpdate): number => {
+            let i,
                 t0,
                 t1,
                 arr = that[data],
-                len = arr.length,
                 last,
                 f = [];
 
+            console.log('intrp func', data, arr)
             if (isNaN(t)) {
                 return NaN;
             }
@@ -979,7 +979,7 @@ export class Curve extends GeometryElement {
             }
 
             if (that.bezierDegree === 3) {
-                last = (len - 1) / 3;
+                last = (arr.length - 1) / 3;
 
                 if (t >= last) {
                     if (Type.isFunction(arr[arr.length - 1])) {
@@ -993,7 +993,7 @@ export class Curve extends GeometryElement {
                 t0 = t % 1;
                 t1 = 1 - t0;
 
-                for (j = 0; j < 4; j++) {
+                for (let j = 0; j < 4; j++) {
                     if (Type.isFunction(arr[i + j])) {
                         f[j] = arr[i + j]();
                     } else {
@@ -1007,8 +1007,8 @@ export class Curve extends GeometryElement {
                 );
             }
 
-            if (t > len - 2) {
-                i = len - 2;
+            if (t > arr.length - 2) {
+                i = arr.length - 2;
             } else {
                 i = Math.floor(t);
             }
@@ -1020,7 +1020,8 @@ export class Curve extends GeometryElement {
                 return arr[i];
             }
 
-            for (j = 0; j < 2; j++) {
+            for (let j = 0; j < 2; j++) {
+
                 if (Type.isFunction(arr[i + j])) {
                     f[j] = arr[i + j]();
                 } else {
@@ -1044,7 +1045,7 @@ export class Curve extends GeometryElement {
      * @param {String|Number|Function} [ma] Upper bound on the parameter
      * @see JXG2.GeonextParser.geonext2JS
      */
-    generateTerm(varname, xterm, yterm, mi, ma) {
+    generateTerm(varname: string, xterm, yterm, mi, ma) {
         var fx, fy, mat;
 
         // Generate the methods X() and Y()
@@ -1053,12 +1054,16 @@ export class Curve extends GeometryElement {
             this.dataX = xterm;
 
             this.numberPoints = this.dataX.length;
-            this.X = this.interpolationFunctionFromArray.apply(this, ["X"]);
+
+            // this.X = this.interpolationFunctionFromArray.apply(this, ["X"]);
+            this.X = this.interpolationFunctionFromArray('X');
+
             this.visProp["curvetype"] = 'plot';
             this.isDraggable = true;
         } else {
             // Continuous data
             this.X = Type.createFunction(xterm, this.board, varname);
+
             if (Type.isString(xterm)) {
                 this.visProp["curvetype"] = 'functiongraph';
             } else if (Type.isFunction(xterm) || Type.isNumber(xterm)) {
@@ -1095,12 +1100,15 @@ export class Curve extends GeometryElement {
             this.X = function (phi) {
                 return xterm(phi) * Math.cos(phi) + fx();
             };
-            // this.X.deps = fx.deps;      // tbtb - something for jessiecode?
+
+            console.log('TROUBL HERE', this);
+            (this.X as any).deps = fx.deps;      // tbtb function with deps??
 
             this.Y = function (phi) {
                 return xterm(phi) * Math.sin(phi) + fy();
             };
-            // this.Y.deps = fy.deps;          // tbtb - something for jessiecode?
+            console.log('TROUBL HERE', this);
+            (this.Y as any).deps = fy.deps;          // tbtb - something for jessiecode?
 
             this.visProp["curvetype"] = 'polar';
         }

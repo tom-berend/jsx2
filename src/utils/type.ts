@@ -41,7 +41,7 @@
  */
 
 import { LooseObject } from '../interfaces.js'
-import { Point,createPoint } from "../base/point.js";
+import { Point, createPoint } from "../base/point.js";
 
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
@@ -429,19 +429,16 @@ export class Type {
     static createFunction(term, board, variableName?, evalGeonext = false) {
         var f = null;
 
-
         // if ((!this.exists(evalGeonext) || evalGeonext) && this.isString(term)) {
-        //tbtb// if (this.isString(term)) {
-        // Convert GEONExT syntax into  JavaScript syntax
-        //newTerm = JXG2.GeonextParser.geonext2JS(term, board);
-        //return new Function(variableName,'return ' + newTerm + ';');
-        //term = JXG2.GeonextParser.replaceNameById(term, board);
-        //term = JXG2.GeonextParser.geonext2JS(term, board);
+        if (this.isString(term)) {
+            // Convert GEONExT syntax into  JavaScript syntax
+            //newTerm = JXG.GeonextParser.geonext2JS(term, board);
+            //return new Function(variableName,'return ' + newTerm + ';');
+            //term = JXG.GeonextParser.replaceNameById(term, board);
+            //term = JXG.GeonextParser.geonext2JS(term, board);
 
-        // f = Type.snippet(term, true, variableName, false);
-
-        // } else
-        if (this.isFunction(term)) {
+            f = Type.snippet(term, true, variableName);
+        } else if (this.isFunction(term)) {
             f = term;
             f.deps = (this.isObject(term.deps)) ? term.deps : {};
         } else if (this.isNumber(term) || this.isArray(term)) {
@@ -455,12 +452,13 @@ export class Type {
             //     f.deps = {};
         }
 
-        // tbtb what is origin??  // if (f !== null) {
-        // tbtb what is origin??  //     f.origin = term;
-        // tbtb what is origin??  // }
+        if (f !== null) {
+            f.origin = term;
+        }
 
         return f;
     }
+
 
     /**
      *  Test if the parents array contains existing points. If instead parents contains coordinate arrays or
@@ -2024,4 +2022,32 @@ export class Type {
         return changes;
     }
 
+    /**
+     * Parses a JessieCode snippet, e.g. "3+4", and wraps it into a function, if desired.
+     * @param {String} code A small snippet of JessieCode. Must not be an assignment.
+     * @param {Boolean} [funwrap=true] If true, the code is wrapped in a function.
+     * @param {String} [varname=''] Name of the parameter(s)
+     * @param {Boolean} [geonext=false] Geonext compatibility mode.
+     * @param {Boolean} [forceValueCall=true] Force evaluation of value method of sliders.
+     */
+    static snippet(code: string, unused = true, varname = ''): Function {//, forceValueCall=true) {
+
+        console.assert(unused==true)  // does ANYONE ever say false?
+
+        // examples
+        //  let a = Type.snippet('2+3')           // () => 2+3
+        //  let b = Type.snippet('x+3',true,'x')  // (...args) {let [x] = args; return x+3; }
+
+        let c: string
+
+        if (varname == '') {
+            c = `{ return ${code}; };`
+            return new Function(c);
+        } else {
+            let args = '...args'
+            let body = `let [${varname}] = args; return ${code};`
+            return new Function(args, body);
+        }
+
+    }
 }

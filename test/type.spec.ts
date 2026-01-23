@@ -132,7 +132,7 @@ describe('copyAttributes(attr, special, toLower, ignoreUndefinedSpecials)', () =
         expect(Type.initVisProps(a, e)).toEqual({ a1: 'string', a2: { enabled: true }, a3: 3.14, a4: false })
 
         // copy a subobject of e into a
-        expect(Type.initVisProps(a, e.a2)).toEqual({ a1: 'string', a2: true, a3: 3.14, a4: { x: { y: 1, z: [1] } }, enabled:true})
+        expect(Type.initVisProps(a, e.a2)).toEqual({ a1: 'string', a2: true, a3: 3.14, a4: { x: { y: 1, z: [1] } }, enabled: true })
 
         // only the second element is converted to lowercase
         let x = { A: true }
@@ -230,5 +230,15 @@ describe('initVisProps()', () => {
         // try with real options.
         expect(Type.initVisProps(Options.jc)).toStrictEqual({ enabled: true, compile: true })
         expect(Type.initVisProps(Options.jc, { COMPILE: 5 })).toStrictEqual({ enabled: true, compile: 5 })
+    });
+});
+
+describe('snippet()', () => {
+    it('creates a function from a string', () => {
+        let a = Type.snippet('2+3')
+        expect(a()).toEqual(5)
+        let b = Type.snippet('x+3',true,'x')
+        expect(b(2)).toEqual(5)
+
     });
 });
