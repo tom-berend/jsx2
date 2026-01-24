@@ -75,6 +75,24 @@ export interface GeometryElementInterface {
  */
 export class GeometryElement extends Events {
 
+     /**
+     * When used as a glider this member stores the object, where to glide on.
+     * To set the object to glide on use the method
+     * {@link JXG.Point#makeGlider} and DO NOT set this property directly
+     * as it will break the dependency tree.
+     * @type JXG.GeometryElement
+     */
+    slideObject: GeometryElement;
+
+    /**
+     * List of elements the element is bound to, i.e. the element glides on.
+     * Only the last entry is active.
+     * Use {@link JXG.Point#popSlideObject} to remove the currently active slideObject.
+     */
+    slideObjects: GeometryElement[] = [];
+
+
+
     /**
      * Controls if updates are necessary
      */
@@ -150,13 +168,13 @@ export class GeometryElement extends Events {
      * Elements depending on this element are stored here.
      * @type Object
      */
-    descendants = {};
+    descendants: LooseObject = {};
 
     /**
      * Elements on which this element depends on are stored here.
      * @type Object
      */
-    ancestors = {};
+    ancestors: LooseObject = {};
 
     /**
      * Ids of elements on which this element depends directly are stored here.
@@ -370,16 +388,16 @@ export class GeometryElement extends Events {
     vertices
     points
     radius
-    point1:Point
-    point2:Point
+    point1: Point
+    point2: Point
 
 
     element// ???
     parentPolygon
 
-    radiuspoint:Point
-    anglepoint:Point
-    center:Point
+    radiuspoint: Point
+    anglepoint: Point
+    center: Point
 
     transformMat
 
@@ -613,7 +631,7 @@ export class GeometryElement extends Events {
      * @private
      */
     addParentsFromJCFunctions(function_array) {
-        console.log (function_array)
+        console.log(function_array)
         var i, e, obj;
         for (i = 0; i < function_array.length; i++) {
             for (e in function_array[i].deps) {
@@ -1328,7 +1346,7 @@ export class GeometryElement extends Events {
         // all sorts of special cases.  for TS, we simply ensure that
         // attribute already exists, and investigate later...
 
-        for (const [key, value] of Object.entries(arg)) {
+        for (const [key, value] of Object.entries(attr)) {
             if (this.visProp[key] === undefined) {
                 // if (dbug(this))
                 console.warn(`%c GeoElement setAttribute(${this.id},${key} => ${value}') previously unknown `, dbugColor)
@@ -1337,305 +1355,307 @@ export class GeometryElement extends Events {
         }
         /////////////////////////////////
 
-
-        // Normalize the user input
-        for (i = 0; i < arguments.length; i++) {
-            arg = arguments[i];
-            if (Type.isString(arg)) {
-                // pairRaw is string of the form 'key:value'
-                pair = arg.split(":");
-                attributes[Type.trim(pair[0])] = Type.trim(pair[1]);
-            } else if (!Type.isArray(arg)) {
-                // pairRaw consists of objects of the form {key1:value1,key2:value2,...}
-                // JXG2.extend(attributes, arg);
-                // this.visProp[]
-                throw new Error('can we take JXG.extend out??')
-            } else {
-                // pairRaw consists of array [key,value]
-                attributes[arg[0]] = arg[1];
-            }
-        }
-
-        // Handle shortcuts
-        attributes = this.resolveShortcuts(attributes);
-
-        for (i in attributes) {
-            if (attributes.hasOwnProperty(i)) {
-                key = i.replace(/\s+/g, "").toLowerCase();
-                value = attributes[i];
-
-                // This handles the subobjects, if the key:value pairs are contained in an object.
-                // Example:
-                // ticks.setAttribute({
-                //      strokeColor: 'blue',
-                //      label: {
-                //          visible: false
-                //      }
-                // })
-                // Now, only the supplied label attributes are overwritten.
-                // Otherwise, the value of label would be {visible:false} only.
-                if (Type.isObject(value) && Type.exists(this.visProp[key])) {
-                    // this.visProp[key] = Type.merge(this.visProp[key], value);
-                    if (!Type.isObject(this.visProp[key]) && value !== null && Type.isObject(value)) {
-                        // Handle cases like key=firstarrow and
-                        // firstarrow==false and value = { type:1 }.
-                        // That is a primitive type is replaced by an object.
-                        this.visProp[key] = {};
-                    }
-                    Type.mergeAttr(this.visProp[key], value);
-
-                    // First, handle the special case
-                    // ticks.setAttribute({label: {anchorX: "right", ..., visible: true});
-                    if (this.otype === OBJECT_TYPE.TICKS && Type.exists(this.labels)) {
-                        le = this.labels.length;
-                        for (j = 0; j < le; j++) {
-                            this.labels[j].setAttribute(value);
-                        }
-                    } else if (Type.exists(this[key])) {
-                        // Attribute looks like: point1: {...}
-                        // Handle this in the sub-element: this.point1.setAttribute({...})
-                        if (Type.isArray(this[key])) {
-                            for (j = 0; j < this[key].length; j++) {
-                                this[key][j].setAttribute(value);
-                            }
-                        } else {
-                            this[key].setAttribute(value);
-                        }
+        return;
+        /*
+                // Normalize the user input
+                for (i = 0; i < arguments.length; i++) {
+                    arg = arguments[i];
+                    if (Type.isString(arg)) {
+                        // pairRaw is string of the form 'key:value'
+                        pair = arg.split(":");
+                        attributes[Type.trim(pair[0])] = Type.trim(pair[1]);
+                    } else if (!Type.isArray(arg)) {
+                        // pairRaw consists of objects of the form {key1:value1,key2:value2,...}
+                        JXG2.extend(attributes, arg);
+                        // this.visProp[]
+                        throw new Error('can we take JXG.extend out??')
                     } else {
-                        // Cases like firstarrow: {...}
-                        oldvalue = null;
+                        // pairRaw consists of array [key,value]
+                        attributes[arg[0]] = arg[1];
+                    }
+                }
+
+                // Handle shortcuts
+                attributes = this.resolveShortcuts(attributes);
+
+                for (i in attributes) {
+                    if (attributes.hasOwnProperty(i)) {
+                        key = i.replace(/\s+/g, "").toLowerCase();
+                        value = attributes[i];
+
+                        // This handles the subobjects, if the key:value pairs are contained in an object.
+                        // Example:
+                        // ticks.setAttribute({
+                        //      strokeColor: 'blue',
+                        //      label: {
+                        //          visible: false
+                        //      }
+                        // })
+                        // Now, only the supplied label attributes are overwritten.
+                        // Otherwise, the value of label would be {visible:false} only.
+                        if (Type.isObject(value) && Type.exists(this.visProp[key])) {
+                            // this.visProp[key] = Type.merge(this.visProp[key], value);
+                            if (!Type.isObject(this.visProp[key]) && value !== null && Type.isObject(value)) {
+                                // Handle cases like key=firstarrow and
+                                // firstarrow==false and value = { type:1 }.
+                                // That is a primitive type is replaced by an object.
+                                this.visProp[key] = {};
+                            }
+                            Type.mergeAttr(this.visProp[key], value);
+
+                            // First, handle the special case
+                            // ticks.setAttribute({label: {anchorX: "right", ..., visible: true});
+                            if (this.otype === OBJECT_TYPE.TICKS && Type.exists(this.labels)) {
+                                le = this.labels.length;
+                                for (j = 0; j < le; j++) {
+                                    this.labels[j].setAttribute(value);
+                                }
+                            } else if (Type.exists(this[key])) {
+                                // Attribute looks like: point1: {...}
+                                // Handle this in the sub-element: this.point1.setAttribute({...})
+                                if (Type.isArray(this[key])) {
+                                    for (j = 0; j < this[key].length; j++) {
+                                        this[key][j].setAttribute(value);
+                                    }
+                                } else {
+                                    this[key].setAttribute(value);
+                                }
+                            } else {
+                                // Cases like firstarrow: {...}
+                                oldvalue = null;
+                                this.triggerEventHandlers(["attribute:" + key], [oldvalue, value, this]);
+                            }
+                            continue;
+                        }
+
+                        oldvalue = this.visProp[key];
+                        switch (key) {
+                            case "checked":
+                                // checkbox Is not available on initial call.
+                                if (Type.exists(this.rendNodeTag)) {
+                                    this.rendNodeCheckbox.checked = !!value;
+                                }
+                                break;
+                            case "disabled":
+                                // button, checkbox, input. Is not available on initial call.
+                                if (Type.exists(this.rendNodeTag)) {
+                                    this.rendNodeTag.disabled = !!value;
+                                }
+                                break;
+                            case "face":
+                                if (Type.isPoint(this)) {
+                                    this.visProp['face'] = value;
+                                    this.board.renderer.changePointStyle(this);
+                                }
+                                break;
+                            case "generatelabelvalue":
+                                if (
+                                    this.otype === OBJECT_TYPE.TICKS &&
+                                    Type.isFunction(value)
+                                ) {
+                                    this.generateLabelValue = value;
+                                }
+                                break;
+                            case "gradient":
+                                this.visProp['gradient'] = value;
+                                this.board.renderer.setGradient(this);
+                                break;
+                            case "gradientsecondcolor":
+                                value = Color.rgba2rgbo(value);
+                                this.visProp['gradientsecondcolor'] = value[0];
+                                this.visProp['gradientsecondopacity'] = value[1];
+                                this.board.renderer.updateGradient(this);
+                                break;
+                            case "gradientsecondopacity":
+                                this.visProp['gradientsecondopacity'] = value;
+                                this.board.renderer.updateGradient(this);
+                                break;
+                            case "infoboxtext":
+                                if (Type.isString(value)) {
+                                    this.infoboxText = value;
+                                } else {
+                                    this.infoboxText = false;
+                                }
+                                break;
+                            case "labelcolor":
+                                value = Color.rgba2rgbo(value);
+                                opacity = value[1];
+                                value = value[0];
+                                if (opacity === 0) {
+                                    if (Type.exists(this.label) && this.hasLabel) {
+                                        this.label.hideElement();
+                                    }
+                                }
+                                if (Type.exists(this.label) && this.hasLabel) {
+                                    this.label.visProp.strokecolor = value;
+                                    this.board.renderer.setObjectStrokeColor(
+                                        this.label,
+                                        value,
+                                        opacity
+                                    );
+                                }
+                                if (this.elementClass === OBJECT_CLASS.TEXT) {
+                                    this.visProp['strokecolor'] = value;
+                                    this.visProp['strokeopacity'] = opacity;
+                                    this.board.renderer.setObjectStrokeColor(this, value, opacity);
+                                }
+                                break;
+                            case "layer":
+                                this.board.renderer.setLayer(this, this.eval(value));
+                                this._set(key, value);
+                                break;
+                            case "maxlength":
+                                // input. Is not available on initial call.
+                                if (Type.exists(this.rendNodeTag)) {
+                                    this.rendNodeTag.maxlength = !!value;
+                                }
+                                break;
+                            case "name":
+                                oldvalue = this.name;
+                                if (typeof this.name === 'string') {
+                                    delete this.board.elementsByName[this.name];
+                                }
+                                this.name = value;
+                                if (typeof this.name === 'string') {
+                                    this.board.elementsByName[this.name] = this;
+                                }
+
+                                break;
+                            case "needsregularupdate":
+                                this.needsRegularUpdate = !(value === "false" || value === false);
+                                this.board.renderer.setBuffering(
+                                    this,
+                                    this.needsRegularUpdate ? "auto" : "static"
+                                );
+                                break;
+                            case "onpolygon":
+                                if (this.otype === OBJECT_TYPE.GLIDER) {
+                                    this.onPolygon = !!value;
+                                }
+                                break;
+                            case "radius":
+                                if (
+                                    this.otype === OBJECT_TYPE.ANGLE ||
+                                    this.otype === OBJECT_TYPE.SECTOR
+                                ) {
+                                    // tbtb - circular ??
+                                    // this.setRadius(value);
+                                }
+                                break;
+                            case "rotate":
+                                if (
+                                    (this.elementClass === OBJECT_CLASS.TEXT &&
+                                        this.evalVisProp('display') === 'internal') ||
+                                    this.otype === OBJECT_TYPE.IMAGE
+                                ) {
+                                    this.addRotation(value);
+                                }
+                                break;
+                            case "tabindex":
+                                if (Type.exists(this.rendNode)) {
+                                    this.rendNode.setAttribute("tabindex", value);
+                                    this._set(key, value);
+                                }
+                                break;
+                            // case "ticksdistance":
+                            //     if (this.type === OBJECT_TYPE.TICKS && Type.isNumber(value)) {
+                            //         this.ticksFunction = this.makeTicksFunction(value);
+                            //     }
+                            //     break;
+                            case "trace":
+                                if (value === "false" || value === false) {
+                                    this.clearTrace();
+                                    this.visProp['trace'] = false;
+                                } else if (value === 'pause') {
+                                    this.visProp['trace'] = false;
+                                } else {
+                                    this.visProp['trace'] = true;
+                                }
+                                break;
+                            case "visible":
+                                if (value === 'false') {
+                                    this.visProp['visible'] = false;
+                                } else if (value === 'true') {
+                                    this.visProp['visible'] = true;
+                                } else {
+                                    this.visProp['visible'] = value;
+                                }
+
+                                this.setDisplayRendNode(this.evalVisProp('visible'));
+                                if (
+                                    this.evalVisProp('visible') &&
+                                    Type.exists(this['updateSize'])  // defined in children
+                                ) {
+                                    this['updateSize']();
+                                }
+
+                                break;
+                            case "withlabel":
+                                this.visProp['withlabel'] = value;
+                                if (!this.evalVisProp('withlabel')) {
+                                    if (this.label && this.hasLabel) {
+                                        //this.label.hideElement();
+                                        this.label.setAttribute({ visible: false });
+                                    }
+                                } else {
+                                    if (!this.label) {
+                                        this.elementCreateLabel();
+                                    }
+                                    //this.label.showElement();
+                                    this.label.setAttribute({ visible: 'inherit' });
+                                    //this.label.setDisplayRendNode(this.evalVisProp('visible'));
+                                }
+                                this.hasLabel = value;
+                                break;
+                            case "straightfirst":
+                            case "straightlast":
+                                this._set(key, value);
+                                for (j in this.childElements) {
+                                    if (this.childElements.hasOwnProperty(j) && this.childElements[j].elType === 'glider') {
+                                        this.childElements[j].fullUpdate();
+                                    }
+                                }
+                                break;
+                            default:
+
+                                // tbtb-- put this back in when options added
+                                console.warn('missing validator')
+                            // if (Type.exists(this.visProp[key]) &&
+                            //     (!Validator[key] ||                                   // No validator for this key => OK
+                            //         (Validator[key] && Validator[key](value)) ||  // Value passes the validator => OK
+                            //         (Validator[key] &&                                // Value is function, function value passes the validator => OK
+                            //             Type.isFunction(value) && Validator[key](value(this))
+                            //         )
+                            //     )
+                            // ) {
+                            //     value = (value.toLowerCase && value.toLowerCase() === 'false')
+                            //         ? false
+                            //         : value;
+                            //     this._set(key, value);
+                            // } else {
+                            //     if (!(key in Options.shortcuts)) {
+                            //         Env.warn("attribute '" + key + "' does not accept type '" + (typeof value) + "' of value " + value + '.');
+                            //     }
+                            // }
+                            // break;
+                        }
                         this.triggerEventHandlers(["attribute:" + key], [oldvalue, value, this]);
                     }
-                    continue;
                 }
 
-                oldvalue = this.visProp[key];
-                switch (key) {
-                    case "checked":
-                        // checkbox Is not available on initial call.
-                        if (Type.exists(this.rendNodeTag)) {
-                            this.rendNodeCheckbox.checked = !!value;
-                        }
-                        break;
-                    case "disabled":
-                        // button, checkbox, input. Is not available on initial call.
-                        if (Type.exists(this.rendNodeTag)) {
-                            this.rendNodeTag.disabled = !!value;
-                        }
-                        break;
-                    case "face":
-                        if (Type.isPoint(this)) {
-                            this.visProp['face'] = value;
-                            this.board.renderer.changePointStyle(this);
-                        }
-                        break;
-                    case "generatelabelvalue":
-                        if (
-                            this.otype === OBJECT_TYPE.TICKS &&
-                            Type.isFunction(value)
-                        ) {
-                            this.generateLabelValue = value;
-                        }
-                        break;
-                    case "gradient":
-                        this.visProp['gradient'] = value;
-                        this.board.renderer.setGradient(this);
-                        break;
-                    case "gradientsecondcolor":
-                        value = Color.rgba2rgbo(value);
-                        this.visProp['gradientsecondcolor'] = value[0];
-                        this.visProp['gradientsecondopacity'] = value[1];
-                        this.board.renderer.updateGradient(this);
-                        break;
-                    case "gradientsecondopacity":
-                        this.visProp['gradientsecondopacity'] = value;
-                        this.board.renderer.updateGradient(this);
-                        break;
-                    case "infoboxtext":
-                        if (Type.isString(value)) {
-                            this.infoboxText = value;
-                        } else {
-                            this.infoboxText = false;
-                        }
-                        break;
-                    case "labelcolor":
-                        value = Color.rgba2rgbo(value);
-                        opacity = value[1];
-                        value = value[0];
-                        if (opacity === 0) {
-                            if (Type.exists(this.label) && this.hasLabel) {
-                                this.label.hideElement();
-                            }
-                        }
-                        if (Type.exists(this.label) && this.hasLabel) {
-                            this.label.visProp.strokecolor = value;
-                            this.board.renderer.setObjectStrokeColor(
-                                this.label,
-                                value,
-                                opacity
-                            );
-                        }
-                        if (this.elementClass === OBJECT_CLASS.TEXT) {
-                            this.visProp['strokecolor'] = value;
-                            this.visProp['strokeopacity'] = opacity;
-                            this.board.renderer.setObjectStrokeColor(this, value, opacity);
-                        }
-                        break;
-                    case "layer":
-                        this.board.renderer.setLayer(this, this.eval(value));
-                        this._set(key, value);
-                        break;
-                    case "maxlength":
-                        // input. Is not available on initial call.
-                        if (Type.exists(this.rendNodeTag)) {
-                            this.rendNodeTag.maxlength = !!value;
-                        }
-                        break;
-                    case "name":
-                        oldvalue = this.name;
-                        if (typeof this.name === 'string') {
-                            delete this.board.elementsByName[this.name];
-                        }
-                        this.name = value;
-                        if (typeof this.name === 'string') {
-                            this.board.elementsByName[this.name] = this;
-                        }
+                this.triggerEventHandlers(["attribute"], [attributes, this]);
 
-                        break;
-                    case "needsregularupdate":
-                        this.needsRegularUpdate = !(value === "false" || value === false);
-                        this.board.renderer.setBuffering(
-                            this,
-                            this.needsRegularUpdate ? "auto" : "static"
-                        );
-                        break;
-                    case "onpolygon":
-                        if (this.otype === OBJECT_TYPE.GLIDER) {
-                            this.onPolygon = !!value;
-                        }
-                        break;
-                    case "radius":
-                        if (
-                            this.otype === OBJECT_TYPE.ANGLE ||
-                            this.otype === OBJECT_TYPE.SECTOR
-                        ) {
-                            // tbtb - circular ??
-                            // this.setRadius(value);
-                        }
-                        break;
-                    case "rotate":
-                        if (
-                            (this.elementClass === OBJECT_CLASS.TEXT &&
-                                this.evalVisProp('display') === 'internal') ||
-                            this.otype === OBJECT_TYPE.IMAGE
-                        ) {
-                            this.addRotation(value);
-                        }
-                        break;
-                    case "tabindex":
-                        if (Type.exists(this.rendNode)) {
-                            this.rendNode.setAttribute("tabindex", value);
-                            this._set(key, value);
-                        }
-                        break;
-                    // case "ticksdistance":
-                    //     if (this.type === OBJECT_TYPE.TICKS && Type.isNumber(value)) {
-                    //         this.ticksFunction = this.makeTicksFunction(value);
-                    //     }
-                    //     break;
-                    case "trace":
-                        if (value === "false" || value === false) {
-                            this.clearTrace();
-                            this.visProp['trace'] = false;
-                        } else if (value === 'pause') {
-                            this.visProp['trace'] = false;
-                        } else {
-                            this.visProp['trace'] = true;
-                        }
-                        break;
-                    case "visible":
-                        if (value === 'false') {
-                            this.visProp['visible'] = false;
-                        } else if (value === 'true') {
-                            this.visProp['visible'] = true;
-                        } else {
-                            this.visProp['visible'] = value;
-                        }
-
-                        this.setDisplayRendNode(this.evalVisProp('visible'));
-                        if (
-                            this.evalVisProp('visible') &&
-                            Type.exists(this['updateSize'])  // defined in children
-                        ) {
-                            this['updateSize']();
-                        }
-
-                        break;
-                    case "withlabel":
-                        this.visProp['withlabel'] = value;
-                        if (!this.evalVisProp('withlabel')) {
-                            if (this.label && this.hasLabel) {
-                                //this.label.hideElement();
-                                this.label.setAttribute({ visible: false });
-                            }
-                        } else {
-                            if (!this.label) {
-                                this.elementCreateLabel();
-                            }
-                            //this.label.showElement();
-                            this.label.setAttribute({ visible: 'inherit' });
-                            //this.label.setDisplayRendNode(this.evalVisProp('visible'));
-                        }
-                        this.hasLabel = value;
-                        break;
-                    case "straightfirst":
-                    case "straightlast":
-                        this._set(key, value);
-                        for (j in this.childElements) {
-                            if (this.childElements.hasOwnProperty(j) && this.childElements[j].elType === 'glider') {
-                                this.childElements[j].fullUpdate();
-                            }
-                        }
-                        break;
-                    default:
-
-                        // tbtb-- put this back in when options added
-                        console.warn('missing validator')
-                    // if (Type.exists(this.visProp[key]) &&
-                    //     (!Validator[key] ||                                   // No validator for this key => OK
-                    //         (Validator[key] && Validator[key](value)) ||  // Value passes the validator => OK
-                    //         (Validator[key] &&                                // Value is function, function value passes the validator => OK
-                    //             Type.isFunction(value) && Validator[key](value(this))
-                    //         )
-                    //     )
-                    // ) {
-                    //     value = (value.toLowerCase && value.toLowerCase() === 'false')
-                    //         ? false
-                    //         : value;
-                    //     this._set(key, value);
-                    // } else {
-                    //     if (!(key in Options.shortcuts)) {
-                    //         Env.warn("attribute '" + key + "' does not accept type '" + (typeof value) + "' of value " + value + '.');
-                    //     }
-                    // }
-                    // break;
+                if (!this.evalVisProp('needsregularupdate')) {
+                    this.board.fullUpdate();
+                } else {
+                    this.board.update(this.id);
                 }
-                this.triggerEventHandlers(["attribute:" + key], [oldvalue, value, this]);
-            }
-        }
+                if (this.elementClass === OBJECT_CLASS.TEXT) {
+                    this['updateSize']();  // really belongs in Text
+                }
 
-        this.triggerEventHandlers(["attribute"], [attributes, this]);
-
-        if (!this.evalVisProp('needsregularupdate')) {
-            this.board.fullUpdate();
-        } else {
-            this.board.update(this.id);
-        }
-        if (this.elementClass === OBJECT_CLASS.TEXT) {
-            this['updateSize']();  // really belongs in Text
-        }
-
-        return this;
+                return this;
+        */
     }
 
     /**
@@ -1692,7 +1712,7 @@ export class GeometryElement extends Events {
      */
     evalVisProp(key) {
 
-        var val, arr, i, le,
+        var val, arr,
             e, o, found;
 
         key = key.toLowerCase();
@@ -1702,12 +1722,12 @@ export class GeometryElement extends Events {
         } else {
             // e.g. label.visible
             arr = key.split('.');
-            le = arr.length;
-            if (le == 2) {
+            if (arr.length == 2 && Type.exists(this.visProp[arr[0]])) {
                 val = this.visProp[arr[0]][arr[1]]
-            } else if (le == 3) {
+            } else if (arr.length == 3 && Type.exists(this.visProp[arr[0]]) && Type.exists(this.visProp[arr[0]][arr[1]])) {
                 val = this.visProp[arr[0]][arr[1]][arr[2]]
             } else {
+                console.log(this)
                 throw new Error(key)
             }
 
@@ -1741,21 +1761,18 @@ export class GeometryElement extends Events {
 
         if (val === 'inherit') {
             for (e in this.descendants) {
-                if (this.descendants.hasOwnProperty(e)) {
-                    o = this.descendants[e];
-                    // Check if this is in inherits of one of its descendant
-                    found = false;
-                    le = o.inherits.length;
-                    for (i = 0; i < le; i++) {
-                        if (this.id === o.inherits[i].id) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (found) {
-                        val = o.evalVisProp(key);
+                o = this.descendants[e];
+                // Check if this is in inherits of one of its descendant
+                found = false;
+                for (let i = 0; i < o.inherits.length; i++) {
+                    if (this.id === o.inherits[i].id) {
+                        found = true;
                         break;
                     }
+                }
+                if (found) {
+                    val = o.evalVisProp(key);
+                    break;
                 }
             }
         }
@@ -1831,7 +1848,6 @@ export class GeometryElement extends Events {
         if (this.hasLabel) {
             this.board.renderer.remove(this.board.renderer.getElementById(this.label.id));
         }
-        return this;
     }
 
     /**

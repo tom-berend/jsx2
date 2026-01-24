@@ -29,6 +29,8 @@ export function TracenpocheReader(board, str) {
     this.board = board;
     this.content = str;
 
+    throw new Error('is this ever called?')
+    
     this.tokenize = function (inputStr, prefix, suffix) {
         if (typeof prefix !== 'string') {
             prefix = "<>+-&";

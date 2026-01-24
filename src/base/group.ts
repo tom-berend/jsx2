@@ -70,7 +70,7 @@ JXG2.Group = function (board, id, name, objects, attributes) {
     }
     this.board.groups[this.id] = this;
 
-    this.type = OBJECT_TYPE.POINT;
+    this.otype = OBJECT_TYPE.POINT;
     this.elementClass = OBJECT_CLASS.POINT;
 
     if (name === "" || !Type.exists(name)) {
@@ -78,7 +78,7 @@ JXG2.Group = function (board, id, name, objects, attributes) {
     } else {
         this.name = name;
     }
-    delete this.type;
+    delete this.otype;
 
     /**
      * Cache coordinates of points. From this and the actual position

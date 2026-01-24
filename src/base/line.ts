@@ -137,7 +137,7 @@ export class Line extends GeometryElement {
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
         this.elType = 'line';
-        this.visProp = Type.initVisProps(Options.elements, Options.line, attributes)
+        this.visProp = Type.initVisProps(Options.board, Options.elements, Options.line, attributes)
 
         /* Register line at board */
         this.id = this.board.setId(this, 'L');
@@ -1358,7 +1358,7 @@ export function createLine(board, parents, attributes) {
 
         // point 2 given by coordinates
         // attr = Type.copyAttributes(attributes, board.options, "line", 'point2');
-        attr = Type.initVisProps(Options.point, Options.line.point2,attributes.point2)
+        attr = Type.initVisProps(Options.point, Options.line.point2, attributes.point2)
         if (doTransform) {
             p2 = createPoint(board, [parents[0].point2, parents[1]], attr)
         } else if (Array.isArray(parents[1]) && parents[1].length > 1) {

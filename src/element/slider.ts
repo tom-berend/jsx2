@@ -1,3 +1,5 @@
+let dbug = (elem) => true //elem && elem.id === 'jxgBoard1P3'
+const dbugColor = `color:red;background-color:lightgreen`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -39,7 +41,7 @@
  */
 
 import { JSXMath } from "../math/math.js";
-import { COORDS_BY } from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
 import { Board } from "../base/board.js";
@@ -47,6 +49,8 @@ import { Type } from "../utils/type.js";
 import { Point, createPoint } from "../base/point.js";
 import { Glider, createGlider } from "../element/glider.js";
 import { Line, createSegment } from "../base/line.js";
+import { createText } from "../base/text.js";
+import { createTicks } from "../base/ticks.js";
 
 /**
  * @class A slider can be used to choose values from a given range of numbers.
@@ -227,7 +231,7 @@ export function createSlider(board: Board, parents, attributes) {
     return new Slider(board, parents, attributes)
 }
 
-export class Slider {        // doesn't extend anything
+export class Slider extends Glider {
 
     p1: Point  // start point
     p2: Point  // end point
@@ -235,9 +239,25 @@ export class Slider {        // doesn't extend anything
     p3: Glider // on l1
     l2: Line // segment between p1 and Glider
 
-    remove:Function
 
     constructor(board, parents, attributes) {
+        super(board, parents, attributes)
+
+        this.otype = OBJECT_TYPE.GLIDER
+        this.elementClass = OBJECT_CLASS.POINT
+
+        this.elementUpdate = () => this.update();
+        this.elementUpdateRenderer = () => this.updateRenderer();
+        this.elementCreateLabel = () => this.createLabel()
+        this.elementGetLabelAnchor = () => this.getLabelAnchor();
+        this.elementGetTextAnchor = () => this.getTextAnchor();
+
+
+        if (dbug(this))
+            console.warn(`%c create Slider ${this.id}`, dbugColor)
+
+
+
         var pos0, pos1,
             smin, start, smax, diff,
             ticks, ti, t,
@@ -255,7 +275,7 @@ export class Slider {        // doesn't extend anything
         this.p1 = createPoint(board, parents[0], attr.point1);
 
         // End point
-        this.p2 = board.create("point", parents[1], attr.point2);
+        this.p2 = createPoint(board, parents[1], attr.point2);
         //g = board.create('group', [p1, p2]);
 
         // Base line
@@ -300,7 +320,7 @@ export class Slider {        // doesn't extend anything
          * @function
          * @returns {Number}
          */
-        this.p3.Value = function () {
+        this.p3.Value = () => {
             var d = this._smax - this._smin,
                 ev_sw = this.evalVisProp('snapwidth');
 
@@ -391,15 +411,15 @@ export class Slider {        // doesn't extend anything
 
         if (withText) {
             // attr = Type.copyAttributes(attributes, board.options, 'slider', 'label');
-            t = board.create('text', [
-                function () {
-                    return (this.p2.X() - this.p1.X()) * 0.05 + this.p2.X();
+            t = createText(board, [
+                () => {
+                    (this.p2.X() - this.p1.X()) * 0.05 + this.p2.X();
                 },
-                function () {
-                    return (this.p2.Y() - this.p1.Y()) * 0.05 + this.p2.Y();
+                () => {
+                    (this.p2.Y() - this.p1.Y()) * 0.05 + this.p2.Y();
                 },
-                function () {
-                    var n,
+                () => {
+                    let n,
                         d = this.p3.evalVisProp('digits'),
                         sl = this.p3.evalVisProp('suffixlabel'),
                         ul = this.p3.evalVisProp('unitlabel'),
@@ -504,8 +524,8 @@ export class Slider {        // doesn't extend anything
                 };
             }
             ticks = 2;
-            ti = board.create(
-                "ticks",
+            ti = createTicks(
+                board,
                 [
                     this.p3.baseline,
                     this.p3.point1.Dist(this.p1) / ticks,
@@ -534,7 +554,7 @@ export class Slider {        // doesn't extend anything
         }
 
         // override the point's remove method to ensure the removal of all elements
-        this.remove = function () {
+        this.remove = () => {
             if (withText) {
                 board.removeObject(t);
             }
@@ -586,6 +606,8 @@ export class Slider {        // doesn't extend anything
         this.p3.baseline.on("up", function (evt) {
             var pos, c;
 
+            console.log(this, this.p3)
+
             if (this.p3.evalVisProp('moveonup') && !this.p3.evalVisProp('fixed')) {
                 pos = this.l1.board.getMousePosition(evt, 0);
                 c = new Coords(COORDS_BY.SCREEN, pos, this.board);
@@ -597,7 +619,8 @@ export class Slider {        // doesn't extend anything
         // This is necessary to show baseline, highline and ticks
         // when opening the board in case the visible attributes are set
         // to 'inherit'.
-        this.p3.prepareUpdate().update();
+        this.p3.prepareUpdate()
+        this.p3.elementUpdate();
         if (!board.isSuspendedUpdate) {
             this.p3.updateVisibility()
             this.p3.elementUpdateRenderer();
@@ -608,6 +631,12 @@ export class Slider {        // doesn't extend anything
             }
         }
 
+    }
+
+    update() {
+        this.l2.update()
+        this.p3.update()
+        return this
     }
 
 }

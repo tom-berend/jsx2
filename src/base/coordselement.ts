@@ -51,6 +51,9 @@ import { GeometryElement } from "../base/element.js";
 import { Options } from "../options.js"
 import { Transformation } from "./transformation.js";
 import { Glider } from "../element/glider.js";
+import { Line } from "../base/line.js";
+import { Circle } from "../base/circle.js";
+import { Curve } from "../base/curve.js";
 
 export interface CoordsMethods {
     addTransform: Function
@@ -625,30 +628,30 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
                 }
 
 
-                // TODO: move to Glider
-                // if (d < ev_ad) {
-                //     if (
-                //         !(
-                //             this.type === OBJECT_TYPE.GLIDER &&
-                //             (el === this.slideObject ||
-                //                 (this.slideObject &&
-                //                     this.onPolygon &&
-                //                     this.slideObject.parentPolygon === el))
-                //         )
-                //     ) {
-                //         this.makeGlider(el);
-                //     }
-                //     break; // bind the point to the first attractor in its list.
-                // }
-                // if (
-                //     d >= ev_sd &&
-                //     (el === this.slideObject ||
-                //         (this.slideObject &&
-                //             this.onPolygon &&
-                //             this.slideObject.parentPolygon === el))
-                // ) {
-                //     this.popSlideObject();
-                // }
+                // TODO: move to Glider  tbtb
+                if (d < ev_ad) {
+                    if (
+                        !(
+                            this.otype === OBJECT_TYPE.GLIDER &&
+                            (el === this.slideObject ||
+                                (this.slideObject &&
+                                    this.onPolygon &&
+                                    this.slideObject.parentPolygon === el))
+                        )
+                    ) {
+                        (this as unknown as Glider).makeGlider(el);
+                    }
+                    break; // bind the point to the first attractor in its list.
+                }
+                if (
+                    d >= ev_sd &&
+                    (el === this.slideObject ||
+                        (this.slideObject &&
+                            this.onPolygon &&
+                            this.slideObject.parentPolygon === el))
+                ) {
+                    (this as unknown as Glider).popSlideObject();       // tbtb this is DANGEROUS !!
+                }
             }
         }
 
@@ -843,8 +846,8 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
 
         // Completely remove all slideObjects of the element
         if (this.otype === OBJECT_TYPE.GLIDER) {
-            (this as unknown as Glider).slideObject = null;
-            (this as unknown as Glider).slideObjects = [];
+            this.slideObject = null;
+            this.slideObjects = [];
         }
 
         if (this.elementClass === OBJECT_CLASS.POINT) {
@@ -1775,63 +1778,63 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
     _anim(direction, stepCount, maxRounds) {
         var dX, dY, alpha, startPoint, newX, radius, sp1c, sp2c, res;
 
-        // TODO: move this to glider
-        // this._intervalCount += 1;
-        // if (this._intervalCount > stepCount) {
-        //     this._intervalCount = 0;
+        // TODO: move this to glider  // tbtb
+        this._intervalCount += 1;
+        if (this._intervalCount > stepCount) {
+            this._intervalCount = 0;
 
-        //     this._roundsCount += 1;
-        //     if (maxRounds > 0 && this._roundsCount >= maxRounds) {
-        //         this._roundsCount = 0;
-        //         return this.stopAnimation();
-        //     }
-        // }
+            this._roundsCount += 1;
+            if (maxRounds > 0 && this._roundsCount >= maxRounds) {
+                this._roundsCount = 0;
+                return this.stopAnimation();
+            }
+        }
 
-        // if (this.slideObject.elementClass === OBJECT_CLASS.LINE) {
-        //     sp1c = this.slideObject.point1.coords.scrCoords;
-        //     sp2c = this.slideObject.point2.coords.scrCoords;
+        if (this.slideObject.elementClass === OBJECT_CLASS.LINE) {
+            sp1c = this.slideObject.point1.coords.scrCoords;
+            sp2c = this.slideObject.point2.coords.scrCoords;
 
-        //     dX = Math.round(((sp2c[1] - sp1c[1]) * this._intervalCount) / stepCount);
-        //     dY = Math.round(((sp2c[2] - sp1c[2]) * this._intervalCount) / stepCount);
-        //     if (direction > 0) {
-        //         startPoint = this.slideObject.point1;
-        //     } else {
-        //         startPoint = this.slideObject.point2;
-        //         dX *= -1;
-        //         dY *= -1;
-        //     }
+            dX = Math.round(((sp2c[1] - sp1c[1]) * this._intervalCount) / stepCount);
+            dY = Math.round(((sp2c[2] - sp1c[2]) * this._intervalCount) / stepCount);
+            if (direction > 0) {
+                startPoint = this.slideObject.point1;
+            } else {
+                startPoint = this.slideObject.point2;
+                dX *= -1;
+                dY *= -1;
+            }
 
-        //     this.coords.setCoordinates(COORDS_BY.SCREEN, [
-        //         startPoint.coords.scrCoords[1] + dX,
-        //         startPoint.coords.scrCoords[2] + dY
-        //     ]);
-        // } else if (this.slideObject.elementClass === OBJECT_CLASS.CURVE) {
-        //     if (direction > 0) {
-        //         newX = (this.slideObject.maxX() - this.slideObject.minX()) * this._intervalCount / stepCount + this.slideObject.minX();
-        //     } else {
-        //         newX = -(this.slideObject.maxX() - this.slideObject.minX()) * this._intervalCount / stepCount + this.slideObject.maxX();
-        //     }
-        //     this.coords.setCoordinates(COORDS_BY.USER, [this.slideObject.X(newX), this.slideObject.Y(newX)]);
+            this.coords.setCoordinates(COORDS_BY.SCREEN, [
+                startPoint.coords.scrCoords[1] + dX,
+                startPoint.coords.scrCoords[2] + dY
+            ]);
+        } else if (this.slideObject.elementClass === OBJECT_CLASS.CURVE) {
+            if (direction > 0) {
+                newX = ((this.slideObject as Line).maxX() - (this.slideObject as Line).minX()) * this._intervalCount / stepCount + (this.slideObject as Curve).minX();
+            } else {
+                newX = -((this.slideObject as Line).maxX() - (this.slideObject as Line).minX()) * this._intervalCount / stepCount + (this .slideObject as Curve).maxX();
+            }
+            this.coords.setCoordinates(COORDS_BY.USER, [(this.slideObject as Line).X(newX), (this.slideObject as Line).Y(newX)]);
 
-        //     res = Geometry.projectPointToCurve(this, this.slideObject, this.board);
-        //     this.coords = res[0];
-        //     this.position = res[1];
-        // } else if (this.slideObject.elementClass === OBJECT_CLASS.CIRCLE) {
-        //     alpha = 2 * Math.PI;
-        //     if (direction < 0) {
-        //         alpha *= this._intervalCount / stepCount;
-        //     } else {
-        //         alpha *= (stepCount - this._intervalCount) / stepCount;
-        //     }
-        //     radius = this.slideObject.Radius();
+            res = Geometry.projectPointToCurve(this, this.slideObject, this.board);
+            this.coords = res[0];
+            this.position = res[1];
+        } else if (this.slideObject.elementClass === OBJECT_CLASS.CIRCLE) {
+            alpha = 2 * Math.PI;
+            if (direction < 0) {
+                alpha *= this._intervalCount / stepCount;
+            } else {
+                alpha *= (stepCount - this._intervalCount) / stepCount;
+            }
+            radius = (this.slideObject as Circle).Radius();
 
-        //     this.coords.setCoordinates(COORDS_BY.USER, [
-        //         this.slideObject.center.coords.usrCoords[1] + radius * Math.cos(alpha),
-        //         this.slideObject.center.coords.usrCoords[2] + radius * Math.sin(alpha)
-        //     ]);
-        // }
+            this.coords.setCoordinates(COORDS_BY.USER, [
+                this.slideObject.center.coords.usrCoords[1] + radius * Math.cos(alpha),
+                this.slideObject.center.coords.usrCoords[2] + radius * Math.sin(alpha)
+            ]);
+        }
 
-        // this.board.update(this);
+        this.board.update();
         return this;
     }
 

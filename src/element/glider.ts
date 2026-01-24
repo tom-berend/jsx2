@@ -1,5 +1,5 @@
 let dbug = (elem) => true //elem && elem.id === 'jxgBoard1P3'
-const dbugColor = `color:red;background-color:lightgreen`;
+const dbugColor = `color:black;background-color:#ff80c0`;
 
 
 
@@ -26,22 +26,6 @@ export class Glider extends Point {
      */
     onPolygon = false;
 
-    /**
-     * When used as a glider this member stores the object, where to glide on.
-     * To set the object to glide on use the method
-     * {@link JXG.Point#makeGlider} and DO NOT set this property directly
-     * as it will break the dependency tree.
-     * @type JXG.GeometryElement
-     */
-    slideObject: GeometryElement;
-
-    /**
-     * List of elements the element is bound to, i.e. the element glides on.
-     * Only the last entry is active.
-     * Use {@link JXG.Point#popSlideObject} to remove the currently active slideObject.
-     */
-    slideObjects: GeometryElement[] = [];
-
 
     /**
      * If the Glider is part of a constuction (like a Slider), this function will be set to represent a value
@@ -55,10 +39,12 @@ export class Glider extends Point {
 
     baseline
     highline
-    
+
 
     constructor(board: Board, coordinates: number[], attributes: LooseObject = {}) {
         super(board, coordinates, attributes)
+
+        // a glider is just a point.  makeGlider() will attach it to an element to glide on
 
         this.otype = OBJECT_TYPE.GLIDER
         this.elementClass = OBJECT_CLASS.POINT
@@ -71,10 +57,77 @@ export class Glider extends Point {
 
 
         if (dbug(this))
-            console.warn(`%c create Point ${this.id}`, dbugColor, coordinates)
-
+            console.warn(`%c create Glider ${this.id}`, dbugColor, coordinates)
 
     }
+
+    // /**
+    //  * Convert the point to glider and update the construction.
+    //  * To move the point visual onto the glider, a call of board update is necessary.
+    //  * @param {String|Object} slide The object the point will be bound to.
+    //  */
+    makeGlider(slide: GeometryElement) {
+        console.warn(`%c Glider.makeGlider from ${this.id}`,dbugColor, this, slide)
+
+
+        console.assert(this.otype === OBJECT_TYPE.GLIDER)      // this should be created as a glider
+        console.assert(Type.exists(this.board.select(slide)))  // slide object must exist
+
+
+        this.otype = OBJECT_TYPE.GLIDER;
+        this.elType = 'glider';
+
+        var  onPolygon = false,
+            min, i, dist;
+
+
+        if (slide.otype === OBJECT_TYPE.POLYGON) {
+            // Search for the closest edge of the polygon.
+            min = Number.MAX_VALUE;
+            for (i = 0; i < slide['borders'].length; i++) {
+                dist = Geometry.distPointLine(
+                    this.coords.usrCoords,
+                    slide['borders'][i].stdform
+                );
+                if (dist < min) {
+                    min = dist;
+                    slide = slide['borders'][i];
+                }
+            }
+            onPolygon = true;
+        }
+
+        /* Gliders on Ticks are forbidden */
+        if (!Type.exists(slide)) {
+            throw new Error("JSXGraph: slide object undefined.");
+        } else if (slide.otype === OBJECT_TYPE.TICKS) {
+            throw new Error("JSXGraph: gliders on ticks are not possible.");
+        }
+
+        this.slideObject = slide;
+
+        this.slideObjects.push(slide);
+        this.addParents(slide);
+
+        this.visProp['snapwidth'] = -1; // By default, deactivate snapWidth
+        this.slideObject.addChild(this);
+        this.isDraggable = true;
+        this.onPolygon = this.onPolygon;
+
+        this.generatePolynomial = function () {
+            return this.slideObject.generatePolynomial(this);
+        };
+
+        // TODO: move to glider
+        // // Determine the initial value of this.position
+        this.updateGlider();
+        this.needsUpdateFromParent = true;
+        this.updateGliderFromParent();
+
+        return this;
+    }
+
+
 
     /**
      * Update of glider in case of dragging the glider or setting the postion of the glider.
@@ -99,7 +152,6 @@ export class Glider extends Point {
             doRound = false,
             ev_sw,
             snappedTo, snapValues,
-            // slide = this.slideObject,
             res, cu,
             slides = [],
             isTransformed;
@@ -107,8 +159,10 @@ export class Glider extends Point {
         this.needsUpdateFromParent = false;
 
 
+        console.warn(`%cGlider updateGlider`,dbugColor,this, this.slideObject)
+
         if (this.slideObject.elementClass === OBJECT_CLASS.CIRCLE) {
-            let slide = this.slideObject as Circle  // hack - tells TS the type, but TS cannot varify
+            let slide = this.slideObject as Circle  // hack - tells TS the type, but TS cannot verify
 
             if (this.evalVisProp('isgeonext')) {
                 delta = 1.0;
@@ -121,7 +175,7 @@ export class Glider extends Point {
                     this
                 ) / delta;
         } else if (this.slideObject.elementClass === OBJECT_CLASS.LINE) {
-            let slide = this.slideObject as Line  // hack - tells TS the type, but TS cannot varify
+            let slide = this.slideObject as Line  // hack - tells TS the type, but TS cannot verify
 
             /*
              * onPolygon==true: the point is a slider on a segment and this segment is one of the
@@ -280,7 +334,7 @@ export class Glider extends Point {
             }
 
             // } else if (this.slideObject.otype === OBJECT_TYPE.TURTLE) {
-            //     let slide = this.slideObject as Circle  // hack - tells TS the type, but TS cannot varify
+            //     let slide = this.slideObject as Circle  // hack - tells TS the type, but TS cannot verify
 
             //     // In case, tohe point is a constrained glider.
             //     this.updateConstraint();
@@ -289,7 +343,7 @@ export class Glider extends Point {
             //     newPos = res[1]; // save position for the overwriting below
 
         } else if (this.slideObject.elementClass === OBJECT_CLASS.CURVE) {
-            let slide = this.slideObject as Curve  // hack - tells TS the type, but TS cannot varify
+            let slide = this.slideObject as Curve  // hack - tells TS the type, but TS cannot verify
 
             if (
                 slide.otype === OBJECT_TYPE.ARC ||
@@ -401,7 +455,7 @@ export class Glider extends Point {
             }
 
         } else if (this.slideObject.elementClass === OBJECT_CLASS.POINT) {
-            let slide = this.slideObject as Circle  // hack - tells TS the type, but TS cannot varify
+            let slide = this.slideObject as Circle  // hack - tells TS the type, but TS cannot verify
 
             //this.coords.setCoordinates(COORDS_BY.USER, Geometry.projectPointToPoint(this, slide, this.board).usrCoords, false);
             newCoords = Geometry.projectPointToPoint(this, slide, this.board);
@@ -635,71 +689,12 @@ export class Glider extends Point {
  * @param {Number} x
  * @returns {JXG.Point} Reference to the point element.
  */
-    // TODO: move to Glider
-    // setGliderPosition(x) {
-    //     if (this.type === OBJECT_TYPE.GLIDER) {
-    //         this.position = x;
-    //         this.board.update(true);
-    //     }
-
-    //     return this;
-    // }
-
-    // TODO: move to Glider
-    // /**
-    //  * Convert the point to glider and update the construction.
-    //  * To move the point visual onto the glider, a call of board update is necessary.
-    //  * @param {String|Object} slide The object the point will be bound to.
-    //  */
-    makeGlider(slide) {
-        var slideobj = this.board.select(slide),
-            onPolygon = false,
-            min, i, dist;
-
-        if (slideobj.otype === OBJECT_TYPE.POLYGON) {
-            // Search for the closest edge of the polygon.
-            min = Number.MAX_VALUE;
-            for (i = 0; i < slideobj['borders'].length; i++) {
-                dist = Geometry.distPointLine(
-                    this.coords.usrCoords,
-                    slideobj['borders'][i].stdform
-                );
-                if (dist < min) {
-                    min = dist;
-                    slide = slideobj['borders'][i];
-                }
-            }
-            slideobj = this.board.select(slide);
-            onPolygon = true;
+    // TODO: move to Glider  // tbtb
+    setGliderPosition(x) {
+        if (this.otype === OBJECT_TYPE.GLIDER) {
+            this.position = x;
+            this.board.update();
         }
-
-        /* Gliders on Ticks are forbidden */
-        if (!Type.exists(slideobj)) {
-            throw new Error("JSXGraph: slide object undefined.");
-        } else if (slideobj.otype === OBJECT_TYPE.TICKS) {
-            throw new Error("JSXGraph: gliders on ticks are not possible.");
-        }
-
-        this.slideObject = this.board.select(slide);
-        this.slideObjects.push(this.slideObject);
-        this.addParents(slide);
-
-        this.otype = OBJECT_TYPE.GLIDER;
-        this.elType = 'glider';
-        this.visProp['snapwidth'] = -1; // By default, deactivate snapWidth
-        this.slideObject.addChild(this);
-        this.isDraggable = true;
-        this.onPolygon = this.onPolygon;
-
-        this.generatePolynomial = function () {
-            return this.slideObject.generatePolynomial(this);
-        };
-
-        // TODO: move to glider
-        // // Determine the initial value of this.position
-        // this.updateGlider();
-        // this.needsUpdateFromParent = true;
-        // this.updateGliderFromParent();
 
         return this;
     }
@@ -804,10 +799,9 @@ export function createGlider(board, parents, attributes) {
     } else {
         coords = parents.slice(0, 2);
     }
-    let el = new Glider(board, coords, attr);
 
-    // eltype is set in here
-    el.makeGlider(parents[parents.length - 1]);
+    let el = new Glider(board, coords, attr);    // really just a point
+    el.makeGlider(parents[parents.length - 1]);  // convert it into a glider
 
     return el;
 };

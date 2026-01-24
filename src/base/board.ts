@@ -6423,8 +6423,8 @@ export class Board extends Events {
             case 'curve': el = createCurve(this, parents, attributes); break;
             case 'functiongraph': el = createFunctiongraph(this, parents, attributes); break;
             case 'spline': el = createSpline(this, parents, attributes); break;
-            case 'cardinalSpline': el = createCardinalSpline(this, parents, attributes); break;
-            case 'metapostSpline': el = createMetapostSpline(this, parents, attributes); break;
+            case 'cardinalspline': el = createCardinalSpline(this, parents, attributes); break;
+            case 'metapostspline': el = createMetapostSpline(this, parents, attributes); break;
             case 'riemannsum': el = createRiemannsum(this, parents, attributes); break;
             case 'tracecurve': el = createTracecurve(this, parents, attributes); break;
             case 'stepfunction': el = createStepfunction(this, parents, attributes); break;
@@ -6435,7 +6435,6 @@ export class Board extends Events {
             case 'boxplot': el = createBoxPlot(this, parents, attributes); break;
             case 'implicitcurve': el = createImplicitCurve(this, parents, attributes); break;
 
-            case 'glider': el = createGlider(this, parents, attributes); break;
             case 'slider': el = createSlider(this, parents, attributes); break;
 
             case 'grid': el = createGrid(this, parents, attributes); break;

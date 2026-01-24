@@ -2,9 +2,6 @@ import { Board } from "./base/board.js";
 import { JSXGraph } from "./jsxgraph.js"
 import { Type } from "./utils/type.js";
 
-// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
 
 export function runTests(which) {
     console.log('runTests')
@@ -134,11 +131,11 @@ export class IndexTests {
             let l1 = board.create('segment', [[-8, 8], [0, 8]])
             let glid1 = board.create('glider', [l1])
 
-            let c1 = board.create('circle', [[-4, 6], [-4, 3]])
-            let glid2 = board.create('glider', [c1])
+            // let c1 = board.create('circle', [[-4, 6], [-4, 3]])
+            // let glid2 = board.create('glider', [c1])
 
-            let c3 = board.create('curve', [(t) => t - Math.sin(t) + 1, (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
-            let glid3 = board.create('glider', [c3])
+            // let c3 = board.create('curve', [(t) => t - Math.sin(t) + 1, (t) => 1 - Math.cos(t), 0, 2 * Math.PI]);
+            // let glid3 = board.create('glider', [c3])
 
             // Create a slider with values between 1 and 10, initial position is 5.
             let s = board.create('slider', [[-5, -2], [3, -2], [1, 5, 10]]);
@@ -162,16 +159,28 @@ export class IndexTests {
                 strokeOpacity: 0.8
             });
 
+            ////// spline
             let p = [];
-            p[0] = board.create('point', [-2, 7], { size: 4, face: 'o' });
-            p[1] = board.create('point', [0, 4], { size: 4, face: 'o' });
-            p[2] = board.create('point', [2, 5], { size: 4, face: 'o' });
-            p[3] = board.create('point', [4, 6], { size: 4, face: 'o' });
-
+            p[0] = board.create('point', [-7, 7], { size: 4, face: 'o' });
+            p[1] = board.create('point', [-5, 4], { size: 4, face: 'o' });
+            p[2] = board.create('point', [-3, 5], { size: 4, face: 'o' });
+            p[3] = board.create('point', [-1, 6], { size: 4, face: 'o' });
             board.create('spline', p, { strokeWidth: 3 });
 
-            // createSpline
-            // createCardinalSpline
+            /////// cardinalSpline
+
+            //Create array of points
+            p = [];
+            p.push(board.create('point', [4, 3]));
+            p.push(board.create('point', [5, 7]));
+            p.push(board.create('point', [9, 8]));
+            p.push(board.create('point', [6, 6]));
+            p.push(board.create('point', [7, 3]));
+            // tension
+            let tau = board.create('slider', [[2, 2.5], [8, 2.5], [0.001, 0.5, 1]], { name: 'tau' });
+            board.create('cardinalspline', [p, function () { return tau.Value(); }], { strokeWidth: 3 });
+
+
             // createMetapostSpline
             // createRiemannsum
             // createTracecurve
