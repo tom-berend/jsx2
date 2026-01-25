@@ -1420,7 +1420,7 @@ export class Board extends Events {
      * for mouseevents.
      * @returns {Array} Contains the mouse coordinates in screen coordinates, ready for {@link JXG2.Coords}
      */
-    getMousePosition(e: Events, i?: number) {
+    getMousePosition(e: PointerEvent, i?: number) {
         var cPos = this.getCoordsTopLeftCorner(),
             absPos,
             v;
@@ -3345,7 +3345,7 @@ export class Board extends Events {
         }
 
         this.originMoveEnd();
-        this.update();
+        this.elementUpdate();
 
         // selection
         if (this.selectingMode) {

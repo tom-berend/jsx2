@@ -1881,7 +1881,7 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
     updateText(): string {
 
         if (dbug(this))
-            console.warn(`%c text: updateText(${this.content})`, dbugColor)
+            console.warn(`%c text: updateText(${typeof this.content})`, dbugColor)
 
         let e, digits,
             resolvedText,

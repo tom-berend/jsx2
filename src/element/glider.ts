@@ -1,4 +1,4 @@
-let dbug = (elem) => true //elem && elem.id === 'jxgBoard1P3'
+let dbug = (elem) => false //elem && elem.id === 'jxgBoard1P3'
 const dbugColor = `color:black;background-color:#ff80c0`;
 
 
@@ -26,12 +26,11 @@ export class Glider extends Point {
      */
     onPolygon = false;
 
-
     /**
      * If the Glider is part of a constuction (like a Slider), this function will be set to represent a value
      * {@link Slider#createSlider} for example
      */
-    Value: Function = () => 0
+    Value: Function = () => { console.error('not initialized ????'); return 0 }
 
     setMax: Function = () => 0
     setMin: Function = () => 0
@@ -67,7 +66,7 @@ export class Glider extends Point {
     //  * @param {String|Object} slide The object the point will be bound to.
     //  */
     makeGlider(slide: GeometryElement) {
-        console.warn(`%c Glider.makeGlider from ${this.id}`,dbugColor, this, slide)
+        console.warn(`%c Glider.makeGlider from ${this.id}`, dbugColor, this, slide)
 
 
         console.assert(this.otype === OBJECT_TYPE.GLIDER)      // this should be created as a glider
@@ -77,7 +76,7 @@ export class Glider extends Point {
         this.otype = OBJECT_TYPE.GLIDER;
         this.elType = 'glider';
 
-        var  onPolygon = false,
+        var onPolygon = false,
             min, i, dist;
 
 
@@ -158,8 +157,8 @@ export class Glider extends Point {
 
         this.needsUpdateFromParent = false;
 
-
-        console.warn(`%cGlider updateGlider`,dbugColor,this, this.slideObject)
+        if (dbug(this))
+            console.warn(`%cGlider updateGlider`, dbugColor, this, this.slideObject)
 
         if (this.slideObject.elementClass === OBJECT_CLASS.CIRCLE) {
             let slide = this.slideObject as Circle  // hack - tells TS the type, but TS cannot verify
@@ -308,6 +307,7 @@ export class Glider extends Point {
                     v = Math.round(v / ev_sw) * ev_sw + this._smin;
                     newPos = (v - this._smin) / (this._smax - this._smin);
                     this.elementUpdate();
+
                 }
             }
 

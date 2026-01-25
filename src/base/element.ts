@@ -631,7 +631,6 @@ export class GeometryElement extends Events {
      * @private
      */
     addParentsFromJCFunctions(function_array) {
-        console.log(function_array)
         var i, e, obj;
         for (i = 0; i < function_array.length; i++) {
             for (e in function_array[i].deps) {
@@ -1558,7 +1557,7 @@ export class GeometryElement extends Events {
                                 }
                                 break;
                             // case "ticksdistance":
-                            //     if (this.type === OBJECT_TYPE.TICKS && Type.isNumber(value)) {
+                            //     if (this.otype === OBJECT_TYPE.TICKS && Type.isNumber(value)) {
                             //         this.ticksFunction = this.makeTicksFunction(value);
                             //     }
                             //     break;

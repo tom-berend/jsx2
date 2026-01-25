@@ -73,18 +73,23 @@ export class Events {
      * @returns Reference to the object.
      */
     trigger(event: string[], args: argVals[]) {
-        var i, j, h, evt, len1, len2;
+        let h, evt
 
-        if (dbug) console.warn(`%c event: trigger(event: ${JSON.stringify(event)}, args: ${JSON.stringify(args)}`, dbugColor)
+        // if (event.includes('up'))
+        //     console.warn(`%c event: trigger(event: ${JSON.stringify(event)}`, dbugColor, args)
 
-        len1 = event.length;
-        for (j = 0; j < len1; j++) {
+        for (let j = 0; j < event.length; j++) {
             evt = this.eventHandlers[event[j]];
+
             if (!this.suspended[event[j]]) {
                 this.suspended[event[j]] = true;
                 if (evt) {
-                    len2 = evt.length;
-                    for (i = 0; i < len2; i++) {
+
+                    console.log(`%c event evt `, dbugColor, evt)
+                    console.log(`%c event handler(context: ${JSON.stringify(evt[0].context.id)} `, dbugColor)
+
+
+                    for (let i = 0; i < evt.length; i++) {
                         h = evt[i];
                         h.handler.apply(h.context, args);
                     }

@@ -79,7 +79,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
 
     public elem: GeometryElement
 
-    public _t:number = 0    // this is used in Plot.  need to document
+    public _t: number = 0    // this is used in Plot.  need to document
 
     public length = 0       // used in Point3D, text3D, statistics, cinderella
 
@@ -272,7 +272,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      * @returns {Array} Returns copy of the coords array either as standard array or as
      *   typed array.
      */
-    copy(obj:string, offset=0) {
+    copy(obj: string, offset = 0) {
         return this[obj].slice(offset);
     }
 

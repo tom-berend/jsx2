@@ -1,5 +1,5 @@
-let dbug = (elem) => true //elem && elem.id === 'jxgBoard1P3'
-const dbugColor = `color:red;background-color:lightgreen`;
+let dbug = (elem) => false //elem && elem.id === 'jxgBoard1P3'
+const dbugColor = `color:black;background-color:lightgreen`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -50,7 +50,8 @@ import { Point, createPoint } from "../base/point.js";
 import { Glider, createGlider } from "../element/glider.js";
 import { Line, createSegment } from "../base/line.js";
 import { createText } from "../base/text.js";
-import { createTicks } from "../base/ticks.js";
+import { Ticks, createTicks } from "../base/ticks.js";
+import { Options } from "../options.js";
 
 /**
  * @class A slider can be used to choose values from a given range of numbers.
@@ -280,6 +281,7 @@ export class Slider extends Glider {
 
         // Base line
         this.l1 = createSegment(board, [this.p1, this.p2], attr.baseline);
+        console.log(`slider l1 ${this.l1.id}`)
 
         // This is required for a correct projection of the glider onto the segment below
         this.l1.updateStdform();
@@ -312,6 +314,8 @@ export class Slider extends Glider {
         // Segment from start point to glider point: highline
         // attr = Type.copyAttributes(attributes, board.options, "slider", 'highline');
         this.l2 = createSegment(board, [this.p1, this.p3], attr.highline);
+        console.log(`slider l2 ${this.l2.id}`)
+
 
         /**
          * Returns the current slider value.
@@ -320,14 +324,18 @@ export class Slider extends Glider {
          * @function
          * @returns {Number}
          */
-        this.p3.Value = () => {
-            var d = this._smax - this._smin,
-                ev_sw = this.evalVisProp('snapwidth');
+        this.Value = (): number => {
 
-            return ev_sw === -1
-                ? this.position * d + this._smin
-                : Math.round((this.position * d) / ev_sw) * ev_sw + this._smin;
+            let d = this.p3._smax - this.p3._smin
+            let ev_sw = this.p3.evalVisProp('snapwidth');
+
+            let ret = ev_sw === -1
+                ? this.p3.position * d + this.p3._smin
+                : Math.round((this.p3.position * d) / ev_sw) * ev_sw + this.p3._smin;
+
+            return ret
         };
+
 
         this.p3.methodMap = Type.deepCopy(this.p3.methodMap, {
             Value: "Value",
@@ -384,7 +392,7 @@ export class Slider extends Glider {
          * @param {Number} val New value
          * @returns {Object} this object
          */
-        this.p3.setValue = function (val) {
+        this.p3.setValue = (val) => {
             var d = this._smax - this._smin;
 
             if (Math.abs(d) > JSXMath.eps) {
@@ -404,7 +412,7 @@ export class Slider extends Glider {
          * @param {Number} val New minimum value
          * @returns {Object} this object
          */
-        this.p3.setMin = function (val) {
+        this.p3.setMin = (val) => {
             this._smin = val;
             return this;
         };
@@ -419,7 +427,8 @@ export class Slider extends Glider {
                     (this.p2.Y() - this.p1.Y()) * 0.05 + this.p2.Y();
                 },
                 () => {
-                    let n,
+
+                    let n = '',
                         d = this.p3.evalVisProp('digits'),
                         sl = this.p3.evalVisProp('suffixlabel'),
                         ul = this.p3.evalVisProp('unitlabel'),
@@ -439,9 +448,9 @@ export class Slider extends Glider {
                     }
 
                     if (this.p3.useLocale()) {
-                        n += this.p3.formatNumberLocale(this.p3.Value(), d);
+                        n += this.p3.formatNumberLocale(this.Value(), d);
                     } else {
-                        n += Type.toFixed(this.p3.Value(), d);
+                        n += Type.toFixed(this.Value(), d);
                     }
 
                     if (ul !== null) {
@@ -454,7 +463,7 @@ export class Slider extends Glider {
                     return n;
                 }
             ],
-                attr.label
+                Type.initVisProps(Options.elements, Options.text, attr.label)
             );
 
             /**
@@ -507,18 +516,18 @@ export class Slider extends Glider {
 
             // attr = Type.copyAttributes(attributes, board.options, "slider", 'ticks');
             if (!Type.exists(attr.generatelabeltext)) {
-                attr.ticks.generateLabelText = function (tick, zero, value) {
-                    var labelText,
+                attr.ticks.generateLabelText = (tick, zero, value) => {
+                    let labelText,
                         dFull = this.p3.point1.Dist(this.p3.point2),
                         smin = this.p3._smin,
                         smax = this.p3._smax,
-                        val = (this.getDistanceFromZero(zero, tick) * (smax - smin)) / dFull + smin;
+                        val = ((this as unknown as Ticks).getDistanceFromZero(zero, tick) * (smax - smin)) / dFull + smin;
 
                     if (dFull < JSXMath.eps || Math.abs(val) < JSXMath.eps) {
                         // Point is zero
                         labelText = '0';
                     } else {
-                        labelText = this.formatLabelText(val);
+                        labelText = (this as unknown as Ticks).formatLabelText(val);
                     }
                     return labelText;
                 };
@@ -603,14 +612,18 @@ export class Slider extends Glider {
             ];
         };
 
-        this.p3.baseline.on("up", function (evt) {
+        this.p3.baseline.on("up", (evt: PointerEvent) => {
             var pos, c;
 
-            console.log(this, this.p3)
+            if (dbug(this))
+                console.log(`%c Slider baseline on(up)`, dbugColor, this, this.p3, evt)
 
             if (this.p3.evalVisProp('moveonup') && !this.p3.evalVisProp('fixed')) {
                 pos = this.l1.board.getMousePosition(evt, 0);
+                console.log(`%c Slider new pos ${JSON.stringify(pos)}`, dbugColor)
                 c = new Coords(COORDS_BY.SCREEN, pos, this.board);
+                console.log(`%c Slider new Coords ${JSON.stringify(c.usrCoords)}`, dbugColor)
+
                 this.p3.moveTo([c.usrCoords[1], c.usrCoords[2]]);
                 this.p3.triggerEventHandlers(['drag'], [evt]);
             }
@@ -634,6 +647,7 @@ export class Slider extends Glider {
     }
 
     update() {
+        this.l1.update()
         this.l2.update()
         this.p3.update()
         return this

@@ -69,8 +69,10 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
 
     Xjc
     Yjc
-    _smin
+
+    _smin   // used by Glider
     _smax
+
     _initialized
 
 
@@ -882,7 +884,7 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
         let newfuncs: Function[] = []
         let what = ["X", "Y"]
         let makeConstFunction = (z) => () => z
-        let makeSliderFunction = (a) => () => a.Value()
+        let makeSliderFunction = (a) => () => {console.error('missing');return a.Value()}
 
         if (dbug(this))
             console.warn(`%c coordselements: addConstraint( ${this.id} terms: ${JSON.stringify(terms)} )`, dbugColor)
@@ -1414,8 +1416,11 @@ export class CoordsElement extends GeometryElement implements CoordsMethods {
      *}
      *</script><pre>
      */
-    moveTo(where, time, options) {
-        options = options || {};
+    moveTo(where, time=0, options:LooseObject={}) {
+
+        if(!Type.exists(options['callback']))
+            options['callback'] = ()=>{}
+
         where = new Coords(COORDS_BY.USER, where, this.board, true, this);
 
         var i,
