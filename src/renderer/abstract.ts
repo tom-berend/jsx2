@@ -1,4 +1,5 @@
-const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
+import { watchElement } from "../jsxgraph.js"
+const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:white;background-color:#0080ff`;
 
 /*
@@ -310,7 +311,7 @@ export abstract class AbstractRenderer {
      * @returns {String} 'highlight' if highlighted, otherwise the ampty string '' is returned.
      * @private
      */
-    _getHighlighted(el: GeometryElement):string {
+    _getHighlighted(el: GeometryElement): string {
         var isTrace = false,
             hl;
 
@@ -338,7 +339,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updatePoint
      * @see JXG2.AbstractRenderer#changePointStyle
      */
-    drawPoint(el:Point) {
+    drawPoint(el: Point) {
 
         if (dbug(el)) console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visProp)
 
@@ -388,7 +389,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#drawPoint
      * @see JXG2.AbstractRenderer#changePointStyle
      */
-    updatePoint(el:Point) {
+    updatePoint(el: Point) {
 
         if (dbug(el))
             console.warn(`%c abstract: updatePoint(${el.id})`, dbugColor, el.coords.scrCoords)
@@ -451,7 +452,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updatePoint
      * @see JXG2.AbstractRenderer#drawPoint
      */
-    changePointStyle(el:Point) {
+    changePointStyle(el: Point) {
         var node = this.getElementById(el.id);
 
         // remove the existing point rendering node
@@ -517,7 +518,10 @@ export abstract class AbstractRenderer {
      * @see JXG2.Curve
      * @see JXG2.AbstractRenderer#updateCurve
      */
-    drawCurve(el:Curve) {
+    drawCurve(el: Curve) {
+        if (dbug(el))
+            console.warn(`%cabstract drawCurve `, dbugColor, el)
+
         el.rendNode = this.appendChildPrim(
             this.createPrim("path", el.id),
             el.evalVisProp('layer')
@@ -534,6 +538,9 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#drawCurve
      */
     updateCurve(el) {
+        if (dbug(el))
+            console.warn(`%cabstract updateCurve `, dbugColor, el.points)
+
         this._updateVisual(el);
         this.updatePathWithArrowHeads(el); // Calls the renderer primitive
         this.setLineCap(el);
@@ -1507,7 +1514,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.Image
      * @see JXG2.AbstractRenderer#drawImage
      */
-    updateImage(el:Image) {
+    updateImage(el: Image) {
         console.log(el)
         this.updateRectPrim(
             el.rendNode,

@@ -115,7 +115,7 @@ export class Arc extends Curve { //Curve {
         let attr = Type.initVisProps(Options.elements, Options.arc, attributes)
         super(board, [[0], [0], 0, 4], attr)
 
-        this.visProp = Type.initVisProps(Options.board,Options.curve, Options.arc, attributes)
+        this.visProp = Type.initVisProps(Options.board,Options.elements, Options.curve,Options.arc,attributes)
         console.log(this.visProp)
 
         this.elementUpdate = () => this.update();
@@ -198,7 +198,6 @@ export class Arc extends Curve { //Curve {
 
 
         this.elType = 'arc';
-        this.points = points
         this.setParents(points);
 
         this.prepareUpdate()
@@ -265,7 +264,6 @@ export class Arc extends Curve { //Curve {
 
             let ev_s = this.evalVisProp('selection');
 
-            console.log(A, B, C)
             phi = Geometry.rad(A, B, C);
             if ((ev_s === "minor" && phi > Math.PI) || (ev_s === "major" && phi < Math.PI)) {
                 sgn = -1;

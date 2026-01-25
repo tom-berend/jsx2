@@ -1,4 +1,5 @@
-let dbug = (elem) => false //elem && elem.id === 'jxgBoard1P3'
+import {watchElement} from "../jsxgraph.js"
+const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:red;background-color:lightblue`;
 /*
     Copyright 2008-2025

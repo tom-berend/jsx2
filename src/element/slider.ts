@@ -281,7 +281,6 @@ export class Slider extends Glider {
 
         // Base line
         this.l1 = createSegment(board, [this.p1, this.p2], attr.baseline);
-        console.log(`slider l1 ${this.l1.id}`)
 
         // This is required for a correct projection of the glider onto the segment below
         this.l1.updateStdform();

@@ -1,4 +1,5 @@
-const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
+import {watchElement} from "../jsxgraph.js"
+const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:black;background-color:#ff8080`;
 /*
     Copyright 2008-2025
@@ -55,6 +56,7 @@ import { CoordsElement } from "../base/coordselement.js";
 import { LooseObject } from "../interfaces.js";
 import { Board } from "./board.js";
 import { Transformation } from "../base/transformation.js";
+import { Options } from "../options.js";
 
 /**
  * Curves are the common object for function graphs, parametric curves, polar curves, and data plots.
@@ -166,6 +168,8 @@ export class Curve extends GeometryElement {
 
         console.warn(`%c New Curve`, dbugColor, parents)
 
+        this.visProp = Type.initVisProps(Options.board,Options.elements, Options.curve,attributes)
+
         this.id = this.board.setId(this, 'G');
 
         this.numberPoints = this.evalVisProp('numberpointshigh');
@@ -183,6 +187,7 @@ export class Curve extends GeometryElement {
 
         this.generateTerm(this.varname, this.xterm, this.yterm, parents[3], parents[4]);
         // First evaluation of the curve
+        this.board.updateRenderer()
         this.updateCurve();
 
         this.board.renderer.drawCurve(this);

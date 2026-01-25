@@ -1,5 +1,6 @@
-const dbug = (elem?) => false//elem && elem.id === "jxgBoard1L9"
-const dbugColor = `color:blue;background-color:#c0ffc0`;
+import { watchElement } from "../jsxgraph.js"
+const dbug = (elem) => elem && elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
+const dbugColor = `color:blue;background-color:#d0f0ff`;
 
 // this is a clone of abstract.ts, not a child (like svg and canvas)
 // the rendering methods are just too different
@@ -49,6 +50,7 @@ import { JSXMath } from "../math/math.js";
 import { Coords } from "../base/coords.js";
 import { Point } from "../base/point.js"
 import { Line } from "../base/line.js"
+import { Curve } from "../base/curve.js"
 import { Geometry } from "../math/geometry.js";
 
 
@@ -219,9 +221,6 @@ export class WebGLRenderer {
 
     constructor(containerName: string, dim: Dim) {  // width height
 
-        if (dbug()) console.log(`%c webgl: constructor(container:${containerName},dim:'${JSON.stringify(dim)}'`, dbugColor)
-
-
         if (typeof containerName == 'string') {
             let container = document.getElementById(containerName) as HTMLDivElement
             if (container) {
@@ -324,7 +323,7 @@ export class WebGLRenderer {
      */
     _updateVisual(el: GeometryElement, not: LooseObject = {}, enhanced: boolean = false) {
 
-        if (dbug(el)) console.warn(`%c abstract: _updateVisual(el, ${JSON.stringify(not)}, ${enhanced})`, dbugColor, 'el.visProp = ', el.visProp, not)
+        if (dbug(el)) console.warn(`%c webgl: _updateVisual(el, ${JSON.stringify(not)}, ${enhanced})`, dbugColor, 'el.visProp = ', el.visProp, not)
 
         if (enhanced || this.enhancedRendering) {
             not = not || {};
@@ -508,7 +507,7 @@ export class WebGLRenderer {
     updatePoint(el: Point) {
 
         if (dbug(el))
-            console.warn(`%c abstract: updatePoint(${el.id})`, dbugColor, el.coords.scrCoords)
+            console.warn(`%c webgl: updatePoint(${el.id})`, dbugColor, el.coords.scrCoords)
 
 
         var size = el.evalVisProp('size'),
@@ -633,7 +632,7 @@ export class WebGLRenderer {
      */
     updateLine(el: GeometryElement) {
         if (dbug(el))
-            console.warn(`%c abstract: _updateLine(${el.id})`, dbugColor)
+            console.warn(`%c webgl: _updateLine(${el.id})`, dbugColor)
 
 
 
@@ -652,11 +651,10 @@ export class WebGLRenderer {
      * @see JXG2.AbstractRenderer#updateCurve
      */
     drawCurve(el) {
-        el.rendNode = this.appendChildPrim(
-            this.createPrim("path", el.id),
-            el.evalVisProp('layer')
-        );
-        this.appendNodesToElement(el, "path");
+
+        if (dbug(el))
+            console.warn(`%cwebgl drawCurve `, dbugColor, el)
+
         this.updateCurve(el);
     }
 
@@ -667,10 +665,27 @@ export class WebGLRenderer {
      * @see JXG2.Curve
      * @see JXG2.AbstractRenderer#drawCurve
      */
-    updateCurve(el) {
-        this._updateVisual(el);
-        this.updatePathWithArrowHeads(el); // Calls the renderer primitive
-        this.setLineCap(el);
+    updateCurve(el: Curve) {
+        if (dbug(el))
+            console.warn(`%cwebgl updateCurve `, dbugColor, el.points, el.points[0].usrCoords, el.points.length)
+
+        let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
+        let color = el.evalVisProp('strokecolor')
+        let opacity = el.evalVisProp('opacity')
+
+        const material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
+
+        for (let i = 0; i < el.points.length - 2; i++) {
+            let start = el.points[i].usrCoords
+            let end = el.points[i + 1].usrCoords
+
+            let path = new THREE.LineCurve3(new THREE.Vector3(start[1], start[2], 0), new THREE.Vector3(end[1], end[2], 0))
+
+            const geometry = new THREE.TubeGeometry(path, 1, strokewidth, 8, false);  // closed must be false
+            const mesh = new THREE.Mesh(geometry, material);
+            this.scene.add(mesh);
+        }
+
     }
 
     /* ********* Arrow heads and related stuff *********** */
@@ -920,6 +935,75 @@ export class WebGLRenderer {
 
         return this;
     }
+
+    /**
+     * Builds a path data string from a {@link JXG2.Curve} element. Since the path data strings heavily depend on the
+     * underlying rendering technique this method is just a stub. Although such a path string is of no use for the
+     * CanvasRenderer, this method is used there to draw a path directly.
+     * @param {JXG2.GeometryElement} el
+     */
+    updatePathStringPrim(el: Curve) {
+        var i,
+            scr,
+            len,
+            symbm = " M ",
+            symbl = " L ",
+            symbc = " C ",
+            nextSymb = symbm,
+            maxSize = 5000.0,
+            pStr = "";
+
+        if (el.numberPoints <= 0) {
+            return "";
+        }
+
+        console.warn(`%c webgl: updatePathStringPrim(${el.id})`, dbugColor, el.numberPoints, el.points)
+
+        len = Math.min(el.points.length, el.numberPoints);
+
+        if (el.bezierDegree === 1) {
+            for (i = 0; i < len; i++) {
+                scr = el.points[i].scrCoords;
+                if (isNaN(scr[1]) || isNaN(scr[2])) {
+                    // PenUp
+                    nextSymb = symbm;
+                } else {
+                    // Chrome has problems with values being too far away.
+                    scr[1] = Math.max(Math.min(scr[1], maxSize), -maxSize);
+                    scr[2] = Math.max(Math.min(scr[2], maxSize), -maxSize);
+
+                    // Attention: first coordinate may be inaccurate if far way
+                    //pStr += [nextSymb, scr[1], ' ', scr[2]].join('');
+                    pStr += nextSymb + scr[1] + " " + scr[2]; // Seems to be faster now (webkit and firefox)
+                    nextSymb = symbl;
+                }
+            }
+        } else if (el.bezierDegree === 3) {
+            i = 0;
+            while (i < len) {
+                scr = el.points[i].scrCoords;
+                if (isNaN(scr[1]) || isNaN(scr[2])) {
+                    // PenUp
+                    nextSymb = symbm;
+                } else {
+                    pStr += nextSymb + scr[1] + " " + scr[2];
+                    if (nextSymb === symbc) {
+                        i += 1;
+                        scr = el.points[i].scrCoords;
+                        pStr += " " + scr[1] + " " + scr[2];
+                        i += 1;
+                        scr = el.points[i].scrCoords;
+                        pStr += " " + scr[1] + " " + scr[2];
+                    }
+                    nextSymb = symbc;
+                }
+                i += 1;
+            }
+        }
+        return pStr;
+    }
+
+
 
     /**
      * Shorten the length of a line element such that the arrow head touches
@@ -1201,7 +1285,7 @@ export class WebGLRenderer {
         var node: HTMLElement, z, level, ev_visible;
 
         if (dbug(el))
-            console.warn(`%c abstract: drawText(${el.id})`, dbugColor)
+            console.warn(`%c webgl: drawText(${el.id})`, dbugColor)
 
         if (this.container !== null) {
             if (
@@ -1292,7 +1376,7 @@ export class WebGLRenderer {
             to_h, to_v;
 
         if (dbug(el))
-            console.warn(`%c abstract: updateText(${el.id} ${JSON.stringify(el.coords.usrCoords)})`, dbugColor)
+            console.warn(`%c webgl: updateText(${el.id} ${JSON.stringify(el.coords.usrCoords)})`, dbugColor)
 
         if (el.visPropCalc.visible) {
             this.updateTextStyle(el, false);
@@ -1545,7 +1629,7 @@ export class WebGLRenderer {
         return;
 
 
-        
+
         var fs,
             so, sc,
             css,
@@ -1845,7 +1929,7 @@ export class WebGLRenderer {
     noHighlight(el) {
         var i, sw;
 
-        if (dbug(el)) console.warn(`%c abstract: noHighlight(el)`, dbugColor, 'el.visProp = ', el)
+        if (dbug(el)) console.warn(`%c webgl: noHighlight(el)`, dbugColor, 'el.visProp = ', el)
 
         this.setObjectTransition(el);
         if (!el.evalVisProp('draft')) {
@@ -2192,9 +2276,9 @@ export class WebGLRenderer {
     updatePathStringPoint(el, size, type) {
         return;
     }
-    updatePathStringPrim(el) {
-        return;
-    }
+    // updatePathStringPrim(el) {
+    //     return;
+    // }
     updatePathStringBezierPrim(el) {
         return;
     }

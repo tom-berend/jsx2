@@ -20,7 +20,7 @@ export class IndexTests {
 
     old = true  // turn on and off boards
     new = true
-    webgl = false
+    webgl = true
 
     boards = []
 

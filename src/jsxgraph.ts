@@ -1,3 +1,4 @@
+export const watchElement = 'jxgBoard1G7'
 /*
     Copyright 2008-2025
         Matthias Ehmann,
