@@ -1,4 +1,4 @@
-export const watchElement = 'jxgBoard1P7'
+export const watchElement = 'never //jxgBoard1P4label'
 /*
     Copyright 2008-2025
         Matthias Ehmann,

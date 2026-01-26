@@ -40,12 +40,12 @@
  * the type of a variable.
  */
 
+import { Options } from '../options.js';
 import { LooseObject } from '../interfaces.js'
 import { Point, createPoint } from "../base/point.js";
 
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
-import { Options } from '../index.js';
 
 export class Type {
     /**
@@ -505,12 +505,18 @@ export class Type {
         for (i = 0; i < len; ++i) {
             if (lenAttr > 0) {
                 j = Math.min(i, lenAttr - 1);
-                attr = this.copyAttributes(
-                    attributes,
-                    board.options,
-                    attrClass,
-                    attrArray[j].toLowerCase()
-                );
+
+                // attr = this.copyAttributes(
+                //     attributes,
+                //     board.options,
+                //     attrClass,
+                //     attrArray[j].toLowerCase()
+                // );
+                // console.log(attr)
+                // console.log(attributes,board.options,attrClass,attrArray)
+                attr = this.initVisProps(Options.point,{visible:false,withlabel:false},attributes)
+
+                // let attr = this.initVisProps( attrArray[j],attrClass,Options.board,attributes)
             }
             if (this.isArray(parents[i]) && parents[i].length > 1) {
                 points.push(board.create("point", parents[i], attr));
@@ -1411,7 +1417,7 @@ export class Type {
      * @returns {Object} The resulting attributes object
      */
     static copyAttributes(attributes, options, ...s) {
-        console.warn('COPYATTRIBUTES - use INITVISPROPS instead')
+        // console.warn('COPYATTRIBUTES - use INITVISPROPS instead')
         var a, arg, i, len, o, isAvail,
             primitives = {
                 circle: 1,

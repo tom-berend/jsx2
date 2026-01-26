@@ -40,6 +40,7 @@ import { Statistics } from "../math/statistics.js";
 import { Geometry } from "../math/geometry.js";
 import { Type } from "../utils/type.js";
 import { GeometryElement } from "./element.js";
+import { CoordsElement } from "./coordselement.js";
 import { LooseObject } from "../interfaces.js";
 import { Board } from "./board.js";
 import { Point } from "./point.js";

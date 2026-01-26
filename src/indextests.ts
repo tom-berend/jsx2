@@ -3,6 +3,7 @@ import { JSXGraph } from "./jsxgraph.js"
 import { Type } from "./utils/type.js";
 
 
+
 export function runTests(which) {
     console.log('runTests')
     if (which)
@@ -80,11 +81,13 @@ export class IndexTests {
     }
     point() {
         this.boards.map((board) => {
+            let wave = 0
+
             let a = board.create('point', [1, 3])
             board.create('point', [() => a.X() + 1, () => a.Y() + 1], { name: 'locked to A', strokecolor: 'blue' })
 
-            let wave = () => new Date().getSeconds()
-            board.create('point', [-2, 3], { strokecolor: 'green', strokewidth: 6, linecolor: 'red', opacity: ((wave() % 10) / 10), name: () => wave() })
+            let b = board.create('point', [-2, 3], { strokecolor: 'green', strokewidth: 6, linecolor: 'red', opacity: () => wave, name: () => wave.toFixed(1) })
+            setInterval(() => { (wave > 1) ? wave = 0 : wave += .1; console.log('x');board.update(b) }, 200);
 
             // Create a point using transformations
             let trans = board.create('transform', [2, 0.5], { type: 'scale' });

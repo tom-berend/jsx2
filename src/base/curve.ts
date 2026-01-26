@@ -1,5 +1,5 @@
-import {watchElement} from "../jsxgraph.js"
-const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
+import { watchElement } from "../jsxgraph.js"
+const dbug = (elem) => elem && elem.id === watchElement //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:black;background-color:#ff8080`;
 /*
     Copyright 2008-2025
@@ -166,9 +166,10 @@ export class Curve extends GeometryElement {
         this.elementGetLabelAnchor = () => this.getLabelAnchor();
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
-        console.warn(`%c New Curve`, dbugColor, parents)
+        if (dbug(this))
+            console.warn(`%c New Curve`, dbugColor, parents)
 
-        this.visProp = Type.initVisProps(Options.board,Options.elements, Options.curve,attributes)
+        this.visProp = Type.initVisProps(Options.board, Options.elements, Options.curve, attributes)
 
         this.id = this.board.setId(this, 'G');
 
@@ -1780,7 +1781,8 @@ export function createCurve(board, parents, attributes): Curve {
         cu = new Curve(board, ["x"].concat(parents), attr);
         cu.updateDataArray = () => { return this }
 
-        console.log(`%c createCurve on parents`, dbugColor, parents)
+        if (dbug(this))
+            console.log(`%c createCurve on parents`, dbugColor, parents)
     }
     return cu;
 };

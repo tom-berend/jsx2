@@ -54,7 +54,6 @@ import { Curve } from "../base/curve.js"
 import { Geometry } from "../math/geometry.js";
 
 
-
 import { Color } from "../utils/color.js";
 import { Base64 } from "../utils/base64.js";
 import { Numerics } from "../math/numerics.js";
@@ -614,7 +613,7 @@ export class WebGLRenderer {
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
-        let opacity = el.evalVisProp('opacity')
+        let opacity = (el.evalVisProp('opacity')==undefined  ? 1:el.evalVisProp('opacity');
 
 
         let path = new THREE.LineCurve3(new THREE.Vector3(start[0], start[1], 0), new THREE.Vector3(end[0], end[1], 0))
@@ -674,7 +673,7 @@ export class WebGLRenderer {
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
-        let opacity = el.evalVisProp('opacity')
+        let opacity = (el.evalVisProp('opacity')==undefined  ? 1:el.evalVisProp('opacity');
 
         const material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
 
@@ -1273,15 +1272,28 @@ export class WebGLRenderer {
      */
     drawText(el: Text): HTMLElement {
 
-
+        let coord = el.coords.usrCoords
         let content = el.htmlStr
-        let coord = el.Coords(false)
+        // console.log('default', JSON.stringify(coord), content)
+
+        // if (el.visProp["islabel"] && Type.exists(el.visProp["anchor"])) {
+        //     console.log(el)
+        //     let anchor = el.visProp['anchor']
+        //     console.log('anchor', anchor)
+        //     coord = anchor.coords.usrCoords
+
+        //     if (typeof el.content == 'string')
+        //         content = el.content
+
+        //     console.log('label', JSON.stringify(coord), content)
+        // }
+
 
         let sprite = new SpriteText(content, .5, 'black')
         el.rendNode = sprite    // save it
         this.scene.add(sprite)
 
-        sprite.position.set(coord[0], coord[1], 0)
+        sprite.position.set(coord[1], coord[2], 0)
         return
 
 

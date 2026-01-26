@@ -67,7 +67,9 @@ export class Glider extends Point {
     //  * @param {String|Object} slide The object the point will be bound to.
     //  */
     makeGlider(slide: GeometryElement) {
-        console.warn(`%c Glider.makeGlider from ${this.id}`, dbugColor, this, slide)
+
+        if (dbug(this))
+            console.warn(`%c Glider.makeGlider from ${this.id}`, dbugColor, this, slide)
 
 
         console.assert(this.otype === OBJECT_TYPE.GLIDER)      // this should be created as a glider
