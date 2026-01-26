@@ -172,6 +172,7 @@ var priv = {
  *
  */
 
+//tbtbtb
 export class Checkbox extends Text {
     constructor(board: Board, parents: any[], attributes = {}) {
         super(board, parents, attributes)

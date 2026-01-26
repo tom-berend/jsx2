@@ -83,6 +83,7 @@ import { createImage } from '../base/image.js';
 import { createPolygon, createRegularPolygon, createPolygonalChain, createParallelogram } from "../base/polygon.js";
 import { createGlider } from '../element/glider.js';
 import { createArc, createMajorArc, createMinorArc, createCircumcircleArc, createSemicircle } from "../element/arc.js";
+import { createSector, createCircumcircleSector, createMinorSector, createMajorSector, createAngle, createNonreflexAngle, createReflexAngle } from '../element/sector.js';
 
 /**
  * Constructs a new Board object.
@@ -6451,6 +6452,15 @@ export class Board extends Events {
             case 'minorarc': el = createMinorArc(this, parents, attributes); break;
             case 'semicircle': el = createSemicircle(this, parents, attributes); break;
             case 'circumcirclearc': el = createCircumcircleArc(this, parents, attributes); break;
+
+            case 'sector': el = createSector(this, parents, attributes); break;
+            case 'circumcirclesector': el = createCircumcircleSector(this, parents, attributes); break;
+            case 'minorsector': el = createMinorSector(this, parents, attributes); break;
+            case 'majorsector': el = createMajorSector(this, parents, attributes); break;
+            case 'angle': el = createAngle(this, parents, attributes); break;
+            case 'nonreflexangle': el = createNonreflexAngle(this, parents, attributes); break;
+            case 'reflexangle': el = createReflexAngle(this, parents, attributes); break;
+
 
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)

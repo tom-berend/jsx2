@@ -232,6 +232,7 @@ export function createSlider(board: Board, parents, attributes) {
     return new Slider(board, parents, attributes)
 }
 
+//tbtbtb
 export class Slider extends Glider {
 
     p1: Point  // start point

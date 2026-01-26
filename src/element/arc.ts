@@ -116,7 +116,6 @@ export class Arc extends Curve { //Curve {
         super(board, [[0], [0], 0, 4], attr)
 
         this.visProp = Type.initVisProps(Options.board,Options.elements, Options.curve,Options.arc,attributes)
-        console.log(this.visProp)
 
         this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();

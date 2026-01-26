@@ -11,7 +11,7 @@ export function runTests(which) {
         new IndexTests()
 }
 
-export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc']
+export let tests = ['axis', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc']
 
 
 export class IndexTests {
@@ -33,7 +33,6 @@ export class IndexTests {
         } else {
             this.curve()
             // this.point()
-            // this.text()
             // this.line()
             // this.circle()
             // this.curve()
@@ -90,11 +89,6 @@ export class IndexTests {
             // Create a point using transformations
             let trans = board.create('transform', [2, 0.5], { type: 'scale' });
             let p3 = board.create('point', [a, trans], { name: 'transform point to A' });
-        })
-    }
-    text() {
-        this.boards.map((board) => {
-            board.create('text', [2, 7, "test"], { strokecolor: 'red' })
         })
     }
     line() {
@@ -226,7 +220,7 @@ export class IndexTests {
             for (let i = 0; i < 15; i++) {
                 board.create('point', [i - 9, 8], { strokewidth: i })
                 board.create('text', [i - 9, 7 - (i / 4), 'Aa'], { fontsize: 2 * i })
-                board.create('segment', [[i - 9, - 9], [i - 2, 2]], { strokewidth: i });  // mostly diagonal
+                board.create('segment', [[i - 9, - 9], [i - 2, 2]], { strokewidth: i, opacity: 1 - (i / 20) });  // mostly diagonal
                 board.create('text', [i - 9, - 9.5, i.toString()])
             }
         })
@@ -235,13 +229,27 @@ export class IndexTests {
     }
     arc() {
         this.boards.map((board) => {
-            // Create an arc out of three free points
-            var p1 = board.create('point', [2.0, 2.0]);
-            var p2 = board.create('point', [1.0, 0.5]);
-            var p3 = board.create('point', [3.5, 1.0]);
+            {
+                // Create an arc out of three free points
+                let p1 = board.create('point', [2.0, 2.0]);
+                let p2 = board.create('point', [1.0, 0.5]);
+                let p3 = board.create('point', [3.5, 1.0]);
 
-            var a = board.create('arc', [p1, p2, p3]);
-            board.create('text', [1, 6, function () { return 'arclength: ' + Math.round(a.Value() * 100) / 100 }])
+                let a = board.create('arc', [p1, p2, p3]);
+                board.create('text', [1, 6, function () { return 'arclength: ' + Math.round(a.Value() * 100) / 100 }])
+                let p4 = board.create('point', [2.0, 3.5]);
+                let p5 = board.create('point', [1.0, 2.0]);
+                let p6 = board.create('point', [3.5, 2.5]);
+                board.create('majorarc', [p4, p5, p6]);
+            }
+            {
+                // Create a sector out of three free points
+                let p1 = board.create('point', [-7.5, 5.0]),
+                    p2 = board.create('point', [-7.0, 0.5]),
+                    p3 = board.create('point', [-4.0, 3.0]),
+
+                    a = board.create('sector', [p1, p2, p3]);
+            }
         })
 
     }

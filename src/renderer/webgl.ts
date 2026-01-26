@@ -312,6 +312,13 @@ export class WebGLRenderer {
     }
 
 
+    // eventually this should account for the size of the board.
+    // currently set for a 10x10 board
+    calcTextFontSize(n: number) {
+        if (n <= 1) return 0;
+        return ((Math.round(n) + 7) * .035)
+
+    }
 
     /**
      * Update visual properties, but only if {@link JXG2.AbstractRenderer#enhancedRendering} or <tt>enhanced</tt> is set to true.
@@ -607,11 +614,7 @@ export class WebGLRenderer {
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
-        // let opacity = el.evalVisProp('opacity')
-
-        // let strokewidth = 2
-        // let color = 'blue'
-        let opacity = 1
+        let opacity = el.evalVisProp('opacity')
 
 
         let path = new THREE.LineCurve3(new THREE.Vector3(start[0], start[1], 0), new THREE.Vector3(end[0], end[1], 0))
@@ -1358,14 +1361,20 @@ export class WebGLRenderer {
         let coord = el.Coords(false)
 
         if (el.rendNode === undefined) {
-            el.rendNode = new SpriteText(content, .5, 'black')
-            this.scene.add(el.rendNode)
+            let fontSize = this.calcTextFontSize(parseInt(el.evalVisProp('fontsize')))
+
+            if (fontSize > 0) {
+                el.rendNode = new SpriteText(content, fontSize, 'black')
+                this.scene.add(el.rendNode)
+                el.rendNode.position.set(coord[0], coord[1], .2)
+            }
         }
 
-        el.rendNode.position.set(coord[0], coord[1], 0)
         return
 
-
+        //////////////////////////
+        //////////////////////////
+        //////////////////////////
 
 
         var v, c,

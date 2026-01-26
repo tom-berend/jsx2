@@ -16,6 +16,7 @@ import { Circle } from "../base/circle.js";
 import { Curve } from "../base/curve.js";
 import { Line } from "../base/line.js";
 
+//tbtbtb
 export class Glider extends Point {
 
     /**

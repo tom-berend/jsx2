@@ -55,12 +55,9 @@ import { Line } from "../base/line.js";
 import { Circle } from "../base/circle.js";
 import { Curve } from "../base/curve.js";
 
-export interface CoordsMethods {
-    addTransform: Function
-}
 
 
-export class CoordsElement extends GeometryElement implements CoordsMethods {
+export abstract class CoordsElement extends GeometryElement {
 
     public usrCoords: number[] = [];
     public scrCoords: number[] = [];

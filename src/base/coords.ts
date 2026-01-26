@@ -51,7 +51,7 @@ import { GeometryElement } from "./element.js";
  * properties and methods coordinates usually have.
  */
 
-
+// tbtbtb
 export class Coords extends Events {   // tbtb - should NOT extend event!!
     /**
    * Stores the board the object is used on.

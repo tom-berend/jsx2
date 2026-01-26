@@ -73,7 +73,7 @@ export interface GeometryElementInterface {
  * @borrows JXG2.EventEmitter#triggerEventHandlers as this.triggerEventHandlers
  * @borrows JXG2.EventEmitter#eventHandlers as this.eventHandlers
  */
-export class GeometryElement extends Events {
+export abstract class GeometryElement extends Events {
 
      /**
      * When used as a glider this member stores the object, where to glide on.

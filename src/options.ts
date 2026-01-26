@@ -116,7 +116,6 @@ import { MeasureMemoryOptions } from "vm";
  * @name JXG.Options
  */
 
-// Board and GeometryElement extend Events.  CoordsElement extends Coords.
 
 
 // NOTE: a class is a custom object which is slightly different from an object literal.

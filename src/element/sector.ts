@@ -32,11 +32,11 @@
 /*global JXG2: true, define: true*/
 /*jslint nomen: true, plusplus: true*/
 
-import { JXG2 } from "../jxg.js";
 import { Geometry } from "../math/geometry.js";
 import { JSXMath } from "../math/math.js";
 import { Statistics } from "../math/statistics.js";
 import { Coords } from "../base/coords.js";
+import {Env} from "../utils/env.js";
 
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Type } from "../utils/type.js";
@@ -188,7 +188,7 @@ import { Type } from "../utils/type.js";
  *
  *
  */
-JXG2.createSector = function (board, parents, attributes) {
+export function createSector (board, parents, attributes) {
     var el,
         attr,
         i,
@@ -822,7 +822,7 @@ JXG2.createSector = function (board, parents, attributes) {
      * @ignore
      */
     el.getRadius = function () {
-        JXG2.deprecated("Sector.getRadius()", "Sector.Radius()");
+        Env.deprecated("Sector.getRadius()", "Sector.Radius()");
         return this.Radius();
     };
 
@@ -918,8 +918,6 @@ JXG2.createSector = function (board, parents, attributes) {
     return el;
 };
 
-JXG2.registerElement("sector", JXG2.createSector);
-
 /**
  * @class A sector whose arc is a circum circle arc through three points.
  * A circumcircle sector is different from a {@link Sector} mostly in the way the parent elements are interpreted.
@@ -953,7 +951,7 @@ JXG2.registerElement("sector", JXG2.createSector);
  * })();
  * </script><pre>
  */
-JXG2.createCircumcircleSector = function (board, parents, attributes) {
+export function createCircumcircleSector (board, parents, attributes) {
     var el, mp, attr, points;
 
     points = Type.providePoints(board, parents, attributes, 'point');
@@ -992,7 +990,6 @@ JXG2.createCircumcircleSector = function (board, parents, attributes) {
     return el;
 };
 
-JXG2.registerElement("circumcirclesector", JXG2.createCircumcircleSector);
 
 /**
  * @class A minor sector is a sector of a circle having measure at most
@@ -1070,12 +1067,11 @@ JXG2.registerElement("circumcirclesector", JXG2.createCircumcircleSector);
  * </script><pre>
  *
  */
-JXG2.createMinorSector = function (board, parents, attributes) {
+export function createMinorSector (board, parents, attributes) {
     attributes.selection = 'minor';
-    return JXG2.createSector(board, parents, attributes);
+    return createSector(board, parents, attributes);
 };
 
-JXG2.registerElement("minorsector", JXG2.createMinorSector);
 
 /**
  * @class A major sector is a sector of a circle having measure at least
@@ -1108,12 +1104,11 @@ JXG2.registerElement("minorsector", JXG2.createMinorSector);
  * })();
  * </script><pre>
  */
-JXG2.createMajorSector = function (board, parents, attributes) {
+export function createMajorSector(board, parents, attributes) {
     attributes.selection = 'major';
-    return JXG2.createSector(board, parents, attributes);
+    return createSector(board, parents, attributes);
 };
 
-JXG2.registerElement("majorsector", JXG2.createMajorSector);
 
 /**
  * @class Angle sector defined by three points or two lines.
@@ -1251,7 +1246,7 @@ JXG2.registerElement("majorsector", JXG2.createMajorSector);
  * </script><pre>
  *
  */
-JXG2.createAngle = function (board, parents, attributes) {
+export function createAngle(board, parents, attributes) {
     var el,
         radius, attr, attrsub,
         i, points,
@@ -1863,7 +1858,6 @@ JXG2.createAngle = function (board, parents, attributes) {
     return el;
 };
 
-JXG2.registerElement("angle", JXG2.createAngle);
 
 /**
  * @class A non-reflex angle is the instance of an angle that is at most 180°.
@@ -1898,12 +1892,12 @@ JXG2.registerElement("angle", JXG2.createAngle);
  * })();
  * </script><pre>
  */
-JXG2.createNonreflexAngle = function (board, parents, attributes) {
+export function createNonreflexAngle(board, parents, attributes) {
     var el;
 
     attributes.selection = 'minor';
     attributes = Type.copyAttributes(attributes, board.options, 'nonreflexangle');
-    el = JXG2.createAngle(board, parents, attributes);
+    el = createAngle(board, parents, attributes);
 
     // Documented in createAngle
     el.Value = function (unit) {
@@ -1919,7 +1913,6 @@ JXG2.createNonreflexAngle = function (board, parents, attributes) {
     return el;
 };
 
-JXG2.registerElement("nonreflexangle", JXG2.createNonreflexAngle);
 
 /**
  * @class A reflex angle is the instance of an angle that is larger than 180°.
@@ -1954,12 +1947,12 @@ JXG2.registerElement("nonreflexangle", JXG2.createNonreflexAngle);
  * })();
  * </script><pre>
  */
-JXG2.createReflexAngle = function (board, parents, attributes) {
+export function createReflexAngle(board, parents, attributes) {
     var el;
 
     attributes.selection = 'major';
     attributes = Type.copyAttributes(attributes, board.options, 'reflexangle');
-    el = JXG2.createAngle(board, parents, attributes);
+    el = createAngle(board, parents, attributes);
 
     // Documented in createAngle
     el.Value = function (unit) {
@@ -1976,4 +1969,3 @@ JXG2.createReflexAngle = function (board, parents, attributes) {
     return el;
 };
 
-JXG2.registerElement("reflexangle", JXG2.createReflexAngle);

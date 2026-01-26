@@ -1,4 +1,4 @@
-export const watchElement = 'jxgBoard1G7'
+export const watchElement = 'jxgBoard1P7'
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -24,6 +24,9 @@ export const watchElement = 'jxgBoard1G7'
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
+
+
+export abstract class CoordsElement extends GeometryElement {
 
     You should have received a copy of the GNU Lesser General Public License and
     the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>

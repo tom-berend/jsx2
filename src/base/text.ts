@@ -89,7 +89,7 @@ var priv = {
  *
  */
 
-export class Text extends CoordsElement /*implements GeometryElementInterface*/ {
+export class Text extends CoordsElement  {
 
     content: string | number | Function = "";    // this is the current value to evaluate
 
@@ -573,7 +573,7 @@ export class Text extends CoordsElement /*implements GeometryElementInterface*/ 
         node = this.rendNode;
 
         if (node === undefined) {
-            console.warn('Text node is undefined')
+            // console.warn('Text node is undefined')
             return this;
         }
 
@@ -2200,6 +2200,7 @@ export function createText(board: Board, parents: any[], attributes: LooseObject
 /**
  * [[x,y], [w px, h px], [range]
  */
+//tbtbtb
 export class HTMLSlider extends Text {
     constructor(board, parents: any[], attributes = {}) {
         super(board, [parents[0], parents[1]], attributes)
