@@ -34,14 +34,18 @@
 
 import { JXG2 } from "../jxg.js";
 import { Env } from "../utils/env.js";
-import {Type} from "../utils/type.js";
-import{ Encoding }from "../utils/encoding.js";
-import{ Base64 }from "../utils/base64.js";
+import { Type } from "../utils/type.js";
+import { Encoding } from "../utils/encoding.js";
+import { Base64 } from "../utils/base64.js";
 
 /**
  * The FileReader object bundles the file input capabilities of JSXGraph.
  */
-JXG2.FileReader = {
+export class FileReader {
+
+    readAsText(url,encoding){} // missing !!
+
+
     /**
      *
      * @param {String} url
@@ -52,7 +56,7 @@ JXG2.FileReader = {
      *
      * @private
      */
-    handleRemoteFile: function (url, board, format, async, encoding, callback) {
+    handleRemoteFile(url, board, format, async, encoding, callback) {
         var request = false;
 
         try {
@@ -124,7 +128,7 @@ JXG2.FileReader = {
                 "JSXGraph: A problem occurred while trying to read remote file '" + url + "'."
             );
         }
-    },
+    }
 
     /**
      *
@@ -136,7 +140,7 @@ JXG2.FileReader = {
      *
      * @private
      */
-    handleLocalFile: function (url, board, format, async, encoding, callback) {
+    handleLocalFile(url, board, format, async, encoding, callback) {
         if (!Type.exists(async)) {
             async = true;
         }
@@ -162,7 +166,7 @@ JXG2.FileReader = {
         } else {
             reader.readAsText(url, encoding);
         }
-    },
+    }
 
     /**
      * Opens a file using the given URL and passes the contents to {@link JXG2.FileReader#parseString}
@@ -181,13 +185,13 @@ JXG2.FileReader = {
      * @param {Boolean} async Call ajax asynchonously.
      * @param {function} callback A function that is run when the board is ready.
      */
-    parseFileContent: function (url, board, format, async, encoding, callback) {
+    parseFileContent(url, board, format, async, encoding, callback) {
         if (Type.isString(url) || FileReader === undefined) {
             this.handleRemoteFile(url, board, format, async, encoding, callback);
         } else {
             this.handleLocalFile(url, board, format, async, encoding, callback);
         }
-    },
+    }
 
     /**
      * Parses a given string according to the file format given in format.
@@ -205,7 +209,7 @@ JXG2.FileReader = {
      * </dl>
      * @param {function} callback
      */
-    parseString: function (str, board, format, callback) {
+    parseString(str, board, format, callback) {
         var Reader, read;
 
         format = format.toLowerCase();
@@ -285,4 +289,3 @@ End Function\n\
     );
 }
 
-export default JXG2.FileReader;

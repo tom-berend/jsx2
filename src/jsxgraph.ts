@@ -47,7 +47,7 @@ import { Env } from "./utils/env.js";
 import { Type } from "./utils/type.js";
 // import {JSXMath} from "./math/math.js";
 import { Board } from "./base/board.js";
-import FileReader from "./reader/file.js";
+// import { FileReader } from "./reader/file.js";
 import { Options } from "./options.js";
 import { SVGRenderer } from "./renderer/svg.js";
 import { WebGLRenderer } from "./renderer/webgl.js";
@@ -517,7 +517,7 @@ export class JSXGraph {
 
         // old style copies EVERYTHIN
         options = Type.deepCopy(Options, theme, true);
-        attr = Type.initVisProps(Options.board,attributes)
+        attr = Type.initVisProps(Options.board, attributes)
 
 
         dimensions = Env.getDimensions(box, attr.document);
@@ -669,36 +669,36 @@ export class JSXGraph {
      *      function (board) { console.log("Done loading"); }
      * );
      */
-    static loadBoardFromFile(box, file, format, attributes, callback) {
-        var attr, renderer, board, dimensions, encoding;
+    // static loadBoardFromFile(box, file, format, attributes, callback) {
+    //     var attr, renderer, board, dimensions, encoding;
 
-        attributes = attributes || {};
-        attr = this._setAttributes(attributes);
+    //     attributes = attributes || {};
+    //     attr = this._setAttributes(attributes);
 
-        dimensions = Env.getDimensions(box, attr.document);
-        renderer = this.initRenderer(box, dimensions, attr.document, attr.renderer);
-        this._setARIA(box, attr);
+    //     dimensions = Env.getDimensions(box, attr.document);
+    //     renderer = this.initRenderer(box, dimensions, attr.document, attr.renderer);
+    //     this._setARIA(box, attr);
 
-        /* User default parameters, in parse* the values in the gxt files are submitted to board */
-        board = new Board(
-            box,
-            renderer,
-            "",
-            [150, 150],
-            1,
-            1,
-            50,
-            50,
-            dimensions.width,
-            dimensions.height,
-            attr
-        );
-        this._fillBoard(board, attr, dimensions);
-        encoding = attr.encoding || "iso-8859-1";
-        FileReader.parseFileContent(file, board, format, true, encoding, callback);
+    //     /* User default parameters, in parse* the values in the gxt files are submitted to board */
+    //     board = new Board(
+    //         box,
+    //         renderer,
+    //         "",
+    //         [150, 150],
+    //         1,
+    //         1,
+    //         50,
+    //         50,
+    //         dimensions.width,
+    //         dimensions.height,
+    //         attr
+    //     );
+    //     this._fillBoard(board, attr, dimensions);
+    //     encoding = attr.encoding || "iso-8859-1";
+    //     FileReader.parseFileContent(file, board, format, true, encoding, callback);
 
-        return board;
-    }
+    //     return board;
+    // }
 
     /**
      * Load a board from a base64 encoded string containing a construction made with either GEONExT,
@@ -716,35 +716,35 @@ export class JSXGraph {
      * @see JXG.IntergeoReader
      * @see JXG.CinderellaReader
      */
-    static loadBoardFromString(box, string, format, attributes, callback) {
-        var attr, renderer, board, dimensions;
+    // static loadBoardFromString(box, string, format, attributes, callback) {
+    //     var attr, renderer, board, dimensions;
 
-        attributes = attributes || {};
-        attr = this._setAttributes(attributes);
+    //     attributes = attributes || {};
+    //     attr = this._setAttributes(attributes);
 
-        dimensions = Env.getDimensions(box, attr.document);
-        renderer = this.initRenderer(box, dimensions, attr.document, attr.renderer);
-        this._setARIA(box, attr);
+    //     dimensions = Env.getDimensions(box, attr.document);
+    //     renderer = this.initRenderer(box, dimensions, attr.document, attr.renderer);
+    //     this._setARIA(box, attr);
 
-        /* User default parameters, in parse* the values in the gxt files are submitted to board */
-        board = new Board(
-            box,
-            renderer,
-            "",
-            [150, 150],
-            1.0,
-            1.0,
-            50,
-            50,
-            dimensions.width,
-            dimensions.height,
-            attr
-        );
-        this._fillBoard(board, attr, dimensions);
-        FileReader.parseString(string, board, format, true, callback);
+    //     /* User default parameters, in parse* the values in the gxt files are submitted to board */
+    //     board = new Board(
+    //         box,
+    //         renderer,
+    //         "",
+    //         [150, 150],
+    //         1.0,
+    //         1.0,
+    //         50,
+    //         50,
+    //         dimensions.width,
+    //         dimensions.height,
+    //         attr
+    //     );
+    //     this._fillBoard(board, attr, dimensions);
+    //     FileReader.parseString(string, board, format, callback);
 
-        return board;
-    }
+    //     return board;
+    // }
 
     /**
      * Delete a board and all its contents.

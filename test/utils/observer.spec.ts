@@ -1,5 +1,5 @@
 ////////////////// prototype test
-import { Observer } from "../../src/utils/observer"
+import { Observer } from "../../src/utils/observer.js"
 describe('setup up some observers', () => {
     it('basic, no message handling', () => {
         let event = 'not yet'

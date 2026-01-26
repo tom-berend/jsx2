@@ -613,7 +613,7 @@ export class WebGLRenderer {
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
-        let opacity = (el.evalVisProp('opacity')==undefined  ? 1:el.evalVisProp('opacity');
+        let opacity = (el.evalVisProp('opacity')==undefined)  ? 1:el.evalVisProp('opacity');
 
 
         let path = new THREE.LineCurve3(new THREE.Vector3(start[0], start[1], 0), new THREE.Vector3(end[0], end[1], 0))
@@ -673,7 +673,7 @@ export class WebGLRenderer {
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
-        let opacity = (el.evalVisProp('opacity')==undefined  ? 1:el.evalVisProp('opacity');
+        let opacity = (el.evalVisProp('opacity')==undefined ) ? 1:el.evalVisProp('opacity');
 
         const material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
 
