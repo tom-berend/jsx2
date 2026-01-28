@@ -1,4 +1,5 @@
-const dbug = (elem) => false// elem && elem.id === "jxgBoard1L3";
+import { watchElement } from "../jsxgraph.js"
+const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:blue;background-color:#ffc0c0`;
 
 /*
@@ -616,16 +617,16 @@ export class SVGRenderer extends AbstractRenderer {
      */
     updateTicks(ticks) {
         var i,
-        j,
-        c,
-        node,
-        x,
-        y,
-        tickStr = "",
-        len = ticks.ticks.length,
-        len2,
-        str,
-        isReal = true;
+            j,
+            c,
+            node,
+            x,
+            y,
+            tickStr = "",
+            len = ticks.ticks.length,
+            len2,
+            str,
+            isReal = true;
 
         for (i = 0; i < len; i++) {
             c = ticks.ticks[i];
@@ -885,7 +886,9 @@ export class SVGRenderer extends AbstractRenderer {
             cx, cy,
             len = t.length;
 
-        if (dbug(el)) console.log(`%c svg: transformRect(el,t)' ${el.id}`, dbugColor, el)
+        if (dbug(el))
+            console.log(`%c svg: transformRect(el,t)' ${el.id}`, dbugColor, el)
+
         if (t.length > 0 && dbug(el)) console.log(`%c svg: ${JSON.stringify(t)}`, dbugColor)
 
         if (len > 0) {
@@ -923,7 +926,7 @@ export class SVGRenderer extends AbstractRenderer {
     updateImageURL(el) {
         var url = el.eval(el.url);
 
-        console.log(url,el.url)
+        console.log(url, el.url)
         if (el._src !== url) {
             el.imgIsLoaded = false;
             el.rendNode.setAttributeNS(this.xlinkNamespace, "xlink:href", url);
@@ -1522,7 +1525,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Node} node
      * @param {JXG2.Polygon} el A JSXGraph element of type {@link JXG2.Polygon}
      */
-    updatePolygonPrim(node, el:Polygon) {
+    updatePolygonPrim(node, el: Polygon) {
         var i,
             pStr = "",
             scrCoords,
@@ -1898,18 +1901,18 @@ export class SVGRenderer extends AbstractRenderer {
 
             if (el.elementClass === OBJECT_CLASS.TEXT) {
                 if (el.evalVisProp('display') === "html") {
-                    this._setAttribute(function () {
+                    this._setAttribute(() => {
                         node.style.color = c;
                         node.style.opacity = oo;
                     }, el.visPropOld.strokecolor);
                 } else {
-                    this._setAttribute(function () {
+                    this._setAttribute(() => {
                         node.setAttributeNS(null, "style", "fill:" + c);
                         node.setAttributeNS(null, "style", "fill-opacity:" + oo);
                     }, el.visPropOld.strokecolor);
                 }
             } else {
-                this._setAttribute(function () {
+                this._setAttribute(() => {
                     node.setAttributeNS(null, "stroke", c);
                     node.setAttributeNS(null, "stroke-opacity", oo);
                 }, el.visPropOld.strokecolor);

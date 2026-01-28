@@ -1,4 +1,4 @@
-import {watchElement} from "../jsxgraph.js"
+import { watchElement } from "../jsxgraph.js"
 const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:red;background-color:lightblue`;
 /*
@@ -51,7 +51,7 @@ import { Type } from "../utils/type.js";
 import { Coords } from "./coords.js";
 import { CoordsElement } from "./coordselement.js";
 import { COORDS_BY_USER } from "../index.js";
-import { Text } from "../base/text.js"
+import { Text, createText, createLabel } from "../base/text.js"
 import { PointOptions } from "../optionInterfaces.js";
 import { Board } from "../base/board.js";
 import { LooseObject } from "../interfaces.js";
@@ -80,7 +80,7 @@ export class Point extends CoordsElement {
 
         this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
-        this.elementCreateLabel = () => this.createLabel()
+        // this.elementCreateLabel = () => this.createLabel()
         this.elementGetLabelAnchor = () => this.getLabelAnchor();
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
@@ -103,7 +103,6 @@ export class Point extends CoordsElement {
         this.coordsConstructor(coordinates, this.visProp)
 
         this.createGradient();
-        this.createLabel();
 
         if (this.evalVisProp('anchor'))
             this.element = this.board.select(this.evalVisProp('anchor'));
@@ -165,7 +164,7 @@ export class Point extends CoordsElement {
      * Updates the position of the point.
      */
     update(fromParent?: boolean): GeometryElement {
-        if (dbug(this)) console.warn(`%c Point: pointUpdate ${this.id} ${fromParent}`, dbugColor)
+        if (dbug(this)) console.warn(`%c Point: pointUpdate ${this.id} ${fromParent}`, dbugColor, this)
 
         // if (!this.needsUpdate) {
         //     console.log(`%c Point doesn't need update`, dbugColor)
@@ -174,6 +173,12 @@ export class Point extends CoordsElement {
 
 
         this.updateCoords(fromParent);
+        if (Type.exists(this.label))
+            this.label.updateCoords(fromParent)  // labels aren't special anymore, use childElements??
+
+        // for (let [id, elem] of Object.entries(this.childElements)) {
+        //     elem.elementUpdate()     // labels aren't special anymore, update here
+        // }
 
         if (this.evalVisProp('trace')) {
             this.cloneToBackground();
@@ -479,57 +484,6 @@ export class Point extends CoordsElement {
 
         return this;
     }
-
-    /**
-        * Creates a label element for this geometry element.
-        * @see JXG2.GeometryElement#addLabelToElement
-        */
-    createLabel() {
-        var attr
-
-        //tbtb - this should be in each of the coordsElements
-
-
-        attr = Options.label;
-        attr['id'] = this.id + 'Label';
-        attr['isLabel'] = true;
-        attr['anchor'] = this;
-        attr['priv'] = this.visProp['priv'];
-
-        if (dbug(this))
-            console.warn(`%c geometryElement: creating label for ${this.id})`, dbugColor)
-
-        if (this.visProp['withlabel']) {
-
-            let plainName: string;
-
-            if (typeof this.name == 'function') {       // typeguard doesn't seem to work in ternary operator
-                plainName = this.name();
-            } else {
-                plainName = this.name;
-            }
-
-            this.label = new Text(this.board, [() => this.X(), () => this.Y(), plainName], attr);
-
-            let ev_o = this.label.evalVisProp('offset');  // offset is in screen coords, must convert
-            let sx = parseFloat(ev_o[0]) / this.board.unitX;
-            let sy = parseFloat(ev_o[1]) / this.board.unitY;
-
-            this.label.addConstraint([1, () => this.X() + sx, () => this.Y() + sy])
-
-            this.label.needsUpdate = true;
-            this.label.dump = false;
-            this.label.fullUpdate();
-
-            this.hasLabel = true;
-
-            if (dbug(this.label))
-                console.warn(`%c geometryElement: new label ${this.label.id} for  ${this.id})`, dbugColor)
-
-            return this;
-        }
-
-    }
 }
 
 /**
@@ -582,14 +536,13 @@ export class Point extends CoordsElement {
  *   var fpex2_p3 = fpex2_board.create('point', [fpex2_p2, fpex2_trans]);
  * </script><pre>
  */
-export function createPoint(board, parents, attributes): Point {
-    var el, attr;
+export function createPoint(board: Board, parents, attributes): Point {
 
     // attr = Type.copyAttributes(attributes, board.options, 'point');
-    attr = Type.initVisProps(Options.point,attributes)
-    el = new Point(board, parents, attr);
+    let pointAttr = Type.initVisProps(Options.point, attributes)
+    let point = new Point(board, parents, pointAttr);
 
-    if (!el) {
+    if (!point) {
         throw new Error(
             "JSXGraph: Can't create point with parent types '" +
             typeof parents[0] +
@@ -600,7 +553,25 @@ export function createPoint(board, parents, attributes): Point {
         );
     }
 
-    return el;
+    if (point.evalVisProp('withlabel')) {
+        let labelAttr = Type.initVisProps(Options.label, attributes.label)
+
+        point.label = new Text(board, [0, 0, point.name], labelAttr);
+        point.label.id = point.id + 'label'
+
+        point.label.addConstraint([() => point.X() + .5, () => point.Y() + .5])
+        point.addChild(point.label)
+        point.label.addParents(point)
+
+        point.hasLabel = true;
+        console.warn(`%c createPoint ${point.label.id}`, dbugColor, point, point.label)
+    }
+
+    // console.log(board.objects)
+    // point.hasLabel = true;
+
+    // let label = createLabel(board,[point],{})
+    return point;
 };
 
 /**
@@ -1026,3 +997,6 @@ export function createPolePoint(board, parents, attributes) {
 
     return el;
 };
+
+
+

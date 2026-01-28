@@ -474,7 +474,7 @@ export class Env {
     static addEvent(obj: Node | Window, type: string, fn: Function, owner: Board, options: object | boolean = false) {
 
         if (dbug)
-            console.warn(`%c env:addEvent(obj:node, type: ${type}, fn:Function, owner: ${owner.id}, options:'${JSON.stringify(options)}')`, dbugColor, options)
+            console.warn(`%c env:addEvent(obj:node, type: ${type}, fn:Function, owner: ${owner.id})`, dbugColor, options)
 
 
         let callback = function () {

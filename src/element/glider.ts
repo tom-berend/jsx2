@@ -51,7 +51,7 @@ export class Glider extends Point {
 
         this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
-        this.elementCreateLabel = () => this.createLabel()
+        // this.elementCreateLabel = () => this.createLabel()
         this.elementGetLabelAnchor = () => this.getLabelAnchor();
         this.elementGetTextAnchor = () => this.getTextAnchor();
 

@@ -12,7 +12,7 @@ export function runTests(which) {
         new IndexTests()
 }
 
-export let tests = ['axis', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc']
+export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc']
 
 
 export class IndexTests {
@@ -79,6 +79,17 @@ export class IndexTests {
             let t = board.create('hatch', [l1, 3]);
         })
     }
+    text() {
+        this.boards.map((board) => {
+
+            let a = board.create('point', [1, 3])
+            board.create('text', [() => a.X(), () => a.Y() + 1, 'follows'])
+
+            board.create('text', [-3, -3, `[${a.X()}, ${a.Y()}]`])
+
+        })
+    }
+
     point() {
         this.boards.map((board) => {
             let wave = 0
@@ -87,7 +98,7 @@ export class IndexTests {
             board.create('point', [() => a.X() + 1, () => a.Y() + 1], { name: 'locked to A', strokecolor: 'blue' })
 
             let b = board.create('point', [-2, 3], { strokecolor: 'green', strokewidth: 6, linecolor: 'red', opacity: () => wave, name: () => wave.toFixed(1) })
-            setInterval(() => { (wave > 1) ? wave = 0 : wave += .1; console.log('x');board.update(b) }, 200);
+            setInterval(() => { (wave > 1) ? wave = 0 : wave += .1; board.update(b) }, 200);
 
             // Create a point using transformations
             let trans = board.create('transform', [2, 0.5], { type: 'scale' });

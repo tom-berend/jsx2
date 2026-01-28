@@ -61,6 +61,7 @@ import { CoordsElement } from "./coordselement.js";
 import { Coords } from "./coords.js";
 // import { TextOptions } from "../optionInterfaces.js";
 import { Board } from "./board.js"
+import { Point } from "./point.js"
 import { Options } from "../options.js"
 import { LooseObject } from "../interfaces.js";
 
@@ -89,7 +90,7 @@ var priv = {
  *
  */
 
-export class Text extends CoordsElement  {
+export class Text extends CoordsElement {
 
     content: string | number | Function = "";    // this is the current value to evaluate
 
@@ -145,7 +146,9 @@ export class Text extends CoordsElement  {
         this.relativeCoords = new Coords(COORDS_BY.USER, coordinates, board, true, this)  // used by transforms
 
         this.element = this.evalVisProp('anchor');
-        this.addAnchor(this.coords.scrCoords, this.evalVisProp('islabel'))
+
+        // don't need since we use createPoint
+        // this.addAnchor(this.coords.scrCoords, this.evalVisProp('islabel'))
 
 
 
@@ -156,10 +159,9 @@ export class Text extends CoordsElement  {
             this.visProp['autoposition'] = true;    // always lower case
         }
 
-        this.coordsConstructor(coordinates, this.evalVisProp('islabel'));
+        // this.coordsConstructor(coordinates, this.evalVisProp('islabel'));
 
         this.orgText = this.content; // tbtb - recalculate content from orgText in updateText()
-
 
 
         this.rendNode = this.board.renderer.drawText(this);
@@ -758,9 +760,9 @@ export class Text extends CoordsElement  {
     update(fromParent: boolean = false) {
         if (dbug(this)) console.warn(`%c text: update(fromParent: ${fromParent}) ${this.id}`, dbugColor)
 
-        if (!this.needsUpdate) {
-            return this;
-        }
+        // if (!this.needsUpdate) {     // tbtb don't skip this step
+        //     return this;
+        // }
 
         this.updateCoords(fromParent);
         this.updateText();
@@ -816,7 +818,8 @@ export class Text extends CoordsElement  {
             // this.board.updateQuality === this.board.BOARD_QUALITY_HIGH &&
             this.evalVisProp('autoposition')
         ) {
-            this.setAutoPosition().updateConstraint();
+            this.setAutoPosition()
+            this.updateConstraint();
         }
         return this.updateRendererGeneric("updateText");
     }
@@ -2184,18 +2187,57 @@ export function createText(board: Board, parents: any[], attributes: LooseObject
  * @constructor
  * @type JXG.Text
  */
-//  See element.js#createLabel
 
-// tbtb - should become a stub class like....
-// export class Label extends Text {
-//     constructor(board: Board, coordinates: number[], attributes: TextOptions, content: string | Function) {
-//         super(board, coordinates, attributes, content)
+/**
+    * Creates a label element for this geometry element.
+    * @see JXG2.GeometryElement#addLabelToElement
+    */
+export function createLabel(board: Board, parents: [Point], attributes) {
+    var attr
 
-//         this.elType = "text";
-//         this.visProp = Type.merge(this.visProp, Options.text)
-//         this.id = board.setId(this,'label')
-//     }
-// }
+    let p = parents[0] as Point // just easier to say
+
+    attr = Options.label;
+    attr['id'] = p.id + 'Label';
+    attr['isLabel'] = true;
+    attr['anchor'] = p;
+    attr['priv'] = p.visProp['priv'];
+
+    if (dbug(this))
+        console.warn(`%c geometryElement: creating label for ${p.id})`, dbugColor)
+
+    if (p.visProp['withlabel']) {
+
+        let plainName: string;
+
+        if (typeof p.name == 'function') {       // typeguard doesn't seem to work in ternary operator
+            plainName = p.name();
+        } else {
+            plainName = p.name;
+        }
+
+        let label = new Text(board, [0,0 , plainName], {strokecolor:'yellow'})//attributes);
+
+        let ev_o = label.evalVisProp('offset');  // offset is in screen coords, must convert
+        let sx = parseFloat(ev_o[0]) / p.board.unitX;
+        let sy = parseFloat(ev_o[1]) / p.board.unitY;
+
+        label.addConstraint([() => p.X() + sx, () => p.Y() + sy])
+
+        label.needsUpdate = true;
+        label.dump = false;
+        // label.fullUpdate();
+
+
+        if (dbug(p.label))
+            console.warn(`%c geometryElement: new label ${p.label.id} for  ${p.id})`, dbugColor)
+
+        return label;
+    }
+
+}
+
+
 
 /**
  * [[x,y], [w px, h px], [range]
@@ -2278,5 +2320,7 @@ export class HTMLSlider extends Text {
 
 
 }
+
+
 
 // JXG_registerElement("text", createText);

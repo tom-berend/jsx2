@@ -45,7 +45,7 @@ import { Options } from "../options.js";
 import { EventEmitter } from "../utils/event.js";
 import { Color } from "../utils/color.js";
 import { Type } from "../utils/type.js";
-import { LooseObject } from "../interfaces.js";
+import { ElementObject, LooseObject } from "../interfaces.js";
 import { Transformation } from "./transformation.js";
 import { Text } from "./text.js";
 import { Point } from "./point.js";
@@ -75,13 +75,13 @@ export interface GeometryElementInterface {
  */
 export abstract class GeometryElement extends Events {
 
-     /**
-     * When used as a glider this member stores the object, where to glide on.
-     * To set the object to glide on use the method
-     * {@link JXG.Point#makeGlider} and DO NOT set this property directly
-     * as it will break the dependency tree.
-     * @type JXG.GeometryElement
-     */
+    /**
+    * When used as a glider this member stores the object, where to glide on.
+    * To set the object to glide on use the method
+    * {@link JXG.Point#makeGlider} and DO NOT set this property directly
+    * as it will break the dependency tree.
+    * @type JXG.GeometryElement
+    */
     slideObject: GeometryElement;
 
     /**
@@ -113,7 +113,8 @@ export abstract class GeometryElement extends Events {
      * Stores all dependent objects to be updated when this point is moved.
      * @type Object
      */
-    childElements: LooseObject = {};
+    childElements: {[id: string]:GeometryElement} = {};
+
 
     /**
      * If element has a label subelement then this property will be set to true.
@@ -751,6 +752,7 @@ export abstract class GeometryElement extends Events {
             this.otype !== OBJECT_TYPE.GLIDER
         );
     }
+
 
     /**
      * Translates the object by <tt>(x, y)</tt>. In case the element is defined by points, the defining points are

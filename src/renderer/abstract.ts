@@ -1060,8 +1060,8 @@ export abstract class AbstractRenderer {
     drawText(el): HTMLElement {
         var node: HTMLElement, z, level, ev_visible;
 
-        if (dbug(el))
-            console.warn(`%c abstract: drawText(${el.id})`, dbugColor)
+        // if (dbug(el))
+            console.warn(`%c abstract: drawText(${el.id})`, dbugColor,el)
 
         if (this.container !== null) {
             if (
@@ -1139,7 +1139,7 @@ export abstract class AbstractRenderer {
             to_h, to_v;
 
         if (dbug(el))
-            console.warn(`%c abstract: updateText(${el.id} ${JSON.stringify(el.coords.usrCoords)})`, dbugColor)
+            console.warn(`%c abstract: updateText(${el.id} ${JSON.stringify(el.coords.usrCoords)})`, dbugColor,el)
 
         if (el.visPropCalc.visible) {
             this.updateTextStyle(el, false);
@@ -1174,6 +1174,7 @@ export abstract class AbstractRenderer {
                     //}
 
                     if (el.visPropOld.left !== ax + v) {
+
                         if (ax === "right") {
                             el.rendNode.style.right = v + "px";
                             el.rendNode.style.left = "auto";
@@ -1226,6 +1227,7 @@ export abstract class AbstractRenderer {
 
                 // Set the content
                 if (el.htmlStr !== content) {
+
                     try {
                         if (el.otype === OBJECT_TYPE.BUTTON) {
                             el.rendNodeButton.innerHTML = content;
@@ -1332,6 +1334,7 @@ export abstract class AbstractRenderer {
                         ')';
                     el.rendNode.style['transform-origin'] = to_h + ' ' + to_v;
                 }
+
                 this.transformRect(el, el.transformations);
             } else {
                 this.updateInternalText(el);
@@ -1515,7 +1518,6 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#drawImage
      */
     updateImage(el: Image) {
-        console.log(el)
         this.updateRectPrim(
             el.rendNode,
             el.coords.scrCoords[1],

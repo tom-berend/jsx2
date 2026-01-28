@@ -67,7 +67,7 @@ import { Dim } from '../interfaces.js'
 
 // import {GeometryElement} from './element.js';
 import { Text } from '../base/text.js'
-import { Point, createPolePoint, createIntersectionPoint, createOtherIntersectionPoint } from '../base/point.js'
+import { createPoint, createPolePoint, createIntersectionPoint, createOtherIntersectionPoint } from '../base/point.js'
 import { Checkbox } from "../element/checkbox.js"
 import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis, createPolarLine, createTangentTo } from '../base/line.js'
 import { createCircle } from './circle.js';
@@ -682,11 +682,6 @@ export class Board extends Events {
     methodMap
     hasGrid
 
-
-
-    // because we send updates to axis, etc
-    elementUpdate = () => this.update();
-    elementUpdateRenderer = () => this.updateRenderer();
 
 
     constructor(
@@ -3327,6 +3322,8 @@ export class Board extends Events {
             touchTargets,
             updateNeeded = false;
 
+        console.warn(`%c pointerUpListener`, dbugColor, this.touches)
+
         this.triggerEventHandlers(['touchend', 'up', 'pointerup', 'MSPointerUp'], [evt]);
         this.displayInfobox(false);
 
@@ -3346,7 +3343,7 @@ export class Board extends Events {
         }
 
         this.originMoveEnd();
-        this.elementUpdate();
+        this.update();
 
         // selection
         if (this.selectingMode) {
@@ -3818,6 +3815,9 @@ export class Board extends Events {
             touchTargets,
             updateNeeded = false;
 
+
+        console.warn('%c touchEndListener', dbugColor)
+
         this.triggerEventHandlers(['touchend', 'up'], [evt]);
         this.displayInfobox(false);
 
@@ -3945,6 +3945,8 @@ export class Board extends Events {
             this.updateQuality = this.BOARD_QUALITY_HIGH;
 
             this.originMoveEnd();
+            console.warn('update needed', updateNeeded)
+
             if (updateNeeded) {
                 this.update();
             }
@@ -5959,19 +5961,13 @@ export class Board extends Events {
         var el, pEl;
         //var childId, i = 0;
 
-        /*
-        if (Type.exists(drag)) {
-            for (el = 0; el < this.objectsList.length; el++) {
-                pEl = this.objectsList[el];
-                if (pEl.id === drag.id) {
-                    i = el;
-                    break;
-                }
-            }
-        }
-        */
         for (el = 0; el < this.objectsList.length; el++) {
             pEl = this.objectsList[el];
+
+        if (dbug(pEl))
+            console.warn(`%c board: ${this.id} updateElements()`, dbugColor)
+
+
             if (this.needsFullUpdate && pEl.elementClass === OBJECT_CLASS.TEXT) {
                 pEl.updateSize();
             }
@@ -5990,6 +5986,7 @@ export class Board extends Events {
                 this.groups[el].elementUpdate(dragId);
             }
         }
+
 
         return this;
     }
@@ -6238,59 +6235,69 @@ export class Board extends Events {
      * @param {JXG2.GeometryElement} [drag] Element that caused the update.
      * @returns {JXG2.Board} Reference to the board
      */
-    update(dragID?: string) {
+    update(dragID?: string | GeometryElement) {
         var i, len, b, insert, storeActiveEl;
 
-        if (this.inUpdate || this.isSuspendedUpdate) {
-            return this;
-        }
-        this.inUpdate = true;
-
-        if (
-            this.attr.minimizereflow === 'all' &&
-            this.containerObj &&
-            this.renderer.type !== 'vml'
-        ) {
-            storeActiveEl = this.document.activeElement; // Store focus element
-            insert = this.renderer.removeToInsertLater(this.containerObj);
+        if (typeof dragID === 'object') {
+            console.warn(`%cBoard update(dragID should not be an object ${dragID.id}'`, dbugColor, dragID)
+            dragID = dragID.id
         }
 
-        if (this.attr.minimizereflow === 'svg' && this.renderer.type === 'svg') {
-            storeActiveEl = this.document.activeElement;
-            insert = this.renderer.removeToInsertLater(this.renderer.svgRoot);
-        }
+        if (typeof dragID === 'string') {     // just a typeguard, can remove this
+            console.warn(`%cBoard update(dragID = '${dragID})'`, dbugColor, dragID)
 
-        if (dragID !== undefined)
-            this.prepareUpdate(dragID).updateElements(dragID).updateConditions();
-        else
-            console.warn(`Board.update() by ${this.id} without specifying element`)
 
-        this.renderer.suspendRedraw();
-        this.updateRenderer();
-        this.renderer.unsuspendRedraw();
-        this.triggerEventHandlers(['update'], []);
-
-        if (insert) {
-            insert();
-            storeActiveEl.focus(); // Restore focus element
-        };
-
-        // To resolve dependencies between boards
-        // for (var board in JXG2.boards) {
-        len = this.dependentBoards.length;
-        for (i = 0; i < len; i++) {
-            b = this.dependentBoards[i];
-            if (Type.exists(b) && b !== this) {
-                b.updateQuality = this.updateQuality;
-                b.prepareUpdate().updateElements().updateConditions();
-                b.renderer.suspendRedraw(this);
-                b.updateRenderer();
-                b.renderer.unsuspendRedraw();
-                b.triggerEventHandlers(['update'], []);
+            if (this.inUpdate || this.isSuspendedUpdate) {
+                return this;
             }
-        }
+            this.inUpdate = true;
 
-        this.inUpdate = false;
+            if (
+                this.attr.minimizereflow === 'all' &&
+                this.containerObj &&
+                this.renderer.type !== 'vml'
+            ) {
+                storeActiveEl = this.document.activeElement; // Store focus element
+                insert = this.renderer.removeToInsertLater(this.containerObj);
+            }
+
+            if (this.attr.minimizereflow === 'svg' && this.renderer.type === 'svg') {
+                storeActiveEl = this.document.activeElement;
+                insert = this.renderer.removeToInsertLater(this.renderer.svgRoot);
+            }
+
+            if (dragID !== undefined)
+                this.prepareUpdate(dragID).updateElements(dragID).updateConditions();
+            else
+                console.warn(`Board.update() by ${this.id} without specifying element`)
+
+            this.renderer.suspendRedraw();
+            this.updateRenderer();
+            this.renderer.unsuspendRedraw();
+            this.triggerEventHandlers(['update'], []);
+
+            if (insert) {
+                insert();
+                storeActiveEl.focus(); // Restore focus element
+            };
+
+            // To resolve dependencies between boards
+            // for (var board in JXG2.boards) {
+            len = this.dependentBoards.length;
+            for (i = 0; i < len; i++) {
+                b = this.dependentBoards[i];
+                if (Type.exists(b) && b !== this) {
+                    b.updateQuality = this.updateQuality;
+                    b.prepareUpdate().updateElements().updateConditions();
+                    b.renderer.suspendRedraw(this);
+                    b.updateRenderer();
+                    b.renderer.unsuspendRedraw();
+                    b.triggerEventHandlers(['update'], []);
+                }
+            }
+
+            this.inUpdate = false;
+        }
         return this;
     }
 
@@ -6396,7 +6403,7 @@ export class Board extends Events {
         switch (elementType.toLowerCase()) {
             case 'text': el = new Text(this, parents, attributes); break;
 
-            case 'point': el = new Point(this, parents, attributes); break;
+            case 'point': el = createPoint(this, parents, attributes); break;
             case 'glider': el = createGlider(this, parents, attributes); break;
             case 'createpolepoint': el = createPolePoint(this, parent, attributes); break;
             case 'createIntersectionpoint': el = createIntersectionPoint(this, parent, attributes); break;
@@ -6476,15 +6483,6 @@ export class Board extends Events {
             el.fullUpdate();
         }
         return el;
-    }
-
-    /**
-     * Deprecated name for {@link JXG2.Board.create}.
-     * @deprecated
-     */
-    createElement() {
-        Env.deprecated('Board.createElement()', 'Board.create()');
-        return this.create.apply(this, arguments);
     }
 
     /**
@@ -7262,7 +7260,7 @@ export class Board extends Events {
      *   return true;
      * });
      */
-    select(str, onlyByIdOrName = true) {
+    select(str, onlyByIdOrName = true): GeometryElement | null {
 
         let flist,
             olist,
@@ -7274,10 +7272,10 @@ export class Board extends Events {
             return null;
         }
 
-        // if (typeof str === 'object') {
-        //     console.warn('ERROR - wrong type sent to board.select()', str)
-        //     str = (str as GeometryElement).id
-        // }
+        if (typeof str === 'object') {
+            console.warn('ERROR - wrong type sent to board.select()', str)
+            str = (str as GeometryElement).id
+        }
 
         // It's a string, most likely an id or a name.
         if (typeof str == 'string' && str !== '') {

@@ -89,6 +89,7 @@ export abstract class CoordsElement extends GeometryElement {
     initialCoords: Coords
     actualCoords: Coords
 
+
     /**
      * Relative position on a slide element (line, circle, curve) if element is a glider on this element.
      * @type Number
@@ -350,8 +351,8 @@ export abstract class CoordsElement extends GeometryElement {
             this.board.renderer.display(this, this.visPropCalc.visible);
             this.visPropOld.visible = this.visPropCalc.visible;
 
-            if (this.hasLabel) {
-                this.board.renderer.display(this.label, this.label.visPropCalc.visible);
+            if (this.hasLabel && Type.exists(this.label) && Type.exists(this.label['visPropCalc'])) {
+                this.board.renderer.display(this.label, this.label.visPropCalc['visible']);
             }
         }
 
@@ -881,10 +882,10 @@ export abstract class CoordsElement extends GeometryElement {
         let newfuncs: Function[] = []
         let what = ["X", "Y"]
         let makeConstFunction = (z) => () => z
-        let makeSliderFunction = (a) => () => {console.error('missing');return a.Value()}
+        let makeSliderFunction = (a: Glider) => () => a.Value()
 
-        if (dbug(this))
-            console.warn(`%c coordselements: addConstraint( ${this.id} terms: ${JSON.stringify(terms)} )`, dbugColor)
+        // if (dbug(this))
+        console.warn(`%c coordselements: addConstraint( ${this.id} terms(${terms.length}): )`, dbugColor, terms)
 
 
         if (this.elementClass === OBJECT_CLASS.POINT) {
@@ -896,26 +897,14 @@ export abstract class CoordsElement extends GeometryElement {
         for (i = 0; i < terms.length; i++) {
             v = terms[i];
 
-            //tbtb - if (Type.isString(v)) {
-            //     // Convert GEONExT syntax into JavaScript syntax
-            //     //t  = JXG.GeonextParser.geonext2JS(v, this.board);
-            //     //newfuncs[i] = new Function('','return ' + t + ';');
-            //     //v = GeonextParser.replaceNameById(v, this.board);
-            //     newfuncs[i] = Type.snippet(v, true, null, true);
-            //     this.addParentsFromJCFunctions([newfuncs[i]]);
-
-            //     // Store original term as 'Xjc' or 'Yjc'
-            //     if (terms.length === 2) {
-            //         this[what[i] + "jc"] = terms[i];
-            //     }
-            // } else
             if (Type.isFunction(v)) {
                 newfuncs[i] = v;
             } else if (Type.isNumber(v)) {
                 newfuncs[i] = makeConstFunction(v);
-            } else if (Type.isObject(v) && Type.isFunction(v.Value)) {
-                // Slider
+            } else if (Type.isObject(v) && Type.isFunction(v.Value)) {           // Glider
                 newfuncs[i] = makeSliderFunction(v);
+            } else {
+                console.error('should never get here', v)
             }
 
             // newfuncs[i].origin = v;  tbtb - what??
@@ -943,13 +932,13 @@ export abstract class CoordsElement extends GeometryElement {
             // tbtb - what is .origin ????  where does it belong??
             // this.addParents([newfuncs[0].origin, newfuncs[1].origin]);
 
-            // this.updateConstraint = function () {
-            //     this.coords.setCoordinates(COORDS_BY.USER, [
-            //         this.XEval(),
-            //         this.YEval()
-            //     ]);
-            //     return this;
-            // };
+            this.updateConstraint = () => {
+                this.coords.setCoordinates(COORDS_BY.USER, [
+                    this.XEval(),
+                    this.YEval()
+                ]);
+                return this;
+            };
         } else {
             // Homogeneous coordinates
             this.ZEval = newfuncs[0];
@@ -958,14 +947,15 @@ export abstract class CoordsElement extends GeometryElement {
 
             // this.addParents([newfuncs[0].origin, newfuncs[1].origin, newfuncs[2].origin]);
 
-            // this.updateConstraint = function () {
-            //     this.coords.setCoordinates(COORDS_BY.USER, [
-            //         this.ZEval(),
-            //         this.XEval(),
-            //         this.YEval()
-            //     ]);
-            //     return this;
-            // };
+            this.updateConstraint = function () {
+
+                this.coords.setCoordinates(COORDS_BY.USER, [
+                    this.ZEval(),
+                    this.XEval(),
+                    this.YEval()
+                ]);
+                return this;
+            };
         }
         this.isConstrained = true;
 
@@ -1058,8 +1048,9 @@ export abstract class CoordsElement extends GeometryElement {
 
 
         if (Type.exists(this.element) && Type.exists(this.element.id)) {
-            // console.log(this.element.id, )
+            console.log(this.element.id, this.board.objects)
             let remote = this.board.select(this.element.id)
+            console.log(remote)
             if (remote !== null)
                 anchor = remote.elementGetTextAnchor();
         } else {
@@ -1413,10 +1404,10 @@ export abstract class CoordsElement extends GeometryElement {
      *}
      *</script><pre>
      */
-    moveTo(where, time=0, options:LooseObject={}) {
+    moveTo(where, time = 0, options: LooseObject = {}) {
 
-        if(!Type.exists(options['callback']))
-            options['callback'] = ()=>{}
+        if (!Type.exists(options['callback']))
+            options['callback'] = () => { }
 
         where = new Coords(COORDS_BY.USER, where, this.board, true, this);
 
@@ -1814,7 +1805,7 @@ export abstract class CoordsElement extends GeometryElement {
             if (direction > 0) {
                 newX = ((this.slideObject as Line).maxX() - (this.slideObject as Line).minX()) * this._intervalCount / stepCount + (this.slideObject as Curve).minX();
             } else {
-                newX = -((this.slideObject as Line).maxX() - (this.slideObject as Line).minX()) * this._intervalCount / stepCount + (this .slideObject as Curve).maxX();
+                newX = -((this.slideObject as Line).maxX() - (this.slideObject as Line).minX()) * this._intervalCount / stepCount + (this.slideObject as Curve).maxX();
             }
             this.coords.setCoordinates(COORDS_BY.USER, [(this.slideObject as Line).X(newX), (this.slideObject as Line).Y(newX)]);
 
@@ -1955,7 +1946,7 @@ export abstract class CoordsElement extends GeometryElement {
                 if (Type.exists(attr1['slideobject'])) {
                     // tbtb - attr1 is never a glider, so always false
                     throw new Error('huh?')
-                //     this.makeGlider(attr1.slideobject);
+                    //     this.makeGlider(attr1.slideobject);
                 } else {
                     // Free element
                     this.baseElement = this;
