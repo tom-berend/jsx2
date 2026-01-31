@@ -45,6 +45,8 @@ import { Options } from "../options.js";
 import { JSXMath } from "../math/math.js";
 import { Geometry } from "../math/geometry.js";
 import { Numerics } from "../math/numerics.js";
+import { Circle } from "../base/circle.js";
+import { Polygon } from "../base/polygon.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { GeometryElement } from "./element.js";
 import { Type } from "../utils/type.js";
@@ -418,8 +420,8 @@ export class Point extends CoordsElement {
      * </script><pre>
      *
      */
-    isOn(el, tol) {
-        var arr, crds;
+    isOn(el: GeometryElement, tol: number): boolean {
+        let arr: number[]  // usrCoords
 
         tol = tol || JSXMath.eps;
 
@@ -444,18 +446,20 @@ export class Point extends CoordsElement {
             } else {
                 return Geometry.distPointLine(this.coords.usrCoords, el.stdform) < tol;
             }
+
         } else if (el.elementClass === OBJECT_CLASS.CIRCLE) {
             if (el.evalVisProp('hasinnerpoints')) {
-                return this.Dist(el.center) < el.Radius() + tol;
+                return this.Dist(el.center) < (el as Circle).Radius() + tol;
             }
-            return Math.abs(this.Dist(el.center) - el.Radius()) < tol;
+            return Math.abs(this.Dist(el.center) - (el as Circle).Radius()) < tol;
         } else if (el.elementClass === OBJECT_CLASS.CURVE) {
-            crds = Geometry.projectPointToCurve(this, el, this.board)[0];
+            let crds = Geometry.projectPointToCurve(this, el, this.board)[0];
             return Geometry.distance(this.coords.usrCoords, crds.usrCoords, 3) < tol;
-        } else if (el.type === OBJECT_TYPE.POLYGON) {
+
+        } else if (el.otype === OBJECT_TYPE.POLYGON) {
             if (el.evalVisProp('hasinnerpoints')) {
                 if (
-                    el.pnpoly(
+                    (el as Polygon).pnpoly(
                         this.coords.usrCoords[1],
                         this.coords.usrCoords[2],
                         COORDS_BY.USER
@@ -464,11 +468,12 @@ export class Point extends CoordsElement {
                     return true;
                 }
             }
-            arr = Geometry.projectCoordsToPolygon(this.coords.usrCoords, el);
+            arr = Geometry.projectCoordsToPolygon(this.coords.usrCoords, (el as Polygon));
             return Geometry.distance(this.coords.usrCoords, arr, 3) < tol;
-        } else if (el.type === OBJECT_TYPE.TURTLE) {
-            crds = Geometry.projectPointToTurtle(this, el, this.board);
-            return Geometry.distance(this.coords.usrCoords, crds.usrCoords, 3) < tol;
+
+            // } else if (el.type === OBJECT_TYPE.TURTLE) {
+            //     crds = Geometry.projectPointToTurtle(this, el, this.board);
+            //     return Geometry.distance(this.coords.usrCoords, crds.usrCoords, 3) < tol;
         }
 
         // TODO: Arc, Sector

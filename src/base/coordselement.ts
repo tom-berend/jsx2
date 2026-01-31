@@ -841,7 +841,7 @@ export abstract class CoordsElement extends GeometryElement {
         }
 
         // A free point does not depend on anything. Remove all ancestors.
-        this.ancestors = {}; // only remove the reference
+        this.groupAncestors = {}; // only remove the reference
         this.parents = [];
 
         // Completely remove all slideObjects of the element

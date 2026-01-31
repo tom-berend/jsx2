@@ -1834,9 +1834,9 @@ export class Axis extends Line {
         this._point1UsrCoordsOrg = this.point1.coords.usrCoords.slice();
         this._point2UsrCoordsOrg = this.point2.coords.usrCoords.slice();
 
-        for (let ancestor in this.ancestors) {
-            if (this.ancestors.hasOwnProperty(ancestor)) {
-                this.ancestors[ancestor].type = OBJECT_TYPE.AXISPOINT;
+        for (let ancestor in this.groupAncestors) {
+            if (this.groupAncestors.hasOwnProperty(ancestor)) {
+                this.groupAncestors[ancestor].type = OBJECT_TYPE.AXISPOINT;
             }
         }
 

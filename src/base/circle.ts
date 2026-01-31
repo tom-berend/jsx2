@@ -1,4 +1,4 @@
-import {watchElement} from "../jsxgraph.js"
+import { watchElement } from "../jsxgraph.js"
 const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:black;background-color:#80c0ff`;
 
@@ -42,7 +42,6 @@ const dbugColor = `color:black;background-color:#80c0ff`;
  * a board.
  */
 
-import { JXG2 } from "../jxg.js";
 import { Options } from "../options.js";
 import { GeometryElement } from "./element.js";
 import { Coords } from "../base/coords.js";
@@ -50,7 +49,10 @@ import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
 // import GeonextParser from "../parser/geonext.js";
 import { Type } from "../utils/type.js";
-import { Point} from "../base/point.js";
+import { Point } from "../base/point.js";
+import { Env } from "../utils/env.js";
+import { createEllipse } from "../element/conic.js";
+import { createCircumcircle } from '../element/composition.js';
 
 /**
  * A circle consists of all points with a given distance from one point. This point is called center, the distance is called radius.
@@ -603,7 +605,7 @@ export class Circle extends GeometryElement {
      * @deprecated
      */
     getRadius() {
-        JXG2.deprecated("Circle.getRadius()", "Circle.Radius()");
+        Env.deprecated("Circle.getRadius()", "Circle.Radius()");
         return this.Radius();
     }
 
@@ -994,7 +996,7 @@ export function createCircle(board, parents, attributes) {
         //     el = JXG2.createCircle(board, [obj.center, function() { return obj.Radius(); }], attr);
         // } else {
         // Create a conic element from a circle and a projective transformation
-        el = JXG2.createEllipse(
+        el = createEllipse(
             board,
             [
                 obj.center,
@@ -1067,14 +1069,8 @@ export function createCircle(board, parents, attributes) {
         Type.isPoint(p[2])
     ) {
         // Circle through three points
-        // Check if circumcircle element is available
-        if (JXG2.elements['circumcircle']) {
-            el = JXG2.elements['circumcircle'](board, p, attr);
-        } else {
-            throw new Error(
-                "JSXGraph: Can't create circle with three points. Please include the circumcircle element (element/composition)."
-            );
-        }
+        el = createCircumcircle(board, p, attr);
+
     } else {
         throw new Error(
             "JSXGraph: Can't create circle with parent types '" +

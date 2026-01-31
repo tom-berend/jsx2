@@ -84,6 +84,8 @@ import { createPolygon, createRegularPolygon, createPolygonalChain, createParall
 import { createGlider } from '../element/glider.js';
 import { createArc, createMajorArc, createMinorArc, createCircumcircleArc, createSemicircle } from "../element/arc.js";
 import { createSector, createCircumcircleSector, createMinorSector, createMajorSector, createAngle, createNonreflexAngle, createReflexAngle } from '../element/sector.js';
+import { createEllipse, createParabola, createHyperbola, createConic } from "../element/conic.js";
+import { createCircumcircle } from '../element/composition.js';
 
 /**
  * Constructs a new Board object.
@@ -5638,7 +5640,7 @@ export class Board extends Events {
                             )
                         ) {
                             delete this.objects[el].childElements[object.id];
-                            delete this.objects[el].descendants[object.id];
+                            delete this.objects[el].groupDescendants[object.id];
                         }
                     }
                 }
@@ -5964,8 +5966,8 @@ export class Board extends Events {
         for (el = 0; el < this.objectsList.length; el++) {
             pEl = this.objectsList[el];
 
-        if (dbug(pEl))
-            console.warn(`%c board: ${this.id} updateElements()`, dbugColor)
+            if (dbug(pEl))
+                console.warn(`%c board: ${this.id} updateElements()`, dbugColor)
 
 
             if (this.needsFullUpdate && pEl.elementClass === OBJECT_CLASS.TEXT) {
@@ -6239,7 +6241,8 @@ export class Board extends Events {
         var i, len, b, insert, storeActiveEl;
 
         if (typeof dragID === 'object') {
-            console.warn(`%cBoard update(dragID should not be an object ${dragID.id}'`, dbugColor, dragID)
+            if (dbug(dragID.id))
+                console.warn(`%cBoard update(dragID should not be an object ${dragID.id}'`, dbugColor, dragID)
             dragID = dragID.id
         }
 

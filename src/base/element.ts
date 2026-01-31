@@ -166,16 +166,18 @@ export abstract class GeometryElement extends Events {
     baseElement = null;
 
     /**
-     * Elements depending on this element are stored here.
+     * Elements depending on this element are stored here.  Descendants and Ancestors are the
+     * relationships of GeometryElements in a GROUP.
+     * the
      * @type Object
      */
-    descendants: LooseObject = {};
+    groupDescendants: LooseObject = {};
 
     /**
      * Elements on which this element depends on are stored here.
      * @type Object
      */
-    ancestors: LooseObject = {};
+    groupAncestors: LooseObject = {};
 
     /**
      * Ids of elements on which this element depends directly are stored here.
@@ -500,51 +502,31 @@ export abstract class GeometryElement extends Events {
     addChild(obj: GeometryElement): GeometryElement {
 
         this.childElements[obj.id] = obj;
-        this.addDescendants(obj);  // TODO TomBerend removed this. Check if it is possible.
-        obj.ancestors[this.id] = this;
+        obj.groupAncestors[this.id] = this;
 
-        for (let el in this.descendants) {
-            if (this.descendants.hasOwnProperty(el)) {
-                this.descendants[el].ancestors[this.id] = this;
+        for (let el in this.groupDescendants) {
+            if (this.groupDescendants.hasOwnProperty(el)) {
+                this.groupDescendants[el].ancestors[this.id] = this;
 
-                for (let el2 in this.ancestors) {
-                    if (this.ancestors.hasOwnProperty(el2)) {
-                        this.descendants[el].ancestors[this.ancestors[el2].id] =
-                            this.ancestors[el2];
+                for (let el2 in this.groupAncestors) {
+                    if (this.groupAncestors.hasOwnProperty(el2)) {
+                        this.groupDescendants[el].ancestors[this.groupAncestors[el2].id] =
+                            this.groupAncestors[el2];
                     }
                 }
             }
         }
 
-        for (let el in this.ancestors) {
-            if (this.ancestors.hasOwnProperty(el)) {
-                for (let el2 in this.descendants) {
-                    if (this.descendants.hasOwnProperty(el2)) {
-                        this.ancestors[el].descendants[this.descendants[el2].id] =
-                            this.descendants[el2];
+        for (let el in this.groupAncestors) {
+            if (this.groupAncestors.hasOwnProperty(el)) {
+                for (let el2 in this.groupDescendants) {
+                    if (this.groupDescendants.hasOwnProperty(el2)) {
+                        this.groupAncestors[el].groupDescendants[this.groupDescendants[el2].id] =
+                            this.groupDescendants[el2];
                     }
                 }
             }
         }
-        return this;
-    }
-
-    /**
-     * @param {JXG2.GeometryElement} obj The element that is to be added to the descendants list.
-     * @private
-     * @return this
-    */
-    // Adds the given object to the descendants list of this object and all its child objects.
-    addDescendants(obj) {
-        var el;
-
-        this.descendants[obj.id] = obj;
-        // tbtb need to unravel childElements vs descendants
-        //tbtb infinite loop?? // for (el in obj.childElements) {
-        //tbtb infinite loop?? //     if (obj.childElements.hasOwnProperty(el)) {
-        //tbtb infinite loop?? //         this.addDescendants(obj.childElements[el]);
-        //tbtb infinite loop?? //     }
-        //tbtb infinite loop?? // }
         return this;
     }
 
@@ -691,7 +673,7 @@ export abstract class GeometryElement extends Events {
     removeDescendants(obj) {
         var el;
 
-        delete this.descendants[obj.id];
+        delete this.groupDescendants[obj.id];
         for (el in obj.childElements) {
             if (obj.childElements.hasOwnProperty(el)) {
                 this.removeDescendants(obj.childElements[el]);
@@ -1761,8 +1743,8 @@ export abstract class GeometryElement extends Events {
         // val is not of type function
 
         if (val === 'inherit') {
-            for (e in this.descendants) {
-                o = this.descendants[e];
+            for (e in this.groupDescendants) {
+                o = this.groupDescendants[e];
                 // Check if this is in inherits of one of its descendant
                 found = false;
                 for (let i = 0; i < o.inherits.length; i++) {

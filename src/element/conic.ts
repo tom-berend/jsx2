@@ -36,7 +36,6 @@
  * @fileoverview In this file the conic sections defined.
  */
 
-import { JXG2 } from "../jxg.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
@@ -44,6 +43,7 @@ import { JSXMath } from "../math/math.js";
 import { Numerics } from "../math/numerics.js";
 import { Geometry } from "../math/geometry.js";
 import { Type } from "../utils/type.js";
+import {Board} from "../base/board.js";
 
 /**
  * @class An ellipse is a special conic section given by two points (the foci) and a third point on the ellipse or
@@ -108,7 +108,7 @@ import { Type } from "../utils/type.js";
  *
  *
  */
-JXG2.createEllipse = function (board, parents, attributes) {
+export function createEllipse (board, parents, attributes) {
     var polarForm,
         curve,
         M,
@@ -359,7 +359,7 @@ JXG2.createEllipse = function (board, parents, attributes) {
  * })();
  * </script><pre>
  */
-JXG2.createHyperbola = function (board, parents, attributes) {
+ export function createHyperbola (board:Board, parents, attributes) {
     var polarForm,
         curve,
         M,
@@ -595,7 +595,7 @@ JXG2.createHyperbola = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG2.createParabola = function (board, parents, attributes) {
+export function createParabola (board, parents, attributes) {
     var polarForm,
         curve,
         M,
@@ -823,7 +823,7 @@ JXG2.createParabola = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG2.createConic = function (board, parents, attributes) {
+export function createConic (board, parents, attributes) {
     var polarForm,
         curve,
         fitConic,
@@ -1153,10 +1153,10 @@ JXG2.createConic = function (board, parents, attributes) {
     return curve;
 };
 
-JXG2.registerElement("ellipse", JXG2.createEllipse);
-JXG2.registerElement("hyperbola", JXG2.createHyperbola);
-JXG2.registerElement("parabola", JXG2.createParabola);
-JXG2.registerElement("conic", JXG2.createConic);
+// JXG2.registerElement("ellipse", JXG2.createEllipse);
+// JXG2.registerElement("hyperbola", JXG2.createHyperbola);
+// JXG2.registerElement("parabola", JXG2.createParabola);
+// JXG2.registerElement("conic", JXG2.createConic);
 
 // export default {
 //     createEllipse: JXG2.createEllipse,

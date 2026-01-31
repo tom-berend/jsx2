@@ -1646,7 +1646,7 @@ JXG2.createIncenter = function (board, parents, attributes) {
  *   var ccex1_cc1 = ccex1_board.create('circumcircle', [ccex1_p1, ccex1_p2, ccex1_p3]);
  * </script><pre>
  */
-JXG2.createCircumcircle = function (board, parents, attributes) {
+export function createCircumcircle (board, parents, attributes) {
     var p, c, attr, i;
 
     parents = Type.providePoints(board, parents, attributes, 'point');

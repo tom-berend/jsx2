@@ -49,6 +49,8 @@ import { Type } from "../utils/type.js";
 import { Expect } from "../utils/expect.js";
 import { Board } from "../base/board.js";
 import { GeometryElement } from "../base/element.js";
+import { Polygon } from "../base/polygon.js";
+
 
 /**
  * Math.Geometry namespace definition. This namespace holds geometrical algorithms,
@@ -3920,16 +3922,14 @@ export class Geometry {
      * @param {JXG2.Polygon} pol Polygon element
      * @returns {Array} The coordinates of the closest projection of the given point to the border of the polygon.
      */
-    static projectCoordsToPolygon(p, pol) {
-        var i,
-            len = pol.vertices.length,
-            d_best = Infinity,
+    static projectCoordsToPolygon(p: number[], pol: Polygon) {
+        let d_best = Infinity,
             d,
             projection,
             proj,
             bestprojection;
 
-        for (i = 0; i < len - 1; i++) {
+        for (let i = 0; i < pol.vertices.length - 1; i++) {
             projection = Geometry.projectCoordsToSegment(
                 p,
                 pol.vertices[i].coords.usrCoords,
