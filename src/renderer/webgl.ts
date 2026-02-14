@@ -1,6 +1,6 @@
 import { watchElement } from "../jsxgraph.js"
-const dbug = (elem) => elem && elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
-const dbugColor = `color:blue;background-color:#d0f0ff`;
+const dbug = (elem) => elem && elem.id == watchElement
+const dbugColor = `color:blue;background-color:#d0d0ff`;
 
 // this is a clone of abstract.ts, not a child (like svg and canvas)
 // the rendering methods are just too different
@@ -207,29 +207,31 @@ export class WebGLRenderer {
     xlinkNamespace = "http://www.w3.org/1999/xlink";
 
 
-
+    static container: HTMLDivElement | null = null    // may have several JSXBoards in a single container
     public canvasRoot
     public canvasId
     public canvasNamespace
     public context
 
     public scene
-
+    public renderer
+    public camera
     public enableOrbital = true
     public orbitalControls = null
 
     constructor(containerName: string, dim: Dim) {  // width height
 
-        if (typeof containerName == 'string') {
-            let container = document.getElementById(containerName) as HTMLDivElement
-            if (container) {
-                this.container = container;
+        if (this.container === null)     // static but may be null
+            if (typeof containerName == 'string') {
+                this.container = document.getElementById(containerName) as HTMLDivElement
+                if (this.container) {
+                    this.container = this.container;
+                } else {
+                    throw new Error(`Could not find HTML container element '${this.container}`)
+                }
             } else {
-                throw new Error(`Could not find HTML container element '${container}`)
+                this.container = containerName
             }
-        } else {
-            this.container = containerName
-        }
 
         this.container.style.overflow = 'hidden';
         if (this.container.style.position === "") {
@@ -245,22 +247,25 @@ export class WebGLRenderer {
 
 
         console.log(webcanvas)
-        const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: webcanvas });
-        renderer.setSize(webcanvas.clientWidth, webcanvas.clientHeight)
 
-        this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color('lightblue');
+        if (!this.renderer) {  // not yet initialized
+            this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas: webcanvas });
+            this.renderer.setSize(webcanvas.clientWidth, webcanvas.clientHeight)
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 13;
+            this.scene = new THREE.Scene();
+            this.scene.background = new THREE.Color('lightblue');
 
-        // const camera = new THREE.OrthographicCamera(-10, 10, 10, -10, 0.1, 1000);
-        // camera.position.z = 10;
+            this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            this.camera.position.z = 13;
+
+            // const camera = new THREE.OrthographicCamera(-10, 10, 10, -10, 0.1, 1000);
+            // camera.position.z = 10;
 
 
-        if (this.enableOrbital) {
-            this.orbitalControls = new OrbitControls(camera, webcanvas);
-            this.orbitalControls.enableDamping = true;
+            if (this.enableOrbital) {
+                this.orbitalControls = new OrbitControls(this.camera, webcanvas);
+                this.orbitalControls.enableDamping = true;
+            }
         }
         ////////////////////
 
@@ -282,7 +287,7 @@ export class WebGLRenderer {
             if (this.enableOrbital)
                 this.orbitalControls.update();
 
-            renderer.render(this.scene, camera);
+            this.renderer.render(this.scene, this.camera);
             requestAnimationFrame(animate);
 
         }
@@ -438,7 +443,8 @@ export class WebGLRenderer {
      */
     drawPoint(el: Point) {
 
-        if (dbug(el)) console.warn(`%c webgl: drawPoint(${el.id})`, dbugColor, el.visProp)
+        if (dbug(el))
+            console.warn(`%c webgl: drawPoint(${el.id})`, dbugColor, el.visProp)
 
         // really naive
 
@@ -613,7 +619,7 @@ export class WebGLRenderer {
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
-        let opacity = (el.evalVisProp('opacity')==undefined)  ? 1:el.evalVisProp('opacity');
+        let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
 
 
         let path = new THREE.LineCurve3(new THREE.Vector3(start[0], start[1], 0), new THREE.Vector3(end[0], end[1], 0))
@@ -633,10 +639,9 @@ export class WebGLRenderer {
      * @see JXG2.AbstractRenderer#drawLine
      */
     updateLine(el: GeometryElement) {
+
         if (dbug(el))
-            console.warn(`%c webgl: _updateLine(${el.id})`, dbugColor)
-
-
+            console.warn(`%c webgl: updateLine(${el.id})`, dbugColor)
 
         this._updateVisual(el);
         this.updatePathWithArrowHeads(el); // Calls the renderer primitive
@@ -673,7 +678,7 @@ export class WebGLRenderer {
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
-        let opacity = (el.evalVisProp('opacity')==undefined ) ? 1:el.evalVisProp('opacity');
+        let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
 
         const material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
 
@@ -712,6 +717,9 @@ export class WebGLRenderer {
         var hl = doHighlight ? 'highlight' : '',
             w,
             arrowData;
+
+        if (dbug(el))
+            console.warn(`%c webgl updatePathWithArrowHeads(${el.id}, ${doHighlight})`, dbugColor)
 
         if (doHighlight && el.evalVisProp('highlightstrokewidth')) {
             w = Math.max(
@@ -1171,10 +1179,8 @@ export class WebGLRenderer {
      * @see JXG2.AbstractRenderer#updateTicks
      */
     drawTicks(el) {
-        let layer = el.evalVisProp('layer')
-        let prim = this.createPrim("path", el.id)
-        el.rendNode = this.appendChildPrim(prim, layer);
-        this.appendNodesToElement(el, "path");
+
+        this.updateTicks(el)
     }
 
 
@@ -2238,7 +2244,58 @@ export class WebGLRenderer {
     setLineCap(el) {
         return;
     }
-    updateTicks(ticks) {
+    updateTicks(el: GeometryElement) {
+
+        if (dbug(el))
+            console.warn(`%c webgl: updateTicks(${el.id})`, dbugColor, el.ticks)
+
+        let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
+        let color = el.evalVisProp('strokecolor')
+        let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
+
+
+        let isReal = true;
+        let tickStr = '';
+
+
+
+        for (let i = 0; i < el.ticks.length; i++) {
+            let c = el.ticks[i];
+            let x = c[0];
+            let y = c[1];
+
+            let len2 = x.length;
+            // let str = " M " + x[0] + " " + y[0];    // starting point
+            if (!Type.isNumber(x[0])) {
+                isReal = false;
+            }
+            for (let j = 1; isReal && j < len2; ++j) {
+                if (Type.isNumber(x[j])) {
+                    if (x[j] !== x[0] || y[j] !== y[0]) {
+
+                        // have to convert from scrCoords to usrCoord
+                        let start = new Coords(COORDS_BY.SCREEN, [x[0], y[0]], el.board)
+                        let end = new Coords(COORDS_BY.SCREEN, [x[j], y[j]], el.board)
+                        let y1 = start.usrCoords.slice(1)
+                        let y2 = end.usrCoords.slice(1)
+
+                        let path = new THREE.LineCurve3(new THREE.Vector3(y1[0], y1[1], .1), new THREE.Vector3(y2[0], y2[1], .1))
+                        const geometry = new THREE.TubeGeometry(path, 1, strokewidth, 8, false);
+                        const material = new THREE.MeshBasicMaterial({ color: color });
+                        const mesh = new THREE.Mesh(geometry, material);
+                        this.scene.add(mesh);
+                        // str += " L " + x[j] + " " + y[j];    // line to
+                    }
+                } else {
+                    isReal = false;
+                }
+            }
+            // if (isReal) {
+            //     tickStr += str;
+            // }
+
+
+        }
         return;
     }
     displayCopyright(str, fontsize) {

@@ -884,7 +884,7 @@ export abstract class CoordsElement extends GeometryElement {
         let makeConstFunction = (z) => () => z
         let makeSliderFunction = (a: Glider) => () => a.Value()
 
-        // if (dbug(this))
+        if (dbug(this))
         console.warn(`%c coordselements: addConstraint( ${this.id} terms(${terms.length}): )`, dbugColor, terms)
 
 

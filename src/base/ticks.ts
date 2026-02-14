@@ -1,4 +1,5 @@
-const dbug = (elem) => false // elem && elem.id === "jxgBoard1L3";
+import { watchElement } from "../jsxgraph.js"
+const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:black;background-color:#bfbfff`;
 /*
     Copyright 2008-2025
@@ -41,10 +42,10 @@ const dbugColor = `color:black;background-color:#bfbfff`;
  * @version 0.1
  */
 
-import {Board} from "../base/board.js";
+import { Board } from "../base/board.js";
 
 import { JSXMath } from "../math/math.js";
-import {Env} from "../utils/env.js";
+import { Env } from "../utils/env.js";
 import { Geometry } from "../math/geometry.js";
 import { Numerics } from "../math/numerics.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
@@ -52,7 +53,9 @@ import { GeometryElement } from "./element.js";
 import { Coords } from "../base/coords.js";
 import { Type } from "../utils/type.js";
 import { Line } from "./line.js"
+import { Curve } from "./curve.js"
 import { createText } from "./text.js"
+import { CoordsElement } from "./coordselement.js";
 
 /**
  * Creates ticks for an axis.
@@ -74,14 +77,7 @@ export class Ticks extends GeometryElement {
      * @type JXG2.Line
      * @private
      */
-    line: Line
-
-    /**
-     * The board the ticks line is drawn on.
-     * @type JXG2.Board
-     * @private
-     */
-    // - already defined in GeometryElement    // board
+    line: Line | Curve
 
     // /**
     //  * A function calculating ticks delta depending on the ticks number.
@@ -115,7 +111,7 @@ export class Ticks extends GeometryElement {
     //  * Least distance between two ticks, measured in pixels.
     //  * @type int
     //  */
-    // // this.minTicksDistance = attributes.minticksdistance;
+    // this.minTicksDistance = attributes.minticksdistance;
 
     /**
      * Stores the ticks coordinates
@@ -192,8 +188,8 @@ export class Ticks extends GeometryElement {
         this.inherits.push(this.labels);
         this.board.setId(this, 'Ti');
 
-        if(dbug(this))
-            console.warn(`%c ${this.id} creating ticks`,dbugColor)
+        if (dbug(this))
+            console.warn(`%c ${this.id} creating ticks`, dbugColor)
 
     };
 
@@ -417,6 +413,10 @@ export class Ticks extends GeometryElement {
         } else {
             this.generateFixedTicks(coordsZero, b);
         }
+
+     // @returns {Array} Array of length 3 containing path coordinates in screen coordinates
+     //  of the tick (arrays of length 2). 3rd entry is true if major tick otherwise false.
+     //  If the tick is outside of the canvas, the return array is empty.
 
         return this;
     }
@@ -967,7 +967,7 @@ export class Ticks extends GeometryElement {
      * @param  {Object}     deltas      x and y distance between two major ticks
      * @private
      */
-    processTickPosition(coordsZero, tickPosition, ticksDelta, deltas) {
+    processTickPosition(coordsZero: Coords, tickPosition: number, ticksDelta: number, deltas: { x: number, y: number }) {
         var x,
             y,
             tickCoords,
@@ -977,18 +977,25 @@ export class Ticks extends GeometryElement {
             ticksPerLabel = this.evalVisProp('ticksperlabel'),
             labelVal = null;
 
+        if (dbug(this))
+            console.warn(`%c Ticks.processTickPosition '${this.id}' `, dbugColor)//, coords, major)
+
+
         // Calculates tick coordinates
         if (this.line.elementClass === OBJECT_CLASS.LINE) {
             x = coordsZero.usrCoords[1] + tickPosition * deltas.x;
             y = coordsZero.usrCoords[2] + tickPosition * deltas.y;
         } else {
-            x = this.line.X(coordsZero + tickPosition);
-            y = this.line.Y(coordsZero + tickPosition);
+            console.error('who? what? - test ticks on curve')
+            // x = this.line.X(coordsZero + tickPosition);
+            // y = this.line.Y(coordsZero + tickPosition);
         }
         tickCoords = new Coords(COORDS_BY.USER, [x, y], this.board);
+
         if (this.line.elementClass === OBJECT_CLASS.CURVE) {
-            labelVal = coordsZero + tickPosition;
-            this.setTicksSizeVariables(labelVal);
+            console.error('who? what? - test ticks on curve')
+            // labelVal = coordsZero + tickPosition;
+            // this.setTicksSizeVariables(labelVal);
         }
 
         ev_mt = this.evalVisProp('minorticks');
@@ -1140,7 +1147,7 @@ export class Ticks extends GeometryElement {
      * @param  {Array}  y Array of length two
      * @return {Boolean}   true if parts of the tick are inside of the canvas or on the boundary.
      */
-    _isInsideCanvas(x, y, m=0):boolean {
+    _isInsideCanvas(x, y, m = 0): boolean {
         var cw = this.board.canvasWidth,
             ch = this.board.canvasHeight;
 
@@ -1158,10 +1165,8 @@ export class Ticks extends GeometryElement {
      *                 If the tick is outside of the canvas, the return array is empty.
      * @private
      */
-    createTickPath(coords, major) {
-        var c,
-            lineStdForm,
-            intersection,
+    createTickPath(coords: CoordsElement, major) {
+        let intersection,
             dxs,
             dys,
             dxr,
@@ -1175,7 +1180,10 @@ export class Ticks extends GeometryElement {
             te0, te1, // Tick ending visProps
             dists; // 'signed' distances of intersections to the parent line
 
-        c = coords.scrCoords;
+        if (dbug(this))
+            console.warn(`%c Ticks.createTickPath '${this.id}' `, dbugColor, coords, major)
+
+        let c = coords.scrCoords;
         if (major) {
             dxs = this.dxMaj;
             dys = this.dyMaj;
@@ -1189,7 +1197,7 @@ export class Ticks extends GeometryElement {
             te0 = this.evalVisProp('tickendings.0') > 0;
             te1 = this.evalVisProp('tickendings.1') > 0;
         }
-        lineStdForm = [-dys * c[1] - dxs * c[2], dys, dxs];
+        let lineStdForm = [-dys * c[1] - dxs * c[2], dys, dxs];    // [-1300, 5, 0]
 
         // For all ticks regardless if of finite or infinite
         // tick length the intersection with the canvas border is
@@ -1292,6 +1300,8 @@ export class Ticks extends GeometryElement {
                     }
                 }
             } else {
+                // tbtb - what are face < and > ??  (default is | )
+
                 if (this.evalVisProp('face') === ">") {
                     alpha = Math.PI / 4;
                 } else if (this.evalVisProp('face') === "<") {
@@ -1766,10 +1776,11 @@ export class Ticks extends GeometryElement {
  *
  * @example
  */
-export function createTicks (board:Board, parents, attributes) {
+export function createTicks(board: Board, parents, attributes) {
     var el,
         dist,
         attr = Type.copyAttributes(attributes, board.options, 'ticks');
+
 
     if (parents.length < 2) {
         dist = attr.ticksdistance; // Will be ignored anyhow and attr.ticksDistance will be used instead
@@ -1798,7 +1809,8 @@ export function createTicks (board:Board, parents, attributes) {
 
     el.setParents(parents[0]);
     el.isDraggable = true;
-    el.fullUpdate(parents[0].visPropCalc.visible);
+    el.elementUpdate()
+    el.fullUpdate(parents[0].evalVisProp('visible'));
 
     return el;
 };

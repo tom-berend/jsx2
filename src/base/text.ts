@@ -581,30 +581,30 @@ export class Text extends CoordsElement {
 
         // offsetWidth and offsetHeight seem to be supported for internal vml elements by IE10+ in IE8 mode.
         if (ev_d === "html") {
-            //tbtb//if (Type.exists(node.offsetWidth)) {
-            //tbtb// window.setTimeout(() => {
-            //tbtb//     this.size = [node.offsetWidth, node.offsetHeight];
-            //tbtb//     this.needsUpdate = true;
-            //tbtb//     this.updateRenderer();
-            //tbtb// }, 0);
+            if (Type.exists(node.offsetWidth)) {
+                window.setTimeout(() => {
+                    this.size = [node.offsetWidth, node.offsetHeight];
+                    this.needsUpdate = true;
+                    this.board.updateRenderer();
+                }, 0);
 
 
-            // In case, there is non-zero padding or borders
-            // the following approach does not longer work.
-            // s = [node.offsetWidth, node.offsetHeight];
-            // if (s[0] === 0 && s[1] === 0) { // Some browsers need some time to set offsetWidth and offsetHeight
-            //     that = this;
-            //     window.setTimeout(function () {
-            //         that.size = [node.offsetWidth, node.offsetHeight];
-            //         that.needsUpdate = true;
-            //         that.updateRenderer();
-            //     } 0);
-            // } else {
-            //     this.size = s;
-            // }
-            // } else {
-            this.size = this.crudeSizeEstimate();
-            // }
+                // In case, there is non-zero padding or borders
+                // the following approach does not longer work.
+                // s = [node.offsetWidth, node.offsetHeight];
+                // if (s[0] === 0 && s[1] === 0) { // Some browsers need some time to set offsetWidth and offsetHeight
+                //     that = this;
+                //     window.setTimeout(function () {
+                //         that.size = [node.offsetWidth, node.offsetHeight];
+                //         that.needsUpdate = true;
+                //         that.updateRenderer();
+                //     } 0);
+                // } else {
+                //     this.size = s;
+                // }
+                // } else {
+                this.size = this.crudeSizeEstimate();
+            }
         } else if (ev_d === "internal") {
             if (this.board.renderer.type === "svg") {
                 window.setTimeout(() => {
@@ -1884,7 +1884,7 @@ export class Text extends CoordsElement {
     updateText(): string {
 
         if (dbug(this))
-            console.warn(`%c text: updateText(${typeof this.content})`, dbugColor)
+            console.warn(`%c text: updateText(${typeof this.content}) ${this.content}`, dbugColor)
 
         let e, digits,
             resolvedText,
@@ -2216,7 +2216,7 @@ export function createLabel(board: Board, parents: [Point], attributes) {
             plainName = p.name;
         }
 
-        let label = new Text(board, [0,0 , plainName], {strokecolor:'yellow'})//attributes);
+        let label = new Text(board, [0, 0, plainName], { strokecolor: 'yellow' })//attributes);
 
         let ev_o = label.evalVisProp('offset');  // offset is in screen coords, must convert
         let sx = parseFloat(ev_o[0]) / p.board.unitX;

@@ -12,7 +12,7 @@ export function runTests(which) {
         new IndexTests()
 }
 
-export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc']
+export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc', 'mathml']
 
 
 export class IndexTests {
@@ -61,7 +61,6 @@ export class IndexTests {
 
         if (this.old)
             this.boards.push((window as any).JXG.JSXGraph.initBoard('box2', attr));
-
 
         if (this.webgl) {
             attr['renderer'] = 'webgl'
@@ -268,4 +267,26 @@ export class IndexTests {
 
     }
 
+    mathml() {
+        this.boards.map((board) => {
+
+            let htmlSt = `<div><math>
+                        <mrow>
+                        <mo>−<!-- − --></mo>
+                        <mfrac>
+                        <mn>1</mn>
+                        <mn>3</mn>
+                        </mfrac>
+                        </mrow>
+                       </math></div>`;
+
+            let txt = board.create('text', [2, 2, htmlSt], { anchorX: 'middle', anchorY: 'middle', dragArea: 'all', fontSize: 32, fixed: false, display: 'html' });
+
+            console.log('----------- about to update --------------')
+
+            board.update();
+
+
+        })
+    }
 }

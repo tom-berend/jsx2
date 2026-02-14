@@ -1803,7 +1803,6 @@ export function createAxis(board: Board, parents: any[], attributes: LooseObject
 
 
 
-// tbtbtb
 export class Axis extends Line {
 
     _point1UsrCoordsOrg: number[]
@@ -1842,6 +1841,7 @@ export class Axis extends Line {
 
         // Create ticks
         // this.visPropTicks = this.visProp.ticks;
+
         let ticksDist
         if (this.evalVisProp('ticks.ticksdistance')) {
             ticksDist = this.evalVisProp('ticks.ticksdistance');
@@ -1884,9 +1884,10 @@ export class Axis extends Line {
             visLabel, anchr, off;
 
         if (dbug(this))
-            console.warn(`%c axis update `, dbugColor)
+            console.warn(`%c Line:: axis update `, dbugColor)
 
         if (!this.needsUpdate) {
+            console.log(`%c axis doesn't need update`,dbugColor)
             return this;
         }
 
@@ -2113,7 +2114,6 @@ export class Axis extends Line {
         }
 
         this.board.renderer.updateLine(this);
-
     }
 };
 

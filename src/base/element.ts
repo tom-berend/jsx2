@@ -379,6 +379,10 @@ export abstract class GeometryElement extends Events {
     rendNodeCheckbox
     rendNodeText
     rendNodeButton
+
+    rendNodeTriangleStart   // arrowhead (and axis ticks?)
+    rendNodeTriangleEnd
+
     generateLabelValue
     infoboxText
     onPolygon

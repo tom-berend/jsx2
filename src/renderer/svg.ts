@@ -615,32 +615,30 @@ export class SVGRenderer extends AbstractRenderer {
      * @see JXG2.Ticks
      * @see JXG2.AbstractRenderer#drawTicks
      */
-    updateTicks(ticks) {
-        var i,
-            j,
+    updateTicks(ticks: GeometryElement) {
+        let j,
             c,
             node,
             x,
             y,
             tickStr = "",
-            len = ticks.ticks.length,
             len2,
             str,
             isReal = true;
 
-        for (i = 0; i < len; i++) {
+        for (let i = 0; i < ticks.ticks.length; i++) {
             c = ticks.ticks[i];
             x = c[0];
             y = c[1];
 
             len2 = x.length;
-            str = " M " + x[0] + " " + y[0];
+            str = " M " + x[0] + " " + y[0];    // starting point
             if (!Type.isNumber(x[0])) {
                 isReal = false;
             }
-            for (j = 1; isReal && j < len2; ++j) {
+            for (let j = 1; isReal && j < len2; ++j) {
                 if (Type.isNumber(x[j])) {
-                    str += " L " + x[j] + " " + y[j];
+                    str += " L " + x[j] + " " + y[j];    // line to
                 } else {
                     isReal = false;
                 }
@@ -991,6 +989,9 @@ export class SVGRenderer extends AbstractRenderer {
     */
     // Already documented in JXG2.AbstractRenderer
     appendNodesToElement(el, type: string) {
+        if (dbug(el))
+            console.warn(`%c svg: appendNodesToElement(${el.id}) ${type}`, dbugColor, el)
+
         if (type === "shape" || type === "path" || type === 'polygon') {
             el.rendNodePath = this.getElementById(el.id + "_path");
         }
@@ -1082,7 +1083,7 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Object} arrowData Data concerning possible arrow heads
     *
      */
-    makeArrows(el/*: GeometryElement*/, a) {
+    makeArrows(el: GeometryElement, a) {
         var node2, str,
             ev_fa = a.evFirst,
             ev_la = a.evLast;
@@ -1217,6 +1218,10 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {JXG2.Board} board Reference to the element's board.
      */
     updatePathPrim(node, pointString, board: Board) {
+
+        if (dbug(node))
+            console.warn(`%c svg: updatePathPrim(${node.id} `, dbugColor, pointString)
+
         if (pointString === "") {
             pointString = "M 0 0";
         }

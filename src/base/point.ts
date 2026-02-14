@@ -569,7 +569,9 @@ export function createPoint(board: Board, parents, attributes): Point {
         point.label.addParents(point)
 
         point.hasLabel = true;
-        console.warn(`%c createPoint ${point.label.id}`, dbugColor, point, point.label)
+
+        if (dbug(point))
+            console.warn(`%c createPoint ${point.label.id}`, dbugColor, point, point.label)
     }
 
     // console.log(board.objects)

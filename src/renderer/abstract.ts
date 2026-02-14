@@ -500,7 +500,7 @@ export abstract class AbstractRenderer {
      */
     updateLine(el: GeometryElement) {
         if (dbug(el))
-            console.warn(`%c abstract: _updateLine(${el.id})`, dbugColor)
+            console.warn(`%c abstract: updateLine(${el.id})`, dbugColor)
 
 
 
@@ -569,6 +569,9 @@ export abstract class AbstractRenderer {
             w,
             arrowData;
 
+        if (dbug(el))
+            console.warn(`%c abstract: updatePathWithArrowHeads(${el.id}, ${doHighlight})`,dbugColor)
+
         if (doHighlight && el.evalVisProp('highlightstrokewidth')) {
             w = Math.max(
                 el.evalVisProp('highlightstrokewidth'),
@@ -580,7 +583,6 @@ export abstract class AbstractRenderer {
 
         // Get information if there are arrow heads and how large they are.
         arrowData = this.getArrowHeadData(el, w, hl);
-        // console.log(`UpdatePathWithArrowHeads`,el.coords.scrCoords)
 
         // Create the SVG nodes if necessary
         this.makeArrows(el, arrowData);
@@ -758,6 +760,8 @@ export abstract class AbstractRenderer {
         this.handleTouchpoints(el, c1, c2, arrowData);
         this.getPositionArrowHead(el, c1, c2, arrowData);
 
+        console.error(c1.scrCoords,c2.scrCoords)
+        
         this.updateLinePrim(
             el.rendNode,
             c1.scrCoords[1],
@@ -958,6 +962,10 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateTicks
      */
     drawTicks(el) {
+
+        if (dbug(el))
+            console.warn(`%c abstract: drawTicks(${el.id})`, dbugColor, el)
+
         let layer = el.evalVisProp('layer')
         let prim = this.createPrim("path", el.id)
         el.rendNode = this.appendChildPrim(prim, layer);
@@ -1060,8 +1068,8 @@ export abstract class AbstractRenderer {
     drawText(el): HTMLElement {
         var node: HTMLElement, z, level, ev_visible;
 
-        // if (dbug(el))
-            console.warn(`%c abstract: drawText(${el.id})`, dbugColor,el)
+        if (dbug(el))
+            console.warn(`%c abstract: drawText(${el.id})`, dbugColor, el)
 
         if (this.container !== null) {
             if (
@@ -1139,7 +1147,7 @@ export abstract class AbstractRenderer {
             to_h, to_v;
 
         if (dbug(el))
-            console.warn(`%c abstract: updateText(${el.id} ${JSON.stringify(el.coords.usrCoords)})`, dbugColor,el)
+            console.warn(`%c abstract: updateText(${el.id} ${JSON.stringify(el.coords.usrCoords)})`, dbugColor, el)
 
         if (el.visPropCalc.visible) {
             this.updateTextStyle(el, false);
