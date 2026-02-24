@@ -49,6 +49,8 @@ import { Type } from "../utils/type.js";
 import { JSXMath } from "../math/math.js";
 import { Coords } from "../base/coords.js";
 import { Point } from "../base/point.js"
+// import { TPoint } from "../tbase/tpoint.js"
+
 import { Line } from "../base/line.js"
 import { Curve } from "../base/curve.js"
 import { Geometry } from "../math/geometry.js";
@@ -187,6 +189,7 @@ export class WebGLRenderer {
 
     isSafari: boolean
 
+    svgRoot:    null    // because AbstractRenderer has one
 
     defs: any
 
@@ -443,28 +446,26 @@ export class WebGLRenderer {
      */
     drawPoint(el: Point) {
 
-        if (dbug(el))
+        // if (dbug(el))
             console.warn(`%c webgl: drawPoint(${el.id})`, dbugColor, el.visProp)
 
         // really naive
-
         if (!el.evalVisProp('visible'))
             return;
+
 
         let coord = el.Coords(false)
 
         let color = el.evalVisProp('strokecolor')
 
-
         let pointMaterial = new THREE.MeshBasicMaterial({ color: color });
         pointMaterial.transparent = true
         pointMaterial.opacity = 1
-
         let strokewidth = this.calcPointStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
 
         let v = new THREE.Mesh(new THREE.SphereGeometry(strokewidth, 8, 8), pointMaterial)
 
-        v.position.set(coord[0], coord[1], 0)
+        v.position.set(coord[0], coord[1], 1)
 
         this.scene.add(v)
         return
@@ -611,23 +612,27 @@ export class WebGLRenderer {
      */
     drawLine(el: Line) {
 
-        if (dbug(el))
-            console.warn(`%c webgl: drawLine(${el.id})`, dbugColor, el.visProp)
 
         let start = el.point1.Coords(false)
         let end = el.point2.Coords(false)
+
+        // let start = el.point1.usrCoords
+        // let end = el.point2.usrCoords
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
         let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
 
 
-        let path = new THREE.LineCurve3(new THREE.Vector3(start[0], start[1], 0), new THREE.Vector3(end[0], end[1], 0))
+        el.webGL.lineCurve3 = new THREE.LineCurve3(new THREE.Vector3(start[0], start[1], 0), new THREE.Vector3(end[0], end[1], 0))
 
-        const geometry = new THREE.TubeGeometry(path, 1, strokewidth, 8, false);  // closed must be false
-        const material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
-        const mesh = new THREE.Mesh(geometry, material);
-        this.scene.add(mesh);
+        el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
+        el.webGL.material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
+        el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);
+        this.scene.add(el.webGL.mesh);
+
+        if (dbug(el))
+            console.log(`%c webgl drawLine(${el.id})`, dbugColor, el.webGL)
 
     }
 
@@ -638,10 +643,32 @@ export class WebGLRenderer {
      * @see JXG2.Line
      * @see JXG2.AbstractRenderer#drawLine
      */
-    updateLine(el: GeometryElement) {
+    updateLine(el: Line) {
 
         if (dbug(el))
-            console.warn(`%c webgl: updateLine(${el.id})`, dbugColor)
+            console.warn(`%c webgl: updateLine(${el.id})`, dbugColor, el.webGL)
+
+        let start = el.point1.Coords(false)
+        let end = el.point2.Coords(false)
+
+        // let start = el.point1.usrCoords
+        // let end = el.point2.usrCoords
+
+        if (dbug(el))
+            console.warn(start, end, el.point1)
+
+        // first update the lineCurve3
+        el.webGL.lineCurve3.v1 = new THREE.Vector3(start[0], start[1], 0)
+        el.webGL.lineCurve3.v2 = new THREE.Vector3(end[0], end[1], 0)
+        el.webGL.lineCurve3.needsUpdate = true
+
+        el.webGL.geometry.dispose() // dispose the old geometry
+        let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
+        el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
+
+        this.scene.remove(el.webGL.mesh)
+        el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);
+        this.scene.add(el.webGL.mesh)
 
         this._updateVisual(el);
         this.updatePathWithArrowHeads(el); // Calls the renderer primitive
@@ -901,6 +928,7 @@ export class WebGLRenderer {
             // useTotalLength = true,
             margin = null;
 
+            // console.error('updateLinewithEndings')
         c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board);
         c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
 

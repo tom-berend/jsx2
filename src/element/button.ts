@@ -36,10 +36,9 @@
  * @fileoverview In this file the Text element is defined.
  */
 
-import {JXG2} from "../jxg.js";
 import { OBJECT_TYPE } from "../base/constants.js";
-import {Env} from "../utils/env.js";
-import {Type} from "../utils/type.js";
+import { Env } from "../utils/env.js";
+import { Type } from "../utils/type.js";
 
 var priv = {
     ButtonClickEventHandler: function () {
@@ -238,7 +237,7 @@ var priv = {
  * </script><pre>
  *
  */
-JXG2.createButton = function (board, parents, attributes) {
+export function createButton(board, parents, attributes) {
     var t,
         par,
         attr = Type.copyAttributes(attributes, board.options, 'button');
@@ -266,19 +265,9 @@ JXG2.createButton = function (board, parents, attributes) {
 
     // This sets the font size of the button text
     t.visPropOld.fontsize = '0px';
-    board.renderer.updateTextStyle(t, false);
+    board.renderer.updateText(t);
+    // board.renderer.updateTextStyle(t, false);
 
-    if (parents[3]) {
-        if (Type.isString(parents[3])) {
-            t._jc = new JXG2.JessieCode();
-            t._jc.use(board);
-            t._handler = function () {
-                t._jc.parse(parents[3]);
-            };
-        } else {
-            t._handler = parents[3];
-        }
-    }
 
     Env.addEvent(t.rendNodeButton, "click", priv.ButtonClickEventHandler, t);
     Env.addEvent(
@@ -315,8 +304,3 @@ JXG2.createButton = function (board, parents, attributes) {
     return t;
 };
 
-JXG2.registerElement("button", JXG2.createButton);
-
-// export default {
-//     createButton: JXG2.createButton
-// };

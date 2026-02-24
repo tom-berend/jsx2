@@ -331,7 +331,7 @@ export class Geometry {
      * @param {JXG2.Board} [board=point.board] Reference to the board
      * @returns {JXG2.Coords} Coordinates of the new position.
      */
-    static rotation(rotpoint, point, phi, board) {
+    static rotation(rotpoint, point, phi, board):Coords {
         var x0,
             y0,
             c,
@@ -366,7 +366,7 @@ export class Geometry {
      * @returns {Array} Array of length two containing coordinates of a point on the perpendicular to the given line
      *                  through the given point and boolean flag "change".
      */
-    static perpendicular(line, point, board) {
+    static perpendicular(line, point, board):Coords[] {
         var x,
             y,
             change,

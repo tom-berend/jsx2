@@ -1,4 +1,4 @@
-export const watchElement = 'jxgBoard1L5'
+export const watchElement = '--'
 /*
     Copyright 2008-2025
         Matthias Ehmann,

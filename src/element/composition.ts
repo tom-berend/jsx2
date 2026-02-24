@@ -60,6 +60,9 @@ import { Geometry } from "../math/geometry.js";
 import { Numerics } from "../math/numerics.js";
 import { Coords } from "../base/coords.js";
 
+import { createCurve } from "../base/curve.js"
+import { createLine } from "../base/line.js";
+
 import { Type } from "../utils/type.js";
 import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 // import Point from "../base/point.js";
@@ -1646,7 +1649,7 @@ JXG2.createIncenter = function (board, parents, attributes) {
  *   var ccex1_cc1 = ccex1_board.create('circumcircle', [ccex1_p1, ccex1_p2, ccex1_p3]);
  * </script><pre>
  */
-export function createCircumcircle (board, parents, attributes) {
+export function createCircumcircle(board, parents, attributes) {
     var p, c, attr, i;
 
     parents = Type.providePoints(board, parents, attributes, 'point');
@@ -2724,12 +2727,16 @@ JXG2.createIntegral = function (board, parents, attributes) {
  * </script><pre>
  *
  */
-JXG2.createInequality = function (board, parents, attributes) {
+export function createInequality(board, parents, attributes) {
     var f, a, attr;
 
+
+
+
     attr = Type.copyAttributes(attributes, board.options, 'inequality');
+
     if (parents[0].elementClass === OBJECT_CLASS.LINE) {
-        a = board.create("curve", [[], []], attr);
+        a = createLine(board, [[], []], attr);
         a.hasPoint = function () {
             return false;
         };
@@ -2751,7 +2758,7 @@ JXG2.createInequality = function (board, parents, attributes) {
                 w = expansion * Math.max(bb[2] - bb[0], bb[1] - bb[3]),
                 // Fake a point (for Math.Geometry.perpendicular)
                 // contains centroid of the board
-                dp: LooseObject = {
+                dp = {
                     coords: {
                         usrCoords: [1, (bb[0] + bb[2]) * 0.5, inverse ? bb[1] : bb[3]]
                     }
@@ -2767,7 +2774,7 @@ JXG2.createInequality = function (board, parents, attributes) {
                 Math.max(
                     Geometry.perpendicular(parents[0], dp, board)[0].distance(
                         COORDS_BY.USER,
-                        dp.coords
+                        dp.coords as Coords
                     ),
                     w
                 );
@@ -2778,7 +2785,7 @@ JXG2.createInequality = function (board, parents, attributes) {
                 coords: {
                     usrCoords: [1, (bb[0] + bb[2]) * 0.5, (bb[1] + bb[3]) * 0.5]
                 }
-            };
+            }
 
             // If dp is on the line, Geometry.perpendicular will return a point not on the line.
             // Since this somewhat odd behavior of Geometry.perpendicular is needed in GEONExT,
@@ -2787,9 +2794,18 @@ JXG2.createInequality = function (board, parents, attributes) {
                 Math.abs(JSXMath.innerProduct(dp.coords.usrCoords, parents[0].stdform, 3)) >=
                 JSXMath.eps
             ) {
-                dp = Geometry.perpendicular(parents[0], dp, board)[0].usrCoords;
+                dp = {
+                    coords: {
+                        usrCoords: Geometry.perpendicular(parents[0], dp, board)[0].usrCoords
+                    }
+                }
+
             } else {
-                dp = dp.coords.usrCoords;
+                dp = {
+                    coords: {
+                        usrCoords: dp.coords.usrCoords
+                    }
+                }
             }
             i1 = [1, dp[1] + slope1[1] * w, dp[2] - slope1[0] * w];
             i2 = [1, dp[1] - slope2[1] * w, dp[2] + slope2[0] * w];
@@ -2804,7 +2820,7 @@ JXG2.createInequality = function (board, parents, attributes) {
         parents[0].elementClass === OBJECT_CLASS.CURVE &&
         parents[0].visProp.curvetype === "functiongraph"
     ) {
-        a = board.create("curve", [[], []], attr);
+        a = createCurve(board, [[], []], attr);
         /**
          * @class
          * @ignore
@@ -2817,13 +2833,16 @@ JXG2.createInequality = function (board, parents, attributes) {
                 last,
                 len,
                 i,
+                miv = Infinity,
+                mav = -Infinity,
+                p,
                 mi = parents[0].minX(),
                 ma = parents[0].maxX(),
                 curve_mi,
                 curve_ma,
                 firstx,
                 lastx,
-                enlarge = (bbox[1] - bbox[3]) * 0.3, // enlarge the bbox vertically by this amount
+                enlarge = (bbox[1] - bbox[3]) * 1, // enlarge the bbox vertically by this amount
                 inverse = this.evalVisProp('inverse');
 
             // inverse == true <=> Fill area with y >= f(x)
@@ -2881,9 +2900,20 @@ JXG2.createInequality = function (board, parents, attributes) {
 
                 points.push([1, curve_mi, bbox[infty]]);
                 points.push([1, curve_mi, parents[0].points[first].usrCoords[2]]);
+
                 for (i = first; i <= last; i++) {
+                    p = parents[0].points[i].usrCoords;
                     points.push(parents[0].points[i].usrCoords);
+                    miv = (p[2] < miv) ? p[2] : miv;
+                    mav = (p[2] > mav) ? p[2] : mav;
                 }
+
+                if (infty === 1) {
+                    points[0][2] = mav + enlarge;
+                } else {
+                    points[0][2] = miv - enlarge;
+                }
+
                 points.push([1, curve_ma, parents[0].points[last].usrCoords[2]]);
                 points.push([1, curve_ma, bbox[infty]]);
                 points.push(points[0]);
@@ -2909,6 +2939,8 @@ JXG2.createInequality = function (board, parents, attributes) {
             return false;
         };
     } else {
+console.log(parents[0])
+
         // Not yet practical?
         f = Type.createFunction(parents[0], board);
         a.addParentsFromJCFunctions([f]);

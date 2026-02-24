@@ -39,12 +39,58 @@
  */
 
 import { JXG2 } from "../jxg.js";
-import { OBJECT_CLASS, OBJECT_TYPE,COORDS_BY } from "../base/constants.js";
+import { OBJECT_CLASS, OBJECT_TYPE, COORDS_BY } from "../base/constants.js";
 import { Coords } from "../base/coords.js";
 
 import { JSXMath } from "./math.js";
 import { Geometry } from "./geometry.js";
 import { Type } from "../utils/type.js";
+
+
+/**
+ * JavaScript object containing the intersection of two paths. Every intersection point is on one path, but
+ * comes with a neighbour point having the same coordinates and being on the other path.
+ *
+ * The intersection point is inserted into the doubly linked list of the path.
+ *
+ * @private
+ * @param  {JXG2.Coords} coords JSXGraph Coords object containing the coordinates of the intersection
+ * @param  {Number} i        Number of the segment of the subject path (first path) containing the intersection.
+ * @param  {Number} alpha    The intersection is a p_1 + alpha*(p_2 - p_1), where p_1 and p_2 are the end points
+ *      of the i-th segment.
+ * @param  {Array} path      Pointer to the path containing the intersection point
+ * @param  {String} pathname Name of the path: 'S' or 'C'.
+ */
+class Vertex {
+    pos
+    intersection
+    coords
+    elementClass
+    data
+    neighbour
+    entry_exit
+
+    constructor(coords, i, alpha, path, pathname, type) {
+        this.pos = i;
+        this.intersection = true;
+        this.coords = coords;
+        this.elementClass = OBJECT_CLASS.POINT;
+
+        this.data = {
+            alpha: alpha,
+            path: path,
+            pathname: pathname,
+            done: false,
+            type: type,
+            idx: 0
+        };
+
+        // Set after initialisation
+        this.neighbour = null;
+        this.entry_exit = false;
+    }
+
+}
 
 /**
  * Math.Clip namespace definition. This namespace contains algorithms for Boolean operations on paths, i.e.
@@ -126,39 +172,6 @@ export class Clip {
         return components;
     }
 
-    /**
-     * JavaScript object containing the intersection of two paths. Every intersection point is on one path, but
-     * comes with a neighbour point having the same coordinates and being on the other path.
-     *
-     * The intersection point is inserted into the doubly linked list of the path.
-     *
-     * @private
-     * @param  {JXG2.Coords} coords JSXGraph Coords object containing the coordinates of the intersection
-     * @param  {Number} i        Number of the segment of the subject path (first path) containing the intersection.
-     * @param  {Number} alpha    The intersection is a p_1 + alpha*(p_2 - p_1), where p_1 and p_2 are the end points
-     *      of the i-th segment.
-     * @param  {Array} path      Pointer to the path containing the intersection point
-     * @param  {String} pathname Name of the path: 'S' or 'C'.
-     */
-    static Vertex(coords, i, alpha, path, pathname, type) {
-        Clip.pos = i;
-        Clip.intersection = true;
-        Clip.coords = coords;
-        Clip.elementClass = OBJECT_CLASS.POINT;
-
-        Clip.data = {
-            alpha: alpha,
-            path: path,
-            pathname: pathname,
-            done: false,
-            type: type,
-            idx: 0
-        };
-
-        // Set after initialisation
-        Clip.neighbour = null;
-        Clip.entry_exit = false;
-    }
 
     static _addToList(list, coords, pos) {
         var len = list.length,
@@ -499,8 +512,8 @@ export class Clip {
                             crds = new Coords(COORDS_BY.USER, Si, board);
                             res[1] = 0;
                             res[2] = alpha;
-                            IS = new this.Vertex(crds, i, res[1], S, "S", type);
-                            IC = new this.Vertex(crds, j, res[2], C, "C", type);
+                            IS = new Vertex(crds, i, res[1], S, "S", type);
+                            IC = new Vertex(crds, j, res[2], C, "C", type);
                             IS.neighbour = IC;
                             IC.neighbour = IS;
                             S_crossings[i].push(IS);
@@ -524,8 +537,8 @@ export class Clip {
                             crds = new Coords(COORDS_BY.USER, Cj, board);
                             res[1] = alpha;
                             res[2] = 0;
-                            IS = new this.Vertex(crds, i, res[1], S, "S", type);
-                            IC = new this.Vertex(crds, j, res[2], C, "C", type);
+                            IS = new Vertex(crds, i, res[1], S, "S", type);
+                            IC = new Vertex(crds, j, res[2], C, "C", type);
                             IS.neighbour = IC;
                             IC.neighbour = IS;
                             S_crossings[i].push(IS);
@@ -546,8 +559,8 @@ export class Clip {
                         console.log("IS", i, j, crds.usrCoords, type);
                     }
 
-                    IS = new this.Vertex(crds, i, res[1], S, "S", type);
-                    IC = new this.Vertex(crds, j, res[2], C, "C", type);
+                    IS = new Vertex(crds, i, res[1], S, "S", type);
+                    IC = new Vertex(crds, j, res[2], C, "C", type);
                     IS.neighbour = IC;
                     IC.neighbour = IS;
 

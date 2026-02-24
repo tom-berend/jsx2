@@ -831,7 +831,7 @@ export class Line extends GeometryElement {
 
     // documented in geometry element
     cloneToBackground() {
-        var copy = Type.getCloneObject(this),
+        var copy = Type.getCloneObject(this) as Line,
             r, s,
             er;
 

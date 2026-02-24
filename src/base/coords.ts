@@ -280,7 +280,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      * Test if one of the usrCoords is NaN or the coordinates are infinite.
      * @returns {Boolean} true if the coordinates are finite, false otherwise.
      */
-    computeIsReal() {
+    isReal() {
         return (
             !isNaN(this.usrCoords[1] + this.usrCoords[2]) &&
             Math.abs(this.usrCoords[0]) > JSXMath.eps

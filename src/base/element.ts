@@ -113,7 +113,7 @@ export abstract class GeometryElement extends Events {
      * Stores all dependent objects to be updated when this point is moved.
      * @type Object
      */
-    childElements: {[id: string]:GeometryElement} = {};
+    childElements: { [id: string]: GeometryElement } = {};
 
 
     /**
@@ -407,6 +407,8 @@ export abstract class GeometryElement extends Events {
     center: Point
 
     transformMat
+
+    webGL = { lineCurve3: null, geometry: null, material: null, mesh: null }
 
 
     // The inheritance tree is mangles (prototype inheritance lets the parent call the child).

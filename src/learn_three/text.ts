@@ -6,6 +6,7 @@ startwebgl();
 import { SpriteText } from './three-spritetext.js'
 
 let sprite = new SpriteText("SPRITE",.25,'black' )
+sprite.backgroundColor = 'yellow'
 scene.add(sprite)
 sprite.position.set(9.5,9.5,0)
 

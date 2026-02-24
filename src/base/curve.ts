@@ -1361,7 +1361,7 @@ export class Curve extends GeometryElement {
     // documented in geometry element
     cloneToBackground() {
         var er,
-            copy = Type.getCloneObject(this);
+            copy = Type.getCloneObject(this) as Curve;
 
         copy.points = this.points.slice(0);
         copy.bezierDegree = this.bezierDegree;
@@ -1829,11 +1829,10 @@ export function createCurve(board, parents, attributes): Curve {
  * </script><pre>
  */
 export function createFunctiongraph(board, parents, attributes) {
-    var attr,
+    let attr
 
+    let par = ["x", "x"].concat(parents); // variable name and identity function for x-coordinate
 
-        // tbtb - seems to be for jessiecode     par = ["x", "x"].concat(parents); // variable name and identity function for x-coordinate
-        par = ["x", (x) => { return x; }].concat(parents);
 
     attr = Type.copyAttributes(attributes, board.options, 'functiongraph');
     attr = Type.copyAttributes(attr, board.options, 'curve');

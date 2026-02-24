@@ -2,6 +2,8 @@ import { Board } from "./base/board.js";
 import { JSXGraph } from "./jsxgraph.js"
 import { Type } from "./utils/type.js";
 
+import { createFunctiongraph } from "./base/curve.js";
+import { createInequality } from "./element/composition.js";
 
 
 export function runTests(which) {
@@ -12,15 +14,19 @@ export function runTests(which) {
         new IndexTests()
 }
 
-export let tests = ['axis', 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc', 'mathml']
+export let tests = [
+    'axis', /*'widgets', 'innerpoints',*/ 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc', 'mathml',
+    'composition'
+]
+]
 
 
 export class IndexTests {
     newBoard: Board
     oldBoard: any
 
-    old = true  // turn on and off boards
-    new = true
+    new = true   // turn on and off boards
+    old = true
     webgl = true
 
     boards = []
@@ -32,12 +38,14 @@ export class IndexTests {
         if (which) {
             this[which]()
         } else {
-            this.curve()
+            // this.axis()
+            // this.widgets()
+            // this.curve()
+            this.text()
             // this.point()
             // this.line()
             // this.circle()
             // this.curve()
-            // this.widgets()
             // this.image()
             // this.polygon()
         }
@@ -68,6 +76,7 @@ export class IndexTests {
         }
     }
 
+
     axis() {
         this.boards.map((board) => {
 
@@ -85,7 +94,6 @@ export class IndexTests {
             board.create('text', [() => a.X(), () => a.Y() + 1, 'follows'])
 
             board.create('text', [-3, -3, `[${a.X()}, ${a.Y()}]`])
-
         })
     }
 
@@ -203,9 +211,45 @@ export class IndexTests {
     }
     widgets() {
         this.boards.map((board) => {
-            let a = board.create('checkbox', [-8, 8, 'Checkbox'], {});
-            let b = board.create('point', [-8.3, 8.3], { name: 'is checked', fillcolor: () => a.Value() ? 'red' : 'green' })
+
+            // let a = board.create('checkbox', [-8, 8, 'Checkbox'], {});
+            // let b = board.create('point', [-8.3, 8.3], { name: () => a.Value() ? 'checked' : 'NOT checked', strokecolor: () => a.Value() ? 'red' : 'green', strokewidth: 10 })
+
+            let button1 = board.create('button', [1, 2, 'Change Y']);
+
+
+            // let p = board.create('point', [0.5, 0.5], { id: 'p1' });
+            // let button1 = board.create('button', [1, 2, 'Change Y', () => p.moveTo([p.X(), p.Y() + 0.5], 100)]);
         })
+
+    }
+    innerpoints() {
+        this.boards.map((board) => {
+
+            // Only the edges of the polygon can be dragged
+            var pg0 = board.create('polygon', [[1, 2], [3, 7], [-3, 1]], { fillColor: 'none' });
+
+            var txt0 = board.create('text', [-5, 4, 'over!'], { fontSize: 16, visible: false });
+            pg0.on('over', function () {
+                txt0.setAttribute({ visible: true });
+            })
+            pg0.on('out', function () {
+                txt0.setAttribute({ visible: false });
+            })
+
+            // With hasInnerPoints, the polygon can be dragged from any internal point
+            var pg1 = board.create('polygon', [[1, -2], [3, -7], [-3, -1]], { fillColor: 'none', hasInnerPoints: true });
+
+            var txt1 = board.create('text', [-5, -4, 'over!'], { fontSize: 16, visible: false });
+            pg1.on('over', function () {
+                txt1.setAttribute({ visible: true });
+            })
+            pg1.on('out', function () {
+                txt1.setAttribute({ visible: false });
+            })
+
+        });
+
     }
     image() {
         this.boards.map((board) => {
@@ -286,6 +330,31 @@ export class IndexTests {
 
             board.update();
 
+
+        })
+    }
+
+    composition() {
+        this.boards.map((board) => {
+
+            let f1 = board.create('functiongraph', ['(8 - x/2) * 4 / 3'], {
+                strokeColor: 'blue',
+                strokeWidth: 3
+            });
+
+            let f2 = board.create('functiongraph', ['(20 - x) / 2'], {
+                strokeColor: 'red',
+                strokeWidth: 3
+            });
+
+            let in1 = board.create('inequality', [f1], { visible: false });
+            let in2 = board.create('inequality', [f2], { visible: false });
+            let clip = board.create('curveintersection', [in1, in2], {
+                fillColor: 'yellow',
+                fillOpacity: 0.5,
+                highlightFillColor: 'yellow',
+                highlightFillOpacity: 0.3
+            });
 
         })
     }

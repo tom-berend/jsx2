@@ -568,10 +568,10 @@ export class SVGRenderer extends AbstractRenderer {
                 }
             }
 
-            if (this.isSafari) {
+            // if (this.isSafari) {
                 // Necessary, since Safari is the new IE (11.2024)
                 el.rendNode.parentNode.insertBefore(el.rendNode, el.rendNode);
-            }
+            // }
         }
     }
     /**

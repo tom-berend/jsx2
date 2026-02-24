@@ -65,6 +65,9 @@ import { AbstractRenderer } from '../renderer/abstract.js';
 import { Dim } from '../interfaces.js'
 // import { Infobox } from './infobox.js';
 
+// import { TPoint } from "../base/point.js"
+
+
 // import {GeometryElement} from './element.js';
 import { Text } from '../base/text.js'
 import { createPoint, createPolePoint, createIntersectionPoint, createOtherIntersectionPoint } from '../base/point.js'
@@ -86,6 +89,10 @@ import { createArc, createMajorArc, createMinorArc, createCircumcircleArc, creat
 import { createSector, createCircumcircleSector, createMinorSector, createMajorSector, createAngle, createNonreflexAngle, createReflexAngle } from '../element/sector.js';
 import { createEllipse, createParabola, createHyperbola, createConic } from "../element/conic.js";
 import { createCircumcircle } from '../element/composition.js';
+import { createButton } from '../element/button.js';
+
+import { createInequality } from '../element/composition.js';
+
 
 /**
  * Constructs a new Board object.
@@ -209,7 +216,7 @@ export class Board extends Events {
      * @private
      * @ignore
      */
-    renderer/*: AbstractRenderer*/
+    renderer: AbstractRenderer | WebGLRenderer
 
     /**
      * Grids keeps track of all grids attached to this board.
@@ -2108,6 +2115,8 @@ export class Board extends Events {
      * that move objects, i.e. mouse, pointer and touch events.
      */
     addEventHandlers() {
+        console.log(`addEventHandlers()`)
+
         if (Env.supportsPointerEvents()) {
             this.addPointerEventHandlers();
         } else {
@@ -2869,8 +2878,8 @@ export class Board extends Events {
      */
     pointerDownListener(evt: any, object/*: GeometryElement*/, allowDefaultEventHandling = false) {
 
-        if (dbug(this))  //console.warn(`%c board: pointerDownListener(evt: '${evt.type},  obj.id='${object.id}')`, dbugColor)
-            console.log('%c pointerDownEvent', 'background-color:red', evt, object)
+        // if (dbug(this))  //console.warn(`%c board: pointerDownListener(evt: '${evt.type},  obj.id='${object.id}')`, dbugColor)
+        console.log('%c pointerDownEvent', 'background-color:red', evt, object)
 
         var i, j, k, pos,
             elements, sel, target_obj,
@@ -6264,10 +6273,11 @@ export class Board extends Events {
                 insert = this.renderer.removeToInsertLater(this.containerObj);
             }
 
-            if (this.attr.minimizereflow === 'svg' && this.renderer.type === 'svg') {
-                storeActiveEl = this.document.activeElement;
-                insert = this.renderer.removeToInsertLater(this.renderer.svgRoot);
-            }
+            // tbtb - not sure if this is important for modern browsers
+            // if (this.attr.minimizereflow === 'svg' && this.renderer.type === 'svg') {
+            //     storeActiveEl = this.document.activeElement;
+            //     insert = this.renderer.removeToInsertLater(this.renderer.svgRoot);
+            // }
 
             if (dragID !== undefined)
                 this.prepareUpdate(dragID).updateElements(dragID).updateConditions();
@@ -6404,6 +6414,8 @@ export class Board extends Events {
 
         let attr
         switch (elementType.toLowerCase()) {
+
+
             case 'text': el = new Text(this, parents, attributes); break;
 
             case 'point': el = createPoint(this, parents, attributes); break;
@@ -6471,7 +6483,10 @@ export class Board extends Events {
             case 'nonreflexangle': el = createNonreflexAngle(this, parents, attributes); break;
             case 'reflexangle': el = createReflexAngle(this, parents, attributes); break;
 
+            case 'button': el = createButton(this, parents, attributes); break;
 
+            case 'inequality':el = createInequality(this, parents, attributes); break;
+            
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)
                 throw new Error('JSXGraph: create: Unknown element type given: ' + elementType);

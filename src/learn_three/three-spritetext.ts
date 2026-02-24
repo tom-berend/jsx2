@@ -15,7 +15,7 @@ export class SpriteText extends THREE.Sprite {
     private _text
     private _textHeight
     private _color
-    private _backgroundColor = false; // no background color
+    private _backgroundColor:string|boolean = false; // no background color
     private _padding = 0;
     private _borderWidth = 0;
     private _borderRadius = 0;
@@ -182,11 +182,15 @@ export class SpriteText extends THREE.Sprite {
         }
 
         lines.forEach((line, index) => {
-            const lineX = (innerWidth - ctx.measureText(line).width) / 2;
+            const lineX = (innerWidth - ctx.measureText(line).width) / 2
             const lineY = (index + 1) * this.fontSize;
 
             drawTextStroke && ctx.strokeText(line, lineX, lineY);
             ctx.fillText(line, lineX, lineY);
+
+            // tbtb -  compile in some extra
+            ctx.fillText('x',lineX+15,lineY+15)
+            console.log('tbtb')
         });
 
         // Inject canvas into sprite
@@ -194,7 +198,7 @@ export class SpriteText extends THREE.Sprite {
         const texture = this.material.map = new THREE.CanvasTexture(canvas);
         texture.colorSpace = THREE.SRGBColorSpace;
 
-        const yScale = this.textHeight * lines.length + border[1] * 2 + padding[1] * 2 + Math.abs(this.offsetY);
+        let yScale = this.textHeight * lines.length + border[1] * 2 + padding[1] * 2 + Math.abs(this.offsetY);
         this.scale.set(yScale * canvas.width / canvas.height, yScale, 0);
     }
 

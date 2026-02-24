@@ -43,6 +43,7 @@
 import { Options } from '../options.js';
 import { LooseObject } from '../interfaces.js'
 import { Point, createPoint } from "../base/point.js";
+import { GeometryElement } from '../base/element.js';
 
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
@@ -1609,7 +1610,7 @@ export class Type {
             tabindex: -100000,
             transitionduration: 0,
             top: -100000,
-            visible: null
+            visible: null,
         };
 
         return el;

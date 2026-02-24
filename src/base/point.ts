@@ -482,7 +482,7 @@ export class Point extends CoordsElement {
 
     // Already documented in GeometryElement
     cloneToBackground() {
-        var copy = Type.getCloneObject(this);
+        var copy = Type.getCloneObject(this) as Point;
 
         this.board.renderer.drawPoint(copy);
         this.traces[copy.id] = copy.rendNode;
@@ -490,6 +490,9 @@ export class Point extends CoordsElement {
         return this;
     }
 }
+
+
+
 
 /**
  * @class Construct a free or a fixed point. A free point is created if the given parent elements are all numbers
@@ -543,7 +546,6 @@ export class Point extends CoordsElement {
  */
 export function createPoint(board: Board, parents, attributes): Point {
 
-    // attr = Type.copyAttributes(attributes, board.options, 'point');
     let pointAttr = Type.initVisProps(Options.point, attributes)
     let point = new Point(board, parents, pointAttr);
 

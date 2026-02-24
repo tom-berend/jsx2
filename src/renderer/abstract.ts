@@ -23,7 +23,7 @@ const dbugColor = `color:white;background-color:#0080ff`;
       OR
       * MIT License: https://github.com/jsxgraph/jsxgraph/blob/master/LICENSE.MIT
 
-    JSXGraph is distributed in the hope that it will be useful,
+    JSXGraph is distributed in the hope that it will be ueful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
@@ -69,6 +69,7 @@ import { Point } from "../base/point.js"
 import { Curve } from "../base/curve.js"
 import { Image } from "../base/image.js"
 import { elements } from "../index.js";
+// import { TPoint } from "../tbase/tpoint.js";
 
 
 /**
@@ -341,7 +342,9 @@ export abstract class AbstractRenderer {
      */
     drawPoint(el: Point) {
 
-        if (dbug(el)) console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visProp)
+        // if (dbug(el))
+        console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visProp)
+
 
 
         var prim: SVGType
@@ -359,8 +362,6 @@ export abstract class AbstractRenderer {
             // triangleright/>, plus/+, |, -
             prim = "path";
         }
-
-        if (dbug(el)) console.log(`%c abstract: drawPoint(el)`, dbugColor)
 
         // el.rendNode = this.appendChildPrim(
         //     this.createPrim(prim, el.id),
@@ -570,7 +571,7 @@ export abstract class AbstractRenderer {
             arrowData;
 
         if (dbug(el))
-            console.warn(`%c abstract: updatePathWithArrowHeads(${el.id}, ${doHighlight})`,dbugColor)
+            console.warn(`%c abstract: updatePathWithArrowHeads(${el.id}, ${doHighlight})`, dbugColor)
 
         if (doHighlight && el.evalVisProp('highlightstrokewidth')) {
             w = Math.max(
@@ -755,13 +756,16 @@ export abstract class AbstractRenderer {
         c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
 
         margin = el.evalVisProp('margin');
+            if (!el.evalVisProp('clip')) {
+                margin += 4096;
+            }
         Geometry.calcStraight(el, c1, c2, margin);
 
         this.handleTouchpoints(el, c1, c2, arrowData);
         this.getPositionArrowHead(el, c1, c2, arrowData);
 
-        console.error(c1.scrCoords,c2.scrCoords)
-        
+        // console.error(c1.scrCoords,c2.scrCoords)
+
         this.updateLinePrim(
             el.rendNode,
             c1.scrCoords[1],
