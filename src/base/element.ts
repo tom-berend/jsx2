@@ -47,8 +47,6 @@ import { Color } from "../utils/color.js";
 import { Type } from "../utils/type.js";
 import { ElementObject, LooseObject } from "../interfaces.js";
 import { Transformation } from "./transformation.js";
-import { Text } from "./text.js";
-import { Point } from "./point.js";
 
 
 export interface GeometryElementInterface {
@@ -1899,6 +1897,9 @@ export abstract class GeometryElement extends Events {
      * @see JXG2.GeometryElement#addLabelToElement
      */
     createLabelGeneric() {
+        // Dynamic import to avoid circular dependency
+        const { Text } = require("./text.js");
+        
         var attr
 
 

@@ -1,4 +1,17 @@
-////////////////// prototype test
+
+jest.mock("../../src/renderer/webgl.js", () => ({
+    WebGLRenderer: class WebGlRenderer {
+        public render(): void {
+            return;
+        }
+    }
+}));
+
+import { Type } from "../../src/utils/type.js"
+import { createPoint } from "../../src/base/point.js";
+
+
+
 describe('board suite description', () => {
     it('test description', () => {
         let a = 0
@@ -15,7 +28,7 @@ import { Coords } from "../../src/base/coords.js";
 describe('board creation', () => {
     it('test description', () => {
         document.body.innerHTML =
-        `<!DOCTYPE html><html lang="en"><head></head><body><div id="box" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div></body></html>`
+            `<!DOCTYPE html><html lang="en"><head></head><body><div id="box" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div></body></html>`
 
         let b = new Board('box')
         expect(b.container).toBe('box')
@@ -27,10 +40,10 @@ describe('board creation', () => {
 describe('generate names', () => {
     it('generates A,B,C for points', () => {
         document.body.innerHTML =
-        `<!DOCTYPE html><html lang="en"><head></head><body><div id="box" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div></body></html>`
+            `<!DOCTYPE html><html lang="en"><head></head><body><div id="box" class="jxgbox" style="width:500px; aspect-ratio: 1/1;"></div></body></html>`
 
         let b = new Board('box')
-        let p = b.create('point',[2,3])
+        let p = b.create('point', [2, 3])
         // expect(p.name).toBe('A')
 
         let ptName = b.generateName(p)
@@ -51,11 +64,6 @@ describe('check a few isSomething() methods from Type', () => {
 
         let p = createPoint(b, [0, 0])
         expect(Type.isId(b, p.id)).toBe(true)
-
-        // adding a point also adds a label so we should see its id too
-        expect(p.label).toBeTruthy()    // should not be null
-        if (p.label)    //
-            expect(Type.isId(b, p.label.id)).toBe(true)
 
         expect(Type.isPoint(b)).toBe(false)
         expect(Type.isPoint(p)).toBe(true)

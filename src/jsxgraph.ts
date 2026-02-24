@@ -1,4 +1,3 @@
-export const watchElement = '--'
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -51,18 +50,13 @@ import { Board } from "./base/board.js";
 import { Options } from "./options.js";
 import { SVGRenderer } from "./renderer/svg.js";
 import { WebGLRenderer } from "./renderer/webgl.js";
-import CanvasRenderer from "./renderer/canvas.js";
-import NoRenderer from "./renderer/no.js";
-
-import './index.js'
-import { LooseObject } from "./interfaces.js";
 
 
-const original: LooseObject = { name: "MDN" };
+const original = { name: "MDN" ,itself:{}};
 original.itself = original;
 
 // Clone it
-const clone = structuredClone(original);
+// const clone = structuredClone(original);
 
 /**
  * Constructs a new JSXGraph singleton object.
@@ -82,7 +76,7 @@ export class JSXGraph {
      * Store the available file readers in this structure.
      * @type Object
      */
-    static readers: LooseObject = {};
+    static readers = {};
 
     /**
      * Associative array that keeps track of all constructable elements registered
@@ -166,10 +160,10 @@ export class JSXGraph {
             renderer = new SVGRenderer(boxid, dim);
         } else if (attrRenderer === 'webgl') {
             renderer = new WebGLRenderer(boxid, dim);
-        } else if (attrRenderer === 'canvas') {
-            renderer = new CanvasRenderer(boxid, dim);
-        } else {
-            renderer = new NoRenderer();
+        // } else if (attrRenderer === 'canvas') {
+        //     renderer = new CanvasRenderer(boxid, dim);
+        // } else {
+        //     renderer = new NoRenderer();
         }
 
         return renderer;

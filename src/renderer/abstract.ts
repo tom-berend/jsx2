@@ -342,8 +342,8 @@ export abstract class AbstractRenderer {
      */
     drawPoint(el: Point) {
 
-        // if (dbug(el))
-        console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visProp)
+        if (dbug(el))
+            console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visProp)
 
 
 
@@ -756,9 +756,9 @@ export abstract class AbstractRenderer {
         c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
 
         margin = el.evalVisProp('margin');
-            if (!el.evalVisProp('clip')) {
-                margin += 4096;
-            }
+        if (!el.evalVisProp('clip')) {
+            margin += 4096;
+        }
         Geometry.calcStraight(el, c1, c2, margin);
 
         this.handleTouchpoints(el, c1, c2, arrowData);

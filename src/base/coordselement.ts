@@ -50,7 +50,6 @@ import { Type } from "../utils/type.js";
 import { GeometryElement } from "../base/element.js";
 import { Options } from "../options.js"
 import { Transformation } from "./transformation.js";
-import { Glider } from "../element/glider.js";
 import { Line } from "../base/line.js";
 import { Circle } from "../base/circle.js";
 import { Curve } from "../base/curve.js";

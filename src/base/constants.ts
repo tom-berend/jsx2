@@ -43,6 +43,12 @@ let major = 1,
 export const Version = major + '.' + minor + '.' + patch + (add ? '-' + add : '')
 
 /**
+ * Used for debugging specific elements by ID
+ * @type String
+ */
+export const watchElement = '--'
+
+/**
  * Constant: the small gray version indicator in the top left corner of every JSXGraph board (if
  * showCopyright is not set to false on board creation).
  *

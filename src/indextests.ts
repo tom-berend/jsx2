@@ -18,7 +18,7 @@ export let tests = [
     'axis', /*'widgets', 'innerpoints',*/ 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc', 'mathml',
     'composition'
 ]
-]
+
 
 
 export class IndexTests {

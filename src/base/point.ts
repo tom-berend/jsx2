@@ -1,4 +1,4 @@
-import { watchElement } from "../jsxgraph.js"
+import { watchElement } from "../base/constants.js"
 const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
 const dbugColor = `color:red;background-color:lightblue`;
 /*
@@ -544,7 +544,7 @@ export class Point extends CoordsElement {
  *   var fpex2_p3 = fpex2_board.create('point', [fpex2_p2, fpex2_trans]);
  * </script><pre>
  */
-export function createPoint(board: Board, parents, attributes): Point {
+export function createPoint(board: Board, parents, attributes = {}): Point {
 
     let pointAttr = Type.initVisProps(Options.point, attributes)
     let point = new Point(board, parents, pointAttr);

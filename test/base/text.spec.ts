@@ -1,3 +1,12 @@
+jest.mock("../../src/renderer/webgl.js", () => ({
+    WebGLRenderer: class WebGlRenderer {
+        public render(): void {
+            return;
+        }
+    }
+}));
+
+
 import { Text } from "../../src/base/text.js"
 import { Board } from "../../src/base/board.js"
 
