@@ -56,7 +56,7 @@ import { COORDS_BY_USER } from "../index.js";
 import { Text, createText, createLabel } from "../base/text.js"
 import { PointOptions } from "../optionInterfaces.js";
 import { Board } from "../base/board.js";
-import { LooseObject } from "../interfaces.js";
+import { LooseObject, ComposeInterface } from "../interfaces.js";
 import { Env } from "../utils/env.js";
 
 /**
@@ -544,6 +544,57 @@ export class Point extends CoordsElement {
  *   var fpex2_p3 = fpex2_board.create('point', [fpex2_p2, fpex2_trans]);
  * </script><pre>
  */
+
+export class CreatePoint implements ComposeInterface {
+
+    private point: Point
+    private label: Text
+
+    constructor(board: Board, parents, attributes = {}) {
+
+        let pointAttr = Type.initVisProps(Options.point, attributes)
+
+        this.point = new Point(board, parents, pointAttr)
+
+        if (!this.point) {
+            throw new Error(
+                "JSXGraph: Can't create point with parent types '" +
+                typeof parents[0] +
+                "' and '" +
+                typeof parents[1] +
+                "'." +
+                "\nPossible parent types: [x,y], [z,x,y], [element,transformation]"
+            );
+        }
+        if (dbug(this.point))
+            console.warn(`%c new Point ${this.point.id} `, dbugColor, this.point)
+
+
+        if (this.point.evalVisProp('withlabel')) {
+            let labelAttr = Type.initVisProps(Options.label, attributes['label'])
+
+            this.label = new Text(board, [0, 0, this.point.name], labelAttr);
+            this.label.id = this.point.id + 'label'   // overwrite
+
+            this.label.addConstraint([() => this.point.X() + .5, () => this.point.Y() + .5])
+            this.label.setAttribute({ visible: () => this.point.evalVisProp('visible') })
+
+            if (dbug(this.label))
+                console.warn(`%c new Label on Point ${this.label.id} `, dbugColor, this.label)
+        }
+    }
+
+    update() {
+        this.point.update()
+        this.label.update()
+    }
+
+    X() { this.point.X() }
+    Y() { this.point.Y() }
+}
+
+
+
 export function createPoint(board: Board, parents, attributes = {}): Point {
 
     let pointAttr = Type.initVisProps(Options.point, attributes)
@@ -561,7 +612,7 @@ export function createPoint(board: Board, parents, attributes = {}): Point {
     }
 
     if (point.evalVisProp('withlabel')) {
-        let labelAttr = Type.initVisProps(Options.label, attributes.label)
+        let labelAttr = Type.initVisProps(Options.label, attributes['label'])
 
         point.label = new Text(board, [0, 0, point.name], labelAttr);
         point.label.id = point.id + 'label'

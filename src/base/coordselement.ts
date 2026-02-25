@@ -53,7 +53,7 @@ import { Transformation } from "./transformation.js";
 import { Line } from "../base/line.js";
 import { Circle } from "../base/circle.js";
 import { Curve } from "../base/curve.js";
-
+import { Glider} from "../element/glider.js"
 
 
 export abstract class CoordsElement extends GeometryElement {

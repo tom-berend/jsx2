@@ -1,3 +1,6 @@
+export const watchElement = '--'
+
+
 /*
     Copyright 2008-2025
         Matthias Ehmann,

@@ -3,6 +3,11 @@ import { GeometryElement } from "./base/element.js"
 
 export type Constructor<T = {}> = new (...args: any[]) => T  // for mixins.  Constructor is something that can be instantiated
 
+export interface ComposeInterface {
+
+}
+
+
 export interface Dim { width: number, height: number }
 export type SVGType = 'text' | 'line' | 'path' | 'rect' | 'ellipse' | 'polygon' | 'image' | 'foreignObject' | 'stop' | 'marker' | 'linearGradient' | 'radialGradient'
 

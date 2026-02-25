@@ -131,6 +131,9 @@ describe('copyAttributes(attr, special, toLower, ignoreUndefinedSpecials)', () =
         expect(Type.initVisProps(a, d)).toEqual({ a1: 'string', a2: true, a3: 3.14, a4: { x: { y: 1, z: [2] } } })
         expect(Type.initVisProps(a, e)).toEqual({ a1: 'string', a2: { enabled: true }, a3: 3.14, a4: false })
 
+        // maybe subobject is undefined (eg: attributes['label'])
+        expect(Type.initVisProps(a, undefined)).toEqual({ a1: 'string', a2: true, a3: 3.14, a4: { x: { y: 1, z: [1] } }})
+
         // copy a subobject of e into a
         expect(Type.initVisProps(a, e.a2)).toEqual({ a1: 'string', a2: true, a3: 3.14, a4: { x: { y: 1, z: [1] } }, enabled: true })
 
@@ -237,7 +240,7 @@ describe('snippet()', () => {
     it('creates a function from a string', () => {
         let a = Type.snippet('2+3')
         expect(a()).toEqual(5)
-        let b = Type.snippet('x+3',true,'x')
+        let b = Type.snippet('x+3', true, 'x')
         expect(b(2)).toEqual(5)
 
     });

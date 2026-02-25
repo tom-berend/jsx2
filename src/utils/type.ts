@@ -515,7 +515,7 @@ export class Type {
                 // );
                 // console.log(attr)
                 // console.log(attributes,board.options,attrClass,attrArray)
-                attr = this.initVisProps(Options.point,{visible:false,withlabel:false},attributes)
+                attr = this.initVisProps(Options.point, { visible: false, withlabel: false }, attributes)
 
                 // let attr = this.initVisProps( attrArray[j],attrClass,Options.board,attributes)
             }
@@ -1941,8 +1941,8 @@ export class Type {
 
         let a: LooseObject = {}
         s.map((addVisProps) => {
-            this.mergeAttr(a, addVisProps, true)
-
+            if (addVisProps !== undefined)  //
+                this.mergeAttr(a, addVisProps, true)
         })
 
         // console.warn('initVisProps',Type.getObjectDiff(a,b),a,b)
@@ -2039,7 +2039,7 @@ export class Type {
      */
     static snippet(code: string, unused = true, varname = ''): Function {//, forceValueCall=true) {
 
-        console.assert(unused==true)  // does ANYONE ever say false?
+        console.assert(unused == true)  // does ANYONE ever say false?
 
         // examples
         //  let a = Type.snippet('2+3')           // () => 2+3
