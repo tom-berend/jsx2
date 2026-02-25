@@ -1,3 +1,11 @@
+jest.mock("../../src/renderer/webgl.js", () => ({
+    WebGLRenderer: class WebGlRenderer {
+        public render(): void {
+            return;
+        }
+    }
+}));
+
 /*
     Copyright 2008-2025
         Matthias Ehmann,

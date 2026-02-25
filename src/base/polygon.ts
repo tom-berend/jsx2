@@ -48,6 +48,7 @@ import { createSegment } from "./line.js";
 import { Options } from "../options.js";
 import { Env } from "../utils/env.js";
 import { COORDS_BY_SCREEN } from "../index.js";
+import { createLabelGeneric } from "./text.js";
 
 /**
  * Creates a new instance of JXG2.Polygon.
@@ -265,7 +266,11 @@ export class Polygon extends GeometryElement {
     }
 
     createLabel() {
-        this.createLabelGeneric();
+        if (this.visProp['withlabel']) {
+            this.label = createLabelGeneric(this.board, undefined);
+            this.hasLabel = true;
+            this.label.id = this.id + 'Label';
+        }
     }
 
 

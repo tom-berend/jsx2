@@ -57,6 +57,7 @@ import { LooseObject } from "../interfaces.js";
 import { Board } from "./board.js";
 import { Transformation } from "../base/transformation.js";
 import { Options } from "../options.js";
+import { createLabelGeneric } from "./text.js";
 
 /**
  * Curves are the common object for function graphs, parametric curves, polar curves, and data plots.
@@ -197,7 +198,12 @@ export class Curve extends GeometryElement {
 
         this.createGradient();
         this.elType = 'curve';
-        this.createLabelGeneric();
+
+        if (this.visProp['withlabel']) {
+            this.label = createLabelGeneric(this.board, undefined);
+            this.hasLabel = true;
+            this.label.id = this.id + 'Label';
+        }
 
         if (Type.isString(this.xterm)) {
             this.notifyParents(this.xterm);

@@ -53,6 +53,8 @@ import { Point } from "../base/point.js";
 import { Env } from "../utils/env.js";
 import { createEllipse } from "../element/conic.js";
 import { createCircumcircle } from '../element/composition.js';
+import { createLabelGeneric } from "./text.js";
+
 
 /**
  * A circle consists of all points with a given distance from one point. This point is called center, the distance is called radius.
@@ -864,9 +866,11 @@ export class Circle extends GeometryElement {
         * @see JXG2.GeometryElement#addLabelToElement
         */
     createLabel() {
-        this.createLabelGeneric()
-        return;
-
+        if (this.visProp['withlabel']) {
+            this.label = createLabelGeneric(this.board, undefined);
+            this.hasLabel = true;
+            this.label.id = this.id + 'Label';
+        }
     }
 
     updateRadius(): number {

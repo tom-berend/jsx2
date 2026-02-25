@@ -42,6 +42,7 @@ import { Env } from "../utils/env.js";
 import { Type } from "../utils/type.js";
 import { Text } from "../base/text.js";
 import { Board } from "../base/board.js";
+import { ComposeInterface } from "../interfaces.js";
 
 var priv = {
     /**
@@ -173,15 +174,13 @@ var priv = {
  */
 
 //tbtbtb
-export class Checkbox extends Text {
-    constructor(board: Board, parents: any[], attributes = {}) {
-        super(board, parents, attributes)
+export class CreateCheckbox implements ComposeInterface {
 
-        this.elementUpdate = () => this.update();
-        this.elementUpdateRenderer = () => this.updateRenderer();
-        // this.elementCreateLabel = () => this.createLabel()
-        this.elementGetLabelAnchor = () => this.getLabelAnchor();
-        this.elementGetTextAnchor = () => this.getTextAnchor();
+    _value: boolean
+    rendNodeCheckbox
+    needsUpdate
+    
+    constructor(board: Board, parents: any[], attributes = {}) {
 
 
         var t,
@@ -203,7 +202,7 @@ export class Checkbox extends Text {
         ];
 
         // 1. Create checkbox element with empty label
-        t = board.create("text", par, attr);
+        t = new Text(board, par, attr);
         t.type = OBJECT_TYPE.CHECKBOX;
 
         t.rendNodeCheckbox = t.rendNode.childNodes[0].childNodes[0];
@@ -228,31 +227,32 @@ export class Checkbox extends Text {
 
         t._value = attr.checked;
 
-        /**
-         * Returns the value of the checkbox element
-         * @name Value
-         * @memberOf Checkbox.prototype
-         * @function
-         * @returns {String} value of the checkbox.
-         */
-        t.Value = function () {
-            return this._value;
-        };
-
-        /**
-        * @class
-        * @ignore
-        */
-        t.update = () => {
-            if (this.needsUpdate) {
-                this.update();
-                this._value = this.rendNodeCheckbox.checked;
-            }
-            return this;
-        };
-
-        Env.addEvent(t.rendNodeCheckbox, "change", priv.CheckboxChangeEventHandler, t);
-
-        return t;
+        return t
+    }
+    /**
+     * Returns the value of the checkbox element
+     * @name Value
+     * @memberOf Checkbox.prototype
+     * @function
+     * @returns {String} value of the checkbox.
+     */
+    Value() {
+        return this._value;
     };
+
+    /**
+    * @class
+    * @ignore
+    */
+    update() {
+        if (this.needsUpdate) {
+            this.update();
+            this._value = this.rendNodeCheckbox.checked;
+        }
+        return this;
+    };
+
+    // Env.addEvent(t.rendNodeCheckbox, "change", priv.CheckboxChangeEventHandler, t);
+
+    // return t;
 }

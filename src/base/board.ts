@@ -63,15 +63,16 @@ import { JSXMath } from '../math/math.js';
 import { Statistics } from '../math/statistics.js';
 import { AbstractRenderer } from '../renderer/abstract.js';
 import { Dim } from '../interfaces.js'
+import {Text} from './text.js'
 // import { Infobox } from './infobox.js';
 
 // import { TPoint } from "../base/point.js"
 
 
 // import {GeometryElement} from './element.js';
-import { Text } from '../base/text.js'
+import { createText } from '../base/text.js'
 import { createPoint, createPolePoint, createIntersectionPoint, createOtherIntersectionPoint } from '../base/point.js'
-import { Checkbox } from "../element/checkbox.js"
+import { CreateCheckbox } from "../element/checkbox.js"
 import { createLine, createSegment, createArrow, createAxis, createTangent, createNormal, createRadicalAxis, createPolarLine, createTangentTo } from '../base/line.js'
 import { createCircle } from './circle.js';
 import { createTicks, createHatchmark } from "./ticks.js";
@@ -888,7 +889,7 @@ export class Board extends Events {
 
         // since this.infobox should never be null
         // this.infobox = new Text(this, [0, 0], {}, '[0,0]')
-        this.infobox = new Text(this, [0, 0, '[0,0]'], { islabel: false })
+        this.infobox = createText(this, [0, 0, '[0,0]'], { islabel: false })
 
         this.displayInfobox(false)
 
@@ -6416,7 +6417,7 @@ export class Board extends Events {
         switch (elementType.toLowerCase()) {
 
 
-            case 'text': el = new Text(this, parents, attributes); break;
+            case 'text': el = createText(this, parents, attributes); break;
 
             case 'point': el = createPoint(this, parents, attributes); break;
             case 'glider': el = createGlider(this, parents, attributes); break;
@@ -6425,7 +6426,7 @@ export class Board extends Events {
             case 'createotherintersectionpoint': el = createOtherIntersectionPoint(this, parent, attributes); break;
 
 
-            case 'checkbox': el = new Checkbox(this, parents, attributes); break;
+            // case 'checkbox': el = new CreateCheckbox(this, parents, attributes); break;
 
             case 'line': el = createLine(this, parents, attributes); break;
             case 'segment': el = createSegment(this, parents, attributes); break;
@@ -6486,7 +6487,7 @@ export class Board extends Events {
             case 'button': el = createButton(this, parents, attributes); break;
 
             case 'inequality':el = createInequality(this, parents, attributes); break;
-            
+
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)
                 throw new Error('JSXGraph: create: Unknown element type given: ' + elementType);

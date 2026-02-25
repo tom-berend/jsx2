@@ -503,7 +503,7 @@ export class Text extends CoordsElement {
         this.orgText = text
 
         if (text === 'Change Y') {
-            console.log(text,'found change')
+            console.log(text, 'found change')
 
         }
         // First evaluation of the string.
@@ -2327,4 +2327,35 @@ export class HTMLSlider extends Text {
 
 
 
-// JXG_registerElement("text", createText);
+/**
+ * Creates a label element for this geometry element.
+ * @see JXG2.GeometryElement#addLabelToElement
+ */
+export function createLabelGeneric(board: Board, attributes: LooseObject): Text {
+
+    // // Dynamic import to avoid circular dependency
+    // const { Text } = require("./text.js");
+
+    let attr = Type.initVisProps(Options.label, attributes)
+    attr['isLabel'] = true;
+    attr['anchor'] = this;
+    // attr['priv'] = this.visProp['priv'];   // tbtb ??
+
+    console.warn(`%c createLabelGeneric: creating label `, dbugColor)
+
+
+    let newLabel = createText(
+        board,
+        [0, 0,
+            (typeof attr.name == 'function') ? attr.name(this) : attr.name
+        ],
+        attr
+    );
+    newLabel.needsUpdate = true;
+    newLabel.dump = false;
+    newLabel.fullUpdate(newLabel.evalVisProp('visible'));
+
+    return newLabel;
+}
+
+

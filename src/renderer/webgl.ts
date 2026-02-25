@@ -98,7 +98,7 @@ export class WebGLRenderer {
     /**
      * SVG root node
      */
-    canvas: Element | null = null;       // not SVGElement!
+    canvas: Element | null = null;       // not SVGElement
 
     /**
      * The SVG Namespace used in JSXGraph.

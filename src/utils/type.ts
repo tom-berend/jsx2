@@ -1,3 +1,6 @@
+import { watchElement } from "../jsxgraph.js"
+const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
+const dbugColor = `color:black;background-color:#80c0ff`;
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -42,8 +45,7 @@
 
 import { Options } from '../options.js';
 import { LooseObject } from '../interfaces.js'
-import { Point, createPoint } from "../base/point.js";
-import { GeometryElement } from '../base/element.js';
+import { Point, createPoint } from "../base/point.js"
 
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
@@ -1908,7 +1910,6 @@ export class Type {
 
         return t;
     }
-
 
     /**
      * Generates a visProp object (all keys in lowercase) from objects presented in order and overwritten
