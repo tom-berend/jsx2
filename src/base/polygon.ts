@@ -1,4 +1,5 @@
-let dbug = (elem) => elem && elem.id === "jxgBoard1L9"
+import { watchElement } from "../jsxgraph.js"
+const dbug = (elem) => elem && elem['id'] && elem.id == watchElement
 const dbugColor = `color:black;background-color:#ffff0f`;
 /*
     Copyright 2008-2025
@@ -45,10 +46,11 @@ import { LooseObject } from "../interfaces.js";
 import { Board } from "./board.js";
 import { Point } from "./point.js";
 import { createSegment } from "./line.js";
+import { createText } from "./text.js";
 import { Options } from "../options.js";
 import { Env } from "../utils/env.js";
 import { COORDS_BY_SCREEN } from "../index.js";
-import { createLabelGeneric } from "./text.js";
+
 
 /**
  * Creates a new instance of JXG2.Polygon.
@@ -88,7 +90,6 @@ export class Polygon extends GeometryElement {
 
         this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
-        this.elementCreateLabel = () => this.createLabel()
         // this.elementGetLabelAnchor = () => this.getLabelAnchor();
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
@@ -168,8 +169,6 @@ export class Polygon extends GeometryElement {
 
         this.createGradient();
 
-        // create label
-        this.createLabel();
 
         // if (dbug(this))
         console.warn(`%c new Polygon(${this.id} `, dbugColor, this)
@@ -265,13 +264,29 @@ export class Polygon extends GeometryElement {
         return false;
     }
 
-    createLabel() {
-        if (this.visProp['withlabel']) {
-            this.label = createLabelGeneric(this.board, undefined);
-            this.hasLabel = true;
-            this.label.id = this.id + 'Label';
-        }
+    createLabel(attributes: LooseObject) {
+        let attr = Type.initVisProps(Options.label, attributes)
+        attr['isLabel'] = true;
+        attr['anchor'] = this;
+        // attr['priv'] = this.visProp['priv'];   // tbtb ??
+
+        console.warn(`%c createLabel: creating label `, dbugColor)
+
+
+        let newLabel = createText(
+            this.board,
+            [0, 0,
+                (typeof attr.name == 'function') ? attr.name(this) : attr.name
+            ],
+            attr
+        );
+        newLabel.needsUpdate = true;
+        newLabel.dump = false;
+        newLabel.fullUpdate(newLabel.evalVisProp('visible'));
+
+        return newLabel;
     }
+
 
 
     /**
@@ -1312,6 +1327,10 @@ export function createPolygon(board, parents, attributes) {
             points[i].elementUpdateRenderer();
         }
     }
+
+    // create label
+    el.createLabel(attributes);
+
 
     return el;
 };

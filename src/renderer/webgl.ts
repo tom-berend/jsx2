@@ -1,5 +1,5 @@
 import { watchElement } from "../jsxgraph.js"
-const dbug = (elem) => elem && elem.id == watchElement
+const dbug = (elem) => elem && elem['id'] && elem.id == watchElement
 const dbugColor = `color:blue;background-color:#d0d0ff`;
 
 // this is a clone of abstract.ts, not a child (like svg and canvas)
@@ -189,7 +189,7 @@ export class WebGLRenderer {
 
     isSafari: boolean
 
-    svgRoot:    null    // because AbstractRenderer has one
+    svgRoot: null    // because AbstractRenderer has one
 
     defs: any
 
@@ -446,7 +446,7 @@ export class WebGLRenderer {
      */
     drawPoint(el: Point) {
 
-        // if (dbug(el))
+        if (dbug(el))
             console.warn(`%c webgl: drawPoint(${el.id})`, dbugColor, el.visProp)
 
         // really naive
@@ -616,8 +616,6 @@ export class WebGLRenderer {
         let start = el.point1.Coords(false)
         let end = el.point2.Coords(false)
 
-        // let start = el.point1.usrCoords
-        // let end = el.point2.usrCoords
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
@@ -632,7 +630,7 @@ export class WebGLRenderer {
         this.scene.add(el.webGL.mesh);
 
         if (dbug(el))
-            console.log(`%c webgl drawLine(${el.id})`, dbugColor, el.webGL)
+            console.log(`%c webgl drawLine(${el.id}) from ${JSON.stringify(start)} to${JSON.stringify(end)}`, dbugColor, el.webGL)
 
     }
 
@@ -644,37 +642,17 @@ export class WebGLRenderer {
      * @see JXG2.AbstractRenderer#drawLine
      */
     updateLine(el: Line) {
-
-        if (dbug(el))
-            console.warn(`%c webgl: updateLine(${el.id})`, dbugColor, el.webGL)
-
-        let start = el.point1.Coords(false)
-        let end = el.point2.Coords(false)
-
-        // let start = el.point1.usrCoords
-        // let end = el.point2.usrCoords
-
-        if (dbug(el))
-            console.warn(start, end, el.point1)
-
-        // first update the lineCurve3
-        el.webGL.lineCurve3.v1 = new THREE.Vector3(start[0], start[1], 0)
-        el.webGL.lineCurve3.v2 = new THREE.Vector3(end[0], end[1], 0)
-        el.webGL.lineCurve3.needsUpdate = true
-
-        el.webGL.geometry.dispose() // dispose the old geometry
-        let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
-        el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
-
-        this.scene.remove(el.webGL.mesh)
-        el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);
-        this.scene.add(el.webGL.mesh)
+                if (dbug(el))
+            console.warn(`%c abstract: updateLine(${el.id})`, dbugColor)
 
         this._updateVisual(el);
         this.updatePathWithArrowHeads(el); // Calls the renderer primitive
         this.setLineCap(el);
+
+
     }
 
+    
     /* ********* Curve related stuff *********** */
 
     /**
@@ -928,7 +906,7 @@ export class WebGLRenderer {
             // useTotalLength = true,
             margin = null;
 
-            // console.error('updateLinewithEndings')
+        // console.error('updateLinewithEndings')
         c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board);
         c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
 

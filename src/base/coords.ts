@@ -1,5 +1,5 @@
 
-const dbug = (elem) => false //elem && elem.id === "jxgBoard1L9";
+const dbug = (elem) => elem && elem['id'] && elem.id === "jxgBoard1L9";
 const dbugColor = `color:black;background-color:white`;
 
 // TODO: need a way to mark Coord as invalid.   Geometry often sends [0, NaN, NaN] or Coords

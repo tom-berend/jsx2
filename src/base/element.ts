@@ -1,4 +1,5 @@
-const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
+import { watchElement } from "../jsxgraph.js"
+const dbug = (elem) => elem && elem['id'] && elem.id == watchElement
 let dbugColor = 'color:black;background-color:#FF8FFF;'
 /*
     Copyright 2008-2025
@@ -1893,7 +1894,7 @@ export abstract class GeometryElement extends Events {
     }
 
 
-    
+
 /**
  * Highlights the element.
  * @private

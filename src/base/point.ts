@@ -1,5 +1,5 @@
 import { watchElement } from "../base/constants.js"
-const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
+const dbug = (elem) => elem.id == watchElement //elem && elem['id'] && elem.id === "jxgBoard1L3";
 const dbugColor = `color:red;background-color:lightblue`;
 /*
     Copyright 2008-2025
@@ -53,7 +53,7 @@ import { Type } from "../utils/type.js";
 import { Coords } from "./coords.js";
 import { CoordsElement } from "./coordselement.js";
 import { COORDS_BY_USER } from "../index.js";
-import { Text, createText, createLabel } from "../base/text.js"
+import { Text, createText} from "../base/text.js"
 import { PointOptions } from "../optionInterfaces.js";
 import { Board } from "../base/board.js";
 import { LooseObject, ComposeInterface } from "../interfaces.js";
@@ -82,7 +82,6 @@ export class Point extends CoordsElement {
 
         this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
-        // this.elementCreateLabel = () => this.createLabel()
         this.elementGetLabelAnchor = () => this.getLabelAnchor();
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
@@ -630,7 +629,6 @@ export function createPoint(board: Board, parents, attributes = {}): Point {
     // console.log(board.objects)
     // point.hasLabel = true;
 
-    // let label = createLabel(board,[point],{})
     return point;
 };
 

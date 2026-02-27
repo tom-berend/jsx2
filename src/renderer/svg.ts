@@ -1,5 +1,5 @@
 import { watchElement } from "../jsxgraph.js"
-const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
+const dbug = (elem) => elem && elem['id'] && elem.id == watchElement
 const dbugColor = `color:blue;background-color:#ffc0c0`;
 
 /*
@@ -569,8 +569,8 @@ export class SVGRenderer extends AbstractRenderer {
             }
 
             // if (this.isSafari) {
-                // Necessary, since Safari is the new IE (11.2024)
-                el.rendNode.parentNode.insertBefore(el.rendNode, el.rendNode);
+            // Necessary, since Safari is the new IE (11.2024)
+            el.rendNode.parentNode.insertBefore(el.rendNode, el.rendNode);
             // }
         }
     }
@@ -885,9 +885,9 @@ export class SVGRenderer extends AbstractRenderer {
             len = t.length;
 
         if (dbug(el))
-            console.log(`%c svg: transformRect(el,t)' ${el.id}`, dbugColor, el)
+            console.log(`%c svg: transformRect(el,t)' ${el.id}`, dbugColor, el, t)
 
-        if (t.length > 0 && dbug(el)) console.log(`%c svg: ${JSON.stringify(t)}`, dbugColor)
+        if (t.length > 0 && dbug(el)) console.log(`%c svg: transformRec `, dbugColor)
 
         if (len > 0) {
             node = el.rendNode;

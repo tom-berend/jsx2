@@ -1,4 +1,5 @@
-const dbug = (elem) => false //elem && elem.id === "jxgBoard1L3";
+import { watchElement } from "../jsxgraph.js"
+const dbug = (elem) => elem && elem['id'] && elem.id == watchElement
 const dbugColor = `color:black;background-color:aliceblue`;
 
 /*
@@ -63,7 +64,7 @@ import { JSXMath } from '../math/math.js';
 import { Statistics } from '../math/statistics.js';
 import { AbstractRenderer } from '../renderer/abstract.js';
 import { Dim } from '../interfaces.js'
-import {Text} from './text.js'
+import { Text } from './text.js'
 // import { Infobox } from './infobox.js';
 
 // import { TPoint } from "../base/point.js"
@@ -200,7 +201,7 @@ export class Board extends Events {
      * ID of the board
      * @type String
      */
-    id = '';
+    id: string = undefined
 
     /**
      * Pointer to the html element containing the board.
@@ -3012,6 +3013,8 @@ export class Board extends Events {
                 evt.preventDefault();
             }
         }
+
+        console.warn(`%c List of elements being touched`, dbugColor, this.touches)
 
         if (this.touches.length > 0 && !allowDefaultEventHandling) {
             evt.preventDefault();
@@ -6486,7 +6489,7 @@ export class Board extends Events {
 
             case 'button': el = createButton(this, parents, attributes); break;
 
-            case 'inequality':el = createInequality(this, parents, attributes); break;
+            case 'inequality': el = createInequality(this, parents, attributes); break;
 
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)

@@ -1,5 +1,5 @@
 import { watchElement } from "../jsxgraph.js"
-const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
+const dbug = (elem) => elem.id == watchElement //elem && elem['id'] && elem.id === "jxgBoard1L3";
 const dbugColor = `color:black;background-color:#80c0ff`;
 /*
     Copyright 2008-2025

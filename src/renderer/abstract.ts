@@ -1,5 +1,5 @@
 import { watchElement } from "../jsxgraph.js"
-const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
+const dbug = (elem) => elem.id == watchElement //elem && elem['id'] && elem.id === "jxgBoard1L3";
 const dbugColor = `color:white;background-color:#0080ff`;
 
 /*
@@ -484,12 +484,17 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateLine
      */
     drawLine(el) {
+        if (dbug(el))
+            console.warn(`%c abstract: drawLine(${el.id})`, dbugColor)
+
         el.rendNode = this.appendChildPrim(
             this.createPrim("line", el.id),
             el.evalVisProp('layer')
         );
         this.appendNodesToElement(el, "lines");
         this.updateLine(el);
+
+
     }
 
     /**
@@ -502,8 +507,6 @@ export abstract class AbstractRenderer {
     updateLine(el: GeometryElement) {
         if (dbug(el))
             console.warn(`%c abstract: updateLine(${el.id})`, dbugColor)
-
-
 
         this._updateVisual(el);
         this.updatePathWithArrowHeads(el); // Calls the renderer primitive
@@ -764,7 +767,8 @@ export abstract class AbstractRenderer {
         this.handleTouchpoints(el, c1, c2, arrowData);
         this.getPositionArrowHead(el, c1, c2, arrowData);
 
-        // console.error(c1.scrCoords,c2.scrCoords)
+        if (dbug(el))
+            console.log(`%c Abstract updateLineWithEndings(${el.id}) from ${JSON.stringify(c1.usrCoords)} to${JSON.stringify(c2.usrCoords)}`, dbugColor, el.webGL)
 
         this.updateLinePrim(
             el.rendNode,

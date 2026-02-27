@@ -1,4 +1,4 @@
-let dbug = (elem) => false //elem && elem.id === 'jxgBoard1P3'
+let dbug = (elem) => false //elem && elem['id'] && elem.id === 'jxgBoard1P3'
 const dbugColor = `color:black;background-color:lightgreen`;
 /*
     Copyright 2008-2025

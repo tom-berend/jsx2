@@ -1,4 +1,5 @@
-let dbug = (elem) => false //elem && elem.id === 'jxgBoard1P3Label'
+import { watchElement } from "../jsxgraph.js"
+const dbug = (elem) => elem && elem['id'] && elem.id ==watchElement
 const dbugColor = `color:yellow;background-color:#803030`;
 
 /*
@@ -303,7 +304,7 @@ export abstract class CoordsElement extends GeometryElement {
 
 
     updateRendererGeneric(rendererMethod: string) {
-        //var wasReal;
+
         if (dbug(this))
             console.warn(`%c coordselements: updateRendererGeneric(${rendererMethod}), ${this.id}`, dbugColor)
 

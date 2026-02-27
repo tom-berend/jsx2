@@ -237,6 +237,7 @@ export class Text extends CoordsElement {
 
     }
 
+
     /**
      * Returns the coords object where a text that is bound to the element shall be drawn.
      * Differs in some cases from the values that getLabelAnchor returns.
@@ -2327,35 +2328,6 @@ export class HTMLSlider extends Text {
 
 
 
-/**
- * Creates a label element for this geometry element.
- * @see JXG2.GeometryElement#addLabelToElement
- */
-export function createLabelGeneric(board: Board, attributes: LooseObject): Text {
 
-    // // Dynamic import to avoid circular dependency
-    // const { Text } = require("./text.js");
-
-    let attr = Type.initVisProps(Options.label, attributes)
-    attr['isLabel'] = true;
-    attr['anchor'] = this;
-    // attr['priv'] = this.visProp['priv'];   // tbtb ??
-
-    console.warn(`%c createLabelGeneric: creating label `, dbugColor)
-
-
-    let newLabel = createText(
-        board,
-        [0, 0,
-            (typeof attr.name == 'function') ? attr.name(this) : attr.name
-        ],
-        attr
-    );
-    newLabel.needsUpdate = true;
-    newLabel.dump = false;
-    newLabel.fullUpdate(newLabel.evalVisProp('visible'));
-
-    return newLabel;
-}
 
 

@@ -1,5 +1,5 @@
 import { watchElement } from "../jsxgraph.js"
-const dbug = (elem) => elem.id == watchElement //elem && elem.id === "jxgBoard1L3";
+const dbug = (elem) => elem && elem['id'] && elem.id == watchElement
 const dbugColor = `color:black;background-color:#80c0ff`;
 
 /*
@@ -52,8 +52,8 @@ import { Type } from "../utils/type.js";
 import { Point } from "../base/point.js";
 import { Env } from "../utils/env.js";
 import { createEllipse } from "../element/conic.js";
+import { createText } from "./text.js";
 import { createCircumcircle } from '../element/composition.js';
-import { createLabelGeneric } from "./text.js";
 
 
 /**
@@ -104,13 +104,14 @@ export class Circle extends GeometryElement {
      * The circles center. Do not set this parameter directly as it will break JSXGraph's update system.
      * @type JXG2.Point
      */
+    point:Point = null
     //center  // tbtb - defined in GeometryElement
 
     /** Point on the circle only set if method equals 'twoPoints'. Do not set this parameter directly as it will break JSXGraph's update system.
      * @type JXG2.Point
      * @see JXG2.Circle#method
      */
-    point2 = null;
+    point2:Point = null;
 
     /** Radius of the circle
      * only set if method equals 'pointRadius'
@@ -118,7 +119,7 @@ export class Circle extends GeometryElement {
      * @default null
      * @see JXG2.Circle#method
      */
-    radius = 0;
+    radius:number = 0;
 
     /** Line defining the radius of the circle given by the distance from the startpoint and the endpoint of the line
      * only set if method equals 'pointLine'. Do not set this parameter directly as it will break JSXGraph's update system.
@@ -152,7 +153,6 @@ export class Circle extends GeometryElement {
 
         this.elementUpdate = () => this.update();
         this.elementUpdateRenderer = () => this.updateRenderer();
-        this.elementCreateLabel = () => this.createLabel()
         this.elementGetLabelAnchor = () => this.getLabelAnchor();
         this.elementGetTextAnchor = () => this.getTextAnchor();
 
@@ -201,7 +201,7 @@ export class Circle extends GeometryElement {
 
         this.createGradient();
         this.elType = 'circle';
-        this.createLabel();
+        this.createLabel(attributes);
 
         if (Type.exists(this.center._is_new)) {
             this.addChild(this.center);
@@ -865,11 +865,18 @@ export class Circle extends GeometryElement {
         * Creates a label element for this geometry element.
         * @see JXG2.GeometryElement#addLabelToElement
         */
-    createLabel() {
-        if (this.visProp['withlabel']) {
-            this.label = createLabelGeneric(this.board, undefined);
-            this.hasLabel = true;
-            this.label.id = this.id + 'Label';
+    createLabel(attributes) {
+        if (this.evalVisProp('withlabel')) {
+            let labelAttr = Type.initVisProps(Options.label, attributes['label'])
+
+            this.label = createText(this.board, [0, 0, this.name], labelAttr);
+            this.label.id = this.id + 'label'   // overwrite
+
+            this.label.addConstraint([() => this.point.X() + .5, () => this.point.Y() + .5])
+            this.label.setAttribute({ visible: () => this.point.evalVisProp('visible') })
+
+            if (dbug(this.label))
+                console.warn(`%c add Label on Circle ${this.label.id} `, dbugColor, this.label)
         }
     }
 
