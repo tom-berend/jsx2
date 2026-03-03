@@ -135,7 +135,7 @@ export abstract class AbstractRenderer {
     /**
      * SVG root node
      */
-    canvas: Element | null = null;       // not SVGElement!
+    canvas: Element | null = null;       // SVGElement!
 
     /**
      * The SVG Namespace used in JSXGraph.
@@ -330,149 +330,6 @@ export abstract class AbstractRenderer {
         return hl;
     }
 
-    /* ********* Point related stuff *********** */
-
-    /**
-     * Draws a point on the {@link JXG2.Board}.
-     * @param {JXG2.Point} el Reference to a {@link JXG2.Point} object that has to be drawn.
-     * @see Point
-     * @see JXG2.Point
-     * @see JXG2.AbstractRenderer#updatePoint
-     * @see JXG2.AbstractRenderer#changePointStyle
-     */
-    drawPoint(el: Point) {
-
-        if (dbug(el))
-            console.warn(`%c abstract: drawPoint(el)`, dbugColor, el.visProp)
-
-
-
-        var prim: SVGType
-        // Sometimes el is not a real point and lacks the methods of a JXG2.Point instance,
-        // in these cases to not use el directly.
-        let face = Options.normalizePointFace(el.evalVisProp('face'));
-
-        // Determine how the point looks like
-        if (face === "o") {
-            prim = "ellipse";
-        } else if (face === "[]") {
-            prim = "rect";
-        } else {
-            // cross/x, diamond/<>, triangleup/A/^, triangledown/v, triangleleft/<,
-            // triangleright/>, plus/+, |, -
-            prim = "path";
-        }
-
-        // el.rendNode = this.appendChildPrim(
-        //     this.createPrim(prim, el.id),
-        //     el.evalVisProp('layer')
-        // );
-        let layer = el.evalVisProp('layer')
-        let tempPrim = this.createPrim(prim, el.id)
-        el.rendNode = this.appendChildPrim(tempPrim, layer)
-
-
-        this.appendNodesToElement(el, prim);   // updates el with characteristics of various nodes
-
-        // Adjust visual properties
-        this._updateVisual(el, { dash: true, shadow: true }, true);
-
-        // By now we only created the xml nodes and set some styles, in updatePoint
-        // the attributes are filled with data.
-        this.updatePoint(el);
-    }
-
-    /**
-     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Point}.
-     * @param {JXG2.Point} el Reference to a {@link JXG2.Point} object, that has to be updated.
-     * @see Point
-     * @see JXG2.Point
-     * @see JXG2.AbstractRenderer#drawPoint
-     * @see JXG2.AbstractRenderer#changePointStyle
-     */
-    updatePoint(el: Point) {
-
-        if (dbug(el))
-            console.warn(`%c abstract: updatePoint(${el.id})`, dbugColor, el.coords.scrCoords)
-
-
-        var size = el.evalVisProp('size'),
-            // sometimes el is not a real point and lacks the methods of a JXG2.Point instance,
-            // in these cases to not use el directly.
-            face = Options.normalizePointFace(el.evalVisProp('face')),
-            unit = el.evalVisProp('sizeunit'),
-            zoom = el.evalVisProp('zoom'),
-            s1;
-
-        if (!isNaN(el.coords.scrCoords[2] + el.coords.scrCoords[1])) {
-            if (unit === "user") {
-                size *= Math.sqrt(Math.abs(el.board.unitX * el.board.unitY));
-            }
-            size *= !el.board || !zoom ? 1.0 : Math.sqrt(el.board.zoomX * el.board.zoomY);
-            s1 = size === 0 ? 0 : size + 1;
-
-            if (face === "o") {
-                // circle
-                this.updateEllipsePrim(
-                    el.rendNode,
-                    el.coords.scrCoords[1],
-                    el.coords.scrCoords[2],
-                    s1,
-                    s1
-                );
-            } else if (face === "[]") {
-                // rectangle
-                this.updateRectPrim(
-                    el.rendNode,
-                    el.coords.scrCoords[1] - size,
-                    el.coords.scrCoords[2] - size,
-                    size * 2,
-                    size * 2
-                );
-            } else {
-                // x, +, <>, <<>>, ^, v, <, >
-                this.updatePathPrim(
-                    el.rendNode,
-                    this.updatePathStringPoint(el, size, face),
-                    el.board
-                );
-            }
-            this._updateVisual(el, { dash: false, shadow: false });
-            this.setShadow(el);
-        }
-    }
-
-    /**
-     * Changes the style of a {@link JXG2.Point}. This is required because the point styles differ in what
-     * elements have to be drawn, e.g. if the point is marked by a "x" or a "+" two lines are drawn, if
-     * it's marked by spot a circle is drawn. This method removes the old renderer element(s) and creates
-     * the new one(s).
-     * @param {JXG2.Point} el Reference to a {@link JXG2.Point} object, that's style is changed.
-     * @see Point
-     * @see JXG2.Point
-     * @see JXG2.AbstractRenderer#updatePoint
-     * @see JXG2.AbstractRenderer#drawPoint
-     */
-    changePointStyle(el: Point) {
-        var node = this.getElementById(el.id);
-
-        // remove the existing point rendering node
-        if (Type.exists(node)) {
-            this.remove(node);
-        }
-
-        // and make a new one
-        this.drawPoint(el);
-        Type.clearVisPropOld(el);
-
-        if (!el.visPropCalc.visible) {
-            this.display(el, false);
-        }
-
-        if (el.evalVisProp('draft.draft')) {
-            this.setDraft(el);
-        }
-    }
 
     /* ********* Line related stuff *********** */
 
@@ -1073,8 +930,8 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateInternalText
      * @see JXG2.AbstractRenderer#updateTextStyle
      */
-    drawText(el): HTMLElement {
-        var node: HTMLElement, z, level, ev_visible;
+    drawText(el: Text) {
+        var node: HTMLElement, z, level
 
         if (dbug(el))
             console.warn(`%c abstract: drawText(${el.id})`, dbugColor, el)
@@ -1118,15 +975,21 @@ export abstract class AbstractRenderer {
             if (el.visProp["islabel"] && Type.exists(el.visProp["anchor"])) {
                 if (el.board.objects[el.visProp["anchor"]] == undefined) {
                 }
-                if (typeof el.visProp["anchor"] !== 'string') {
-                    ev_visible = true
-                } else {
-                    ev_visible = el.board.objects[el.visProp["anchor"]].evalVisProp('visible')
+
+                let ev_visible = true
+                if (el.board.objects[el.visProp["anchor"]]) {   // is there an anchor?
+
+                    if (typeof el.visProp["anchor"] !== 'string' || el.visProp["anchor"] == '') {
+                        ev_visible = true
+                    } else {
+                        ev_visible = el.board.objects[el.visProp["anchor"]].evalVisProp('visible')
+                    }
                 }
                 el.prepareUpdate().updateVisibility(ev_visible);
             } else {
                 el.prepareUpdate().updateVisibility();
             }
+
             this.updateText(el);
 
         } else {
@@ -1407,7 +1270,7 @@ export abstract class AbstractRenderer {
      * @see JXG2.AbstractRenderer#updateInternalText
      * @see JXG2.AbstractRenderer#updateInternalTextStyle
      */
-    updateTextStyle(el, doHighlight) {
+    updateTextStyle(el: Text, doHighlight) {
         var fs,
             so, sc,
             css,
@@ -2044,5 +1907,17 @@ export abstract class AbstractRenderer {
     abstract screenshot(board, imgId, ignoreTexts)
     abstract updateInternalTextStyle(el, strokeColor, strokeOpacity)
     abstract uniqName(prefix)
+
+    /* ********* Point related stuff *********** */
+
+    abstract drawPoint(el: Point)
+    abstract updatePoint(el: Point)
+    abstract changePointStyle(el: Point)
+
+        /* ********* Button related stuff *********** */
+
+    abstract drawbutton(el:Text)
+    abstract updateButtonStyle(el: Text)
+
 
 }

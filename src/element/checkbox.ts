@@ -179,7 +179,7 @@ export class CreateCheckbox implements ComposeInterface {
     _value: boolean
     rendNodeCheckbox
     needsUpdate
-    
+
     constructor(board: Board, parents: any[], attributes = {}) {
 
 

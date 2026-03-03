@@ -187,10 +187,6 @@ export class SpriteText extends THREE.Sprite {
 
             drawTextStroke && ctx.strokeText(line, lineX, lineY);
             ctx.fillText(line, lineX, lineY);
-
-            // tbtb -  compile in some extra
-            ctx.fillText('x',lineX+15,lineY+15)
-            console.log('tbtb')
         });
 
         // Inject canvas into sprite

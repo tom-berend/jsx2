@@ -69,6 +69,7 @@ import { Dim, SVGType } from "../interfaces.js"
 import { genUUID } from "../utils/uuid.js";
 
 import * as THREE from 'three'
+
 // @ts-ignore
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // @ts-ignore
@@ -652,7 +653,7 @@ export class WebGLRenderer {
 
     }
 
-    
+
     /* ********* Curve related stuff *********** */
 
     /**
@@ -1301,7 +1302,7 @@ export class WebGLRenderer {
         // }
 
 
-        let sprite = new SpriteText(content, .5, 'black')
+        let sprite = new SpriteText(content, {fontsize:.5, strokecolor:'black'})
         el.rendNode = sprite    // save it
         this.scene.add(sprite)
 
@@ -1388,7 +1389,7 @@ export class WebGLRenderer {
             let fontSize = this.calcTextFontSize(parseInt(el.evalVisProp('fontsize')))
 
             if (fontSize > 0) {
-                el.rendNode = new SpriteText(content, fontSize, 'black')
+                el.rendNode = new SpriteText(content, {fontsize:fontSize})
                 this.scene.add(el.rendNode)
                 el.rendNode.position.set(coord[0], coord[1], .2)
             }

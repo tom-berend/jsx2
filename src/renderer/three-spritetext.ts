@@ -5,6 +5,7 @@
 
 
 import * as THREE from 'three'
+import { basicVisProps } from '../interfaces'
 
 
 export class SpriteText extends THREE.Sprite {
@@ -25,15 +26,22 @@ export class SpriteText extends THREE.Sprite {
     private _strokeWidth = 0;
     private _strokeColor = 'white';
     private _fontFace = 'system-ui';
-    private _fontSize = 90; // defines text resolution
-    private _fontWeight = 'normal';
+    private _fontSize = 200; // defines text resolution
+    private _fontWeight = 100 //'normal';
 
-    constructor(text = '', textHeight = 10, color = 'rgba(255, 255, 255, 1)') {
+    private _opacity= 1
+    private _visible = true
+
+    constructor(text, attributes:basicVisProps={}){
         super()
-
         this._text = `${text}`
-        this._textHeight = textHeight;
-        this._color = color;
+
+        this._color = attributes.strokecolor ?? 'black';
+        this._opacity = attributes.opacity ?? 1
+        this._textHeight = attributes.fontsize ?? 5  // fontsize is something else
+        this._strokeWidth = attributes.strokewidth ?? 0
+        this._visible = attributes.visible ?? true
+        this._fontFace = attributes.font ?? 'system-ui'
 
         this._canvas = document.createElement('canvas');
         this._genCanvas();
@@ -198,9 +206,9 @@ export class SpriteText extends THREE.Sprite {
         this.scale.set(yScale * canvas.width / canvas.height, yScale, 0);
     }
 
-    clone(recursive = true):any {
-        return new SpriteText(this.text, this.textHeight, this.color).copy(this);
-    }
+    // clone(recursive = true):any {
+    //     return new SpriteText(this.text, this.textHeight, this.color).copy(this);
+    // }
 
     copy(source) {
         THREE.Sprite.prototype.copy.call(this, source);

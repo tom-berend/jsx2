@@ -503,10 +503,6 @@ export class Text extends CoordsElement {
         // this._createFctUpdateText(text);
         this.orgText = text
 
-        if (text === 'Change Y') {
-            console.log(text, 'found change')
-
-        }
         // First evaluation of the string.
         // We need this for display='internal' and Canvas
         this.updateText();

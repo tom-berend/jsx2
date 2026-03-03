@@ -60,6 +60,7 @@ import { Env } from '../utils/env.js';
 // import Composition from './composition.js';
 import { SVGRenderer } from '../renderer/svg.js';
 import { WebGLRenderer } from '../renderer/webgl.js';
+import { ThreeRenderer } from '../renderer/threejs.js';
 import { JSXMath } from '../math/math.js';
 import { Statistics } from '../math/statistics.js';
 import { AbstractRenderer } from '../renderer/abstract.js';
@@ -218,7 +219,7 @@ export class Board extends Events {
      * @private
      * @ignore
      */
-    renderer: AbstractRenderer | WebGLRenderer
+    renderer: SVGRenderer | WebGLRenderer | ThreeRenderer
 
     /**
      * Grids keeps track of all grids attached to this board.
@@ -8407,6 +8408,10 @@ export class Board extends Events {
             case 'auto':
             case 'svg':
                 return this.renderer = new SVGRenderer(containerName, dim)
+                break;
+
+            case 'three':
+                return this.renderer = new ThreeRenderer(containerName, dim)
                 break;
 
             case 'webgl':

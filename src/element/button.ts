@@ -36,9 +36,13 @@
  * @fileoverview In this file the Text element is defined.
  */
 
+import { Text, createText } from "../base/text.js";
 import { OBJECT_TYPE } from "../base/constants.js";
 import { Env } from "../utils/env.js";
 import { Type } from "../utils/type.js";
+import { Board } from "../base/board.js";
+import { Options } from "../options.js"
+import { LooseObject } from "../interfaces.js";
 
 var priv = {
     ButtonClickEventHandler: function () {
@@ -237,10 +241,7 @@ var priv = {
  * </script><pre>
  *
  */
-export function createButton(board, parents, attributes) {
-    var t,
-        par,
-        attr = Type.copyAttributes(attributes, board.options, 'button');
+export function createButton(board: Board, parents: any[], attributes: LooseObject) {
 
     //if (parents.length < 3) {
     //throw new Error("JSXGraph: Can't create button with parent types '" +
@@ -248,11 +249,17 @@ export function createButton(board, parents, attributes) {
     //    "\nPossible parents are: [x, y, label, handler]");
     //}
 
-    // 1. Create empty button
-    par = [parents[0], parents[1], '<button type="button" style="width:100%; height:100%;" tabindex="0"></button>'];
-    t = board.create("text", par, attr);
-    t.type = OBJECT_TYPE.BUTTON;
+    let attr = Type.initVisProps(Options.button,attributes)
 
+    if(board.renderer.type == 'webgl')
+        return
+
+    // 1. Create empty button
+    let par = [parents[0], parents[1], '<button type="button" style="width:100%; height:100%;" tabindex="0"></button>'];
+    let t = createText(board, par, attr);
+    t.otype = OBJECT_TYPE.BUTTON;
+
+    console.log(t.rendNode)
     t.rendNodeButton = t.rendNode.childNodes[0];
     t.rendNodeButton.id = t.rendNode.id + "_button";
 
@@ -265,11 +272,12 @@ export function createButton(board, parents, attributes) {
 
     // This sets the font size of the button text
     t.visPropOld.fontsize = '0px';
+
     board.renderer.updateText(t);
     // board.renderer.updateTextStyle(t, false);
 
 
-    Env.addEvent(t.rendNodeButton, "click", priv.ButtonClickEventHandler, t);
+    Env.addEvent(t.rendNodeButton, "click", priv.ButtonClickEventHandler, t.board);
     Env.addEvent(
         t.rendNodeButton,
         "mousedown",
@@ -278,7 +286,7 @@ export function createButton(board, parents, attributes) {
                 evt.stopPropagation();
             }
         },
-        t
+        t.board
     );
     Env.addEvent(
         t.rendNodeButton,
@@ -288,7 +296,7 @@ export function createButton(board, parents, attributes) {
                 evt.stopPropagation();
             }
         },
-        t
+        t.board
     );
     Env.addEvent(
         t.rendNodeButton,
@@ -298,7 +306,7 @@ export function createButton(board, parents, attributes) {
                 evt.stopPropagation();
             }
         },
-        t
+        t.board
     );
 
     return t;

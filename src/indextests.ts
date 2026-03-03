@@ -71,7 +71,7 @@ export class IndexTests {
             this.boards.push((window as any).JXG.JSXGraph.initBoard('box2', attr));
 
         if (this.webgl) {
-            attr['renderer'] = 'webgl'
+            attr['renderer'] = 'three'
             this.boards.push(JSXGraph.initBoard('box3', attr));
         }
     }
@@ -92,8 +92,15 @@ export class IndexTests {
 
             let a = board.create('point', [1, 3])
             board.create('text', [() => a.X(), () => a.Y() + 1, 'follows'])
-
             board.create('text', [-3, -3, `[${a.X()}, ${a.Y()}]`])
+
+            // Create a button element at position [1,4].
+            let p = board.create('point', [0.5, -5.5], { name: 'p1' });
+
+            // Create a button element at position [1,2].
+            var button1 = board.create('button', [2, -5, 'Change p1 with JavaScript', function () {
+                p.moveTo([p.X(), p.Y() + 0.5], 100);
+            }], {});
         })
     }
 

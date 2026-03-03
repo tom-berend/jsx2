@@ -7,6 +7,30 @@ export interface ComposeInterface {
 
 }
 
+export type basicVisProps = {
+
+    strokecolor?: string
+    opacity?: number
+    fontsize?: number
+    strokewidth?: number
+    visible?: boolean,
+    font?: string
+    /** fontweight 100 = thin, 900 = heavy */
+    fontweight?: number
+
+    // shadow: false,
+    // transitionduration: 0,
+    // top: -100000,
+    // left: -100000,
+    // firstarrow?: boolean,
+    // lastarrow?: boolean
+    // linecap: "",
+
+    // tabindex: -100000,
+    // cssclass ?: string
+    // cssdefaultstyle ?: string
+    //     cssstyle?: string,
+}
 
 export interface Dim { width: number, height: number }
 export type SVGType = 'text' | 'line' | 'path' | 'rect' | 'ellipse' | 'polygon' | 'image' | 'foreignObject' | 'stop' | 'marker' | 'linearGradient' | 'radialGradient'

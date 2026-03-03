@@ -373,7 +373,6 @@ export abstract class GeometryElement extends Events {
     animationCallback
     visPropOld
     label
-    labels
     hiddenByParent
     rendNodeTag
     rendNodeCheckbox
@@ -607,8 +606,7 @@ export abstract class GeometryElement extends Events {
      * Alternatively, one can give a list of objects as parameters.
      * @returns {JXG2.Object} reference to the object itself.
      **/
-    setParents(parents) {
-        this.parents = [];
+    setParents(parents:GeometryElement[]) {
         this.addParents(parents);
     }
 

@@ -481,7 +481,7 @@ export class Point extends CoordsElement {
 
     // Already documented in GeometryElement
     cloneToBackground() {
-        var copy = Type.getCloneObject(this) as Point;
+        let copy = Type.getCloneObject(this) as any;
 
         this.board.renderer.drawPoint(copy);
         this.traces[copy.id] = copy.rendNode;

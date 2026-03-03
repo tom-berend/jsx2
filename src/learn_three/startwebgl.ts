@@ -62,7 +62,7 @@ export function startwebgl(divId?: string, attributes?: StartWebGLAttributes) {
 
 ////////////////////
 
-    let groundGeometry = new THREE.BoxGeometry(20, 20, 0.1);
+    let groundGeometry = new THREE.BoxGeometry(20, 20, -.1);
     let groundMaterial = new THREE.MeshBasicMaterial({ color: 'aliceblue' });
 
     let ground = new THREE.Mesh(groundGeometry, groundMaterial);
