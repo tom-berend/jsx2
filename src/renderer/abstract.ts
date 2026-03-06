@@ -607,13 +607,10 @@ export abstract class AbstractRenderer {
      *
      */
     updateLineWithEndings(el: GeometryElement, arrowData) {
-        var c1,
-            c2,
-            // useTotalLength = true,
-            margin = null;
+        let margin = null;
 
-        c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board);
-        c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
+        let c1 = new Coords(COORDS_BY.USER, el.point1.coords.usrCoords, el.board);
+        let c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
 
         margin = el.evalVisProp('margin');
         if (!el.evalVisProp('clip')) {
@@ -628,11 +625,9 @@ export abstract class AbstractRenderer {
             console.log(`%c Abstract updateLineWithEndings(${el.id}) from ${JSON.stringify(c1.usrCoords)} to${JSON.stringify(c2.usrCoords)}`, dbugColor, el.webGL)
 
         this.updateLinePrim(
-            el.rendNode,
-            c1.scrCoords[1],
-            c1.scrCoords[2],
-            c2.scrCoords[1],
-            c2.scrCoords[2],
+            el,
+            c1,
+            c2,
             el.board
         );
 
@@ -924,11 +919,11 @@ export abstract class AbstractRenderer {
      * Displays a {@link JXG2.Text} on the {@link JXG2.Board} by putting a HTML div over it.
      * @param {JXG2.Text} el Reference to an {@link JXG2.Text} object, that has to be displayed
      * @see Text
-     * @see JXG2.Text
-     * @see JXG2.AbstractRenderer#drawInternalText
-     * @see JXG2.AbstractRenderer#updateText
-     * @see JXG2.AbstractRenderer#updateInternalText
-     * @see JXG2.AbstractRenderer#updateTextStyle
+     * @see Text
+     * @see AbstractRenderer#drawInternalText
+     * @see AbstractRenderer#updateText
+     * @see AbstractRenderer#updateInternalText
+     * @see AbstractRenderer#updateTextStyle
      */
     drawText(el: Text) {
         var node: HTMLElement, z, level
@@ -1871,7 +1866,7 @@ export abstract class AbstractRenderer {
     abstract remove(node)
     abstract makeArrows(el, arrowData)
     abstract updateEllipsePrim(node, x, y, rx, ry)
-    abstract updateLinePrim(node, p1x, p1y, p2x, p2y, board)
+    abstract updateLinePrim(node, c1, c2, board)
     abstract updatePathPrim(node, pathString, board)
     abstract updatePathStringPoint(el, size, type)
     abstract updatePathStringPrim(el)
@@ -1914,9 +1909,9 @@ export abstract class AbstractRenderer {
     abstract updatePoint(el: Point)
     abstract changePointStyle(el: Point)
 
-        /* ********* Button related stuff *********** */
+    /* ********* Button related stuff *********** */
 
-    abstract drawbutton(el:Text)
+    abstract drawbutton(el: Text)
     abstract updateButtonStyle(el: Text)
 
 

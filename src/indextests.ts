@@ -1,9 +1,12 @@
 import { Board } from "./base/board.js";
 import { JSXGraph } from "./jsxgraph.js"
 import { Type } from "./utils/type.js";
+import {Coords} from "./base/coords.js"
 
 import { createFunctiongraph } from "./base/curve.js";
 import { createInequality } from "./element/composition.js";
+import { Geometry } from "./math/geometry.js";
+import { COORDS_BY } from "./base/constants.js";
 
 
 export function runTests(which) {
@@ -121,6 +124,12 @@ export class IndexTests {
     }
     line() {
         this.boards.map((board) => {
+            
+            let c1 = new Coords(COORDS_BY.USER,[0,0],board)
+            let c2 = new Coords(COORDS_BY.USER,[1,0],board)
+            Geometry.calcStraight(testLine,c1,c2)
+
+
             board.create('segment', [[-3, -2], [-4, -2]], { strokecolor: 'green' })
 
             let p1 = board.create('point', [-3, -3])

@@ -53,8 +53,9 @@ import { Point } from "../base/point.js"
 import { Options } from "../options.js"
 import { GeometryElement } from "../base/element.js";
 import { Type } from "../utils/type.js"
-import { COORDS_BY } from "../base/constants.js";
+import { COORDS_BY, OBJECT_TYPE } from "../base/constants.js";
 import { Coords } from "../base/coords.js"
+import { Board } from "../base/board.js";
 
 import * as THREE from 'three'
 // @ts-ignore
@@ -62,6 +63,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // @ts-ignore
 import { SpriteText } from './three-spritetext.js'
 import { createEllipse } from "../element/conic.js";
+import { elements } from "../index.js";
 // import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 
 /**
@@ -234,7 +236,7 @@ export class ThreeRenderer extends AbstractRenderer {
     /* ********* Button related stuff *********** */
 
     drawbutton(el: Text) {
-        
+
 
     }
     updateButtonStyle(el: Text) {
@@ -482,7 +484,56 @@ export class ThreeRenderer extends AbstractRenderer {
 
     updateEllipsePrim(node, x, y, rx, ry) { }
 
-    updateLinePrim(node, p1x, p1y, p2x, p2y, board) { }
+    updateLinePrim(el: GeometryElement, c1: Coords, c2: Coords, board: Board) {
+        let node = el.rendNode
+
+        let minusClipX = -10     // needs adjustment for scaling and position of board
+        let plusClipX = 10
+
+        let minusClipY = -10     // needs adjustment for scaling and position of board
+        let plusClipY = 10
+
+        // have to convert from scrCoords to usrCoord
+        let start = c1.usrCoords
+        let end = c2.usrCoords
+
+        let x1: number, x2: number, y1: number, y2: number  // define them
+
+        // if (el.otype == OBJECT_TYPE.SEGMENT) {
+            x1 = this.clip(start[0], minusClipX, plusClipX)
+            y1 = this.clip(start[1], minusClipY, plusClipY)
+            x2 = this.clip(end[0], minusClipX, plusClipX)
+            y2 = this.clip(end[1], minusClipY, plusClipY)
+        // } else {
+
+        // }
+
+        let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
+        let color = 'red' //el.evalVisProp('strokecolor')
+        let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
+
+        console.log(`%c WEBGL updateLinePrim(${el.id}, ${x1}, ${y1}, ${x2}, ${y2}) ${strokewidth}`, dbugColor)
+
+        if (el.webGL.mesh !== undefined) {
+            el.webGL.geometry.dispose();
+            el.webGL.material.dispose();
+            this.scene.remove(el.webGL.mesh);
+        }
+
+        el.webGL.lineCurve3 = new THREE.LineCurve3(new THREE.Vector3(x1, y1, 0), new THREE.Vector3(x2, y2, 0))
+        el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
+        el.webGL.material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
+        el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);
+        this.scene.add(el.webGL.mesh);
+
+
+    }
+    clip(value: number, min: number, max: number): number {
+        console.assert(min < max)
+        if (value < min) value = min
+        if (value > max) value = max
+        return value
+    }
 
     updatePathPrim(node, pathString, board) { }
 

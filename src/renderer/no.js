@@ -150,7 +150,7 @@ JXG2.extend(
 
         updateEllipsePrim: function (node, x, y, rx, ry) {},
 
-        updateLinePrim: function (node, p1x, p1y, p2x, p2y, board) {},
+        updateLinePrim: function (el, p1x, p1y, p2x, p2y, board) {},
 
         updatePathPrim: function (node, pathString, board) {},
 

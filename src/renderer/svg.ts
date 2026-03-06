@@ -1,3 +1,4 @@
+
 import { watchElement } from "../jsxgraph.js"
 const dbug = (elem) => elem && elem['id'] && elem.id == watchElement
 const dbugColor = `color:blue;background-color:#ffc0c0`;
@@ -1349,9 +1350,17 @@ export class SVGRenderer extends AbstractRenderer {
      * @param {Number} p2y The second point's y coordinate.
      * @param {JXG2.Board} board
      */
-    updateLinePrim(node, p1x, p1y, p2x, p2y) {
+    updateLinePrim(el: GeometryElement, c1, c2, board) {
+        let node = el.rendNode
         var huge = 1000000;
 
+        let p1x = c1.scrCoords[1]
+        let p1y = c1.scrCoords[2]
+        let p2x = c2.scrCoords[1]
+        let p2y = c2.scrCoords[2]
+
+
+        console.log(`%c SVG updateLinePrim(node, ${p1x}, ${p1y}, ${p2x}, ${p2y})`, dbugColor)
         huge = 200000; //IE
         if (!isNaN(p1x + p1y + p2x + p2y)) {
             // webkit does not like huge values if the object is dashed

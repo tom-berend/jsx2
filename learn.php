@@ -94,6 +94,8 @@ function htmlBody($sFile)
 {
     $html =
         "    <body>
+         <div id='buttonContainer'></div>
+
 		<canvas class='webgl'></canvas>
 		<script type='module' src='/jsx2/build/learn_three/$sFile'></script>
 	</body>

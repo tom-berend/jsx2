@@ -1172,6 +1172,7 @@ export class Geometry {
         return false;
     }
 
+    
     /**
      * A line can be a segment, a straight, or a ray. So it is not always delimited by point1 and point2
      * calcStraight determines the visual start point and end point of the line. A segment is only drawn

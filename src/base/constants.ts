@@ -88,6 +88,7 @@ export enum OBJECT_TYPE {
     GLIDER,
     IMAGE,
     LINE,
+    SEGMENT,   // new, because lines and segments are different
     POINT,
     SLIDER, // unused
     CAS,
