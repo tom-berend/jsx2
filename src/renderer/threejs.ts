@@ -56,6 +56,7 @@ import { Type } from "../utils/type.js"
 import { COORDS_BY, OBJECT_TYPE } from "../base/constants.js";
 import { Coords } from "../base/coords.js"
 import { Board } from "../base/board.js";
+import { Geometry } from "../math/geometry.js";
 
 import * as THREE from 'three'
 // @ts-ignore
@@ -106,6 +107,7 @@ export class ThreeRenderer extends AbstractRenderer {
     xlinkNamespace = "http://www.w3.org/1999/xlink";
 
 
+    negOffsetPlate = -.2   // plate is extra distance behind zero
     constructor(containerName: string | HTMLDivElement, dim: Dim) {  // width height
         super()
 
@@ -177,7 +179,7 @@ export class ThreeRenderer extends AbstractRenderer {
         }
         ////////////////////
 
-        let groundGeometry = new THREE.BoxGeometry(20, 20, 0.1);
+        let groundGeometry = new THREE.BoxGeometry(20, 20, this.negOffsetPlate);
         let groundMaterial = new THREE.MeshBasicMaterial({ color: 'white' });
         groundMaterial.transparent = true
         groundMaterial.opacity = .9
@@ -267,7 +269,7 @@ export class ThreeRenderer extends AbstractRenderer {
 
         let v = new THREE.Mesh(new THREE.SphereGeometry(strokewidth, 8, 8), pointMaterial)
 
-        v.position.set(coord[0], coord[1], 1)
+        v.position.set(coord[0], coord[1], 0)
 
         this.scene.add(v)
         return
@@ -378,7 +380,7 @@ export class ThreeRenderer extends AbstractRenderer {
                         let y1 = start.usrCoords.slice(1)
                         let y2 = end.usrCoords.slice(1)
 
-                        let path = new THREE.LineCurve3(new THREE.Vector3(y1[0], y1[1], .1), new THREE.Vector3(y2[0], y2[1], .1))
+                        let path = new THREE.LineCurve3(new THREE.Vector3(y1[0], y1[1], this.negOffsetPlate), new THREE.Vector3(y2[0], y2[1], this.negOffsetPlate))
                         const geometry = new THREE.TubeGeometry(path, 1, strokewidth, 8, false);
                         const material = new THREE.MeshBasicMaterial({ color: color });
                         const mesh = new THREE.Mesh(geometry, material);
@@ -487,32 +489,18 @@ export class ThreeRenderer extends AbstractRenderer {
     updateLinePrim(el: GeometryElement, c1: Coords, c2: Coords, board: Board) {
         let node = el.rendNode
 
-        let minusClipX = -10     // needs adjustment for scaling and position of board
-        let plusClipX = 10
-
-        let minusClipY = -10     // needs adjustment for scaling and position of board
-        let plusClipY = 10
+        Geometry.calcLineDelimitingPoints(el,c1,c2)
 
         // have to convert from scrCoords to usrCoord
         let start = c1.usrCoords
         let end = c2.usrCoords
 
-        let x1: number, x2: number, y1: number, y2: number  // define them
-
-        // if (el.otype == OBJECT_TYPE.SEGMENT) {
-            x1 = this.clip(start[0], minusClipX, plusClipX)
-            y1 = this.clip(start[1], minusClipY, plusClipY)
-            x2 = this.clip(end[0], minusClipX, plusClipX)
-            y2 = this.clip(end[1], minusClipY, plusClipY)
-        // } else {
-
-        // }
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
-        let color = 'red' //el.evalVisProp('strokecolor')
+        let color = el.evalVisProp('strokecolor')
         let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
 
-        console.log(`%c WEBGL updateLinePrim(${el.id}, ${x1}, ${y1}, ${x2}, ${y2}) ${strokewidth}`, dbugColor)
+        console.log(`%c WEBGL updateLinePrim(${el.id}, ${start[1]}, ${start[2]}, ${end[1]}, ${end[2]}) ${strokewidth}`, dbugColor)
 
         if (el.webGL.mesh !== undefined) {
             el.webGL.geometry.dispose();
@@ -520,7 +508,7 @@ export class ThreeRenderer extends AbstractRenderer {
             this.scene.remove(el.webGL.mesh);
         }
 
-        el.webGL.lineCurve3 = new THREE.LineCurve3(new THREE.Vector3(x1, y1, 0), new THREE.Vector3(x2, y2, 0))
+        el.webGL.lineCurve3 = new THREE.LineCurve3(new THREE.Vector3(start[1], start[2], 0), new THREE.Vector3(end[1], end[2], 0))
         el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
         el.webGL.material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
         el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);

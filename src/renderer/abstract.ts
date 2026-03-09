@@ -617,6 +617,7 @@ export abstract class AbstractRenderer {
             margin += 4096;
         }
         Geometry.calcStraight(el, c1, c2, margin);
+        console.log(`calc straight from ${JSON.stringify(el.point1.coords.usrCoords)} ${JSON.stringify(el.point2.coords.usrCoords)} to ${JSON.stringify(c1.usrCoords)} ${JSON.stringify(c2.usrCoords)}`)
 
         this.handleTouchpoints(el, c1, c2, arrowData);
         this.getPositionArrowHead(el, c1, c2, arrowData);

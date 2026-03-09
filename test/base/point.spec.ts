@@ -1,12 +1,5 @@
-import { jest } from '@jest/globals';
+import "../webgl.mock"    // load mocks for three.js, orbitcontrols, etc
 
-jest.mock("../../src/renderer/webgl.js", () => ({
-    WebGLRenderer: class WebGlRenderer {
-        public render(): void {
-            return;
-        }
-    }
-}));
 
 import { Board } from '../../src/base/board.js';
 import { createPoint } from '../../src/base/point.js';

@@ -331,7 +331,7 @@ export class Geometry {
      * @param {JXG2.Board} [board=point.board] Reference to the board
      * @returns {JXG2.Coords} Coordinates of the new position.
      */
-    static rotation(rotpoint, point, phi, board):Coords {
+    static rotation(rotpoint, point, phi, board): Coords {
         var x0,
             y0,
             c,
@@ -366,7 +366,7 @@ export class Geometry {
      * @returns {Array} Array of length two containing coordinates of a point on the perpendicular to the given line
      *                  through the given point and boolean flag "change".
      */
-    static perpendicular(line, point, board):Coords[] {
+    static perpendicular(line, point, board): Coords[] {
         var x,
             y,
             change,
@@ -1172,7 +1172,7 @@ export class Geometry {
         return false;
     }
 
-    
+
     /**
      * A line can be a segment, a straight, or a ray. So it is not always delimited by point1 and point2
      * calcStraight determines the visual start point and end point of the line. A segment is only drawn
@@ -1324,13 +1324,11 @@ export class Geometry {
         }
 
         if (p1) {
-            point1.setCoordinates(COORDS_BY.USER, p1.usrCoords.slice(1));
-            // point1.setCoordinates(COORDS_BY.USER, p1.usrCoords);
+            point1.setCoordinates(COORDS_BY.USER, p1.usrCoords);
         }
 
         if (p2) {
-            point2.setCoordinates(COORDS_BY.USER, p2.usrCoords.slice(1));
-            // point2.setCoordinates(COORDS_BY.USER, p2.usrCoords);
+            point2.setCoordinates(COORDS_BY.USER, p2.usrCoords);
         }
     }
 
@@ -1352,7 +1350,7 @@ export class Geometry {
      * @see Line
      * @see JXG2.Line
      */
-    static calcLineDelimitingPoints(el, point1, point2) {
+    static calcLineDelimitingPoints(el, point1:Coords, point2:Coords) {
         var distP1P2,
             boundingBox,
             lineSlope,
@@ -1360,7 +1358,6 @@ export class Geometry {
             intersect2,
             straightFirst,
             straightLast,
-            c,
             p1,
             p2,
             takePoint1 = false,
@@ -1378,19 +1375,21 @@ export class Geometry {
             straightLast = true;
         }
 
-        // Compute the stdform of the line in screen coordinates.
-        c = [];
-        c[0] =
-            el.stdform[0] -
-            (el.stdform[1] * el.board.origin.scrCoords[1]) / el.board.unitX +
-            (el.stdform[2] * el.board.origin.scrCoords[2]) / el.board.unitY;
-        c[1] = el.stdform[1] / el.board.unitX;
-        c[2] = -el.stdform[2] / el.board.unitY;
+        // tbtb - this seems to be a sanity check for homogenous coordinates.  don't understand what it checks
 
-        // p1=p2
-        if (isNaN(c[0] + c[1] + c[2])) {
-            return;
-        }
+        // // Compute the stdform of the line in screen coordinates.
+        // let c = [];
+        // c[0] =
+        //     el.stdform[0] -
+        //     (el.stdform[1] * el.board.origin.scrCoords[1]) / el.board.unitX +
+        //     (el.stdform[2] * el.board.origin.scrCoords[2]) / el.board.unitY;
+        // c[1] = el.stdform[1] / el.board.unitX;
+        // c[2] = -el.stdform[2] / el.board.unitY;
+
+        // // p1=p2
+        // if (isNaN(c[0] + c[1] + c[2])) {
+        //     return;
+        // }
 
         takePoint1 = !straightFirst;
         takePoint2 = !straightLast;
@@ -1399,6 +1398,8 @@ export class Geometry {
 
         // boundingBox = [x1, y1, x2, y2] upper left, lower right vertices
         boundingBox = el.board.getBoundingBox();
+        console.log(`%c calcLineDelimitingPoints BOUNDINGBOX ${JSON.stringify(boundingBox)}`, 'background-color:red;')
+
         lineSlope = el.getSlope();
         if (lineSlope >= 0) {
             // project vertices (x2,y1) (x1, y2)
@@ -1425,6 +1426,8 @@ export class Geometry {
                 el.board
             );
         }
+
+        console.log(`%c calcLineDelimitingPoints INTERSECTS ${JSON.stringify(intersect1.usrCoords)} ${JSON.stringify(intersect2.usrCoords)}`, 'background-color:red;')
 
         /**
          * we have four points:
@@ -1526,7 +1529,8 @@ export class Geometry {
             //point2.setCoordinates(COORDS_BY.USER, p2.usrCoords.slice(1));
             point2.setCoordinates(COORDS_BY.USER, p2.usrCoords);
         }
-    }
+
+   }
 
     /**
      * Calculates the visProp.position corresponding to a given angle.

@@ -1,11 +1,5 @@
+import "../webgl.mock"    // load mocks for three.js, orbitcontrols, etc
 
-jest.mock("../../src/renderer/webgl.js", () => ({
-    WebGLRenderer: class WebGlRenderer {
-        public render(): void {
-            return;
-        }
-    }
-}));
 
 import { Type } from "../../src/utils/type.js"
 import { createPoint } from "../../src/base/point.js";

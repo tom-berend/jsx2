@@ -1,10 +1,4 @@
-jest.mock("../../src/renderer/webgl.js", () => ({
-    WebGLRenderer: class WebGlRenderer {
-        public render(): void {
-            return;
-        }
-    }
-}));
+import "../webgl.mock"    // load mocks for three.js, orbitcontrols, etc
 
 
 import { Board } from "../../src/base/board.js";

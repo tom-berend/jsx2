@@ -1371,6 +1371,8 @@ export class JSXMath {
     /* *************************** Normalize *************************** */
 
     /**
+     * A real circle may be represented by the scalars a and c, and a vector b, satisfying b*b - 4ac >= 0
+     *
      * Normalize the standard form [c, b0, b1, a, k, r, q0, q1].
      * @private
      * @param {Array} stdform The standard form to be normalized.
@@ -1383,7 +1385,8 @@ export class JSXMath {
             r = stdform[4] / a2;
 
         stdform[5] = r;
-        stdform[6] = -stdform[1] / a2;
+
+        stdform[6] = -stdform[1] / a2;   // center of circle q is b/a2
         stdform[7] = -stdform[2] / a2;
 
         if (!isFinite(r)) {
@@ -1395,11 +1398,13 @@ export class JSXMath {
             stdform[3] = 0;
             stdform[4] = 1;
         } else if (Math.abs(r) >= 1) {
+            // 0,1,2 is b
+            // 5,6,7 is q, but q.x is always 1.  just 6,7 is x,y of q
             stdform[0] = (stdform[6] * stdform[6] + stdform[7] * stdform[7] - r * r) / (2 * r);
             stdform[1] = -stdform[6] / r;
             stdform[2] = -stdform[7] / r;
-            stdform[3] = 1 / (2 * r);
-            stdform[4] = 1;
+            stdform[3] = 1 / (2 * r);       // a
+            stdform[4] = 1;                 // k
         } else {
             signr = r <= 0 ? -1 : 1;
             stdform[0] =

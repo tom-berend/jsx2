@@ -1,0 +1,22 @@
+jest.mock("../src/renderer/webgl.js", () => ({
+    WebGLRenderer: class WebGlRenderer {
+        // public render(): void {
+        //     return;
+        // }
+    }
+}));
+jest.mock('three/addons/controls/OrbitControls.js', () => ({
+    OrbitControls: class OrbitControls {
+        // public render(): void {
+        //     return;
+        // }
+    }
+}));
+jest.mock('../src/renderer/three-spritetext.js', () => ({
+    SpriteText: class SpriteText {
+        // public render(): void {
+        //     return;
+        // }
+    }
+}));
+
