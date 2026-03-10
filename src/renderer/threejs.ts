@@ -57,6 +57,7 @@ import { COORDS_BY, OBJECT_TYPE } from "../base/constants.js";
 import { Coords } from "../base/coords.js"
 import { Board } from "../base/board.js";
 import { Geometry } from "../math/geometry.js";
+import { JSXMath } from "../math/math.js";
 
 import * as THREE from 'three'
 // @ts-ignore
@@ -322,27 +323,10 @@ export class ThreeRenderer extends AbstractRenderer {
 
     drawLine(el: Line) {
 
-        let start = el.point1.Coords(false)
-        let end = el.point2.Coords(false)
-
-
-        let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
-        let color = el.evalVisProp('strokecolor')
-        let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
-
-
-        el.webGL.lineCurve3 = new THREE.LineCurve3(new THREE.Vector3(start[0], start[1], 0), new THREE.Vector3(end[0], end[1], 0))
-
-        el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
-        el.webGL.material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
-        el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);
-        this.scene.add(el.webGL.mesh);
-
-        if (dbug(el))
-            console.log(`%c webgl drawLine(${el.id}) from ${JSON.stringify(start)} to${JSON.stringify(end)}`, dbugColor, el.webGL)
-
-
+        this.updateLinePrim(el, el.point1.coords, el.point2.coords, el.board)
     }
+
+
 
     // drawTicks(el) { console.log(`three: drawTicks not yet implemented`) }
 
@@ -489,26 +473,42 @@ export class ThreeRenderer extends AbstractRenderer {
     updateLinePrim(el: GeometryElement, c1: Coords, c2: Coords, board: Board) {
         let node = el.rendNode
 
-        Geometry.calcLineDelimitingPoints(el,c1,c2)
+        const clipped = Geometry.cohenSutherlandLineClipping(c1, c2)
 
-        // have to convert from scrCoords to usrCoord
-        let start = c1.usrCoords
-        let end = c2.usrCoords
+        if (clipped === null) {        // line is entirely out of viewport
+            // console.log(`%c line is out of viewport`, dbugColor)
+            return
+        }
+        if (Number.isNaN(c1.usrCoords[1]) || Number.isNaN(c2.usrCoords)) {
+            // console.log(`%c clipping is NAN`, dbugColor, clipped)
+            return
+        }
 
+        let start = clipped[0].usrCoords
+        let end = clipped[1].usrCoords
+
+        if (Math.abs(start[1] - end[1]) < JSXMath.eps && Math.abs(start[2] - end[2]) < JSXMath.eps) {
+            // console.log(`%c clipping returns tiny line`, dbugColor, clipped)
+            return
+        }
 
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
         let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
 
-        console.log(`%c WEBGL updateLinePrim(${el.id}, ${start[1]}, ${start[2]}, ${end[1]}, ${end[2]}) ${strokewidth}`, dbugColor)
+        console.log(`%c WEBGL updateLinePrim(${el.id}, [${start[1]}, ${start[2]}], [${end[1]}, ${end[2]}]) stroke: ${strokewidth}`, dbugColor)
 
-        if (el.webGL.mesh !== undefined) {
+        if (Type.exists(el.webGL.mesh)) {
+            console.log(el.webGL.mesh)
+            this.scene.remove(el.webGL.mesh);
+            // el.webGL.lineCurve3.dispose();
             el.webGL.geometry.dispose();
             el.webGL.material.dispose();
-            this.scene.remove(el.webGL.mesh);
+            el.webGL.mesh = el.webGL.lineCurve3 = el.webGL.geometry = el.webGL.material = undefined
         }
 
         el.webGL.lineCurve3 = new THREE.LineCurve3(new THREE.Vector3(start[1], start[2], 0), new THREE.Vector3(end[1], end[2], 0))
+
         el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
         el.webGL.material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
         el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);

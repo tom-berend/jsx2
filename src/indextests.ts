@@ -1,7 +1,7 @@
 import { Board } from "./base/board.js";
 import { JSXGraph } from "./jsxgraph.js"
 import { Type } from "./utils/type.js";
-import {Coords} from "./base/coords.js"
+import { Coords } from "./base/coords.js"
 
 import { createFunctiongraph } from "./base/curve.js";
 import { createInequality } from "./element/composition.js";
@@ -18,7 +18,7 @@ export function runTests(which) {
 }
 
 export let tests = [
-    'axis', /*'widgets', 'innerpoints',*/ 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc', 'mathml',
+    'axis', 'clip',/*'widgets', 'innerpoints',*/ 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc', 'mathml',
     'composition'
 ]
 
@@ -90,6 +90,31 @@ export class IndexTests {
             let t = board.create('hatch', [l1, 3]);
         })
     }
+    clip() {
+        this.boards.map((board, nth) => {
+
+            for (let i = 0; i < Math.PI; i += Math.PI / 32) {
+
+
+                let line = board.create('line', [[0, 0], [Math.cos(i), Math.sin(i)]]);
+
+                // quick test of line intersections while we are here
+                let linez = board.create('line', [[-9, 9], [9, 9]], { color: 'olive' })  // top border
+                let isect = Geometry.calculateLineIntersection(line.point1.coords, line.point2.coords, linez.point1.coords, linez.point2.coords,)
+                if (nth !== 1 && !Number.isNaN(isect[0]))   // not for old jsxgraph
+                    board.create('point', isect)
+            }
+
+            for (let i = -Math.PI; i < Math.PI; i += Math.PI / 16) {
+                board.create('line', [[0, 20], [20 * Math.cos(i), 20 * Math.sin(i)]], { color: 'red' });
+            }
+
+            for (let i = -Math.PI; i < Math.PI; i += Math.PI / 16) {
+                board.create('line', [[20, 20], [20 * Math.cos(i), 20 * Math.sin(i)]], { color: 'green' });
+            }
+
+        })
+    }
     text() {
         this.boards.map((board) => {
 
@@ -138,8 +163,8 @@ export class IndexTests {
 
             let c1 = testLine.point1.coords //new Coords(COORDS_BY.USER,[0,0],board)
             let c2 = testLine.point2.coords //new Coords(COORDS_BY.USER,[1,0],board)
-            Geometry.calcStraight(testLine,c1,c2)
-            Geometry.calcLineDelimitingPoints(testLine,c1,c2)
+            Geometry.calcStraight(testLine, c1, c2)
+            Geometry.calcLineDelimitingPoints(testLine, c1, c2)
 
             testLine.update()
 

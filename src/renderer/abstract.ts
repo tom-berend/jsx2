@@ -613,11 +613,12 @@ export abstract class AbstractRenderer {
         let c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
 
         margin = el.evalVisProp('margin');
-        if (!el.evalVisProp('clip')) {
-            margin += 4096;
-        }
+        // tbtb - this was killing the window clip algorithm.  what is it??
+        // if (!el.evalVisProp('clip')) {
+        //     margin += 4096;
+        // }
         Geometry.calcStraight(el, c1, c2, margin);
-        console.log(`calc straight from ${JSON.stringify(el.point1.coords.usrCoords)} ${JSON.stringify(el.point2.coords.usrCoords)} to ${JSON.stringify(c1.usrCoords)} ${JSON.stringify(c2.usrCoords)}`)
+        // console.log(`calc straight from ${JSON.stringify(el.point1.coords.usrCoords)} ${JSON.stringify(el.point2.coords.usrCoords)} to ${JSON.stringify(c1.usrCoords)} ${JSON.stringify(c2.usrCoords)}`)
 
         this.handleTouchpoints(el, c1, c2, arrowData);
         this.getPositionArrowHead(el, c1, c2, arrowData);

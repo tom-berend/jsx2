@@ -1350,7 +1350,7 @@ export class Geometry {
      * @see Line
      * @see JXG2.Line
      */
-    static calcLineDelimitingPoints(el, point1:Coords, point2:Coords) {
+    static calcLineDelimitingPoints(el, point1: Coords, point2: Coords) {
         var distP1P2,
             boundingBox,
             lineSlope,
@@ -1375,21 +1375,23 @@ export class Geometry {
             straightLast = true;
         }
 
-        // tbtb - this seems to be a sanity check for homogenous coordinates.  don't understand what it checks
+        {
+            // this seems to be a sanity check for homogenous coordinates.  don't understand what it checks
 
-        // // Compute the stdform of the line in screen coordinates.
-        // let c = [];
-        // c[0] =
-        //     el.stdform[0] -
-        //     (el.stdform[1] * el.board.origin.scrCoords[1]) / el.board.unitX +
-        //     (el.stdform[2] * el.board.origin.scrCoords[2]) / el.board.unitY;
-        // c[1] = el.stdform[1] / el.board.unitX;
-        // c[2] = -el.stdform[2] / el.board.unitY;
+            // Compute the stdform of the line in screen coordinates.
+            let c = [];
+            c[0] =
+                el.stdform[0] -
+                (el.stdform[1] * el.board.origin.scrCoords[1]) / el.board.unitX +
+                (el.stdform[2] * el.board.origin.scrCoords[2]) / el.board.unitY;
+            c[1] = el.stdform[1] / el.board.unitX;
+            c[2] = -el.stdform[2] / el.board.unitY;
 
-        // // p1=p2
-        // if (isNaN(c[0] + c[1] + c[2])) {
-        //     return;
-        // }
+            // p1=p2
+            if (isNaN(c[0] + c[1] + c[2])) {
+                return;
+            }
+        }
 
         takePoint1 = !straightFirst;
         takePoint2 = !straightLast;
@@ -1530,7 +1532,7 @@ export class Geometry {
             point2.setCoordinates(COORDS_BY.USER, p2.usrCoords);
         }
 
-   }
+    }
 
     /**
      * Calculates the visProp.position corresponding to a given angle.
@@ -4570,4 +4572,127 @@ export class Geometry {
         return [makeFct("X", 'cos'), makeFct("Y", 'sin'), 0, pi2];
     }
 
-}
+
+
+    //  https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+    //  given two points on each line
+    static calculateLineIntersection(l1p1: Coords, l1p2: Coords, l2p1: Coords, l2p2: Coords): number[] {
+        let x1 = l1p1.usrCoords[1]
+        let y1 = l1p1.usrCoords[2]
+
+        let x2 = l1p2.usrCoords[1]
+        let y2 = l1p2.usrCoords[2]
+
+        let x3 = l2p1.usrCoords[1]
+        let y3 = l2p1.usrCoords[2]
+
+        let x4 = l2p2.usrCoords[1]
+        let y4 = l2p2.usrCoords[2]
+
+        // console.log(x1, y1, x2, y2, x3, y3, x4, y4)
+        let denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+
+        let px: number, py: number
+        if (Math.abs(denominator) > JSXMath.eps) {
+            px = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4) / denominator
+            py = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4) / denominator
+        } else {
+            px = py = NaN
+        }
+        // console.log(`calc [${JSON.stringify(l1p1.usrCoords)},${JSON.stringify(l1p2.usrCoords)}], [${JSON.stringify(l2p1.usrCoords)}${JSON.stringify(l2p2.usrCoords)}]`)
+        // console.log(`returns [${JSON.stringify(px)}, ${JSON.stringify(py)}]`)
+
+        return [px, py]
+    }
+
+
+
+
+
+
+
+    ///////  cohen-sutherland line clipping
+    ///  https://cse18-iiith.vlabs.ac.in/exp/clipping-line/theory.html
+
+    // divide the board into 9 zones
+    //
+    //      1001   |   1000    |   1010
+    //            ---         ---
+    //      0001   |   0000    |   0010
+    //            ---         ---
+    //      0101   |   0100    |   0110
+
+
+    /**
+     * returns two Coords representing a line or segment clipped by the viewport.
+     * If line is completely outside viewport, returns null
+     * */
+    static cohenSutherlandLineClipping(point1: Coords, point2: Coords): [Coords, Coords] | null {
+
+        console.assert(point1.board.id == point2.board.id, "Cohen-Sutherland: Expected points to share the same board")
+
+        let boundingBox = point1.board.getBoundingBox()
+
+        let TOP = 0b1000
+        let BOTTOM = 0b0100
+        let LEFT = 0b0001
+        let RIGHT = 0b0010
+
+        let quadrant = (p:Coords, boundingBox) => {
+            let result = 0;
+
+            result += p.usrCoords[1] < boundingBox[0] - JSXMath.eps ? LEFT : 0
+            result += p.usrCoords[2] > boundingBox[1] + JSXMath.eps ? TOP : 0     // a point can be in LEFT+TOP
+            result += p.usrCoords[1] > boundingBox[2] + JSXMath.eps ? RIGHT : 0
+            result += p.usrCoords[2] < boundingBox[3] - JSXMath.eps ? BOTTOM : 0
+            return result;
+        };
+
+        // create some coords for the corners of the viewport so we can make boundary lines
+        let topLeft = new Coords(COORDS_BY.USER, [boundingBox[0], boundingBox[1]], point1.board)
+        let topRight = new Coords(COORDS_BY.USER, [boundingBox[2], boundingBox[1]], point1.board)
+        let bottomLeft = new Coords(COORDS_BY.USER, [boundingBox[0], boundingBox[3]], point1.board)
+        let bottomRight = new Coords(COORDS_BY.USER, [boundingBox[2], boundingBox[3]], point1.board)
+
+        /** returns the intersection point as [x,y].  might be [NaN, Nan] */
+        let clipByQuadrant = (quadrant, p1: Coords, p2: Coords, boundingBox: number[]): number[] => {
+
+            if ((quadrant & TOP) !== 0) {
+                return Geometry.calculateLineIntersection(p1, p2, topLeft, topRight);
+            } else if ((quadrant & BOTTOM) !== 0) {
+                return Geometry.calculateLineIntersection(p1, p2, bottomLeft, bottomRight);
+            } else if ((quadrant & LEFT) !== 0) {
+                return Geometry.calculateLineIntersection(p1, p2, topLeft, topRight);
+            } else {  // RIGHT
+                return Geometry.calculateLineIntersection(p1, p2, topRight, bottomRight);
+            }
+        }
+
+        let point1Quadrant = quadrant(point1, boundingBox)
+        let point2Quadrant = quadrant(point2, boundingBox)
+
+        while (true) {            // the algorithm ends when we can trivially accept or reject a segment
+
+            // trivial acceptance: When both endpoints are in quadrant 0000, both points are inside the clipping window.
+            if (point1Quadrant == 0 && point2Quadrant == 0)
+                return [point1, point2]
+
+
+            // trivial rejection:  When the bitwise AND of both endpoint quadrants is not 0000, both points lie in regions that are completely outside the window.
+            if ((point1Quadrant & point2Quadrant) > 0) {
+                return null
+            }
+
+            if (point1Quadrant !== 0) {
+                point1 = new Coords(COORDS_BY.USER, clipByQuadrant(point1Quadrant, point1, point2, boundingBox), point1.board)  // shorten at point1
+                point1Quadrant = quadrant(point1, boundingBox)
+            } else if (point2Quadrant !== 0){
+                point2 = new Coords(COORDS_BY.USER, clipByQuadrant(point2Quadrant, point1, point2, boundingBox), point1.board)  // shorten at point1
+                point2Quadrant = quadrant(point2, boundingBox)
+            }
+
+
+        }
+
+    }
+};

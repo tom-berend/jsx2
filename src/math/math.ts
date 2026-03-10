@@ -82,7 +82,7 @@ export class JSXMath {
      * than eps, it is considered to be equal to zero.
      * @type Number
      */
-    static eps = 0.000001
+    static eps = 0.00001
 
     /**
      * Determine the relative difference between two numbers.
