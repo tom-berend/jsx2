@@ -58,6 +58,7 @@ import { Coords } from "../base/coords.js"
 import { Board } from "../base/board.js";
 import { Geometry } from "../math/geometry.js";
 import { JSXMath } from "../math/math.js";
+import { Curve } from "../base/curve.js"
 
 import * as THREE from 'three'
 // @ts-ignore
@@ -75,6 +76,10 @@ import { elements } from "../index.js";
  * @augments JXG2.AbstractRenderer
  * @see JXG2.AbstractRenderer
  */
+
+
+
+
 export class ThreeRenderer extends AbstractRenderer {
 
     /**
@@ -334,6 +339,7 @@ export class ThreeRenderer extends AbstractRenderer {
         if (dbug(el))
             console.warn(`%c webgl: updateTicks(${el.id})`, dbugColor, el.ticks)
 
+        let visible = el.evalVisProp('visible')
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
         let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
@@ -385,9 +391,47 @@ export class ThreeRenderer extends AbstractRenderer {
 
     /* ********* Curve related stuff *********** */
 
-    drawCurve(el) { console.log(`three: drawCurve not yet implemented`) }
+    /**
+     * Draws a {@link JXG2.Curve} on the {@link JXG2.Board}.
+     * @param {JXG2.Curve} el Reference to a graph object, that has to be plotted.
+     * @see Curve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#updateCurve
+     */
+    drawCurve(el) {
 
-    updateCurve(el) { console.log(`three: updateCurve not yet implemented`) }
+        this.updateCurve(el);
+    }
+
+    /**
+     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Curve}.
+     * @param {JXG2.Curve} el Reference to a {@link JXG2.Curve} object, that has to be updated.
+     * @see Curve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#drawCurve
+     */
+    updateCurve(el: Curve) {
+        if (dbug(el))
+            console.warn(`%cwebgl updateCurve `, dbugColor, el.points, el.points[0].usrCoords, el.points.length)
+
+        let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
+        let color = el.evalVisProp('strokecolor')
+        let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
+
+        const material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
+
+        for (let i = 0; i < el.points.length - 2; i++) {
+            let start = el.points[i].usrCoords
+            let end = el.points[i + 1].usrCoords
+
+            let path = new THREE.LineCurve3(new THREE.Vector3(start[1], start[2], 0), new THREE.Vector3(end[1], end[2], 0))
+
+            const geometry = new THREE.TubeGeometry(path, 1, strokewidth, 8, false);  // closed must be false
+            const mesh = new THREE.Mesh(geometry, material);
+            this.scene.add(mesh);
+        }
+
+    }
 
     /* ********* Circle related stuff *********** */
 
@@ -473,14 +517,15 @@ export class ThreeRenderer extends AbstractRenderer {
     updateLinePrim(el: GeometryElement, c1: Coords, c2: Coords, board: Board) {
         let node = el.rendNode
 
+        console.log(`%c WEBGL updateLinePrim(${el.id}, [${c1.usrCoords[1]}, ${c1.usrCoords[2]}], [${c2.usrCoords[1]}, ${c2.usrCoords[2]}])`, dbugColor)
+
         const clipped = Geometry.cohenSutherlandLineClipping(c1, c2)
 
         if (clipped === null) {        // line is entirely out of viewport
-            // console.log(`%c line is out of viewport`, dbugColor)
             return
         }
+
         if (Number.isNaN(c1.usrCoords[1]) || Number.isNaN(c2.usrCoords)) {
-            // console.log(`%c clipping is NAN`, dbugColor, clipped)
             return
         }
 
@@ -492,28 +537,32 @@ export class ThreeRenderer extends AbstractRenderer {
             return
         }
 
+        let visible = el.evalVisProp('visible')
         let strokewidth = this.calcLineStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
         let color = el.evalVisProp('strokecolor')
         let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
 
-        console.log(`%c WEBGL updateLinePrim(${el.id}, [${start[1]}, ${start[2]}], [${end[1]}, ${end[2]}]) stroke: ${strokewidth}`, dbugColor)
+        if (this.isModifiedVisPropCache(el, visible, strokewidth, color, opacity, start, end)) {
 
-        if (Type.exists(el.webGL.mesh)) {
-            console.log(el.webGL.mesh)
-            this.scene.remove(el.webGL.mesh);
-            // el.webGL.lineCurve3.dispose();
-            el.webGL.geometry.dispose();
-            el.webGL.material.dispose();
-            el.webGL.mesh = el.webGL.lineCurve3 = el.webGL.geometry = el.webGL.material = undefined
+            if (Type.exists(el.webGL.mesh)) {
+                console.log(el.webGL.mesh)
+                this.scene.remove(el.webGL.mesh);
+                // el.webGL.lineCurve3.dispose();
+                el.webGL.geometry.dispose();
+                el.webGL.material.dispose();
+                el.webGL.mesh = el.webGL.lineCurve3 = el.webGL.geometry = el.webGL.material = undefined
+            }
+
+            el.webGL.lineCurve3 = new THREE.LineCurve3(new THREE.Vector3(start[1], start[2], 0), new THREE.Vector3(end[1], end[2], 0))
+
+            el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
+            el.webGL.material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
+            el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);
+            this.scene.add(el.webGL.mesh);
         }
-
-        el.webGL.lineCurve3 = new THREE.LineCurve3(new THREE.Vector3(start[1], start[2], 0), new THREE.Vector3(end[1], end[2], 0))
-
-        el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
-        el.webGL.material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
-        el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);
-        this.scene.add(el.webGL.mesh);
-
+        else {
+            console.log(`%c Avoided an unnecessary refreesh`, 'background-color:yellow;')
+        }
 
     }
     clip(value: number, min: number, max: number): number {
@@ -680,6 +729,8 @@ export class ThreeRenderer extends AbstractRenderer {
     screenshot(board: any, imgId: any, ignoreTexts: any) { }
     dumpToCanvas(canvasId: any, w: any, h: any, _ignoreTexts: any) { }
     dumpToDataURI(_ignoreTexts: any) { }
+
+
 
 }
 

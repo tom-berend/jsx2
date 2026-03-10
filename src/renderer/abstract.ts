@@ -221,6 +221,12 @@ export abstract class AbstractRenderer {
         [0, 5]
     ];
 
+
+        tbcounttry = 0
+    tbcountmod = 0
+
+
+
     /* ********* Private methods *********** */
 
     /**
@@ -370,42 +376,43 @@ export abstract class AbstractRenderer {
         this.setLineCap(el);
     }
 
-    /* ********* Curve related stuff *********** */
+    // /* ********* Curve related stuff *********** */
 
-    /**
-     * Draws a {@link JXG2.Curve} on the {@link JXG2.Board}.
-     * @param {JXG2.Curve} el Reference to a graph object, that has to be plotted.
-     * @see Curve
-     * @see JXG2.Curve
-     * @see JXG2.AbstractRenderer#updateCurve
-     */
-    drawCurve(el: Curve) {
-        if (dbug(el))
-            console.warn(`%cabstract drawCurve `, dbugColor, el)
+    ////////  moved to SVG and WEBGL
+    // /**
+    //  * Draws a {@link JXG2.Curve} on the {@link JXG2.Board}.
+    //  * @param {JXG2.Curve} el Reference to a graph object, that has to be plotted.
+    //  * @see Curve
+    //  * @see JXG2.Curve
+    //  * @see JXG2.AbstractRenderer#updateCurve
+    //  */
+    // drawCurve(el: Curve) {
+    //     if (dbug(el))
+    //         console.warn(`%cabstract drawCurve `, dbugColor, el)
 
-        el.rendNode = this.appendChildPrim(
-            this.createPrim("path", el.id),
-            el.evalVisProp('layer')
-        );
-        this.appendNodesToElement(el, "path");
-        this.updateCurve(el);
-    }
+    //     el.rendNode = this.appendChildPrim(
+    //         this.createPrim("path", el.id),
+    //         el.evalVisProp('layer')
+    //     );
+    //     this.appendNodesToElement(el, "path");
+    //     this.updateCurve(el);
+    // }
 
-    /**
-     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Curve}.
-     * @param {JXG2.Curve} el Reference to a {@link JXG2.Curve} object, that has to be updated.
-     * @see Curve
-     * @see JXG2.Curve
-     * @see JXG2.AbstractRenderer#drawCurve
-     */
-    updateCurve(el) {
-        if (dbug(el))
-            console.warn(`%cabstract updateCurve `, dbugColor, el.points)
+    // /**
+    //  * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Curve}.
+    //  * @param {JXG2.Curve} el Reference to a {@link JXG2.Curve} object, that has to be updated.
+    //  * @see Curve
+    //  * @see JXG2.Curve
+    //  * @see JXG2.AbstractRenderer#drawCurve
+    //  */
+    // updateCurve(el) {
+    //     if (dbug(el))
+    //         console.warn(`%cabstract updateCurve `, dbugColor, el.points)
 
-        this._updateVisual(el);
-        this.updatePathWithArrowHeads(el); // Calls the renderer primitive
-        this.setLineCap(el);
-    }
+    //     this._updateVisual(el);
+    //     this.updatePathWithArrowHeads(el); // Calls the renderer primitive
+    //     this.setLineCap(el);
+    // }
 
     /* ********* Arrow heads and related stuff *********** */
 
@@ -1838,6 +1845,50 @@ export abstract class AbstractRenderer {
                 parentNode.appendChild(el);
             }
         };
+    }
+
+
+        /** for speed, check if this update will modify the element's VisPropCache.  if TRUE, then the
+     * cache is updated here, on the assumption that display will be updated
+     */
+
+
+    isModifiedVisPropCache(el: GeometryElement,
+        visible: boolean, strokewidth: number, color: string, opacity: number,
+        point1: number[] = [0, 0, 0], point2: number[] = [0, 0, 0]): boolean {
+
+            this.tbcounttry+=1
+
+
+        let modified = false;
+
+        if (visible !== el.visPropCache.visible ||
+            strokewidth !== el.visPropCache.strokewidth ||
+            color !== el.visPropCache.color ||
+            opacity !== el.visPropCache.opacity) { modified = true }
+
+        if (Math.abs(point1[0] - el.visPropCache.point1[0]) > JSXMath.eps ||
+            Math.abs(point1[1] - el.visPropCache.point1[1]) > JSXMath.eps ||
+            (point1.length > 2 && Math.abs(point1[2] - el.visPropCache.point1[2]) > JSXMath.eps) ||
+            Math.abs(point2[0] - el.visPropCache.point2[0]) > JSXMath.eps ||
+            Math.abs(point2[1] - el.visPropCache.point2[1]) > JSXMath.eps ||
+            (point2.length > 2 && Math.abs(point2[2] - el.visPropCache.point2[2]) > JSXMath.eps)) { modified = true }
+
+        if (modified) {   // update assuming display will be set
+            this.tbcountmod +=1
+
+            el.visPropCache = {
+                visible: visible,
+                strokewidth: strokewidth,
+                color: color,
+                opacity: opacity,
+                point1: point1,
+                point2: point2
+            }
+        }
+
+        console.log(`%ctbcount mod/try ${this.tbcountmod}/${this.tbcounttry}`,'color:black;background-color:yellow;')
+        return modified
     }
 
 

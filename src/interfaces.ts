@@ -3,9 +3,21 @@ import { GeometryElement } from "./base/element.js"
 
 export type Constructor<T = {}> = new (...args: any[]) => T  // for mixins.  Constructor is something that can be instantiated
 
-export interface ComposeInterface {
+export interface ComposeInterface {}
 
+/** cache to speed rendering in webGL */
+export interface VisPropCache {
+    // these are optional
+    point1?: number[]   // just the coordinates
+    point2?: number[]
+
+    visible: boolean
+    strokewidth: number
+    color: string
+    opacity: number
 }
+
+
 
 export type basicVisProps = {
 

@@ -1,5 +1,5 @@
 import { watchElement } from "../jsxgraph.js"
-const dbug = (elem) => elem && elem['id'] && elem.id ==watchElement
+const dbug = (elem) => elem && elem['id'] && elem.id == watchElement
 const dbugColor = `color:yellow;background-color:#803030`;
 
 /*
@@ -39,7 +39,7 @@ const dbugColor = `color:yellow;background-color:#803030`;
  * This object provides the coordinate handling of points, images and texts.
  */
 
-import { LooseObject } from "../interfaces.js";
+import { LooseObject, VisPropCache } from "../interfaces.js";
 import { Board } from "../base/board.js"
 import { JSXMath } from "../math/math.js";
 import { Geometry } from "../math/geometry.js";
@@ -54,7 +54,7 @@ import { Transformation } from "./transformation.js";
 import { Line } from "../base/line.js";
 import { Circle } from "../base/circle.js";
 import { Curve } from "../base/curve.js";
-import { Glider} from "../element/glider.js"
+import { Glider } from "../element/glider.js"
 
 
 export abstract class CoordsElement extends GeometryElement {
@@ -885,7 +885,7 @@ export abstract class CoordsElement extends GeometryElement {
         let makeSliderFunction = (a: Glider) => () => a.Value()
 
         if (dbug(this))
-        console.warn(`%c coordselements: addConstraint( ${this.id} terms(${terms.length}): )`, dbugColor, terms)
+            console.warn(`%c coordselements: addConstraint( ${this.id} terms(${terms.length}): )`, dbugColor, terms)
 
 
         if (this.elementClass === OBJECT_CLASS.POINT) {

@@ -46,7 +46,7 @@ import { Options } from "../options.js";
 import { EventEmitter } from "../utils/event.js";
 import { Color } from "../utils/color.js";
 import { Type } from "../utils/type.js";
-import { ElementObject, LooseObject } from "../interfaces.js";
+import { ElementObject, LooseObject,VisPropCache } from "../interfaces.js";
 import { Transformation } from "./transformation.js";
 import { Point } from "../base/point.js"
 import { createText } from "../base/text.js"
@@ -372,6 +372,8 @@ export abstract class GeometryElement extends Events {
     animationData: LooseObject
     animationCallback
     visPropOld
+    visPropCache: VisPropCache = { visible: false, strokewidth: 0, color: '', opacity: 0, point1: [0, 0, 0], point2: [0, 0, 0] }
+
     label
     hiddenByParent
     rendNodeTag

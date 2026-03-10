@@ -159,40 +159,40 @@ export class IndexTests {
 
 
 
-            let testLine = board.create('line', [[0, -2], [20, 0]], { strokecolor: 'black' })
+            // let testLine = board.create('line', [[0, -2], [20, 0]], { strokecolor: 'black' })
 
-            let c1 = testLine.point1.coords //new Coords(COORDS_BY.USER,[0,0],board)
-            let c2 = testLine.point2.coords //new Coords(COORDS_BY.USER,[1,0],board)
-            Geometry.calcStraight(testLine, c1, c2)
-            Geometry.calcLineDelimitingPoints(testLine, c1, c2)
+            // let c1 = testLine.point1.coords //new Coords(COORDS_BY.USER,[0,0],board)
+            // let c2 = testLine.point2.coords //new Coords(COORDS_BY.USER,[1,0],board)
+            // Geometry.calcStraight(testLine, c1, c2)
+            // Geometry.calcLineDelimitingPoints(testLine, c1, c2)
 
-            testLine.update()
+            // testLine.update()
 
 
-            // board.create('segment', [[-3, -2], [-4, -2]], { strokecolor: 'green' })
+            board.create('segment', [[-3, -2], [-4, -2]], { strokecolor: 'green' })
 
-            // let p1 = board.create('point', [-3, -3])
-            // let p2 = board.create('point', [-4, -3])
-            // board.create('segment', [p1, p2], { strokecolor: 'blue' })
+            let p1 = board.create('point', [-3, -3])
+            let p2 = board.create('point', [-4, -3])
+            board.create('segment', [p1, p2], { strokecolor: 'blue' })
 
-            // let p3 = board.create('point', [-3, -4])
-            // board.create('segment', [p2, p3], { strokecolor: 'green' })
+            let p3 = board.create('point', [-3, -4])
+            board.create('segment', [p2, p3], { strokecolor: 'green' })
 
-            // let d = board.create('point', [1, 3])
-            // let p5 = board.create('point', [() => d.X() - 1, () => d.Y() + 2], { name: 'locked to A', strokecolor: 'blue' })
-            // board.create('segment', [d, p5], { strokecolor: 'green' })
+            let d = board.create('point', [1, 3])
+            let p5 = board.create('point', [() => d.X() - 1, () => d.Y() + 2], { name: 'locked to A', strokecolor: 'blue' })
+            board.create('segment', [d, p5], { strokecolor: 'green' })
 
-            // // Create a line using point and coordinates/
-            // // The second point will be fixed and invisible.
-            // let e = board.create('point', [4.5, 2.0]);
-            // let l1 = board.create('line', [e, [1.0, 1.0]]);
+            // Create a line using point and coordinates/
+            // The second point will be fixed and invisible.
+            let e = board.create('point', [4.5, 2.0]);
+            let l1 = board.create('line', [e, [1.0, 1.0]]);
 
-            // board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
-            // board.create('arrow', [[-.5, -9.5], [-3, -9.5]])
+            board.create('line', [[-1, -1], [-2, -1]], { strokecolor: 'red' })
+            board.create('arrow', [[-.5, -9.5], [-3, -9.5]])
 
-            // let pl1 = board.create('point', [9.5, -9.5], { withlabel: false })
-            // let pl2 = board.create('point', [3, -.5])
-            // board.create('arrow', [pl1, pl2])
+            let pl1 = board.create('point', [9.5, -9.5], { withlabel: false })
+            let pl2 = board.create('point', [3, -.5])
+            board.create('arrow', [pl1, pl2])
 
         })
     }

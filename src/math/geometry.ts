@@ -50,7 +50,7 @@ import { Expect } from "../utils/expect.js";
 import { Board } from "../base/board.js";
 import { GeometryElement } from "../base/element.js";
 import { Polygon } from "../base/polygon.js";
-
+import { Line } from "../base/line.js";
 
 /**
  * Math.Geometry namespace definition. This namespace holds geometrical algorithms,
@@ -1350,7 +1350,7 @@ export class Geometry {
      * @see Line
      * @see JXG2.Line
      */
-    static calcLineDelimitingPoints(el, point1: Coords, point2: Coords) {
+    static calcLineDelimitingPoints(el:GeometryElement, point1: Coords, point2: Coords) {
         var distP1P2,
             boundingBox,
             lineSlope,
@@ -1402,7 +1402,7 @@ export class Geometry {
         boundingBox = el.board.getBoundingBox();
         console.log(`%c calcLineDelimitingPoints BOUNDINGBOX ${JSON.stringify(boundingBox)}`, 'background-color:red;')
 
-        lineSlope = el.getSlope();
+        lineSlope = (el as unknown as Line).Slope();
         if (lineSlope >= 0) {
             // project vertices (x2,y1) (x1, y2)
             intersect1 = this.projectPointToLine(
@@ -1429,7 +1429,7 @@ export class Geometry {
             );
         }
 
-        console.log(`%c calcLineDelimitingPoints INTERSECTS ${JSON.stringify(intersect1.usrCoords)} ${JSON.stringify(intersect2.usrCoords)}`, 'background-color:red;')
+        console.warn(`%c calcLineDelimitingPoints INTERSECTS ${JSON.stringify(intersect1.usrCoords)} ${JSON.stringify(intersect2.usrCoords)}`, 'background-color:red;')
 
         /**
          * we have four points:
@@ -4671,7 +4671,10 @@ export class Geometry {
         let point1Quadrant = quadrant(point1, boundingBox)
         let point2Quadrant = quadrant(point2, boundingBox)
 
+        let safetyCounter = 0
         while (true) {            // the algorithm ends when we can trivially accept or reject a segment
+            if(safetyCounter++ > 10)
+                return null
 
             // trivial acceptance: When both endpoints are in quadrant 0000, both points are inside the clipping window.
             if (point1Quadrant == 0 && point2Quadrant == 0)

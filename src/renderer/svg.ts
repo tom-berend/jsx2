@@ -54,7 +54,7 @@ import { Text } from "../base/text.js"
 import { Point } from "../base/point.js"
 import { Dim, SVGType } from "../interfaces.js"
 import { Polygon } from "../base/polygon.js";
-
+import {Curve } from "../base/curve.js"
 
 /**
  * Uses SVG to implement the rendering methods defined in {@link JXG2.AbstractRenderer}.
@@ -3022,5 +3022,44 @@ export class SVGRenderer extends AbstractRenderer {
         return this;
 
     }
+
+
+        /* ********* Curve related stuff *********** */
+
+    /**
+     * Draws a {@link JXG2.Curve} on the {@link JXG2.Board}.
+     * @param {JXG2.Curve} el Reference to a graph object, that has to be plotted.
+     * @see Curve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#updateCurve
+     */
+    drawCurve(el: Curve) {
+        if (dbug(el))
+            console.warn(`%cabstract drawCurve `, dbugColor, el)
+
+        el.rendNode = this.appendChildPrim(
+            this.createPrim("path", el.id),
+            el.evalVisProp('layer')
+        );
+        this.appendNodesToElement(el, "path");
+        this.updateCurve(el);
+    }
+
+    /**
+     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Curve}.
+     * @param {JXG2.Curve} el Reference to a {@link JXG2.Curve} object, that has to be updated.
+     * @see Curve
+     * @see JXG2.Curve
+     * @see JXG2.AbstractRenderer#drawCurve
+     */
+    updateCurve(el) {
+        if (dbug(el))
+            console.warn(`%cabstract updateCurve `, dbugColor, el.points)
+
+        this._updateVisual(el);
+        this.updatePathWithArrowHeads(el); // Calls the renderer primitive
+        this.setLineCap(el);
+    }
+
 
 }

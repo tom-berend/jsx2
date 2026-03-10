@@ -584,15 +584,6 @@ export class Line extends GeometryElement {
         return Infinity;
     }
 
-    /**
-     * Alias for line.Slope
-     * @returns {Number} The slope of the line or Infinity if the line is parallel to the y-axis.
-     * @deprecated
-     * @see Line#Slope
-     */
-    getSlope() {
-        return this.Slope();
-    }
 
     /**
      * Determines the angle between the positive x axis and the line.
@@ -839,9 +830,9 @@ export class Line extends GeometryElement {
         copy.point2 = this.point2;
         copy.stdform = this.stdform;
 
-        s = this.getSlope();
+        s = this.Slope();
         r = this.getRise();
-        copy.getSlope = function () {
+        copy.Slope = function () {
             return s;
         };
         copy.getRise = function () {
