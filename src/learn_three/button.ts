@@ -18,80 +18,133 @@ let fontStyle = 'italic'
 let fontWeight = '400'   // or 'bold', 'normal'
 
 ////////////////////
-
 // create Canvas and Context
-const canvas = document.createElement('canvas');
-const ctx = canvas.getContext('2d');
 
-let fontSpecifier = `${fontWeight} ${fontStyle} ${fontHeight}px ${fontFamily}`
+{   // first canvas
 
-//  measure text
-ctx.font = fontSpecifier
-ctx.textAlign = "center"
-let text = ctx.measureText(message);
-console.log('text width', text.width)
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
-// create button
-canvas.width = text.width + (padding * 2) + (border * 2)
-canvas.height = text.fontBoundingBoxAscent + text.fontBoundingBoxDescent + (padding * 2) + (border * 2)
-ctx.fillStyle = backgroundColor;
-ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-// draw text
-ctx.fillStyle = color
-ctx.font = fontSpecifier
-ctx.fillText(message, padding + border, padding + border + text.fontBoundingBoxAscent);
+    let fontSpecifier = `${fontWeight} ${fontStyle} ${fontHeight}px ${fontFamily}`
 
-// draw Border
-if (border > 0) {
-    ctx.strokeStyle = borderColor
-    ctx.lineWidth = border
-    ctx.beginPath()
-    ctx.moveTo(0,0)
+    //  measure text
+    ctx.font = fontSpecifier
+    ctx.textAlign = "center"
+    let text = ctx.measureText(message);
+    console.log('text width', text.width)
 
-    // border must be fully inside the box, so use border/2
-    ctx.lineTo(border/2, border/2)   // if you start at (0,0), you will leave a patch of background
-    ctx.lineTo(canvas.width-border+border/2, border/2)
-    ctx.lineTo(canvas.width-border+border/2, canvas.height-border+border/2)
-    ctx.lineTo(border/2, canvas.height-border/2)
-    ctx.lineTo(border/2, border/2)
-    ctx.stroke()
+    // create button
+    canvas.width = text.width + (padding * 2) + (border * 2)
+    canvas.height = text.fontBoundingBoxAscent + text.fontBoundingBoxDescent + (padding * 2) + (border * 2)
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // draw text
+    ctx.fillStyle = color
+    ctx.font = fontSpecifier
+    ctx.fillText(message, padding + border, padding + border + text.fontBoundingBoxAscent);
+
+    // draw Border
+    if (border > 0) {
+        ctx.strokeStyle = borderColor
+        ctx.lineWidth = border
+        ctx.beginPath()
+        ctx.moveTo(0, 0)
+
+        // border must be fully inside the box, so use border/2
+        ctx.lineTo(border / 2, border / 2)   // if you start at (0,0), you will leave a patch of background
+        ctx.lineTo(canvas.width - border + border / 2, border / 2)
+        ctx.lineTo(canvas.width - border + border / 2, canvas.height - border + border / 2)
+        ctx.lineTo(border / 2, canvas.height - border / 2)
+        ctx.lineTo(border / 2, border / 2)
+        ctx.stroke()
+    }
+
+    // create Texture
+    const texture = new THREE.CanvasTexture(canvas);
+
+    let px2Unit = 70
+
+    // apply to Material
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width / px2Unit, canvas.height / px2Unit), material);
+    scene.add(mesh);
+
+
+    //////////////////////////////////
+    fontHeight /= 2 // div by five to roughly match webGL canvas 10x10
+
+
+    // 1. Create the button element
+    let b = document.createElement('button');
+
+    // 2. Set the button's text content
+    b.innerText = message;
+    b.style.color = color
+    b.style.fontSize = `${fontHeight}px`
+    b.style.backgroundColor = backgroundColor
+    b.style.border = border.toString()
+    b.style.fontStyle = fontStyle
+    b.style.fontFamily = fontFamily
+    b.style.fontWeight = fontWeight.toString()
+    b.style.border = `${border}px solid ${borderColor}`
+
+    // 3. Add an event listener
+    b.addEventListener('click', () => {
+        alert('Dynamically created button clicked!');
+    });
+
+    // 4. Find the container and append the new button to the page
+    const container = document.getElementById('buttonContainer');
+    container.appendChild(b);
 }
 
-// create Texture
-const texture = new THREE.CanvasTexture(canvas);
-
-let px2Unit = 70
-
-// apply to Material
-const material = new THREE.MeshBasicMaterial({ map: texture });
-const mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width / px2Unit, canvas.height / px2Unit), material);
-scene.add(mesh);
 
 
-//////////////////////////////////
-fontHeight /= 2 // div by five to roughly match webGL canvas 10x10
 
+{
+    // const canvas = document.createElement('canvas');
+    // const ctx = canvas.getContext('2d');
 
-// 1. Create the button element
-let b = document.createElement('button');
+    // canvas.width = 2
+    // canvas.height = 2
 
-// 2. Set the button's text content
-b.innerText = message;
-b.style.color = color
-b.style.fontSize = `${fontHeight}px`
-b.style.backgroundColor = backgroundColor
-b.style.border = border.toString()
-b.style.fontStyle = fontStyle
-b.style.fontFamily = fontFamily
-b.style.fontWeight = fontWeight.toString()
-b.style.border = `${border}px solid ${borderColor}`
+    let px2Unit = 70
 
-// 3. Add an event listener
-b.addEventListener('click', () => {
-    alert('Dynamically created button clicked!');
-});
+    // 1. Create an instance of the TextureLoader
+    const loader = new THREE.TextureLoader();
 
-// 4. Find the container and append the new button to the page
-const container = document.getElementById('buttonContainer');
-container.appendChild(b);
+    // 2. Load the image and create the texture
+    // The load method handles asynchronous loading. The texture will update automatically when the image is ready.
+    const texture = loader.load(
+        "space-invader.png",
+        // Optional: onLoad callback
+        function (texture) {
+            console.log('Texture loaded successfully');
+        },
+        // Optional: onProgress callback
+        undefined,
+        // Optional: onError callback
+        function (err) {
+            console.error('An error happened during loading the texture', err);
+        }
+    );
+
+    // 3. Set the color space for correct rendering
+    texture.colorSpace = THREE.SRGBColorSpace;
+
+    // 4. Create a material and assign the texture to its map property
+    const material = new THREE.MeshBasicMaterial({
+         color: '#f1f8ff', // This color will tint the texture
+        map: texture
+    });
+
+    // 5. Create a mesh and add it to the scene
+    // const geometry = new THREE.PlaneGeometry(canvas.width / px2Unit, canvas.height / px2Unit)
+    const geometry = new THREE.PlaneGeometry(3,3)
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+    cube.position.set(2, 2, 0)
+
+}

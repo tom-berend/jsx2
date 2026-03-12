@@ -51,7 +51,7 @@ const dbugColor = `color:white;background-color:#0080ff`;
  * renderers is the class AbstractRenderer defined in this file.
  */
 
-import { LooseObject } from "../interfaces.js";
+import { LooseObject, VisPropModified } from "../interfaces.js";
 import { Options } from "../options.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js'
 import { Coords } from "../base/coords.js";
@@ -68,7 +68,7 @@ import { Text } from "../base/text.js"
 import { Point } from "../base/point.js"
 import { Curve } from "../base/curve.js"
 import { Image } from "../base/image.js"
-import { elements } from "../index.js";
+import { elements } from "../index.js"
 // import { TPoint } from "../tbase/tpoint.js";
 
 
@@ -222,7 +222,7 @@ export abstract class AbstractRenderer {
     ];
 
 
-        tbcounttry = 0
+    tbcounttry = 0
     tbcountmod = 0
 
 
@@ -620,10 +620,12 @@ export abstract class AbstractRenderer {
         let c2 = new Coords(COORDS_BY.USER, el.point2.coords.usrCoords, el.board);
 
         margin = el.evalVisProp('margin');
-        // tbtb - this was killing the window clip algorithm.  what is it??
+
+        // tbtb - this was killing the window clip algorithm.  clip not defined in options - what is it??
         // if (!el.evalVisProp('clip')) {
         //     margin += 4096;
         // }
+
         Geometry.calcStraight(el, c1, c2, margin);
         // console.log(`calc straight from ${JSON.stringify(el.point1.coords.usrCoords)} ${JSON.stringify(el.point2.coords.usrCoords)} to ${JSON.stringify(c1.usrCoords)} ${JSON.stringify(c2.usrCoords)}`)
 
@@ -1848,34 +1850,57 @@ export abstract class AbstractRenderer {
     }
 
 
-        /** for speed, check if this update will modify the element's VisPropCache.  if TRUE, then the
-     * cache is updated here, on the assumption that display will be updated
-     */
-
+    /** for speed, check if this update will modify the element's VisPropCache.  There are
+     * different types of modifications, for example POSITION and MATERIAL.
+     * if any modification, then the cache is updated here, on assumption display will be updated
+     *
+     * otherProps is an object that lists other properties that the caller might be concerned about,
+     * such as straightFirst lastArrow.  Changing them returns VisPropModified.MATERIAL.
+    */
 
     isModifiedVisPropCache(el: GeometryElement,
         visible: boolean, strokewidth: number, color: string, opacity: number,
-        point1: number[] = [0, 0, 0], point2: number[] = [0, 0, 0]): boolean {
+        point1: number[] = [0, 0, 0], point2: number[] = [0, 0, 0],
+        otherProps: LooseObject = {}): VisPropModified {
 
-            this.tbcounttry+=1
+        let modified = VisPropModified.FALSE;
 
+        if (!Type.exists(el.webGL.mesh)) {        // check if the main mesh for this element exists
+            modified |= VisPropModified.REBUILD
+        }
 
-        let modified = false;
+        if (visible !== el.visPropCache.visible) {
+            modified |= VisPropModified.VISIBLE
+        }
 
-        if (visible !== el.visPropCache.visible ||
-            strokewidth !== el.visPropCache.strokewidth ||
+        if (strokewidth !== el.visPropCache.strokewidth ||
             color !== el.visPropCache.color ||
-            opacity !== el.visPropCache.opacity) { modified = true }
+            opacity !== el.visPropCache.opacity) {
+            modified |= VisPropModified.MATERIAL
+        }
+
+        // second test for rebuild - ANYTHING in otherProps different, rebuild completely
+        Object.keys(otherProps).forEach(key => {
+            if (otherProps.key !== el.evalVisProp(key))
+                modified |= VisPropModified.REBUILD
+        })
+
 
         if (Math.abs(point1[0] - el.visPropCache.point1[0]) > JSXMath.eps ||
             Math.abs(point1[1] - el.visPropCache.point1[1]) > JSXMath.eps ||
-            (point1.length > 2 && Math.abs(point1[2] - el.visPropCache.point1[2]) > JSXMath.eps) ||
+            Math.abs(point1[2] - el.visPropCache.point1[2]) > JSXMath.eps ||
             Math.abs(point2[0] - el.visPropCache.point2[0]) > JSXMath.eps ||
             Math.abs(point2[1] - el.visPropCache.point2[1]) > JSXMath.eps ||
-            (point2.length > 2 && Math.abs(point2[2] - el.visPropCache.point2[2]) > JSXMath.eps)) { modified = true }
+            Math.abs(point2[2] - el.visPropCache.point2[2]) > JSXMath.eps) {
+            modified |= VisPropModified.POSITION
+        }
 
-        if (modified) {   // update assuming display will be set
-            this.tbcountmod +=1
+        if (modified !== VisPropModified.FALSE) {   // something changed. save for next time
+
+            let other: LooseObject = {}
+            Object.keys(otherProps).forEach(key => {
+                other[key] = el.evalVisProp(key)
+            })
 
             el.visPropCache = {
                 visible: visible,
@@ -1883,11 +1908,11 @@ export abstract class AbstractRenderer {
                 color: color,
                 opacity: opacity,
                 point1: point1,
-                point2: point2
+                point2: point2,
+                other: other,
             }
         }
 
-        console.log(`%ctbcount mod/try ${this.tbcountmod}/${this.tbcounttry}`,'color:black;background-color:yellow;')
         return modified
     }
 

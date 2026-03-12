@@ -615,11 +615,64 @@ export class Env {
         return [posx, posy];
     }
 
+
+    /**
+     * Cross browser setting of mouse / pointer / touch coordinates relative to the documents's top left corner.
+     * This method might be a bit outdated today, since pointer events and clientX/Y are omnipresent.
+     *
+     * @param {Object} [e] The browsers event object. If omitted, <tt>window.event</tt> will be used.
+     * @param {Array} arr Contains the position to set as x,y-coordinates in the first resp. second component.
+     * @param {Number} [index] If <tt>e</tt> is a touch event, this provides the index of the touch coordinates, i.e. it determines which finger.
+     * @param {Object} [doc] The document object.
+     * @returns {Event}
+     */
+    static setPosition(e, arr, index, doc) {
+        let i, len,evtTouches;
+
+        if (!e) {
+            e = window.event;
+        }
+
+        doc = doc || document;
+        evtTouches = e['touches']; // iOS touch events
+
+        // touchend events have their position in "changedTouches"
+        if (Type.exists(evtTouches) && evtTouches.length === 0) {
+            evtTouches = e.changedTouches;
+        }
+
+        if (Type.exists(index) && Type.exists(evtTouches)) {
+            if (index === -1) {
+                len = evtTouches.length;
+
+                for (i = 0; i < len; i++) {
+                    if (evtTouches[i]) {
+                        evtTouches[i].clientX = arr[0];
+                        evtTouches[i].clientY = arr[1];
+                        break;
+                    }
+                }
+            } else {
+                evtTouches[index].clientX = arr[0];
+                evtTouches[index].clientY = arr[1];
+            }
+        } else if (e.clientX) {
+            e.clientX = arr[0];
+            e.clientY = arr[1];
+        }
+
+        return e;
+    }
+
     /**
      * Calculates recursively the offset of the DOM element in which the board is stored.
      * @param {Object} obj A DOM element
-     * @returns {Array} An array with the elements left and top offset.
-     */
+
+/**
+* Calculates recursively the offset of the DOM element in which the board is stored.
+* @param {Object} obj A DOM element
+* @returns {Array} An array with the elements left and top offset.
+*/
     static getOffset(obj) {
         var cPos,
             o = obj,

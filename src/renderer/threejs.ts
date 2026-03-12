@@ -46,7 +46,7 @@ const dbugColor = `color:blue;background-color:#d0d0ff`;
  */
 
 import { AbstractRenderer } from "./abstract.js";
-import { Dim, SVGType } from "../interfaces.js"
+import { Dim, SVGType, VisPropModified } from "../interfaces.js"
 import { Line } from "../base/line.js"
 import { Text } from "../base/text.js"
 import { Point } from "../base/point.js"
@@ -112,6 +112,7 @@ export class ThreeRenderer extends AbstractRenderer {
      */
     xlinkNamespace = "http://www.w3.org/1999/xlink";
 
+    plateColor = '#f1f8ff'      // lightblue (also background ting for images)
 
     negOffsetPlate = -.2   // plate is extra distance behind zero
     constructor(containerName: string | HTMLDivElement, dim: Dim) {  // width height
@@ -169,7 +170,7 @@ export class ThreeRenderer extends AbstractRenderer {
             this.renderer.setSize(this.webcanvas.clientWidth, this.webcanvas.clientHeight)
 
             this.scene = new THREE.Scene();
-            this.scene.background = new THREE.Color('lightblue');
+            this.scene.background = new THREE.Color(this.plateColor);
 
             this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             this.camera.position.z = 13;
@@ -517,13 +518,16 @@ export class ThreeRenderer extends AbstractRenderer {
     updateLinePrim(el: GeometryElement, c1: Coords, c2: Coords, board: Board) {
         let node = el.rendNode
 
-        console.log(`%c WEBGL updateLinePrim(${el.id}, [${c1.usrCoords[1]}, ${c1.usrCoords[2]}], [${c2.usrCoords[1]}, ${c2.usrCoords[2]}])`, dbugColor)
+        if (dbug(el))
+            console.log(`%c WEBGL updateLinePrim(${el.id}, [${c1.usrCoords[1]}, ${c1.usrCoords[2]}], [${c2.usrCoords[1]}, ${c2.usrCoords[2]}])`, dbugColor)
 
         const clipped = Geometry.cohenSutherlandLineClipping(c1, c2)
 
         if (clipped === null) {        // line is entirely out of viewport
             return
         }
+
+
 
         if (Number.isNaN(c1.usrCoords[1]) || Number.isNaN(c2.usrCoords)) {
             return
@@ -542,7 +546,12 @@ export class ThreeRenderer extends AbstractRenderer {
         let color = el.evalVisProp('strokecolor')
         let opacity = (el.evalVisProp('opacity') == undefined) ? 1 : el.evalVisProp('opacity');
 
-        if (this.isModifiedVisPropCache(el, visible, strokewidth, color, opacity, start, end)) {
+        let modified = this.isModifiedVisPropCache(el, visible, strokewidth, color, opacity, start, end)
+
+        console.log('modiified ', modified, (modified & VisPropModified.REBUILD)?'true': 'false')
+
+        // can change material or position without rebuilding
+        if (modified & VisPropModified.REBUILD) {
 
             if (Type.exists(el.webGL.mesh)) {
                 console.log(el.webGL.mesh)
@@ -558,18 +567,29 @@ export class ThreeRenderer extends AbstractRenderer {
             el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
             el.webGL.material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
             el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);
+            el.webGL.mesh.visible = el.evalVisProp('visible')
             this.scene.add(el.webGL.mesh);
-        }
-        else {
-            console.log(`%c Avoided an unnecessary refreesh`, 'background-color:yellow;')
-        }
 
-    }
-    clip(value: number, min: number, max: number): number {
-        console.assert(min < max)
-        if (value < min) value = min
-        if (value > max) value = max
-        return value
+        } else {    // anything less than REBUILD is cheaper
+
+            if (modified === VisPropModified.FALSE)
+                return
+
+            if (modified & VisPropModified.VISIBLE) {
+                el.webGL.mesh.visible = el.evalVisProp('visible')
+            }
+
+            if (modified & VisPropModified.POSITION) {
+                console.log(el.webGL.geometry)
+                el.webGL.lineCurve3.v1.set(el.point1.Coords(true))
+                el.webGL.lineCurve3.v2.set(el.point2.Coords(true))
+                el.webGL.geometry.attributes.position.needsUpdate = true;
+            }
+
+            if (modified & VisPropModified.MATERIAL) {
+            }
+
+        }
     }
 
     updatePathPrim(node, pathString, board) { }

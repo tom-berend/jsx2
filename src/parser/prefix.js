@@ -43,10 +43,10 @@
  * @example
  *
  */
-import {JXG2} from "../jxg.js";
-import {Type} from "../utils/type.js";
-import {JSXMath} from "../math/math.js";
-import {OBJECT_CLASS,OBJECT_TYPE} from "../base/constants.js";
+import { JXG2 } from "../jxg.js";
+import { Type } from "../utils/type.js";
+import { JSXMath } from "../math/math.js";
+import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 
 /**
  * Prefix expression parser, i.e. a poor man's parser.
@@ -256,6 +256,7 @@ JXG2.PrefixParser = {
                 case 'L':
                 case 'Length':
                 case 'Perimeter':
+                case 'Diameter':
                 case 'Radius':
                 case 'R':
                     res = 1;
