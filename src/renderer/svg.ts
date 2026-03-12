@@ -192,6 +192,45 @@ export class SVGRenderer extends AbstractRenderer {
         }
     }
 
+    /* ********* Line related stuff *********** */
+
+    /**
+     * Draws a line on the {@link JXG2.Board}.
+     * @param {JXG2.Line} el Reference to a line object, that has to be drawn.
+     * @see Line
+     * @see JXG2.Line
+     * @see JXG2.AbstractRenderer#updateLine
+     */
+    drawLine(el) {
+        if (dbug(el))
+            console.warn(`%c abstract: drawLine(${el.id})`, dbugColor)
+
+        el.rendNode = this.appendChildPrim(
+            this.createPrim("line", el.id),
+            el.evalVisProp('layer')
+        );
+        this.appendNodesToElement(el, "lines");
+        this.updateLine(el);
+
+
+    }
+
+    /**
+     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Line}.
+     * @param {JXG2.Line} el Reference to the {@link JXG2.Line} object that has to be updated.
+     * @see Line
+     * @see JXG2.Line
+     * @see JXG2.AbstractRenderer#drawLine
+     */
+    updateLine(el: GeometryElement) {
+        if (dbug(el))
+            console.warn(`%c abstract: updateLine(${el.id})`, dbugColor)
+
+        this._updateVisual(el);
+        this.updatePathWithArrowHeads(el); // Calls the renderer primitive
+        this.setLineCap(el);
+    }
+
 
     /* ********* Button related stuff *********** */
 

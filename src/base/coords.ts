@@ -54,6 +54,14 @@ import { GeometryElement } from "./element.js";
 
 // tbtbtb
 export class Coords extends Events {   // tbtb - should NOT extend event!!
+    /// getters
+    /** x value of usrCoords */
+    public get x(){ return this.usrCoords[1]}
+    /** x value of usrCoords */
+    public get y(){ return this.usrCoords[2]}
+    /** x value of usrCoords */
+    public get z(){ return this.usrCoords[0]}
+
     /**
    * Stores the board the object is used on.
    */
@@ -128,6 +136,13 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
         if (dbug(this.elem))
             console.warn(`%c new Coords scrCoords:${JSON.stringify(this.scrCoords)}}`, dbugColor)
     };
+
+    /**
+     * return user coords as object of [x,y,z]
+     */
+    V3() {
+        return {x:this.usrCoords[1], y:this.usrCoords[2],z:this.usrCoords[0]}
+    }
 
     /**
      * Normalize homogeneous coordinates

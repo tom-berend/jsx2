@@ -329,10 +329,26 @@ export class ThreeRenderer extends AbstractRenderer {
 
     drawLine(el: Line) {
 
-        this.updateLinePrim(el, el.point1.coords, el.point2.coords, el.board)
+        let doHighlight = false
+        let hl = doHighlight ? 'highlight' : ''
+        let w: number // strokeWidth
+        if (doHighlight && el.evalVisProp('highlightstrokewidth')) {
+            w = Math.max(
+                el.evalVisProp('highlightstrokewidth'),
+                el.evalVisProp('strokewidth')
+            );
+        } else {
+            w = el.evalVisProp('strokewidth');
+        }
+
+        let arrowData = this.getArrowHeadData(el, w, hl);
+
+        this.updateLineWithEndings(el, arrowData)
     }
 
-
+    updateLine(el: Line) {
+        this.drawLine(el)
+    }
 
     // drawTicks(el) { console.log(`three: drawTicks not yet implemented`) }
 
@@ -519,24 +535,24 @@ export class ThreeRenderer extends AbstractRenderer {
         let node = el.rendNode
 
         if (dbug(el))
-            console.log(`%c WEBGL updateLinePrim(${el.id}, [${c1.usrCoords[1]}, ${c1.usrCoords[2]}], [${c2.usrCoords[1]}, ${c2.usrCoords[2]}])`, dbugColor)
+            console.warn(`%c WEBGL updateLinePrim(${el.id}, [${JSON.stringify(c1.usrCoords)}, ${JSON.stringify(c2.usrCoords)}])`, dbugColor)
 
         const clipped = Geometry.cohenSutherlandLineClipping(c1, c2)
 
         if (clipped === null) {        // line is entirely out of viewport
             return
         }
+        // console.warn(`%c WEBGL after cohenSutherland(${el.id}, [${JSON.stringify(clipped[0].usrCoords)}, ${JSON.stringify(clipped[1].usrCoords)}])`, dbugColor)
 
-
-
-        if (Number.isNaN(c1.usrCoords[1]) || Number.isNaN(c2.usrCoords)) {
+        // cohenSutherland sometimes failes
+        if (Number.isNaN(clipped[0][1]) || Number.isNaN(clipped[1][1])) {
             return
         }
 
         let start = clipped[0].usrCoords
         let end = clipped[1].usrCoords
 
-        if (Math.abs(start[1] - end[1]) < JSXMath.eps && Math.abs(start[2] - end[2]) < JSXMath.eps) {
+        if ((Math.abs(start[1] - end[1]) < JSXMath.eps) && (Math.abs(start[2] - end[2]) < JSXMath.eps)) {
             // console.log(`%c clipping returns tiny line`, dbugColor, clipped)
             return
         }
@@ -548,10 +564,8 @@ export class ThreeRenderer extends AbstractRenderer {
 
         let modified = this.isModifiedVisPropCache(el, visible, strokewidth, color, opacity, start, end)
 
-        console.log('modiified ', modified, (modified & VisPropModified.REBUILD)?'true': 'false')
-
-        // can change material or position without rebuilding
-        if (modified & VisPropModified.REBUILD) {
+        // faster to change material or position without rebuild if we can
+        if (!Type.exists(el.webGL.mesh) || (modified & VisPropModified.REBUILD)) {
 
             if (Type.exists(el.webGL.mesh)) {
                 console.log(el.webGL.mesh)
@@ -580,13 +594,16 @@ export class ThreeRenderer extends AbstractRenderer {
             }
 
             if (modified & VisPropModified.POSITION) {
+                // console.warn(`%c WEBGL LineCurve3 Position(${el.id}, [${JSON.stringify(start)}, ${JSON.stringify(end)}])`, dbugColor)
                 console.log(el.webGL.geometry)
-                el.webGL.lineCurve3.v1.set(el.point1.Coords(true))
-                el.webGL.lineCurve3.v2.set(el.point2.Coords(true))
-                el.webGL.geometry.attributes.position.needsUpdate = true;
+                el.webGL.lineCurve3.v1.set(start[1], start[2], 0)
+                el.webGL.lineCurve3.v2.set(end[1], end[2], 0)
+                // el.webGL.geometry.attributes.position.needsUpdate = true;
+                el.webGL.geometry.needsUpdate = true
             }
 
             if (modified & VisPropModified.MATERIAL) {
+                // change the material
             }
 
         }

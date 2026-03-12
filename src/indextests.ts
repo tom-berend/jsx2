@@ -18,7 +18,7 @@ export function runTests(which) {
 }
 
 export let tests = [
-    'axis', 'clip',/*'widgets', 'innerpoints',*/ 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc', 'mathml',
+    'axis', 'clip', 'cache',/*'widgets', 'innerpoints',*/ 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc', 'mathml',
     'composition'
 ]
 
@@ -93,10 +93,13 @@ export class IndexTests {
     clip() {
         this.boards.map((board, nth) => {
 
+            // let line = board.create('line', [[-1, 0], [20, 20]]);
+
+
             for (let i = 0; i < Math.PI; i += Math.PI / 32) {
 
 
-                let line = board.create('line', [[0, 0], [Math.cos(i), Math.sin(i)]]);
+                let line = board.create('line', [[0, 0], [20 * Math.cos(i), 20 * Math.sin(i)]]);
 
                 // quick test of line intersections while we are here
                 let linez = board.create('line', [[-9, 9], [9, 9]], { color: 'olive' })  // top border
@@ -115,6 +118,18 @@ export class IndexTests {
 
         })
     }
+    cache() {
+        this.boards.map((board) => {
+
+            let i = 0
+            let line = board.create('segment', [[0, 0], [()=>5 * Math.cos(i), ()=>5 * Math.sin(i)]]);
+
+
+            setInterval(() => { i -= .1; board.update() }, 200);
+
+        })
+    }
+
     text() {
         this.boards.map((board) => {
 

@@ -337,45 +337,6 @@ export abstract class AbstractRenderer {
     }
 
 
-    /* ********* Line related stuff *********** */
-
-    /**
-     * Draws a line on the {@link JXG2.Board}.
-     * @param {JXG2.Line} el Reference to a line object, that has to be drawn.
-     * @see Line
-     * @see JXG2.Line
-     * @see JXG2.AbstractRenderer#updateLine
-     */
-    drawLine(el) {
-        if (dbug(el))
-            console.warn(`%c abstract: drawLine(${el.id})`, dbugColor)
-
-        el.rendNode = this.appendChildPrim(
-            this.createPrim("line", el.id),
-            el.evalVisProp('layer')
-        );
-        this.appendNodesToElement(el, "lines");
-        this.updateLine(el);
-
-
-    }
-
-    /**
-     * Updates visual appearance of the renderer element assigned to the given {@link JXG2.Line}.
-     * @param {JXG2.Line} el Reference to the {@link JXG2.Line} object that has to be updated.
-     * @see Line
-     * @see JXG2.Line
-     * @see JXG2.AbstractRenderer#drawLine
-     */
-    updateLine(el: GeometryElement) {
-        if (dbug(el))
-            console.warn(`%c abstract: updateLine(${el.id})`, dbugColor)
-
-        this._updateVisual(el);
-        this.updatePathWithArrowHeads(el); // Calls the renderer primitive
-        this.setLineCap(el);
-    }
-
     // /* ********* Curve related stuff *********** */
 
     ////////  moved to SVG and WEBGL
@@ -623,17 +584,18 @@ export abstract class AbstractRenderer {
 
         // tbtb - this was killing the window clip algorithm.  clip not defined in options - what is it??
         // if (!el.evalVisProp('clip')) {
-        //     margin += 4096;
+        // margin += 4096;
         // }
 
+        // console.log(`%c Abstract Before calcStraight(${el.id}) from ${JSON.stringify(c1.usrCoords)} to${JSON.stringify(c2.usrCoords)}`, dbugColor, el.webGL)
         Geometry.calcStraight(el, c1, c2, margin);
-        // console.log(`calc straight from ${JSON.stringify(el.point1.coords.usrCoords)} ${JSON.stringify(el.point2.coords.usrCoords)} to ${JSON.stringify(c1.usrCoords)} ${JSON.stringify(c2.usrCoords)}`)
+        // console.log(`%c Abstract After calcStraight(${el.id}) from ${JSON.stringify(c1.usrCoords)} to${JSON.stringify(c2.usrCoords)}`, dbugColor, el.webGL)
 
         this.handleTouchpoints(el, c1, c2, arrowData);
         this.getPositionArrowHead(el, c1, c2, arrowData);
 
         if (dbug(el))
-            console.log(`%c Abstract updateLineWithEndings(${el.id}) from ${JSON.stringify(c1.usrCoords)} to${JSON.stringify(c2.usrCoords)}`, dbugColor, el.webGL)
+        console.log(`%c Abstract updateLineWithEndings(${el.id}) from ${JSON.stringify(c1.usrCoords)} to${JSON.stringify(c2.usrCoords)}`, dbugColor, el.webGL)
 
         this.updateLinePrim(
             el,
@@ -1992,5 +1954,9 @@ export abstract class AbstractRenderer {
     abstract drawbutton(el: Text)
     abstract updateButtonStyle(el: Text)
 
+        /* ********* Line related stuff *********** */
+
+    abstract drawLine(el)
+    abstract updateLine(el: GeometryElement)
 
 }

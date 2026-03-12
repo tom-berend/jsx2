@@ -1350,7 +1350,7 @@ export class Geometry {
      * @see Line
      * @see JXG2.Line
      */
-    static calcLineDelimitingPoints(el:GeometryElement, point1: Coords, point2: Coords) {
+    static calcLineDelimitingPoints(el: GeometryElement, point1: Coords, point2: Coords) {
         var distP1P2,
             boundingBox,
             lineSlope,
@@ -4622,6 +4622,24 @@ export class Geometry {
     //            ---         ---
     //      0101   |   0100    |   0110
 
+    static quadrant(p: Coords, boundingBox) {
+
+        let TOP = 0b1000
+        let BOTTOM = 0b0100
+        let LEFT = 0b0001
+        let RIGHT = 0b0010
+
+        let result = 0;
+        let v3 = p.V3()
+
+        result += v3.x <= (boundingBox[0] - JSXMath.eps) ? LEFT : 0
+        result += v3.y >= (boundingBox[1] + JSXMath.eps) ? TOP : 0     // a point can be in LEFT+TOP
+        result += v3.x >= (boundingBox[2] + JSXMath.eps) ? RIGHT : 0
+        result += v3.y <= (boundingBox[3] - JSXMath.eps) ? BOTTOM : 0
+        return result;
+    };
+
+
 
     /**
      * returns two Coords representing a line or segment clipped by the viewport.
@@ -4638,16 +4656,6 @@ export class Geometry {
         let LEFT = 0b0001
         let RIGHT = 0b0010
 
-        let quadrant = (p:Coords, boundingBox) => {
-            let result = 0;
-
-            result += p.usrCoords[1] < boundingBox[0] - JSXMath.eps ? LEFT : 0
-            result += p.usrCoords[2] > boundingBox[1] + JSXMath.eps ? TOP : 0     // a point can be in LEFT+TOP
-            result += p.usrCoords[1] > boundingBox[2] + JSXMath.eps ? RIGHT : 0
-            result += p.usrCoords[2] < boundingBox[3] - JSXMath.eps ? BOTTOM : 0
-            return result;
-        };
-
         // create some coords for the corners of the viewport so we can make boundary lines
         let topLeft = new Coords(COORDS_BY.USER, [boundingBox[0], boundingBox[1]], point1.board)
         let topRight = new Coords(COORDS_BY.USER, [boundingBox[2], boundingBox[1]], point1.board)
@@ -4662,18 +4670,20 @@ export class Geometry {
             } else if ((quadrant & BOTTOM) !== 0) {
                 return Geometry.calculateLineIntersection(p1, p2, bottomLeft, bottomRight);
             } else if ((quadrant & LEFT) !== 0) {
-                return Geometry.calculateLineIntersection(p1, p2, topLeft, topRight);
-            } else {  // RIGHT
+                return Geometry.calculateLineIntersection(p1, p2, topLeft, bottomLeft);
+            } else if ((quadrant & RIGHT) !== 0) {  // RIGHT
                 return Geometry.calculateLineIntersection(p1, p2, topRight, bottomRight);
+            } else {
+                return [NaN, NaN, NaN]
             }
         }
 
-        let point1Quadrant = quadrant(point1, boundingBox)
-        let point2Quadrant = quadrant(point2, boundingBox)
+        let point1Quadrant = Geometry.quadrant(point1, boundingBox)
+        let point2Quadrant = Geometry.quadrant(point2, boundingBox)
 
         let safetyCounter = 0
         while (true) {            // the algorithm ends when we can trivially accept or reject a segment
-            if(safetyCounter++ > 10)
+            if (safetyCounter++ > 10)
                 return null
 
             // trivial acceptance: When both endpoints are in quadrant 0000, both points are inside the clipping window.
@@ -4688,10 +4698,10 @@ export class Geometry {
 
             if (point1Quadrant !== 0) {
                 point1 = new Coords(COORDS_BY.USER, clipByQuadrant(point1Quadrant, point1, point2, boundingBox), point1.board)  // shorten at point1
-                point1Quadrant = quadrant(point1, boundingBox)
-            } else if (point2Quadrant !== 0){
+                point1Quadrant = Geometry.quadrant(point1, boundingBox)
+            } else if (point2Quadrant !== 0) {
                 point2 = new Coords(COORDS_BY.USER, clipByQuadrant(point2Quadrant, point1, point2, boundingBox), point1.board)  // shorten at point1
-                point2Quadrant = quadrant(point2, boundingBox)
+                point2Quadrant = Geometry.quadrant(point2, boundingBox)
             }
 
 
