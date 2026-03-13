@@ -5933,6 +5933,7 @@ export class Board extends Events {
 
         for (el = 0; el < len; el++) {
             pEl = this.objectsList[el];
+
             if (this._change3DView ||
                 (Type.exists(drag) && drag.elType === 'view3d_slider')
             ) {
@@ -6283,10 +6284,12 @@ export class Board extends Events {
         //     insert = this.renderer.removeToInsertLater(this.renderer.svgRoot);
         // }
 
-        if (dragID !== undefined)
-            this.prepareUpdate(dragID).updateElements(dragID).updateConditions();
-        else
+        if (dragID === undefined){
             console.warn(`Board.update() by ${this.id} without specifying element`)
+            // this.needsFullUpdate = true;
+        }
+
+        this.prepareUpdate(dragID).updateElements(dragID).updateConditions();
 
         this.renderer.suspendRedraw();
         this.updateRenderer();

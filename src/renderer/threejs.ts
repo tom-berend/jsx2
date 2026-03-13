@@ -565,7 +565,7 @@ export class ThreeRenderer extends AbstractRenderer {
         let modified = this.isModifiedVisPropCache(el, visible, strokewidth, color, opacity, start, end)
 
         // faster to change material or position without rebuild if we can
-        if (!Type.exists(el.webGL.mesh) || (modified & VisPropModified.REBUILD)) {
+        if (!Type.exists(el.webGL.mesh) || (modified & VisPropModified.REBUILD) || (modified & VisPropModified.POSITION)) {
 
             if (Type.exists(el.webGL.mesh)) {
                 console.log(el.webGL.mesh)
@@ -598,7 +598,7 @@ export class ThreeRenderer extends AbstractRenderer {
                 console.log(el.webGL.geometry)
                 el.webGL.lineCurve3.v1.set(start[1], start[2], 0)
                 el.webGL.lineCurve3.v2.set(end[1], end[2], 0)
-                // el.webGL.geometry.attributes.position.needsUpdate = true;
+                el.webGL.geometry.attributes.position.needsUpdate = true;
                 el.webGL.geometry.needsUpdate = true
             }
 
@@ -607,6 +607,14 @@ export class ThreeRenderer extends AbstractRenderer {
             }
 
         }
+
+        el.webGL.lineCurve3.v1.set(start[1] + 3, start[2] + 2, 0)
+        el.webGL.lineCurve3.v2.set(end[1] - 1, end[2] - 2, 0)
+        // el.webGL.geometry.attributes.position.needsUpdate = true;
+        el.webGL.geometry.needsUpdate = true
+
+
+
     }
 
     updatePathPrim(node, pathString, board) { }
