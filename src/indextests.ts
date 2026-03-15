@@ -28,7 +28,7 @@ export class IndexTests {
     newBoard: Board
     oldBoard: any
 
-    new = true   // turn on and off boards
+    new =  true   // turn on and off boards
     old = true
     webgl = true
 
@@ -122,10 +122,16 @@ export class IndexTests {
         this.boards.map((board) => {
 
             let i = 0
-            let line = board.create('segment', [[0, 0], [()=>5 * Math.cos(i), ()=>5 * Math.sin(i)]]);
+            let p1 = board.create('point', [()=>Math.cos(i), ()=>Math.sin(i)])
+            let p2 = board.create('point', [()=>2*Math.cos(i*1.3), ()=>2*Math.sin(i*1.3)])
+            let p3 =board.create('point', [3,0])
+            let l1 = board.create('segment', [p1,p2]);
 
 
-            setInterval(() => { i -= .1; board.update() }, 200);
+            // let line = board.create('segment', [[0, 0], [()=>5 * Math.cos(i), ()=>5 * Math.sin(i)]]);
+
+
+            setInterval(() => { i -= .1; board.update() }, 400);
 
         })
     }
