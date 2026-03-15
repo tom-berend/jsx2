@@ -565,7 +565,7 @@ export class ThreeRenderer extends AbstractRenderer {
         let modified = this.isModifiedVisPropCache(el, visible, strokewidth, color, opacity, start, end)
 
         // faster to change material or position without rebuild if we can
-        if (!Type.exists(el.webGL.mesh) || (modified & VisPropModified.REBUILD) || (modified & VisPropModified.POSITION)) {
+        if (!Type.exists(el.webGL.mesh) || (modified & VisPropModified.REBUILD)) {
 
             if (Type.exists(el.webGL.mesh)) {
                 console.log(el.webGL.mesh)
@@ -594,12 +594,27 @@ export class ThreeRenderer extends AbstractRenderer {
             }
 
             if (modified & VisPropModified.POSITION) {
-                // console.warn(`%c WEBGL LineCurve3 Position(${el.id}, [${JSON.stringify(start)}, ${JSON.stringify(end)}])`, dbugColor)
-                console.log(el.webGL.geometry)
-                el.webGL.lineCurve3.v1.set(start[1], start[2], 0)
-                el.webGL.lineCurve3.v2.set(end[1], end[2], 0)
-                el.webGL.geometry.attributes.position.needsUpdate = true;
-                el.webGL.geometry.needsUpdate = true
+
+                // assume line starts at c1 = [0,0,0], draw line to c2-c1
+
+                let c = {x:c2.x-c1.x, y:c2.y-c1.y, z:c2.z-c1.z}
+
+                let zAngle = Math.atan2(c2.y, c2.x)  // plane angle in radians
+                let yAngle = Math.atan2(c2.z, Math.sqrt(c2.x * c2.x + c2.y * c2.y))  // elevation angle in radians
+
+                const axis1 = new THREE.Vector3(0, 0, 1); // Rotate around z for standard JSX position (fix this for floating boards)
+                const axis2 = new THREE.Vector3(1, 1, 0).normalize(); // Rotate around y for elevation  (fix this for floating boards)
+                const q1 = new THREE.Quaternion().setFromAxisAngle(axis1.normalize(), zAngle);
+                const q2 = new THREE.Quaternion().setFromAxisAngle(axis2.normalize(), -yAngle);
+
+                el.webGL.mesh.quaternion.copy(q1.multiply(q2))
+
+                // // console.warn(`%c WEBGL LineCurve3 Position(${el.id}, [${JSON.stringify(start)}, ${JSON.stringify(end)}])`, dbugColor)
+                // console.log(el.webGL.geometry)
+                // el.webGL.lineCurve3.v1.set(start[1], start[2], 0)
+                // el.webGL.lineCurve3.v2.set(end[1], end[2], 0)
+                // el.webGL.geometry.attributes.position.needsUpdate = true;
+                // el.webGL.geometry.needsUpdate = true
             }
 
             if (modified & VisPropModified.MATERIAL) {

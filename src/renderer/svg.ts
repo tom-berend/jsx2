@@ -1399,7 +1399,7 @@ export class SVGRenderer extends AbstractRenderer {
         let p2y = c2.scrCoords[2]
 
 
-        console.log(`%c SVG updateLinePrim(node, ${p1x}, ${p1y}, ${p2x}, ${p2y})`, dbugColor)
+        // console.log(`%c SVG updateLinePrim(node, ${p1x}, ${p1y}, ${p2x}, ${p2y})`, dbugColor)
         huge = 200000; //IE
         if (!isNaN(p1x + p1y + p2x + p2y)) {
             // webkit does not like huge values if the object is dashed

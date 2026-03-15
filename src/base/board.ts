@@ -6285,7 +6285,7 @@ export class Board extends Events {
         // }
 
         if (dragID === undefined){
-            console.warn(`Board.update() by ${this.id} without specifying element`)
+            // console.warn(`Board.update() by ${this.id} without specifying element`)
             // this.needsFullUpdate = true;
         }
 

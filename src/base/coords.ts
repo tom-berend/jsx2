@@ -70,7 +70,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      * Stores coordinates for user view as homogeneous coordinates.
      * @type Array
      */
-    public usrCoords: number[]
+    public usrCoords: (number|Function)[]
     /**
      * Stores coordinates for screen view as homogeneous coordinates.
      * @type Array

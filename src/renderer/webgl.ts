@@ -459,16 +459,17 @@ export class WebGLRenderer {
 
         let color = el.evalVisProp('strokecolor')
 
-        let pointMaterial = new THREE.MeshBasicMaterial({ color: color });
-        pointMaterial.transparent = true
-        pointMaterial.opacity = 1
+        el.webGL.material = new THREE.MeshBasicMaterial({ color: color });
+        el.webGL.material.transparent = true
+        el.webGL.material.opacity = 1
         let strokewidth = this.calcPointStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
 
-        let v = new THREE.Mesh(new THREE.SphereGeometry(strokewidth, 8, 8), pointMaterial)
+        el.webGL.mesh = new THREE.Mesh(new THREE.SphereGeometry(strokewidth, 8, 8), el.webGL.material)
 
-        v.position.set(coord[0], coord[1], 1)
+        el.webGL.mesh.position.set(coord[0], coord[1], 1)
 
-        this.scene.add(v)
+        this.scene.add(el.webGL.mesh)
+
         return
 
 
@@ -542,7 +543,7 @@ export class WebGLRenderer {
             if (face === "o") {
                 // circle
                 this.updateEllipsePrim(
-                    el.rendNode,
+                    el,
                     el.coords.scrCoords[1],
                     el.coords.scrCoords[2],
                     s1,
@@ -643,7 +644,7 @@ export class WebGLRenderer {
      * @see JXG2.AbstractRenderer#drawLine
      */
     updateLine(el: Line) {
-                if (dbug(el))
+        if (dbug(el))
             console.warn(`%c abstract: updateLine(${el.id})`, dbugColor)
 
         this._updateVisual(el);
@@ -1228,7 +1229,7 @@ export class WebGLRenderer {
             radius * el.board.unitX < 2000000
         ) {
             this.updateEllipsePrim(
-                el.rendNode,
+                el,
                 el.center.coords.scrCoords[1],
                 el.center.coords.scrCoords[2],
                 radius * el.board.unitX,
@@ -1302,7 +1303,7 @@ export class WebGLRenderer {
         // }
 
 
-        let sprite = new SpriteText(content, {fontsize:.5, strokecolor:'black'})
+        let sprite = new SpriteText(content, { fontsize: .5, strokecolor: 'black' })
         el.rendNode = sprite    // save it
         this.scene.add(sprite)
 
@@ -1389,7 +1390,7 @@ export class WebGLRenderer {
             let fontSize = this.calcTextFontSize(parseInt(el.evalVisProp('fontsize')))
 
             if (fontSize > 0) {
-                el.rendNode = new SpriteText(content, {fontsize:fontSize})
+                el.rendNode = new SpriteText(content, { fontsize: fontSize })
                 this.scene.add(el.rendNode)
                 el.rendNode.position.set(coord[0], coord[1], .2)
             }
@@ -2348,8 +2349,20 @@ export class WebGLRenderer {
     makeArrows(el, arrowData) {
         return;
     }
-    updateEllipsePrim(node, x, y, rx, ry) {
-        return
+
+    // assume only points
+    updateEllipsePrim(el, x, y, rx, ry) {
+        if (dbug(el))
+            console.warn(`%c WEBGL updateEllipsePrim(${el.id}, ${x},${y}`, dbugColor)
+
+        let pointMaterial = new THREE.MeshBasicMaterial({ color: el.evalVisProp('strokecolor') });
+        pointMaterial.transparent = true
+        pointMaterial.opacity = el.evalVisProp('opacity')
+        let strokewidth = this.calcPointStrokeWidth(parseInt(el.evalVisProp('strokewidth')))
+
+        el.webGL.mesh = new THREE.Mesh(new THREE.SphereGeometry(strokewidth, 8, 8), pointMaterial)
+        el.webGL.geometry.needsUpdate = true
+
         return;
     }
     updateLinePrim(node, p1x, p1y, p2x, p2y, board) {
@@ -2401,8 +2414,25 @@ export class WebGLRenderer {
     setObjectFillColor(el, color, opacity, rendnodw?) {
         return;
     }
-    setObjectStrokeColor(el, color, opacity) {
-        return
+
+    /**
+    * Changes an objects stroke color to the given color.
+    * @param {JXG2.GeometryElement} el Reference of the {@link JXG2.GeometryElement} that gets a new stroke
+    * color.
+    * @param {String} color Color value in a HTML compatible format, e.g. <strong>#00ff00</strong> or
+    * <strong>green</strong> for green.
+    * @param {Number} opacity Opacity of the fill color. Must be between 0 and 1.
+    */
+    setObjectStrokeColor(el, color, opacity = 1) {
+        if (dbug(el))
+            console.warn(`%c WEBGL setObjectStrokeColor(${el.id}, ${color},${opacity}`, dbugColor)
+
+        if (Type.exists(el.webGL.mesh)) {
+            el.webGL.material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
+            el.webGL.mesh = new THREE.Mesh(el.webGL.geometry, el.webGL.material);
+            el.webGL.geometry.needsUpdate = true
+
+        }
         return;
     }
     setObjectStrokeWidth(el, width) {
