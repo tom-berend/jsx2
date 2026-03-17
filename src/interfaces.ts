@@ -5,11 +5,13 @@ export type Constructor<T = {}> = new (...args: any[]) => T  // for mixins.  Con
 
 export interface ComposeInterface { }
 
+export interface JsxV3 { x: number, y: number, z: number }
+
 /** cache to speed rendering in webGL */
 export interface VisPropCache {
     // these are optional
-    point1?: number[]   // just the coordinates
-    point2?: number[]
+    point1?: JsxV3
+    point2?: JsxV3
 
     visible: boolean
     strokewidth: number

@@ -1,4 +1,4 @@
-export const watchElement = 'jxgBoard1P1'
+export const watchElement = 'jxgBoard1L5_ticks_140Label8'
 
 
 /*

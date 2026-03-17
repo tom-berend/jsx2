@@ -4630,12 +4630,11 @@ export class Geometry {
         let RIGHT = 0b0010
 
         let result = 0;
-        let v3 = p.V3()
 
-        result += v3.x <= (boundingBox[0] - JSXMath.eps) ? LEFT : 0
-        result += v3.y >= (boundingBox[1] + JSXMath.eps) ? TOP : 0     // a point can be in LEFT+TOP
-        result += v3.x >= (boundingBox[2] + JSXMath.eps) ? RIGHT : 0
-        result += v3.y <= (boundingBox[3] - JSXMath.eps) ? BOTTOM : 0
+        result += p.x <= (boundingBox[0] - JSXMath.eps) ? LEFT : 0
+        result += p.y >= (boundingBox[1] + JSXMath.eps) ? TOP : 0     // a point can be in LEFT+TOP
+        result += p.x >= (boundingBox[2] + JSXMath.eps) ? RIGHT : 0
+        result += p.y <= (boundingBox[3] - JSXMath.eps) ? BOTTOM : 0
         return result;
     };
 

@@ -3,6 +3,7 @@ import "../webgl.mock"    // load mocks for three.js, orbitcontrols, etc
 
 import { Type } from '../../src/utils/type.js';
 import { Options } from '../../src/options.js';
+import { OBJECT_TYPE } from "../../src/base/constants.js";
 
 
 
@@ -245,6 +246,20 @@ describe('snippet()', () => {
         expect(a()).toEqual(5)
         let b = Type.snippet('x+3', true, 'x')
         expect(b(2)).toEqual(5)
+
+    });
+});
+
+describe('isPoint', () => {
+    it('creates a Point and tests it for Point-ness', () => {
+
+        let a = {elementClass:OBJECT_TYPE.POINT}
+//         let b = {}
+//         let c = null
+//         let d = [1,2,3]
+//         let e = {elementClass:OBJECT_TYPE.LINE}
+
+        // expect(Type.isPoint(a)).toEqual(true)
 
     });
 });

@@ -5,7 +5,6 @@ const dbugColor = `color:black;background-color:white`;
 // TODO: need a way to mark Coord as invalid.   Geometry often sends [0, NaN, NaN] or Coords
 
 
-
 /*
     Copyright 2008-2025
         Matthias Ehmann,
@@ -41,10 +40,13 @@ const dbugColor = `color:black;background-color:white`;
 /*jslint nomen: true, plusplus: true*/
 
 import type { Board } from './board.js'
+import { Type } from "../utils/type.js"
 import { Events } from '../utils/event.js'
 import { JSXMath } from "../math/math.js";
 import { COORDS_BY, OBJECT_TYPE, OBJECT_CLASS } from "./constants.js";
 import { GeometryElement } from "./element.js";
+import { Point } from "./point.js"
+
 // import { GeometryElementOptions } from "../optionInterfaces.js";
 
 /**
@@ -52,25 +54,52 @@ import { GeometryElement } from "./element.js";
  * properties and methods coordinates usually have.
  */
 
-// tbtbtb
 export class Coords extends Events {   // tbtb - should NOT extend event!!
     /// getters
     /** x value of usrCoords */
-    public get x(){ return this.usrCoords[1]}
-    /** x value of usrCoords */
+        public get x(){ return this.usrCoords[1]}
+
+    // public get x() {
+    //     if (Type.isPoint(this.declCoords))
+    //         return this.declCoords[0].coords.x // recursive!
+    //     else        // is a function or number
+    //         return (typeof this.declCoords[0] === 'function') ? this.declCoords[0]() : this.usrCoords[0]
+    // }
+    /** y value of usrCoords */
     public get y(){ return this.usrCoords[2]}
-    /** x value of usrCoords */
-    public get z(){ return this.usrCoords[0]}
+    // public get y() {
+    //     if (Type.isPoint(this.declCoords))
+    //         return this.declCoords[1].coords.y
+    //     else
+    //         return (typeof this.declCoords[1] === 'function') ? this.declCoords[1]() : this.usrCoords[1]
+    // }
+    /** z value of usrCoords */
+        public get z(){ return this.usrCoords[0]}
+
+    // public get z() {
+    //     if (Type.isPoint(this.declCoords))
+    //         return this.declCoords[2].coords.z
+    //     else
+    //         return (typeof this.declCoords[2] === 'function') ? this.declCoords[2]() : this.usrCoords[2]
+    // }
+
 
     /**
    * Stores the board the object is used on.
    */
     public board: Board
+
+    /**
+     * Stores the internal coordinate declaration, in X, Y, Z.  Might be a Point.
+     * @type Array
+     */
+    public declCoords: (number | Function)[] | Point
+
     /**
      * Stores coordinates for user view as homogeneous coordinates.
      * @type Array
      */
-    public usrCoords: (number|Function)[]
+    public usrCoords: number[]
     /**
      * Stores coordinates for screen view as homogeneous coordinates.
      * @type Array
@@ -91,6 +120,8 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
     public _t: number = 0    // this is used in Plot.  need to document
 
     public length = 0       // used in Point3D, text3D, statistics, cinderella
+
+    public isSettable: boolean  // can we set this coordinate directly?
 
     /**
      * Constructs a new Coordinates object.
@@ -119,11 +150,26 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
         this.board = board
         this.method = method
 
+//tbtb//        // intent here is to set values of usrCoords where they are numbers.
+//tbtb//        // functions & points get intercepted by get functions  this.x and this.y
+//tbtb//        this.declCoords = coordinates
+//tbtb//        this.usrCoords = coordinates
+//tbtb//
+//tbtb//        if (this.declCoords.length < 2)       // might only get [x,y]
+//tbtb//            this.declCoords[2] = 0
+//tbtb//
+//tbtb//        // if ANY of the coordinates is not a simple number, then cannot set the corrdiinates directly
+//tbtb//        this.isSettable = Type.isNumber(coordinates[0]) && Type.isNumber(coordinates[1]) && Type.isNumber(coordinates[2])
+//tbtb//
+
+
         if (method === COORDS_BY.USER) {
-            this.usrCoords = [1, coordinates[0], coordinates[1]]
+             this.usrCoords = [1, coordinates[0], coordinates[1]]
+        //    this.usrCoords = [1, this.x, this.y]
             this.usr2screen()
         } else {
             this.scrCoords = [1, coordinates[0], coordinates[1]]
+//            this.scrCoords = [1, this.x, this.y]
             this.screen2usr()
         }
 
@@ -131,7 +177,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
         // EventEmitter.eventify(this);  // tb now handled by class hierarchy
         // }
 
-        this.setCoordinates(this.method, coordinates, false, true);
+         this.setCoordinates(this.method, coordinates, false, true);
 
         if (dbug(this.elem))
             console.warn(`%c new Coords scrCoords:${JSON.stringify(this.scrCoords)}}`, dbugColor)
@@ -140,9 +186,71 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
     /**
      * return user coords as object of [x,y,z]
      */
-    V3() {
-        return {x:this.usrCoords[1], y:this.usrCoords[2],z:this.usrCoords[0]}
+    usrV3(): { x: number, y: number, z: number } {
+        return { x: this.x, y: this.y, z: this.z }
     }
+
+    /**
+     * Getter method for coordinates x, y and (optional) z, suitable for display
+     * @param {Number|String} [digits='auto'] Truncating rule for the digits in the infobox.
+     * <ul>
+     * <li>'auto': done automatically by JXG.autoDigits()
+     * <li>'none': no truncation
+     * <li>number: truncate after "number digits" with JXG.toFixed()
+     * </ul>
+     * @param {Boolean} [withZ=false] If set to true the return value will be <tt>(x | y | z)</tt> instead of <tt>(x, y)</tt>.
+     * @returns {String} User coordinates of point.
+     * @deprecated
+     */
+    Coords(digits: number | 'auto', withZ: boolean = true): number[] {
+
+        throw new Error('not yet ported from CoordsElement')
+    }
+    //     digits = digits || 'auto';
+
+    //     if (withZ) {
+    //         sep = ' | ';
+    //     } else {
+    //         sep = ', ';
+    //     }
+
+    //     if (digits === 'none') {
+    //         arr = [this.X(), sep, this.Y()];
+    //         if (withZ) {
+    //             arr.push(sep, this.Z());
+    //         }
+
+    //     } else if (digits === 'auto') {
+    //         if (this.useLocale()) {
+    //             arr = [this.formatNumberLocale(this.X()), sep, this.formatNumberLocale(this.Y())];
+    //             if (withZ) {
+    //                 arr.push(sep, this.formatNumberLocale(this.Z()));
+    //             }
+    //         } else {
+    //             arr = [Type.autoDigits(this.X()), sep, Type.autoDigits(this.Y())];
+    //             if (withZ) {
+    //                 arr.push(sep, Type.autoDigits(this.Z()));
+    //             }
+    //         }
+
+    //     } else {
+    //         if (this.useLocale()) {
+    //             arr = [this.formatNumberLocale(this.X(), digits), sep, this.formatNumberLocale(this.Y(), digits)];
+    //             if (withZ) {
+    //                 arr.push(sep, this.formatNumberLocale(this.Z(), digits));
+    //             }
+    //         } else {
+    //             arr = [Type.toFixed(this.X(), digits), sep, Type.toFixed(this.Y(), digits)];
+    //             if (withZ) {
+    //                 arr.push(sep, Type.toFixed(this.Z(), digits));
+    //             }
+    //         }
+    //     }
+
+    //     return '(' + arr.join('') + ')';
+    // }
+
+
 
     /**
      * Normalize homogeneous coordinates
@@ -231,6 +339,10 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      */
     setCoordinates(coord_type: COORDS_BY, coordinates: number[], doRound: boolean = true, noevent: boolean = false) {
         // console.log(`setCoordinates(${JSON.stringify(coordinates)})`)
+
+        // if(!this.isSettable){
+            // throw new Error('Cannot set coordinates directly, they are controlled by functions or Points.')
+        // }
 
         var uc = this.usrCoords,
             sc = this.scrCoords,

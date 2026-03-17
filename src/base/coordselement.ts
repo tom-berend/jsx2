@@ -396,9 +396,15 @@ export abstract class CoordsElement extends GeometryElement {
      * @returns {String} User coordinates of point.
      */
     Coords(withZ) {
-        let x = (typeof this.coords.usrCoords[1] ==='function' ) ? this.coords.usrCoords[1]() : this.coords.usrCoords[1]
-        let y = (typeof this.coords.usrCoords[2] ==='function' ) ? this.coords.usrCoords[2]() : this.coords.usrCoords[2]
-        let z = (typeof this.coords.usrCoords[0] ==='function' ) ? this.coords.usrCoords[0]() : this.coords.usrCoords[0]
+        let x =  this.coords.usrCoords[1]
+        let y =  this.coords.usrCoords[2]
+        let z =  this.coords.usrCoords[0]
+
+        console.error('Coords needs update')
+
+        // let x = (typeof this.coords.usrCoords[1] ==='function' ) ? this.coords.usrCoords[1]() : this.coords.usrCoords[1]
+        // let y = (typeof this.coords.usrCoords[2] ==='function' ) ? this.coords.usrCoords[2]() : this.coords.usrCoords[2]
+        // let z = (typeof this.coords.usrCoords[0] ==='function' ) ? this.coords.usrCoords[0]() : this.coords.usrCoords[0]
 
 
 
