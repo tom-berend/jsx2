@@ -51,7 +51,7 @@ const dbugColor = `color:white;background-color:#0080ff`;
  * renderers is the class AbstractRenderer defined in this file.
  */
 
-import { LooseObject, VisPropModified } from "../interfaces.js";
+import { LooseObject, VisPropModified,JsxV3 } from "../interfaces.js";
 import { Options } from "../options.js";
 // import { GeometryElementOptions } from "../optionInterfaces.js'
 import { Coords } from "../base/coords.js";
@@ -1822,7 +1822,7 @@ export abstract class AbstractRenderer {
 
     isModifiedVisPropCache(el: GeometryElement,
         visible: boolean, strokewidth: number, color: string, opacity: number,
-        point1: number[] = [0, 0, 0], point2: number[] = [0, 0, 0],
+        point1: JsxV3 = {x:0, y:0, z:0}, point2: JsxV3 = {x:0, y:0, z:0},
         otherProps: LooseObject = {}): VisPropModified {
 
         let modified = VisPropModified.FALSE;

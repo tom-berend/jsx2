@@ -44,6 +44,7 @@ import { Type } from "../utils/type.js";
 import { Env } from "../utils/env.js";
 import { JSXMath } from "./math.js";
 import { Complex } from "./complex.js"
+import { Slider } from "../element/slider.js";
 
 // Predefined butcher tableaus for the common Runge-Kutta method (fourth order), Heun method (second order), and Euler method (first order).
 var predefinedButcher = {
@@ -2679,10 +2680,10 @@ export class Numerics {
             term = "";
 
         // Slider
-        if (Type.isPoint(degree) && Type.isFunction(degree.Value)) {
+        if (Type.isPoint(degree) && Type.isFunction((degree as Slider).Value)) {
             /** @ignore */
             deg = function () {
-                return degree.Value();
+                return (degree as Slider).Value();
             };
             // function
         } else if (Type.isFunction(degree)) {

@@ -396,9 +396,9 @@ export abstract class CoordsElement extends GeometryElement {
      * @returns {String} User coordinates of point.
      */
     Coords(withZ) {
-        let x =  this.coords.usrCoords[1]
-        let y =  this.coords.usrCoords[2]
-        let z =  this.coords.usrCoords[0]
+        let x = this.coords.usrCoords[1]
+        let y = this.coords.usrCoords[2]
+        let z = this.coords.usrCoords[0]
 
         console.error('Coords needs update')
 
@@ -409,9 +409,9 @@ export abstract class CoordsElement extends GeometryElement {
 
 
         if (withZ) {
-            return [x,y,z]
+            return [x, y, z]
         }
-        return [x,y];
+        return [x, y];
     }
     // Coords(digits, withZ) {
     //     var arr, sep;
@@ -532,7 +532,7 @@ export abstract class CoordsElement extends GeometryElement {
                     }
                 }
 
-                if (Type.isPoint(pEl) && pEl !== this && pEl.visPropCalc.visible) {
+                if (Type.isPoint(pEl) && pEl.visPropCalc.visible) {
                     pCoords = Geometry.projectPointToPoint(this, pEl);
                     if (ev_au === "screen") {
                         d = pCoords.distance(COORDS_BY.SCREEN, this.coords);

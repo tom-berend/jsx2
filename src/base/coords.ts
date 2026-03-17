@@ -90,7 +90,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
     public board: Board
 
     /**
-     * Stores the internal coordinate declaration, in X, Y, Z.  Might be a Point.
+     * Stores the ORIGINAL coordinate declaration, in X, Y, Z.  Might be a Point.
      * @type Array
      */
     public declCoords: (number | Function)[] | Point
@@ -187,6 +187,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      * return user coords as object of [x,y,z]
      */
     usrV3(): { x: number, y: number, z: number } {
+        // return {x:this.usrCoords[1], y:this.usrCoords[2],z:this.usrCoords[0]}
         return { x: this.x, y: this.y, z: this.z }
     }
 

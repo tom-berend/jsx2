@@ -45,12 +45,17 @@ const dbugColor = `color:black;background-color:#80c0ff`;
 
 import { Options } from '../options.js';
 import { LooseObject } from '../interfaces.js'
-import { Point, createPoint } from "../base/point.js"
+import { Point } from "../base/point.js"
+import { Slider } from "../element/slider.js"
+import {Coords} from "../base/coords.js"
 
 import { OBJECT_CLASS, OBJECT_TYPE } from "../base/constants.js";
 import { JSXMath } from "../math/math.js";
 
 export class Type {
+
+
+
     /**
      * Checks if the given object is an JSXGraph board.
      * @param {Object} v
@@ -107,26 +112,19 @@ export class Type {
     }
 
     /**
-     * Checks if the value of a given variable is of type number.
+     * Checks if the value of a given variable is of type number or Number.
      * @param v A variable of any type.
      * @param {Boolean} [acceptStringNumber=false] If set to true, the function returns true for e.g. v='3.1415'.
      * @param {Boolean} [acceptNaN=true] If set to false, the function returns false for v=NaN.
      * @returns {Boolean} True, if v is of type number.
      */
-    static isNumber(v, acceptStringNumber = false, acceptNaN = true) {
-        var result = (
-            typeof v === 'number' || Object.prototype.toString.call(v) === '[Object Number]'
-        );
-        acceptStringNumber = acceptStringNumber || false;
-        acceptNaN = acceptNaN === undefined ? true : acceptNaN;
-
-        if (acceptStringNumber) {
-            result = result || ('' + parseFloat(v)) === v;
+    static isNumber(v: unknown, acceptStringNumber = false, acceptNaN = true) {
+        if (typeof v === 'number' || Object.prototype.toString.call(v) === '[Object Number]') {
+            return (isNaN(v as number) ? acceptNaN : true)
         }
-        if (!acceptNaN) {
-            result = result && !isNaN(v);
-        }
-        return result;
+        if (typeof v === 'string')
+            return acceptStringNumber ? ('' + parseFloat(v)) === v: false
+        return false
     }
 
     /**
@@ -185,15 +183,33 @@ export class Type {
 
     /**
      * Checks if a given variable is a reference of a JSXGraph Point element.
-     * @param v A variable of any type.
-     * @returns {Boolean} True, if v is of type JXG2.Point.
      */
-    static isPoint(v) {
-        if (v !== null && typeof v === "object" && this.exists(v.elementClass)) {
-            return v.elementClass === OBJECT_CLASS.POINT;
+    static isPoint(v: unknown): v is Point {
+        if (typeof v !== 'object' && v !== null) {      // quick check
+            return false;
         }
+        return v.hasOwnProperty('elementClass') && (v as any).elementClass === OBJECT_CLASS.POINT
+    }
 
-        return false;
+
+     /**
+     * Checks if a given variable is a reference of a JSXGraph Coords element.
+     */
+    static isCoords(v: unknown): v is Coords {
+        if (typeof v !== 'object' && v !== null) {      // quick check
+            return false;
+        }
+        return v.hasOwnProperty('usrCoords') && v.hasOwnProperty('scrCoords')
+    }
+
+    /**
+     * Checks if a given variable is a reference of a JSXGraph Slider element.
+     */
+    static isSlider(v: unknown): v is Slider {
+        if (typeof v !== 'object' && v !== null) {      // quick check
+            return false;
+        }
+        return v.hasOwnProperty('elementClass') && (v as any).oType === OBJECT_TYPE.SLIDER
     }
 
     /**

@@ -549,10 +549,10 @@ export class ThreeRenderer extends AbstractRenderer {
             return
         }
 
-        let start = clipped[0].usrCoords
-        let end = clipped[1].usrCoords
+        let start = clipped[0].usrV3()
+        let end = clipped[1].usrV3()
 
-        if ((Math.abs(start[1] - end[1]) < JSXMath.eps) && (Math.abs(start[2] - end[2]) < JSXMath.eps)) {
+        if ((Math.abs(start.x - end.x) < JSXMath.eps) && (Math.abs(start.y - end.y) < JSXMath.eps)) {
             // console.log(`%c clipping returns tiny line`, dbugColor, clipped)
             return
         }
@@ -576,7 +576,7 @@ export class ThreeRenderer extends AbstractRenderer {
                 el.webGL.mesh = el.webGL.lineCurve3 = el.webGL.geometry = el.webGL.material = undefined
             }
 
-            el.webGL.lineCurve3 = new THREE.LineCurve3(new THREE.Vector3(start[1], start[2], 0), new THREE.Vector3(end[1], end[2], 0))
+            el.webGL.lineCurve3 = new THREE.LineCurve3(new THREE.Vector3(start.x, start.y, 0), new THREE.Vector3(end.x, end.y, 0))
 
             el.webGL.geometry = new THREE.TubeGeometry(el.webGL.lineCurve3, 1, strokewidth, 8, false);  // closed must be false
             el.webGL.material = new THREE.MeshBasicMaterial({ color: color, opacity: opacity, transparent: true });
@@ -597,7 +597,7 @@ export class ThreeRenderer extends AbstractRenderer {
 
                 // assume line starts at c1 = [0,0,0], draw line to c2-c1
 
-                let c = {x:c2.x-c1.x, y:c2.y-c1.y, z:c2.z-c1.z}
+                let c = { x: c2.x - c1.x, y: c2.y - c1.y, z: c2.z - c1.z }
 
                 let zAngle = Math.atan2(c2.y, c2.x)  // plane angle in radians
                 let yAngle = Math.atan2(c2.z, Math.sqrt(c2.x * c2.x + c2.y * c2.y))  // elevation angle in radians
@@ -609,12 +609,6 @@ export class ThreeRenderer extends AbstractRenderer {
 
                 el.webGL.mesh.quaternion.copy(q1.multiply(q2))
 
-                // // console.warn(`%c WEBGL LineCurve3 Position(${el.id}, [${JSON.stringify(start)}, ${JSON.stringify(end)}])`, dbugColor)
-                // console.log(el.webGL.geometry)
-                // el.webGL.lineCurve3.v1.set(start[1], start[2], 0)
-                // el.webGL.lineCurve3.v2.set(end[1], end[2], 0)
-                // el.webGL.geometry.attributes.position.needsUpdate = true;
-                // el.webGL.geometry.needsUpdate = true
             }
 
             if (modified & VisPropModified.MATERIAL) {
