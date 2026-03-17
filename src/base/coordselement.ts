@@ -395,17 +395,13 @@ export abstract class CoordsElement extends GeometryElement {
      * @param {Boolean} [withZ=false] If set to true the return value will be <tt>(x | y | z)</tt> instead of <tt>(x, y)</tt>.
      * @returns {String} User coordinates of point.
      */
-    Coords(withZ) {
-        let x = this.coords.usrCoords[1]
-        let y = this.coords.usrCoords[2]
-        let z = this.coords.usrCoords[0]
+    Coords(withZ: boolean) {
 
-        console.error('Coords needs update')
+        console.error('DO NOT USE el.Coords() except for formatted text.  Use Coords.usrV3() instead')
 
-        // let x = (typeof this.coords.usrCoords[1] ==='function' ) ? this.coords.usrCoords[1]() : this.coords.usrCoords[1]
-        // let y = (typeof this.coords.usrCoords[2] ==='function' ) ? this.coords.usrCoords[2]() : this.coords.usrCoords[2]
-        // let z = (typeof this.coords.usrCoords[0] ==='function' ) ? this.coords.usrCoords[0]() : this.coords.usrCoords[0]
-
+        let x = this.coords.x //usrCoords[1]
+        let y = this.coords.y //usrCoords[2]
+        let z = this.coords.z //usrCoords[0]
 
 
         if (withZ) {

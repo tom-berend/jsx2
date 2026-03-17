@@ -265,7 +265,7 @@ export class ThreeRenderer extends AbstractRenderer {
             return;
 
 
-        let coord = el.Coords(false)
+        let coord = el.coords.usrV3()
 
         let color = el.evalVisProp('strokecolor')
 
@@ -276,7 +276,7 @@ export class ThreeRenderer extends AbstractRenderer {
 
         let v = new THREE.Mesh(new THREE.SphereGeometry(strokewidth, 8, 8), pointMaterial)
 
-        v.position.set(coord[0], coord[1], 0)
+        v.position.set(coord.x, coord.y, 0)
 
         this.scene.add(v)
         return
@@ -470,13 +470,13 @@ export class ThreeRenderer extends AbstractRenderer {
 
     updateInternalText(el) { console.log(`three: updateInternalText not yet implemented`) }
 
-    updateText(el) {
+    updateText(el:Text) {
 
 
         if (dbug(el))
             console.warn(`%c three: updateText(${el.id}) ${el.htmlStr} at ${JSON.stringify(el.coords.usrCoords)}`, dbugColor)
 
-        let coord = el.Coords(false)
+        let coord = el.coords.usrV3()
         let content = el.plaintext
         // console.log('default', JSON.stringify(coord), content)
 
@@ -500,7 +500,7 @@ export class ThreeRenderer extends AbstractRenderer {
         if (fontSize > 0) {
             el.rendNode = new SpriteText(content, { fontsize: fontSize })
             this.scene.add(el.rendNode)
-            el.rendNode.position.set(coord[0], coord[1], .2)
+            el.rendNode.position.set(coord.x, coord.y, .2)
         }
     }
 

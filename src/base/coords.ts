@@ -188,7 +188,7 @@ export class Coords extends Events {   // tbtb - should NOT extend event!!
      */
     usrV3(): { x: number, y: number, z: number } {
         // return {x:this.usrCoords[1], y:this.usrCoords[2],z:this.usrCoords[0]}
-        return { x: this.x, y: this.y, z: this.z }
+        return { x: this.x, y: this.y, z: this.z}
     }
 
     /**
