@@ -5507,6 +5507,7 @@ export interface GridOptions extends CurveOptions {
 
 export interface GroupOptions {
     needsRegularUpdate: boolean
+    visible:boolean
 }
 
 /* special html slider options */
@@ -6696,6 +6697,7 @@ export interface LineOptions {
     strokeColor?: string
     highlightStrokeColor?: string
     withTicks?: boolean
+    opacity:number
 
     /**
      * Attributes for first defining point of the line.
@@ -7370,6 +7372,7 @@ export interface PerpendicularsegmentOptions {
 export interface PointOptions {
     withLabel?: boolean
     label?: object
+    anchor?:string
 
     /**
      * This attribute was used to determined the point layout. It was derived from GEONExT and was

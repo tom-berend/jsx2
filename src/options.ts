@@ -429,6 +429,7 @@ export class Options {
         snapSizeY: 1,
         snapToPoints: false,
         ignoredSnapToPoints: [],
+        anchor:'left',
     }
 
     static grid: GridOptions = {
@@ -1029,7 +1030,8 @@ export class Options {
     }
 
     static group: GroupOptions = {
-        needsRegularUpdate: true
+        needsRegularUpdate: true,
+        visible:true
     }
 
     /* special html slider options */
@@ -1252,6 +1254,7 @@ export class Options {
         snapSizeY: 1,
         touchFirstPoint: false,
         touchLastPoint: false,
+        opacity:1,
     }
 
     /* special options for locus curves */

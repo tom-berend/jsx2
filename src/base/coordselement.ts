@@ -119,14 +119,6 @@ export abstract class CoordsElement extends GeometryElement {
      */
     needsUpdateFromParent: boolean = true;
 
-    /**
-     * Stores the groups of this element in an array of Group.
-     * @type Array
-     * @see JXG.Group
-     * @private
-     */
-    //TODO: groups must move higher // this.groups = [];
-
     /*
      * Do we need this?
     // TODO          */

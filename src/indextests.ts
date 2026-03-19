@@ -19,7 +19,7 @@ export function runTests(which) {
 
 export let tests = [
     'axis', 'clip', 'cache',/*'widgets', 'innerpoints',*/ 'text', 'point', 'line', 'circle', 'glider', 'polygon', 'curve', 'image', 'stroke', 'arc', 'mathml',
-    'composition'
+    'composition', 'group'
 ]
 
 
@@ -28,7 +28,7 @@ export class IndexTests {
     newBoard: Board
     oldBoard: any
 
-    new =  true   // turn on and off boards
+    new = true   // turn on and off boards
     old = true
     webgl = true
 
@@ -122,10 +122,10 @@ export class IndexTests {
         this.boards.map((board) => {
 
             let i = 0
-            let p1 = board.create('point', [()=>Math.cos(i), ()=>Math.sin(i)])
-            let p2 = board.create('point', [()=>2*Math.cos(i*1.3), ()=>2*Math.sin(i*1.3)])
-            let p3 =board.create('point', [3,0])
-            let l1 = board.create('segment', [p1,p2]);
+            let p1 = board.create('point', [() => Math.cos(i), () => Math.sin(i)])
+            let p2 = board.create('point', [() => 2 * Math.cos(i * 1.3), () => 2 * Math.sin(i * 1.3)])
+            let p3 = board.create('point', [3, 0])
+            let l1 = board.create('segment', [p1, p2]);
 
 
             // let line = board.create('segment', [[0, 0], [()=>5 * Math.cos(i), ()=>5 * Math.sin(i)]]);
@@ -434,4 +434,32 @@ export class IndexTests {
 
         })
     }
+
+
+
+     // Allow Translations:
+ // By default, every point of a group triggers a translation.
+ // There may be situations, when this is not wanted.
+
+ // In this example, E triggers nothing, but itself is rotation center
+ // and is translated, if other points are moved around.
+    group() {
+        this.boards.map((board) => {
+
+        var p, q, col, pol, g;
+        col = 'blue';
+        p = [];
+        p.push(board.create('point', [-2, -1], { size: 5, strokeColor: col, fillColor: col }));
+        p.push(board.create('point', [2, -1], { size: 5, strokeColor: 'yellow', fillColor: 'yellow' }));
+        p.push(board.create('point', [2, 1], { size: 5, strokeColor: 'red', fillColor: 'red' }));
+        p.push(board.create('point', [-2, 1], { size: 5, strokeColor: col, fillColor: col }));
+        q = board.create('point', [0, 0], { size: 5, strokeColor: col, fillColor: col });
+
+        pol = board.create('polygon', p, { hasInnerPoints: true });
+        g = board.create('group', p.concat(q)).setRotationCenter('centroid').setRotationPoints([p[2]]);
+        g.setScaleCenter(p[0]).setScalePoints(p[1]);
+        g.removeTranslationPoint(q);
+    })
+    }
+
 }

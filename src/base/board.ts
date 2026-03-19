@@ -95,7 +95,7 @@ import { createCircumcircle } from '../element/composition.js';
 import { createButton } from '../element/button.js';
 
 import { createInequality } from '../element/composition.js';
-
+import { createGroup } from "./group.js";
 
 /**
  * Constructs a new Board object.
@@ -6284,7 +6284,7 @@ export class Board extends Events {
         //     insert = this.renderer.removeToInsertLater(this.renderer.svgRoot);
         // }
 
-        if (dragID === undefined){
+        if (dragID === undefined) {
             // console.warn(`Board.update() by ${this.id} without specifying element`)
             // this.needsFullUpdate = true;
         }
@@ -6493,6 +6493,8 @@ export class Board extends Events {
             case 'button': el = createButton(this, parents, attributes); break;
 
             case 'inequality': el = createInequality(this, parents, attributes); break;
+
+            case 'group': el = createGroup(this, parents, attributes); break;
 
             default:
                 if (dbug) console.warn(`%c board: creating elementType '${elementType}'`, dbugColor)
