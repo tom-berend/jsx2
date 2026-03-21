@@ -284,12 +284,12 @@ export abstract class GeometryElement extends Events {
      */
     stdform = [1, 0, 0, 0, 1, 1, 0, 0];
 
-     /**
-     * Stores the groups of this element in an array of Group.
-     * @type Array
-     * @see JXG.Group
-     * @private
-     */
+    /**
+    * Stores the groups of this element in an array of Group.
+    * @type Array
+    * @see JXG.Group
+    * @private
+    */
     groups = [];
 
 
@@ -1336,7 +1336,7 @@ export abstract class GeometryElement extends Events {
      *     visible: true
      * });
      */
-    setAttribute(attr) {
+    setAttribute(attr: LooseObject) {
         var i, j, le, key, value, arg,
             opacity, pair, oldvalue,
             attributes = {};

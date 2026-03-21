@@ -405,6 +405,7 @@ export class ThreeRenderer extends AbstractRenderer {
 
         }
     }
+    
 
     /* ********* Curve related stuff *********** */
 

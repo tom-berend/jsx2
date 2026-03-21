@@ -42,11 +42,8 @@ const dbugColor = `color:yellow;background-color:#4040f0`;
         Tim Sauer
  */
 
-/*global JXG: true, define: true, window: true*/
-/*jslint nomen: true, plusplus: true*/
-
 /**
- * @fileoverview In this file the Text element is defined.
+ * @fileoverview Labels are internal, almost exactly like Text, but are rendered in webGL with sprites (which always face the user)
  */
 
 // import { JXG2 } from "../jxg.js";
@@ -80,7 +77,7 @@ var priv = {
  *
  * MathJax, HTML and GEONExT syntax can be handled.
  * @class Creates a new text object. Do not use this constructor to create a text. Use {@link JXG.Board#create} with
- * type {@link Text} instead.
+ * type {@link Label} instead.
  * @augments JXG.GeometryElement
  * @augments JXG.CoordsElement
  * @param {string|JXG.Board} board The board the new text is drawn on.
@@ -90,7 +87,7 @@ var priv = {
  *
  */
 
-export class Text extends CoordsElement {
+export class Label extends CoordsElement {
 
     content: string | number | Function = "";    // this is the current value to evaluate
 
@@ -272,60 +269,7 @@ export class Text extends CoordsElement {
     // If dragarea is set to 'all' (default), tests if the screen
     // coordinates (x,y) are in within the text boundary.
     hasPoint(x: number, y: number): boolean {
-        let lft, rt, top, bot, ax, ay, type, r;
-        let ret = false
-
-        if (Type.isObject(this.evalVisProp('precision'))) {
-            type = this.board._inputDevice;
-            r = this.evalVisProp('precision.' + type);
-        } else {
-            // 'inherit'
-            r = Options.precision.hasPoint;
-        }
-        if (this.transformations.length > 0) {
-            //Transform the mouse/touch coordinates
-            // back to the original position of the text.
-            lft = JSXMath.matVecMult(
-                JSXMath.inverse(this.board.renderer.joinTransforms(this, this.transformations)),
-                [1, x, y]
-            );
-            x = lft[1];
-            y = lft[2];
-        }
-
-        ax = this.getAnchorX();
-        if (ax === "right") {
-            lft = this.coords.scrCoords[1] - this.size[0];
-        } else if (ax === "middle") {
-            lft = this.coords.scrCoords[1] - 0.5 * this.size[0];
-        } else {
-            lft = this.coords.scrCoords[1];
-        }
-        rt = lft + this.size[0];
-
-        ay = this.getAnchorY();
-        if (ay === "top") {
-            bot = this.coords.scrCoords[2] + this.size[1];
-        } else if (ay === "middle") {
-            bot = this.coords.scrCoords[2] + 0.5 * this.size[1];
-        } else {
-            bot = this.coords.scrCoords[2];
-        }
-        top = bot - this.size[1];
-
-        if (this.evalVisProp('dragarea') === "all") {
-            ret = x >= lft - r && x < rt + r && y >= top - r && y <= bot + r;
-        } else {
-            // e.g. 'small'
-            ret =
-                y >= top - r &&
-                y <= bot + r &&
-                ((x >= lft - r && x <= lft + 2 * r) || (x >= rt - 2 * r && x <= rt + r))
-                ;
-        }
-
-        if (ret && dbug(this)) console.warn(`%c text: hasPoint(x: ${x}),y:${y}) ${this.id}`, dbugColor)
-        return ret;
+        return false;
     }
 
     // /**
@@ -2052,204 +1996,76 @@ export class Text extends CoordsElement {
 
 
 /**
- * @class Constructs a text element.
+ * @class Labels are text objects tied to other elements like points, lines and curves.
+ * Labels are handled internally by JSXGraph, only. There is NO constructor "board.create('label', ...)".
  *
- * The coordinates can either be absolute (i.e. respective to the coordinate system of the board) or be relative to the coordinates of an element
- * given in {@link Text#anchor}.
+ * @description
+ * Labels for points are positioned with the attributes {@link Text#anchorX} {@link Text#anchorX} and {@link Label#offset}.
  * <p>
- * HTML, MathJaX, KaTeX and GEONExT syntax can be handled.
- * <p>
- * There are two ways to display texts:
+ * Labels for lines, segments, curves and circles can be controlled additionally by the attributes {@link Label#position} and
+ * {@link Label#distance} i.e. for a segment [A, B] one could use the follwoing attributes:
  * <ul>
- * <li> using the text element of the renderer (canvas or svg). In most cases this is the suitable approach if speed matters.
- * However, advanced rendering like MathJax, KaTeX or HTML/CSS are not possible.
- * <li> using HTML &lt;div&gt;. This is the most flexible approach. The drawback is that HTML can only be display "above" the geometry elements.
- * If HTML should be displayed in an inbetween layer, conder to use an element of type {@link ForeignObject} (available in svg renderer, only).
+ * <li> "position": determines, where in the direction of the segment from A to B the label is placed
+ * <li> "distance": determines the (orthogonal) distance of the label from the line segment. It is a factor which is multiplied by the font-size.
+ * <li> "offset: [h, v]": a final correction in pixel (horizontally: h, vertically: v)
+ * <li> "anchorX" ('left', 'middle', 'right') and "anchorY" ('bottom', 'middle', 'top'): determines which part of the
+ * label string is the anchor position that is positioned to the coordinates determined by "position", "distance" and "offset".
  * </ul>
+ *
  * @pseudo
- * @name Text
+ * @name Label
  * @augments JXG.Text
  * @constructor
  * @type JXG.Text
- *
- * @param {number,function_number,function_number,function_String,function} z_,x,y,str Parent elements for text elements.
- *                     <p>
- *   Parent elements can be two or three elements of type number, a string containing a GEONE<sub>x</sub>T
- *   constraint, or a function which takes no parameter and returns a number. Every parent element beside the last determines one coordinate.
- *   If a coordinate is
- *   given by a number, the number determines the initial position of a free text. If given by a string or a function that coordinate will be constrained
- *   that means the user won't be able to change the texts's position directly by mouse because it will be calculated automatically depending on the string
- *   or the function's return value. If two parent elements are given the coordinates will be interpreted as 2D affine Euclidean coordinates, if three such
- *   parent elements are given they will be interpreted as homogeneous coordinates.
- *                     <p>
- *                     The text to display may be given as string or as function returning a string.
- *
- * There is the attribute 'display' which takes the values 'html' or 'internal'. In case of 'html' an HTML division tag is created to display
- * the text. In this case it is also possible to use MathJax, KaTeX, or ASCIIMathML. If neither of these is used, basic Math rendering is
- * applied.
- * <p>
- * In case of 'internal', an SVG text element is used to display the text.
- * @see JXG.Text
- * @example
- * // Create a fixed text at position [0,1].
- *   var t1 = board.create('text',[0,1,"Hello World"]);
- * </pre><div class="jxgbox" id="JXG896013aa-f24e-4e83-ad50-7bc7df23f6b7" style="width: 300px; height: 300px;"></div>
- * <script type="text/javascript">
- *   var t1_board = JXG.JSXGraph.initBoard('JXG896013aa-f24e-4e83-ad50-7bc7df23f6b7', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
- *   var t1 = t1_board.create('text',[0,1,"Hello World"]);
- * </script><pre>
- * @example
- * // Create a variable text at a variable position.
- *   var s = board.create('slider',[[0,4],[3,4],[-2,0,2]]);
- *   var graph = board.create('text',
- *                        [function(x){ return s.Value();} 1,
- *                         function(){return "The value of s is"+JXG.toFixed(s.Value(), 2);}
- *                        ]
- *                     );
- * </pre><div class="jxgbox" id="JXG5441da79-a48d-48e8-9e53-75594c384a1c" style="width: 300px; height: 300px;"></div>
- * <script type="text/javascript">
- *   var t2_board = JXG.JSXGraph.initBoard('JXG5441da79-a48d-48e8-9e53-75594c384a1c', {boundingbox: [-3, 6, 5, -3], axis: true, showcopyright: false, shownavigation: false});
- *   var s = t2_board.create('slider',[[0,4],[3,4],[-2,0,2]]);
- *   var t2 = t2_board.create('text',[function(x){ return s.Value();} 1, function(){return "The value of s is "+JXG.toFixed(s.Value(), 2);}]);
- * </script><pre>
- * @example
- * // Create a text bound to the point A
- * var p = board.create('point',[0, 1]),
- *     t = board.create('text',[0, -1,"Hello World"], {anchor: p});
- *
- * </pre><div class="jxgbox" id="JXGff5a64b2-2b9a-11e5-8dd9-901b0e1b8723" style="width: 300px; height: 300px;"></div>
- * <script type="text/javascript">
- *     (function() {
- *         var board = JXG.JSXGraph.initBoard('JXGff5a64b2-2b9a-11e5-8dd9-901b0e1b8723',
- *             {boundingbox: [-8, 8, 8,-8], axis: true, showcopyright: false, shownavigation: false});
- *     var p = board.create('point',[0, 1]),
- *         t = board.create('text',[0, -1,"Hello World"], {anchor: p});
- *
- *     })();
- *
- * </script><pre>
- *
  */
-export function createText(board: Board, parents: any[], attributes: LooseObject/*TextOptions*/ = {}): Text {
-    var t
-    let coords = parents.slice(0, -1),
-        content = parents[parents.length - 1];
-
-
-    // Backwards compatibility
-
-    // TBTB??
-    // attributes.anchor = parent.attributes.anchor || attributes.anchor;
-
-
-    t = new Text(board, parents, attributes);
-
-    if (!t) {
-        throw new Error(
-            "JSXGraph: Can't create text with parent types '" +
-            typeof parents[0] +
-            "' and '" +
-            typeof parents[1] +
-            "'." +
-            "\nPossible parent types: [x,y], [z,x,y], [element,transformation]"
-        );
-    }
-
-    if (attributes.rotate !== 0) {
-        // This is the default value, i.e. no rotation
-        t.addRotation(attributes.rotate);
-    }
-
-    return t;
-
-};
-
-
 
 /**
- * [[x,y], [w px, h px], [range]
- */
-//tbtbtb
-export class HTMLSlider extends Text {
-    constructor(board, parents: any[], attributes = {}) {
-        super(board, [parents[0], parents[1]], attributes)
+    * Creates a label element for this geometry element.
+    * @see JXG2.GeometryElement#addLabelToElement
+    */
+export function createLabel(board: Board, parents: [Point], attributes) {
+    var attr
 
-        var
-            par,
-            attr = Type.initVisProps(Options.board, attributes, Options.htmlslider);
+    let p = parents[0] as Point // just easier to say
 
-        if (parents.length !== 2 || parents[0].length !== 2 || parents[1].length !== 3) {
-            throw new Error(
-                "JSXGraph: Can't create htmlslider with parent types '" +
-                typeof parents[0] +
-                "' and '" +
-                typeof parents[1] +
-                "'." +
-                "\nPossible parents are: [[x,y], [min, start, max]]"
-            );
+    attr = Options.label;
+    attr['id'] = p.id + 'Label';
+    attr['isLabel'] = true;
+    attr['anchor'] = p;
+    attr['priv'] = p.visProp['priv'];
+
+    if (dbug(this))
+        console.warn(`%c geometryElement: creating label for ${p.id})`, dbugColor)
+
+    if (p.visProp['withlabel']) {
+
+        let plainName: string;
+
+        if (typeof p.name == 'function') {       // typeguard doesn't seem to work in ternary operator
+            plainName = p.name();
+        } else {
+            plainName = p.name;
         }
 
-        // Backwards compatibility
-        attr.anchor = attr.parent || attr.anchor;
-        attr.fixed = attr.fixed || true;
+        let label = new Label(board, [0, 0, plainName], { strokecolor: 'yellow' })//attributes);
 
-        par = [
-            parents[0][0],
-            parents[0][1],
-            '<form style="display:inline">' +
-            '<input type="range" /><span></span><input type="text" />' +
-            "</form>"
-        ];
+        let ev_o = label.evalVisProp('offset');  // offset is in screen coords, must convert
+        let sx = parseFloat(ev_o[0]) / p.board.unitX;
+        let sy = parseFloat(ev_o[1]) / p.board.unitY;
 
-        let t = createText(board, par, attr);
-        t.otype = OBJECT_TYPE.HTMLSLIDER;
+        label.addConstraint([() => p.X() + sx, () => p.Y() + sy])
 
-        t.rendNodeForm = t.rendNode.childNodes[0];
+        label.needsUpdate = true;
+        label.dump = false;
+        // label.fullUpdate();
 
-        t.rendNodeRange = t.rendNodeForm.childNodes[0];
-        t.rendNodeRange.min = parents[1][0];
-        t.rendNodeRange.max = parents[1][2];
-        t.rendNodeRange.step = attr.step;
-        t.rendNodeRange.value = parents[1][1];
 
-        t.rendNodeLabel = t.rendNodeForm.childNodes[1];
-        t.rendNodeLabel.id = t.rendNode.id + "_label";
+        if (dbug(p.label))
+            console.warn(`%c geometryElement: new label ${p.label.id} for  ${p.id})`, dbugColor)
 
-        if (attr.withlabel) {
-            t.rendNodeLabel.innerHTML = t.name + "=";
-        }
-
-        t.rendNodeOut = t.rendNodeForm.childNodes[2];
-        t.rendNodeOut.value = parents[1][1];
-
-        try {
-            t.rendNodeForm.id = t.rendNode.id + "_form";
-            t.rendNodeRange.id = t.rendNode.id + "_range";
-            t.rendNodeOut.id = t.rendNode.id + "_out";
-        } catch (e) {
-            Env.debug(e);
-        }
-
-        t.rendNodeRange.style.width = attr.widthrange + "px";
-        t.rendNodeRange.style.verticalAlign = "middle";
-        t.rendNodeOut.style.width = attr.widthout + "px";
-
-        t._val = parents[1][1];
-
-        Env.addEvent(t.rendNodeForm as HTMLElement, "input", t.HTMLSliderInputEventHandler, board);  // tbtb - board param was 't'
-
-        t.Value = function () {
-            return this._val;
-        };
-
-        return t;
-    };
-
+        return label;
+    }
 
 }
-
-
-
-
 
 

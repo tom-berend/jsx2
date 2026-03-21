@@ -437,29 +437,39 @@ export class IndexTests {
 
 
 
-     // Allow Translations:
- // By default, every point of a group triggers a translation.
- // There may be situations, when this is not wanted.
+    // Allow Translations:
+    // By default, every point of a group triggers a translation.
+    // There may be situations, when this is not wanted.
 
- // In this example, E triggers nothing, but itself is rotation center
- // and is translated, if other points are moved around.
+    // In this example, E triggers nothing, but itself is rotation center
+    // and is translated, if other points are moved around.
     group() {
         this.boards.map((board) => {
 
-        var p, q, col, pol, g;
-        col = 'blue';
-        p = [];
-        p.push(board.create('point', [-2, -1], { size: 5, strokeColor: col, fillColor: col }));
-        p.push(board.create('point', [2, -1], { size: 5, strokeColor: 'yellow', fillColor: 'yellow' }));
-        p.push(board.create('point', [2, 1], { size: 5, strokeColor: 'red', fillColor: 'red' }));
-        p.push(board.create('point', [-2, 1], { size: 5, strokeColor: col, fillColor: col }));
-        q = board.create('point', [0, 0], { size: 5, strokeColor: col, fillColor: col });
 
-        pol = board.create('polygon', p, { hasInnerPoints: true });
-        g = board.create('group', p.concat(q)).setRotationCenter('centroid').setRotationPoints([p[2]]);
-        g.setScaleCenter(p[0]).setScalePoints(p[1]);
-        g.removeTranslationPoint(q);
-    })
+            var p, q, col, pol, g;
+            col = 'blue';
+            p = [];
+            p.push(board.create('point', [-2, -1], { size: 5, strokeColor: col, fillColor: col }));
+            p.push(board.create('point', [2, -1], { size: 5, strokeColor: 'yellow', fillColor: 'yellow' }));
+            p.push(board.create('point', [2, 1], { size: 5, strokeColor: 'red', fillColor: 'red' }));
+            p.push(board.create('point', [-2, 1], { size: 5, strokeColor: col, fillColor: col }));
+            q = board.create('point', [0, 0], { size: 5, strokeColor: col, fillColor: col });
+
+            pol = board.create('polygon', p, { hasInnerPoints: true });
+            g = board.create('group', p.concat(q)).setRotationCenter('centroid').setRotationPoints([p[2]]);
+            g.setScaleCenter(p[0]).setScalePoints(p[1]);
+            g.removeTranslationPoint(q);
+
+            let k:boolean = true
+            let text = ()=>k?'visible':'not visible'
+
+            let button1 = board.create('button', [2, -5, text, function () {
+                k = !k
+                g.setAttribute({visible:k})
+            }], {});
+
+
+        })
     }
-
 }

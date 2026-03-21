@@ -54,6 +54,7 @@ import { Coords } from "./coords.js";
 import { CoordsElement } from "./coordselement.js";
 import { COORDS_BY_USER } from "../index.js";
 import { Text, createText} from "../base/text.js"
+import { Label, createLabel} from "../base/label.js"
 import { PointOptions } from "../optionInterfaces.js";
 import { Board } from "../base/board.js";
 import { LooseObject, ComposeInterface } from "../interfaces.js";
@@ -572,7 +573,7 @@ export class CreatePoint implements ComposeInterface {
         if (this.point.evalVisProp('withlabel')) {
             let labelAttr = Type.initVisProps(Options.label, attributes['label'])
 
-            this.label = new Text(board, [0, 0, this.point.name], labelAttr);
+            this.label = createLabel(board, [this.point], labelAttr);
             this.label.id = this.point.id + 'label'   // overwrite
 
             this.label.addConstraint([() => this.point.X() + .5, () => this.point.Y() + .5])

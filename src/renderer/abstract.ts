@@ -337,6 +337,9 @@ export abstract class AbstractRenderer {
     }
 
 
+    abstract drawCurve(el:Curve)
+    abstract updateCurve(el:Curve)
+
     // /* ********* Curve related stuff *********** */
 
     ////////  moved to SVG and WEBGL
